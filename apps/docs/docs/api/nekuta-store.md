@@ -15,7 +15,7 @@ function NekutaStore(props: {
 Root component for a Nekuta-powered app: creates a [`Nekuta`](./create-nekuta.md) instance and makes it available to [`useStore()`](./use-store.md)/[`connectStore()`](./connect-store.md) below it in the tree, via React Context — in one step.
 
 ```tsx
-import { NekutaStore } from '@nekuta/core';
+import { NekutaStore } from '@devtools/core';
 
 function App() {
     return (
@@ -28,7 +28,7 @@ function App() {
 
 ## Props
 
-- **`nekuta`** (optional) — an existing `Nekuta` instance to use instead of creating one. Omit this to have `NekutaStore` create and own one automatically (the common case for a plain client-rendered app). This is the escape hatch used internally by `@nekuta/next`'s [`NekutaAppProvider`](../ssr/nextjs-pages-router.md) (Pages Router) and [`NekutaClientProvider`](../ssr/nextjs-app-router.md) (App Router), which each create a per-request instance server-side and hand it in — you generally don't need this prop unless you're wiring SSR by hand.
+- **`nekuta`** (optional) — an existing `Nekuta` instance to use instead of creating one. Omit this to have `NekutaStore` create and own one automatically (the common case for a plain client-rendered app). This is the escape hatch used internally by `@devtools/next`'s [`NekutaAppProvider`](../ssr/nextjs-pages-router.md) (Pages Router) and [`NekutaClientProvider`](../ssr/nextjs-app-router.md) (App Router), which each create a per-request instance server-side and hand it in — you generally don't need this prop unless you're wiring SSR by hand.
 - **`plugins`** (optional) — plugins to install, applied only when `NekutaStore` creates its own instance (ignored if `nekuta` is passed — install plugins on that instance yourself before rendering).
 
 ## `NekutaContext`

@@ -1,4 +1,4 @@
-import { defineStore } from '@nekuta/core';
+import { defineStore } from '@devtools/core';
 
 export interface TodoItem {
     id: number;

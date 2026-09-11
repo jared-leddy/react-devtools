@@ -1,4 +1,4 @@
-import config from '@nekuta/prettier-config';
+import config from '@devtools/prettier-config';
 
 /** @type {import("prettier").Config} */
 export default config;

@@ -1,5 +1,5 @@
-import { serializeNekutaState } from '@nekuta/core';
-import { getServerNekuta, NekutaClientProvider } from '@nekuta/next';
+import { serializeNekutaState } from '@devtools/core';
+import { getServerNekuta, NekutaClientProvider } from '@devtools/next';
 import type { ReactNode } from 'react';
 import { useCounterStore } from '../stores/counterStore';
 import { useTodoStore } from '../stores/todoStore';
@@ -8,7 +8,7 @@ import '../styles/globals.css';
 export const metadata = {
     title: 'Nekuta Playground',
     description:
-        'Live demo of nekuta + @nekuta/next across the Pages Router and the App Router.'
+        'Live demo of nekuta + @devtools/next across the Pages Router and the App Router.'
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

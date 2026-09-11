@@ -46,4 +46,4 @@ setActiveNekuta(nekuta);
 setActiveNekuta(undefined); // don't leak it into unrelated code afterward
 ```
 
-`@nekuta/next`'s `withNekutaSSR()` already manages this correctly for Pages Router requests — you only need to call it directly for your own headless code (tests, scripts) or a custom SSR flow.
+`@devtools/next`'s `withNekutaSSR()` already manages this correctly for Pages Router requests — you only need to call it directly for your own headless code (tests, scripts) or a custom SSR flow.

@@ -34,7 +34,7 @@ Unlike a typical higher-order component, `connectStore()` doesn't wrap `TargetCo
 ```ts
 type MapStoresToProps = Record<
     string,
-    (nekuta?: NekutaInstance) => StoreGeneric
+    (devtools?: DevToolsInstance) => StoreGeneric
 >;
 ```
 

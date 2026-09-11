@@ -101,13 +101,13 @@ const config = {
                     content:
                         'Intuitive state management for React. Type-safe. Predictable. Class-first.'
                 },
-                { name: 'og:email', content: 'hello@nekuta.org' },
+                { name: 'og:email', content: 'hello@devtools.org' },
                 { name: 'og:locality', content: 'Charlotte' },
                 { name: 'og:region', content: 'NC' },
                 { name: 'og:country-name', content: 'USA' },
                 { name: 'twitter:card', content: 'summary_large_image' },
-                { name: 'twitter:site', content: '@NekutaStore' },
-                { name: 'twitter:creator', content: '@NekutaStore' }
+                { name: 'twitter:site', content: '@devtoolsStore' },
+                { name: 'twitter:creator', content: '@devtoolsStore' }
             ],
             image: 'img/nekuta-social.png',
             colorMode: {

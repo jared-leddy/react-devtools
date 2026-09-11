@@ -9,7 +9,7 @@ A hooks store is a function you write the same way you'd write a custom React ho
 ## Full example
 
 ```ts title="stores/counterStore.ts"
-import { defineStore, ref, computed } from '@nekuta/core';
+import { defineStore, ref, computed } from '@devtools/core';
 
 export const useCounterStore = defineStore('counter', () => {
     const count = ref(0);

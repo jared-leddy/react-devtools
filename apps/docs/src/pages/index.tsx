@@ -44,17 +44,17 @@ const FEATURES: Feature[] = [
         icon: '⚡',
         title: 'SSR-Ready',
         description:
-            '@nekuta/next handles both the Pages Router and the App Router, with per-request state isolation already solved — not left for you to get right.'
+            '@devtools/next handles both the Pages Router and the App Router, with per-request state isolation already solved — not left for you to get right.'
     },
     {
         icon: '📦',
         title: 'Schema or Hooks — Your Choice',
         description:
-            "Two equivalent ways to define a store, converging on one engine. Mix freely, or enforce one project-wide with @nekuta/eslint-plugin — it's up to you."
+            "Two equivalent ways to define a store, converging on one engine. Mix freely, or enforce one project-wide with @devtools/eslint-plugin — it's up to you."
     }
 ];
 
-const QUICK_START_CODE = `import { defineStore } from '@nekuta/core';
+const QUICK_START_CODE = `import { defineStore } from '@devtools/core';
 
 export const useCounterStore = defineStore({
     id: 'counter',

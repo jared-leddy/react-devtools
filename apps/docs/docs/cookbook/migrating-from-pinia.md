@@ -19,7 +19,7 @@ If you already know Pinia, most of this is a rename exercise. The table below is
 | `store.$onAction(...)`                           | `store.$onAction(...)` — identical                                  |
 | `store.$reset()`                                 | `store.$reset()` — schema stores only, same as Pinia                |
 | `pinia.use(plugin)`                              | `nekuta.use(plugin)` — same shape, no `app` field                   |
-| `@pinia/nuxt`                                    | `@nekuta/next`                                                      |
+| `@pinia/nuxt`                                    | `@devtools/next`                                                      |
 | `skipHydrate()`                                  | `skipHydrate()` — same purpose                                      |
 | Vue DevTools' Pinia panel                        | Not built yet — planned as a separate project                       |
 

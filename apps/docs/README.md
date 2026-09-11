@@ -1,15 +1,15 @@
-# @nekuta/docs
+# @devtools/docs
 
 The Nekuta documentation site, built with [Docusaurus](https://docusaurus.io/).
 
-Part of the `nekuta` Turborepo — see the [root README](../../readme.md) for monorepo-wide setup.
+Part of the `devtools` Turborepo — see the [root README](../../readme.md) for monorepo-wide setup.
 
 ## Development
 
 From the repo root:
 
 ```sh
-npx turbo run start:dev --filter=@nekuta/docs
+npx turbo run start:dev --filter=@devtools/docs
 ```
 
 Or from this directory directly:

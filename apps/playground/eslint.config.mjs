@@ -1,4 +1,4 @@
-import { nextJSConfig } from '@nekuta/eslint-config/next-js';
+import { nextJSConfig } from '@devtools/eslint-config/next-js';
 
 export default [
     ...nextJSConfig(import.meta.dirname),

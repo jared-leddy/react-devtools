@@ -9,7 +9,7 @@ A schema store is an object literal with `state`, `getters`, and `actions` field
 ## Full example
 
 ```ts title="stores/counterStore.ts"
-import { defineStore } from '@nekuta/core';
+import { defineStore } from '@devtools/core';
 
 interface CounterState {
     count: number;

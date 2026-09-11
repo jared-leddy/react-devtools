@@ -1,6 +1,6 @@
 'use client';
 
-import { connectStore, useStore, type MappedStores } from '@nekuta/core';
+import { connectStore, useStore, type MappedStores } from '@devtools/core';
 import { Component } from 'react';
 import { useCounterStore } from '../stores/counterStore';
 

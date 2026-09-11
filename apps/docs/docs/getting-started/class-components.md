@@ -16,7 +16,7 @@ Using the same `useCounterStore` from the [Quick Start](./quick-start.md). There
 
 ```tsx title="Counter.tsx"
 import { Component } from 'react';
-import { connectStore, type MappedStores } from '@nekuta/core';
+import { connectStore, type MappedStores } from '@devtools/core';
 import { useCounterStore } from './stores/counterStore';
 
 class CounterComponent extends Component {
@@ -43,7 +43,7 @@ Everything lives on the class itself — `connectStore(CounterComponent)` reads 
 
 ```tsx title="Counter.tsx"
 import { Component } from 'react';
-import { connectStore, type MappedStores } from '@nekuta/core';
+import { connectStore, type MappedStores } from '@devtools/core';
 import { useCounterStore } from './stores/counterStore';
 
 const storeMap = { counter: useCounterStore };

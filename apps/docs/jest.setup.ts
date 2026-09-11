@@ -6,7 +6,7 @@ import { TextDecoder, TextEncoder } from 'util';
 import '@testing-library/jest-dom';
 
 // jsdom doesn't implement matchMedia — components that check
-// prefers-reduced-motion / prefers-color-scheme (e.g. NekutaLogoAnimated)
+// prefers-reduced-motion / prefers-color-scheme (e.g. DevToolsLogoAnimated)
 // need this to mount at all in a test environment.
 if (typeof window !== 'undefined' && !window.matchMedia) {
     window.matchMedia = (query: string) => ({

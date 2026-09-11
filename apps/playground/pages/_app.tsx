@@ -1,4 +1,4 @@
-import { NekutaAppProvider } from '@nekuta/next';
+import { NekutaAppProvider } from '@devtools/next';
 import type { AppProps } from 'next/app';
 import '../styles/globals.css';
 

@@ -1,4 +1,4 @@
-import { defineStore } from '@nekuta/core';
+import { defineStore } from '@devtools/core';
 
 export const useCounterStore = defineStore({
     id: 'counter',

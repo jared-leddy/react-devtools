@@ -14,8 +14,8 @@ Those are all good libraries, and if you're starting fresh with no Vue backgroun
 
 ## Packages
 
-- **`@nekuta/core`** — the store engine itself: `defineStore`, `useStore`, `connectStore`, plugins, SSR helpers. Framework-router-agnostic.
-- **`@nekuta/next`** — the Next.js adapter: SSR/hydration support for both the Pages Router and the App Router.
+- **`@devtools/core`** — the store engine itself: `defineStore`, `useStore`, `connectStore`, plugins, SSR helpers. Framework-router-agnostic.
+- **`@devtools/next`** — the Next.js adapter: SSR/hydration support for both the Pages Router and the App Router.
 
 ## What's supported today
 

@@ -4,12 +4,12 @@ sidebar_position: 1
 
 # Next.js — Pages Router
 
-Two pieces from `@nekuta/next`: `withNekutaSSR()` wraps `getServerSideProps`, and `NekutaAppProvider` wraps your `_app.tsx`.
+Two pieces from `@devtools/next`: `withNekutaSSR()` wraps `getServerSideProps`, and `NekutaAppProvider` wraps your `_app.tsx`.
 
 ## `_app.tsx`
 
 ```tsx title="pages/_app.tsx"
-import { NekutaAppProvider } from '@nekuta/next';
+import { NekutaAppProvider } from '@devtools/next';
 import type { AppProps } from 'next/app';
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -26,7 +26,7 @@ export default function App({ Component, pageProps }: AppProps) {
 ## A page
 
 ```tsx title="pages/index.tsx"
-import { withNekutaSSR } from '@nekuta/next';
+import { withNekutaSSR } from '@devtools/next';
 import { useCounterStore } from '../stores/counterStore';
 
 export const getServerSideProps = withNekutaSSR(async (context) => {

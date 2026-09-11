@@ -4,13 +4,13 @@ sidebar_position: 2
 
 # Next.js — App Router
 
-There's no persistent "app instance" in the App Router the way Pages Router has `_app.tsx` — Server Components render per-request, and state has to cross an explicit Server → Client boundary. Two pieces from `@nekuta/next` handle this: `getServerNekuta()` (a Server Component helper) and `<NekutaClientProvider>` (the Client Component boundary).
+There's no persistent "app instance" in the App Router the way Pages Router has `_app.tsx` — Server Components render per-request, and state has to cross an explicit Server → Client boundary. Two pieces from `@devtools/next` handle this: `getServerNekuta()` (a Server Component helper) and `<NekutaClientProvider>` (the Client Component boundary).
 
 ## Root layout
 
 ```tsx title="app/layout.tsx"
-import { serializeNekutaState } from '@nekuta/core';
-import { getServerNekuta, NekutaClientProvider } from '@nekuta/next';
+import { serializeNekutaState } from '@devtools/core';
+import { getServerNekuta, NekutaClientProvider } from '@devtools/next';
 import { useCounterStore } from '../stores/counterStore';
 
 export default function RootLayout({
@@ -48,7 +48,7 @@ Everything below `<NekutaClientProvider>` uses `useStore()`/`connectStore()` com
 ```tsx title="app/page.tsx"
 'use client';
 
-import { useStore } from '@nekuta/core';
+import { useStore } from '@devtools/core';
 import { useCounterStore } from '../stores/counterStore';
 
 export default function Page() {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useStore } from '@nekuta/core';
+import { useStore } from '@devtools/core';
 import { useEffect, useState } from 'react';
 import { useCounterStore } from '../stores/counterStore';
 import { useTodoStore } from '../stores/todoStore';

@@ -6,14 +6,14 @@ sidebar_position: 4
 
 `defineStore()` supports two styles — see [Defining Stores](../core-concepts/defining-stores.md) — and nothing about the store engine itself picks one for your project. Left alone, different stores (or different contributors) can end up mixing `schema` stores and `hooks` stores in the same codebase.
 
-If you want every store in a project to agree on one style, install `@nekuta/eslint-plugin`:
+If you want every store in a project to agree on one style, install `@devtools/eslint-plugin`:
 
 ```bash
-npm install --save-dev @nekuta/eslint-plugin
+npm install --save-dev @devtools/eslint-plugin
 ```
 
 ```js title="eslint.config.mjs"
-import nekuta from '@nekuta/eslint-plugin';
+import nekuta from '@devtools/eslint-plugin';
 
 export default [
     {
@@ -45,10 +45,10 @@ Choosing a store style is a codebase-authoring convention, not app runtime confi
 A call whose shape the rule can't statically determine (for example `defineStore(someVariable)`) is left alone rather than guessed at. Aliased imports are tracked correctly too:
 
 ```ts
-import { defineStore as define } from '@nekuta/core';
+import { defineStore as define } from '@devtools/core';
 
 // still flagged under { format: 'schema' }
 const useCounterStore = define('counter', () => ({ count: ref(0) }));
 ```
 
-Only calls to `defineStore` actually imported from `@nekuta/core` are checked — an unrelated function that happens to also be named `defineStore` and imported from somewhere else is ignored.
+Only calls to `defineStore` actually imported from `@devtools/core` are checked — an unrelated function that happens to also be named `defineStore` and imported from somewhere else is ignored.

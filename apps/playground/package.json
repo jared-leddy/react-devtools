@@ -1,9 +1,9 @@
 {
-    "name": "@nekuta/playground",
+    "name": "@devtools/playground",
     "version": "0.0.0",
     "private": true,
     "license": "UNLICENSED",
-    "description": "Live demo dogfooding nekuta + @nekuta/next across the Pages Router and the App Router.",
+    "description": "Live demo dogfooding nekuta + @devtools/next across the Pages Router and the App Router.",
     "type": "module",
     "scripts": {
         "start:dev": "next dev --port 3000",
@@ -15,16 +15,16 @@
         "test:watch": "jest --coverage --watch --passWithNoTests --config jest.config.ts"
     },
     "dependencies": {
-        "@nekuta/core": "file:../nekuta",
-        "@nekuta/next": "file:../next",
+        "@devtools/core": "file:../nekuta",
+        "@devtools/next": "file:../next",
         "next": "^15.5.0",
         "react": "^19.1.1",
         "react-dom": "^19.1.1"
     },
     "devDependencies": {
-        "@nekuta/eslint-config": "*",
-        "@nekuta/jest-config": "file:../../packages/jest-config",
-        "@nekuta/typescript-config": "*",
+        "@devtools/eslint-config": "*",
+        "@devtools/jest-config": "file:../../packages/jest-config",
+        "@devtools/typescript-config": "*",
         "@testing-library/jest-dom": "^6.9.1",
         "@testing-library/react": "^16.3.2",
         "@types/jest": "^30.0.0",

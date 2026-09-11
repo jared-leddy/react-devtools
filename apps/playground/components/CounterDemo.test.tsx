@@ -1,4 +1,4 @@
-import { createNekuta, NekutaStore } from '@nekuta/core';
+import { createNekuta, NekutaStore } from '@devtools/core';
 import { act, render, screen } from '@testing-library/react';
 import { CounterDemo } from './CounterDemo';
 

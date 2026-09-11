@@ -1,5 +1,5 @@
-import { getActiveNekuta } from '@nekuta/core';
-import { withNekutaSSR } from '@nekuta/next';
+import { getActiveNekuta } from '@devtools/core';
+import { withNekutaSSR } from '@devtools/next';
 import type { InferGetServerSidePropsType } from 'next';
 import Link from 'next/link';
 import { ActivityLog } from '../../components/ActivityLog';

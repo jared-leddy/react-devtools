@@ -2,7 +2,7 @@
 sidebar_position: 9
 ---
 
-# `@nekuta/next`
+# `@devtools/next`
 
 Covered with full examples in [SSR & Next.js](../ssr/nextjs-pages-router.md) — this page is the quick signature reference. One package, plain named exports (no subpath split — see the project's build plan for why), internally organized by router.
 

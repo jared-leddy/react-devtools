@@ -20,4 +20,4 @@ function skipHydrate<T extends object>(value: T): T;
 function shouldHydrate(value: unknown): boolean;
 ```
 
-All five live in `nekuta` (not `@nekuta/next`) — they're router-agnostic; the Next.js adapter only handles _transporting_ the serialized value across the server/client boundary for each router.
+All five live in `nekuta` (not `@devtools/next`) — they're router-agnostic; the Next.js adapter only handles _transporting_ the serialized value across the server/client boundary for each router.
