@@ -1,0 +1,4 @@
+{
+    "extends": "@nekuta/typescript-config/base.json",
+    "files": []
+}
