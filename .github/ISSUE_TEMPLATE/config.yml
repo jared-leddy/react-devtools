@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+    - name: Ask Questions
+      url: https://github.com/jared-leddy/react-devtools/issues/new/?category=question
+      about: Create a support ticket to get help from developers.
