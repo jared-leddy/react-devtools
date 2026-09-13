@@ -1,36 +1,23 @@
 import { act, render, screen } from '@testing-library/react';
-import { NekutaStore } from '../lib/nekuta-shim';
-import { createNekuta } from '../lib/nekuta-store-shim';
 import { CounterDemo } from './CounterDemo';
 
 function renderDemo() {
-    const nekuta = createNekuta();
-    return render(
-        <NekutaStore nekuta={nekuta}>
-            <CounterDemo />
-        </NekutaStore>
-    );
+    return render(<CounterDemo />);
 }
 
 describe('CounterDemo', () => {
-    it('renders all three bindings, sharing one store', () => {
+    it('renders all three shared counter views', () => {
         renderDemo();
 
-        expect(
-            screen.getByText('Functional component — useStore()')
-        ).toBeInTheDocument();
-        expect(
-            screen.getByText('Class component — connectStore()')
-        ).toBeInTheDocument();
-        expect(
-            screen.getByText('Class component — static stores')
-        ).toBeInTheDocument();
+        expect(screen.getByText('Functional state')).toBeInTheDocument();
+        expect(screen.getByText('Shared state view')).toBeInTheDocument();
+        expect(screen.getByText('Derived state view')).toBeInTheDocument();
         expect(screen.getByTestId('functional-count')).toHaveTextContent('0');
         expect(screen.getByTestId('class-count')).toHaveTextContent('0');
         expect(screen.getByTestId('static-class-count')).toHaveTextContent('0');
     });
 
-    it('a click on the functional binding updates both class bindings too (same store)', () => {
+    it('a click on the functional view updates all shared views', () => {
         renderDemo();
 
         act(() => {
@@ -42,7 +29,7 @@ describe('CounterDemo', () => {
         expect(screen.getByTestId('static-class-count')).toHaveTextContent('1');
     });
 
-    it('a click on the static-stores class binding updates the other two too', () => {
+    it('a click on the derived state view updates the other two too', () => {
         renderDemo();
 
         act(() => {
@@ -56,7 +43,7 @@ describe('CounterDemo', () => {
         );
     });
 
-    it('supports decrementing and resetting the shared store', () => {
+    it('supports decrementing and resetting the shared state', () => {
         renderDemo();
 
         act(() => {
@@ -69,5 +56,20 @@ describe('CounterDemo', () => {
         expect(screen.getByTestId('functional-count')).toHaveTextContent('0');
         expect(screen.getByTestId('class-count')).toHaveTextContent('0');
         expect(screen.getByTestId('static-class-count')).toHaveTextContent('0');
+    });
+
+    it('supports each shared view decrement path', () => {
+        renderDemo();
+
+        act(() => {
+            screen.getByText('-5').click();
+            screen.getByText('-10').click();
+        });
+
+        expect(screen.getByTestId('functional-count')).toHaveTextContent('-15');
+        expect(screen.getByTestId('class-count')).toHaveTextContent('-15');
+        expect(screen.getByTestId('static-class-count')).toHaveTextContent(
+            '-15'
+        );
     });
 });

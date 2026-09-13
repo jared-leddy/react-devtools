@@ -1,21 +1,11 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { NekutaStore } from '../lib/nekuta-shim';
-import { createNekuta } from '../lib/nekuta-store-shim';
-import { useCounterStore } from '../stores/counterStore';
-import { useTodoStore } from '../stores/todoStore';
 import { ActivityLog } from './ActivityLog';
 import { CounterDemo } from './CounterDemo';
 import { TodoDemo } from './TodoDemo';
 
-function renderWithStore(children: React.ReactNode) {
-    return render(
-        <NekutaStore nekuta={createNekuta()}>{children}</NekutaStore>
-    );
-}
-
 describe('playground demo flows', () => {
     it('adds, toggles, clears, and removes todos through the UI', () => {
-        renderWithStore(<TodoDemo />);
+        render(<TodoDemo />);
 
         const input = screen.getByPlaceholderText('Add a todo…');
         const addButton = screen.getByRole('button', { name: 'add' });
@@ -72,8 +62,8 @@ describe('playground demo flows', () => {
         expect(screen.queryByText('Remove me')).not.toBeInTheDocument();
     });
 
-    it('records store subscriptions and action lifecycle events', () => {
-        renderWithStore(
+    it('renders the temporary demos without store dependencies', () => {
+        render(
             <>
                 <CounterDemo />
                 <TodoDemo />
@@ -81,20 +71,9 @@ describe('playground demo flows', () => {
             </>
         );
 
-        act(() => {
-            screen.getByText('+1').click();
-        });
-
-        expect(
-            screen.getByText('[$onAction] counter.increment called', {
-                exact: false
-            })
-        ).toBeInTheDocument();
-        expect(
-            screen.getByText('[$subscribe] counter store changed', {
-                exact: false
-            })
-        ).toBeInTheDocument();
+        expect(screen.getByText('Counter demo')).toBeInTheDocument();
+        expect(screen.getByText('Todo demo')).toBeInTheDocument();
+        expect(screen.getByText('Activity log')).toBeInTheDocument();
 
         const input = screen.getByPlaceholderText('Add a todo…');
         act(() => {
@@ -107,27 +86,40 @@ describe('playground demo flows', () => {
         });
 
         expect(
-            screen.getByText('[$onAction] todos.addTodo called', {
-                exact: false
-            })
+            screen.getByText('Store action logging removed', { exact: false })
         ).toBeInTheDocument();
     });
 
-    it('keeps direct store actions usable for SSR-style setup', () => {
-        const nekuta = createNekuta();
-        const counter = useCounterStore(nekuta);
-        const todos = useTodoStore(nekuta);
+    it('keeps active todos when clearing completed items', () => {
+        render(<TodoDemo />);
 
-        counter.increment(2);
-        counter.decrement();
-        todos.addTodo('Direct store item');
-        todos.toggleTodo(1);
-        todos.toggleTodo(404);
-        todos.removeTodo(404);
+        const input = screen.getByPlaceholderText('Add a todo…');
+        const addButton = screen.getByRole('button', { name: 'add' });
 
-        expect(counter.count).toBe(1);
-        expect(counter.doubleCount).toBe(2);
-        expect(todos.completedCount).toBe(1);
-        expect(todos.remainingCount).toBe(0);
+        act(() => {
+            fireEvent.change(input, {
+                target: { value: 'Done item' }
+            });
+        });
+        act(() => {
+            addButton.click();
+        });
+        act(() => {
+            fireEvent.change(input, {
+                target: { value: 'Active item' }
+            });
+        });
+        act(() => {
+            addButton.click();
+        });
+        act(() => {
+            screen.getAllByRole('checkbox')[0].click();
+        });
+        act(() => {
+            screen.getByRole('button', { name: 'clear completed' }).click();
+        });
+
+        expect(screen.queryByText('Done item')).not.toBeInTheDocument();
+        expect(screen.getByText('Active item')).toBeInTheDocument();
     });
 });
