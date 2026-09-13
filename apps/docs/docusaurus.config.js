@@ -12,7 +12,6 @@ const darkCodeTheme = themes.nightOwl;
 const config = {
     title: 'React DevTools',
     tagline: 'A modern developer tools ecosystem for React apps.',
-    favicon: 'img/logo/nekuta-logo.png',
 
     // Set the production url of your site here
     url: 'https://react-devtools.dev',
@@ -109,17 +108,12 @@ const config = {
                 { name: 'twitter:site', content: '@devtoolsStore' },
                 { name: 'twitter:creator', content: '@devtoolsStore' }
             ],
-            image: 'img/nekuta-social.png',
             colorMode: {
                 defaultMode: 'dark',
                 respectPrefersColorScheme: false
             },
             navbar: {
                 title: 'React DevTools',
-                logo: {
-                    alt: 'React DevTools logo',
-                    src: 'img/logo/nekuta-logo.svg'
-                },
                 items: [
                     {
                         type: 'doc',

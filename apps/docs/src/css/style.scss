@@ -1,42 +1,40 @@
 /**
- * Nekuta brand theme — structurally inspired by Pinia's docs site (dark-first,
+ * React DevTools documentation theme — structurally inspired by Pinia's docs site (dark-first,
  * hero + feature-grid homepage), with Pinia's near-black swapped for a deep
- * navy blue, and Nekuta's own mango-mascot palette as the accent instead of
- * Pinia's green. The mango/leaf gradient stops below are the exact same
- * values used in NekutaLogoAnimated.tsx, so the accent color and the mascot
- * are always drawn from one source of truth.
+ * navy blue, and the existing warm accent palette as the accent instead of
+ * Pinia's green. The accent stops below are temporary and will be revisited with the final DevTools visual system.
  */
 
 :root {
     /* Richer/more saturated than the first pass — the old scale was dark
        enough to read as near-black rather than clearly blue. */
-    --nekuta-navy-950: #05081a;
-    --nekuta-navy-900: #0a1030;
-    --nekuta-navy-800: #111a42;
-    --nekuta-navy-700: #16224f;
-    --nekuta-navy-600: #1f2c63;
-    --nekuta-navy-border: #263a72;
+    --devtools-navy-950: #05081a;
+    --devtools-navy-900: #0a1030;
+    --devtools-navy-800: #111a42;
+    --devtools-navy-700: #16224f;
+    --devtools-navy-600: #1f2c63;
+    --devtools-navy-border: #263a72;
 
     /* A blue-tinted stand-in for Infima's own emphasis-0..1000 ramp, which
        defaults to plain neutral gray in dark mode (--ifm-color-gray-*) and
        isn't affected by the navy tokens above at all — used below to
        override that ramp, and directly by our own secondary-text rules. */
-    --nekuta-navy-emphasis-400: #2a3d76;
-    --nekuta-navy-emphasis-500: #3c4d80;
-    --nekuta-navy-emphasis-600: #5f719c;
-    --nekuta-navy-emphasis-700: #93a2c2;
-    --nekuta-navy-emphasis-800: #c2cbe0;
-    --nekuta-navy-emphasis-900: #e8ecf7;
+    --devtools-navy-emphasis-400: #2a3d76;
+    --devtools-navy-emphasis-500: #3c4d80;
+    --devtools-navy-emphasis-600: #5f719c;
+    --devtools-navy-emphasis-700: #93a2c2;
+    --devtools-navy-emphasis-800: #c2cbe0;
+    --devtools-navy-emphasis-900: #e8ecf7;
 
-    --nekuta-cream-50: #fffdf9;
-    --nekuta-cream-100: #fdf8f0;
-    --nekuta-cream-200: #f5ecdc;
+    --devtools-cream-50: #fffdf9;
+    --devtools-cream-100: #fdf8f0;
+    --devtools-cream-200: #f5ecdc;
 
-    --nekuta-mango-start: #ffe55c;
-    --nekuta-mango-mid: #ffc53d;
-    --nekuta-mango-end: #f4603e;
-    --nekuta-leaf-start: #68d85e;
-    --nekuta-leaf-end: #07883e;
+    --devtools-mango-start: #ffe55c;
+    --devtools-mango-mid: #ffc53d;
+    --devtools-mango-end: #f4603e;
+    --devtools-leaf-start: #68d85e;
+    --devtools-leaf-end: #07883e;
 
     --ifm-font-family-base:
         'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -60,9 +58,9 @@
     --ifm-color-primary-lighter: #f18946;
     --ifm-color-primary-lightest: #f5a06e;
 
-    --ifm-background-color: var(--nekuta-cream-50);
-    --ifm-navbar-background-color: var(--nekuta-cream-50);
-    --ifm-footer-background-color: var(--nekuta-navy-900);
+    --ifm-background-color: var(--devtools-cream-50);
+    --ifm-navbar-background-color: var(--devtools-cream-50);
+    --ifm-footer-background-color: var(--devtools-navy-900);
     --ifm-footer-color: #c3cbe0;
     --ifm-footer-link-color: #e8ecf5;
     --ifm-footer-title-color: #ffffff;
@@ -84,12 +82,12 @@ html[data-theme='dark'] {
     --ifm-color-primary-lighter: #ffcb8a;
     --ifm-color-primary-lightest: #ffe0b8;
 
-    --ifm-background-color: var(--nekuta-navy-900);
-    --ifm-background-surface-color: var(--nekuta-navy-800);
-    --ifm-navbar-background-color: var(--nekuta-navy-900);
-    --ifm-toc-border-color: var(--nekuta-navy-border);
-    --ifm-table-border-color: var(--nekuta-navy-border);
-    --ifm-hr-border-color: var(--nekuta-navy-border);
+    --ifm-background-color: var(--devtools-navy-900);
+    --ifm-background-surface-color: var(--devtools-navy-800);
+    --ifm-navbar-background-color: var(--devtools-navy-900);
+    --ifm-toc-border-color: var(--devtools-navy-border);
+    --ifm-table-border-color: var(--devtools-navy-border);
+    --ifm-hr-border-color: var(--devtools-navy-border);
 
     /* Infima's own emphasis-0..1000 ramp defaults to plain neutral gray in
        dark mode (--ifm-color-gray-*), independent of every navy token above
@@ -97,16 +95,16 @@ html[data-theme='dark'] {
        states, and our own .subtagline/.featureDescription/etc. below), so
        leaving it alone is exactly what was still reading as "dark gray"
        everywhere the navy background/surface overrides don't reach. */
-    --ifm-color-emphasis-0: var(--nekuta-navy-950);
-    --ifm-color-emphasis-100: var(--nekuta-navy-900);
-    --ifm-color-emphasis-200: var(--nekuta-navy-800);
-    --ifm-color-emphasis-300: var(--nekuta-navy-border);
-    --ifm-color-emphasis-400: var(--nekuta-navy-emphasis-400);
-    --ifm-color-emphasis-500: var(--nekuta-navy-emphasis-500);
-    --ifm-color-emphasis-600: var(--nekuta-navy-emphasis-600);
-    --ifm-color-emphasis-700: var(--nekuta-navy-emphasis-700);
-    --ifm-color-emphasis-800: var(--nekuta-navy-emphasis-800);
-    --ifm-color-emphasis-900: var(--nekuta-navy-emphasis-900);
+    --ifm-color-emphasis-0: var(--devtools-navy-950);
+    --ifm-color-emphasis-100: var(--devtools-navy-900);
+    --ifm-color-emphasis-200: var(--devtools-navy-800);
+    --ifm-color-emphasis-300: var(--devtools-navy-border);
+    --ifm-color-emphasis-400: var(--devtools-navy-emphasis-400);
+    --ifm-color-emphasis-500: var(--devtools-navy-emphasis-500);
+    --ifm-color-emphasis-600: var(--devtools-navy-emphasis-600);
+    --ifm-color-emphasis-700: var(--devtools-navy-emphasis-700);
+    --ifm-color-emphasis-800: var(--devtools-navy-emphasis-800);
+    --ifm-color-emphasis-900: var(--devtools-navy-emphasis-900);
     --ifm-color-emphasis-1000: #ffffff;
 
     --docusaurus-highlighted-code-line-bg: rgba(255, 180, 84, 0.14);
@@ -125,7 +123,7 @@ body {
 
 html[data-theme='dark'] {
     .navbar {
-        border-bottom: 1px solid var(--nekuta-navy-border);
+        border-bottom: 1px solid var(--devtools-navy-border);
         box-shadow: none;
     }
 
@@ -137,7 +135,7 @@ html[data-theme='dark'] {
 
 html[data-theme='light'] {
     .navbar {
-        border-bottom: 1px solid var(--nekuta-cream-200);
+        border-bottom: 1px solid var(--devtools-cream-200);
         box-shadow: none;
     }
 }
@@ -147,7 +145,7 @@ html[data-theme='light'] {
    override above at equal specificity — match Infima's own pattern by
    scoping the override to the same selector. */
 .footer--dark {
-    --ifm-footer-background-color: var(--nekuta-navy-900);
+    --ifm-footer-background-color: var(--devtools-navy-900);
     --ifm-footer-link-color: #c3cbe0;
 }
 
@@ -155,8 +153,8 @@ html[data-theme='light'] {
 .button--primary {
     background: linear-gradient(
         135deg,
-        var(--nekuta-mango-mid),
-        var(--nekuta-mango-end)
+        var(--devtools-mango-mid),
+        var(--devtools-mango-end)
     );
     border: none;
     color: #241102;
