@@ -1,5 +1,6 @@
 import type { InferGetServerSidePropsType } from 'next';
 import Link from 'next/link';
+import { PlainReactDemos } from '../../components/PlainReactDemos';
 
 export const getServerSideProps = async () => {
     return { props: {} };
@@ -14,10 +15,8 @@ export default function PagesDemoPage(
                 <Link href="/">← home</Link>
             </p>
             <h1>Pages Router demo</h1>
-            <p>
-                Legacy store demos were removed. Plain React demo coverage will
-                land here next.
-            </p>
+            <p>Plain React components rendered through the Pages Router.</p>
+            <PlainReactDemos />
         </main>
     );
 }
