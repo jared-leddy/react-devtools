@@ -1,0 +1,8 @@
+{
+    "label": "Plugin Authoring",
+    "position": 3,
+    "link": {
+        "type": "doc",
+        "id": "plugin-authoring/overview"
+    }
+}
