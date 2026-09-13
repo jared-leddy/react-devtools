@@ -4,17 +4,21 @@ import React from 'react';
 import Home from '../src/pages/index';
 
 describe('Home', () => {
-    it('renders the hero title, tagline, and subtagline', () => {
+    it('renders the React DevTools hero copy', () => {
         render(<Home />);
 
         expect(
-            screen.getByRole('heading', { name: 'Nekutā', level: 1 })
+            screen.getByRole('heading', { name: 'React DevTools', level: 1 })
         ).toBeInTheDocument();
         expect(
-            screen.getByText('Intuitive state management for React.')
+            screen.getByText(
+                'A modern developer tools ecosystem for React apps.'
+            )
         ).toBeInTheDocument();
         expect(
-            screen.getByText('Type-safe. Predictable. Class-first.')
+            screen.getByText(
+                /Component inspection, framework integrations, plugin APIs/
+            )
         ).toBeInTheDocument();
     });
 
@@ -22,37 +26,35 @@ describe('Home', () => {
         render(<Home />);
 
         const layout = screen.getByTestId('layout');
-        expect(layout).toHaveAttribute(
-            'data-title',
-            'Nekutā — Intuitive state management for React'
-        );
+        expect(layout).toHaveAttribute('data-title', 'React DevTools');
         expect(layout).toHaveAttribute(
             'data-description',
-            'Intuitive state management for React.'
+            'A modern developer tools ecosystem for React apps.'
         );
     });
 
-    it('links "Get Started" to the installation guide and "View on GitHub" to the repo', () => {
+    it('links to the docs intro and the React DevTools repository', () => {
         render(<Home />);
 
         expect(
-            screen.getByRole('link', { name: 'Get Started' })
-        ).toHaveAttribute('href', '/docs/getting-started/installation');
+            screen.getByRole('link', { name: 'Read the Docs' })
+        ).toHaveAttribute('href', '/docs/intro');
         expect(
             screen.getByRole('link', { name: 'View on GitHub' })
-        ).toHaveAttribute('href', 'https://github.com/jared-leddy/nekuta-core');
+        ).toHaveAttribute(
+            'href',
+            'https://github.com/jared-leddy/react-devtools'
+        );
     });
 
-    it('renders all six feature cards', () => {
+    it('renders the placeholder project direction cards', () => {
         render(<Home />);
 
         const titles = [
-            'Intuitive',
-            'Type Safe',
-            'Fine-Grained Reactivity',
-            'Class Components, First-Class',
-            'SSR-Ready',
-            'Schema or Hooks — Your Choice'
+            'Component Tree Explorer',
+            'Framework Integrations',
+            'Plugin Surface',
+            'Beautiful Development UI'
         ];
 
         for (const title of titles) {
@@ -62,22 +64,19 @@ describe('Home', () => {
         }
     });
 
-    it('renders the quick-look code sample and its own CTA', () => {
+    it('renders the roadmap preview instead of a store quick-start snippet', () => {
         render(<Home />);
 
         expect(
-            screen.getByText('The same store, either side of your app')
+            screen.getByText('What lands before the docs are final')
         ).toBeInTheDocument();
-
-        const codeBlock = screen.getByTestId('code-block');
-        expect(codeBlock).toHaveAttribute(
-            'data-title',
-            'stores/counterStore.ts'
-        );
-        expect(codeBlock).toHaveTextContent('defineStore');
-
         expect(
-            screen.getByRole('link', { name: 'Read the Quick Start →' })
-        ).toHaveAttribute('href', '/docs/getting-started/quick-start');
+            screen.getByText('Fiber walker and component inspection')
+        ).toBeInTheDocument();
+        expect(screen.queryByTestId('code-block')).not.toBeInTheDocument();
+        expect(screen.queryByText(/defineStore/)).not.toBeInTheDocument();
+        expect(
+            screen.getByRole('link', { name: 'Start with the Project Notes' })
+        ).toHaveAttribute('href', '/docs/intro');
     });
 });

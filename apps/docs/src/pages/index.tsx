@@ -1,124 +1,84 @@
-// NPM Modules
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
-import CodeBlock from '@theme/CodeBlock';
 import React from 'react';
 
-// Custom Modules
-import { NekutaLogoAnimated } from '../components/NekutaLogoAnimated';
 import styles from './index.module.scss';
 
 interface Feature {
-    icon: string;
     title: string;
     description: string;
 }
 
 const FEATURES: Feature[] = [
     {
-        icon: '💡',
-        title: 'Intuitive',
+        title: 'Component Tree Explorer',
         description:
-            "The same defineStore() shape Pinia users already know — state, getters, and actions, or a setup-style function. If you already think in stores, there's nothing new to learn."
+            'Inspect React roots, component hierarchy, props, hooks, and render state from a UI shaped for everyday debugging.'
     },
     {
-        icon: '🔑',
-        title: 'Type Safe',
+        title: 'Framework Integrations',
         description:
-            'End-to-end TypeScript inference, from defineStore() through useStore() and connectStore() — no manual generics, no casting, no drift between the store and the component reading it.'
+            'Support browser extension, Vite overlay, and standalone development flows from one shared protocol and client.'
     },
     {
-        icon: '🎯',
-        title: 'Fine-Grained Reactivity',
+        title: 'Plugin Surface',
         description:
-            'A real Proxy-based reactivity engine, not manual selectors. Components re-render only for the exact — even deeply nested — properties they actually read.'
+            'Expose custom inspectors and app-specific panels so routers, stores, and product tooling can meet the React tree.'
     },
     {
-        icon: '🏛',
-        title: 'Class Components, First-Class',
+        title: 'Beautiful Development UI',
         description:
-            'connectStore() patches your class in place — no wrapper component, no giving up React.Component. Hooks were never the only way in.'
-    },
-    {
-        icon: '⚡',
-        title: 'SSR-Ready',
-        description:
-            '@devtools/next handles both the Pages Router and the App Router, with per-request state isolation already solved — not left for you to get right.'
-    },
-    {
-        icon: '📦',
-        title: 'Schema or Hooks — Your Choice',
-        description:
-            "Two equivalent ways to define a store, converging on one engine. Mix freely, or enforce one project-wide with @devtools/eslint-plugin — it's up to you."
+            'Rebuild the useful parts of the Vue Devtools experience with a React-first interface that is fast, calm, and readable.'
     }
 ];
 
-const QUICK_START_CODE = `import { defineStore } from '@devtools/core';
-
-export const useCounterStore = defineStore({
-    id: 'counter',
-    state: () => ({ count: 0 }),
-    getters: {
-        doubleCount: (state) => state.count * 2
-    },
-    actions: {
-        increment(this: { count: number }) {
-            this.count++;
-        }
-    }
-});
-
-// anywhere in a function component
-const counter = useStore(useCounterStore);
-counter.count; // 0 — reactive, fine-grained re-renders`;
+const ROADMAP_ITEMS = [
+    'Shared protocol and plugin API',
+    'Fiber walker and component inspection',
+    'Client UI, Vite overlay, and browser extension',
+    'Playgrounds, docs, smoke tests, and release packaging'
+];
 
 function HomepageHero() {
     return (
         <header className={styles.hero}>
-            <div className={styles.heroGlow} aria-hidden="true" />
-            <div className={`container ${styles.heroInner}`}>
-                <div className={styles.heroText}>
-                    <p className={styles.eyebrow}>ネクター</p>
-                    <h1 className={styles.title}>Nekutā</h1>
+            <div className="container">
+                <div className={styles.heroInner}>
+                    <p className={styles.eyebrow}>React DevTools rebuild</p>
+                    <h1 className={styles.title}>React DevTools</h1>
                     <p className={styles.tagline}>
-                        Intuitive state management for React.
+                        A modern developer tools ecosystem for React apps.
                     </p>
                     <p className={styles.subtagline}>
-                        Type-safe. Predictable. Class-first.
+                        Component inspection, framework integrations, plugin
+                        APIs, and a polished UI are being built here in public.
                     </p>
                     <div className={styles.buttons}>
                         <Link
                             className="button button--primary button--lg"
-                            to="/docs/getting-started/installation"
+                            to="/docs/intro"
                         >
-                            Get Started
+                            Read the Docs
                         </Link>
                         <Link
                             className="button button--secondary button--lg"
-                            to="https://github.com/jared-leddy/nekuta-core"
+                            to="https://github.com/jared-leddy/react-devtools"
                         >
                             View on GitHub
                         </Link>
                     </div>
-                </div>
-                <div className={styles.heroMascot}>
-                    <NekutaLogoAnimated size={280} />
                 </div>
             </div>
         </header>
     );
 }
 
-function FeatureCard({ icon, title, description }: Feature) {
+function FeatureCard({ title, description }: Feature) {
     return (
-        <div className={styles.featureCard}>
-            <span className={styles.featureIcon} aria-hidden="true">
-                {icon}
-            </span>
+        <article className={styles.featureCard}>
             <h3 className={styles.featureTitle}>{title}</h3>
             <p className={styles.featureDescription}>{description}</p>
-        </div>
+        </article>
     );
 }
 
@@ -126,6 +86,14 @@ function FeatureGrid() {
     return (
         <section className={styles.features}>
             <div className="container">
+                <div className={styles.sectionHeader}>
+                    <h2>Project Direction</h2>
+                    <p>
+                        These placeholders mark the homepage story for Phase 7,
+                        once the real packages and integration paths have
+                        landed.
+                    </p>
+                </div>
                 <div className={styles.featureGrid}>
                     {FEATURES.map((feature) => (
                         <FeatureCard key={feature.title} {...feature} />
@@ -136,33 +104,30 @@ function FeatureGrid() {
     );
 }
 
-function QuickLook() {
+function RoadmapPreview() {
     return (
         <section className={styles.quickLook}>
             <div className="container">
                 <div className={styles.quickLookInner}>
                     <div className={styles.quickLookCopy}>
-                        <h2>The same store, either side of your app</h2>
+                        <h2>What lands before the docs are final</h2>
                         <p>
-                            Define a store once with <code>defineStore()</code>.
-                            Read it from a function component with{' '}
-                            <code>useStore()</code>, or from a class component
-                            with <code>connectStore()</code> — both fully
-                            reactive, both fine-grained, both built on the same
-                            engine.
+                            The API examples will be written after the shared
+                            runtime, client UI, Vite integration, extension, and
+                            plugin contracts exist.
                         </p>
                         <Link
                             className="button button--primary"
-                            to="/docs/getting-started/quick-start"
+                            to="/docs/intro"
                         >
-                            Read the Quick Start →
+                            Start with the Project Notes
                         </Link>
                     </div>
-                    <div className={styles.quickLookCode}>
-                        <CodeBlock language="ts" title="stores/counterStore.ts">
-                            {QUICK_START_CODE}
-                        </CodeBlock>
-                    </div>
+                    <ol className={styles.roadmapList}>
+                        {ROADMAP_ITEMS.map((item) => (
+                            <li key={item}>{item}</li>
+                        ))}
+                    </ol>
                 </div>
             </div>
         </section>
@@ -170,16 +135,15 @@ function QuickLook() {
 }
 
 export default function Home(): React.JSX.Element {
-    const { siteConfig } = useDocusaurusContext();
     return (
         <Layout
-            title="Nekutā — Intuitive state management for React"
-            description={siteConfig.tagline}
+            title="React DevTools"
+            description="A modern developer tools ecosystem for React apps."
         >
             <HomepageHero />
             <main>
                 <FeatureGrid />
-                <QuickLook />
+                <RoadmapPreview />
             </main>
         </Layout>
     );
