@@ -1,8 +1,8 @@
 export default function useDocusaurusContext() {
     return {
         siteConfig: {
-            title: 'Nekuta',
-            tagline: 'Intuitive state management for React.'
+            title: 'React DevTools',
+            tagline: 'A modern developer tools ecosystem for React apps.'
         }
     };
 }

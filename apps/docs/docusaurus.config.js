@@ -10,12 +10,12 @@ const darkCodeTheme = themes.nightOwl;
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-    title: 'Nekuta',
-    tagline: 'Intuitive state management for React.',
+    title: 'React DevTools',
+    tagline: 'A modern developer tools ecosystem for React apps.',
     favicon: 'img/logo/nekuta-logo.png',
 
     // Set the production url of your site here
-    url: 'https://docs.nekuta.org',
+    url: 'https://react-devtools.dev',
     // Set the /<baseUrl>/ pathname under which your site is served
     // For GitHub pages deployment, it is often '/<projectName>/'
     baseUrl: '/',
@@ -23,7 +23,7 @@ const config = {
     // GitHub pages deployment config.
     // If you aren't using GitHub pages, you don't need these.
     organizationName: 'jared-leddy', // Usually your GitHub org/user name.
-    projectName: 'nekuta-core', // Usually your repo name.
+    projectName: 'react-devtools', // Usually your repo name.
 
     onBrokenLinks: 'throw',
     markdown: {
@@ -76,7 +76,7 @@ const config = {
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
                     editUrl:
-                        'https://github.com/jared-leddy/nekuta-core/edit/main/apps/docs/'
+                        'https://github.com/jared-leddy/react-devtools/edit/main/apps/docs/'
                 },
                 theme: {
                     customCss: require.resolve('./src/css/style.scss')
@@ -92,14 +92,14 @@ const config = {
         /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
         ({
             metadata: [
-                { name: 'og:title', content: 'Nekuta' },
+                { name: 'og:title', content: 'React DevTools' },
                 { name: 'og:type', content: 'website' },
-                { name: 'og:url', content: 'https://docs.nekuta.org/' },
-                { name: 'og:site_name', content: 'Nekuta' },
+                { name: 'og:url', content: 'https://react-devtools.dev/' },
+                { name: 'og:site_name', content: 'React DevTools' },
                 {
                     name: 'og:description',
                     content:
-                        'Intuitive state management for React. Type-safe. Predictable. Class-first.'
+                        'A modern developer tools ecosystem for React apps.'
                 },
                 { name: 'og:email', content: 'hello@devtools.org' },
                 { name: 'og:locality', content: 'Charlotte' },
@@ -115,9 +115,9 @@ const config = {
                 respectPrefersColorScheme: false
             },
             navbar: {
-                title: 'Nekutā',
+                title: 'React DevTools',
                 logo: {
-                    alt: 'Nekuta Logo',
+                    alt: 'React DevTools logo',
                     src: 'img/logo/nekuta-logo.svg'
                 },
                 items: [
@@ -128,7 +128,7 @@ const config = {
                         label: 'Docs'
                     },
                     {
-                        href: 'https://github.com/jared-leddy/nekuta-core',
+                        href: 'https://github.com/jared-leddy/react-devtools',
                         label: 'GitHub',
                         position: 'right'
                     }
@@ -151,12 +151,12 @@ const config = {
                         items: [
                             {
                                 label: 'GitHub',
-                                href: 'https://github.com/jared-leddy/nekuta-core'
+                                href: 'https://github.com/jared-leddy/react-devtools'
                             }
                         ]
                     }
                 ],
-                copyright: `Copyright &copy; 2026-${new Date().getFullYear()} &middot; Nekuta &middot; All Rights Reserved.`
+                copyright: `Copyright &copy; 2026-${new Date().getFullYear()} &middot; React DevTools &middot; All Rights Reserved.`
             },
             prism: {
                 theme: lightCodeTheme,
