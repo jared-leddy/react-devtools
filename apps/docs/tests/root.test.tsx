@@ -4,14 +4,16 @@ import React from 'react';
 import Root from '../src/theme/Root';
 
 describe('Root', () => {
-    it('renders the floating request button and its children', () => {
+    it('renders its children without branded chrome', () => {
         render(
             <Root>
                 <div>Child Content</div>
             </Root>
         );
 
-        expect(screen.getByRole('button', { name: '+' })).toBeInTheDocument();
         expect(screen.getByText('Child Content')).toBeInTheDocument();
+        expect(
+            screen.queryByRole('button', { name: '+' })
+        ).not.toBeInTheDocument();
     });
 });
