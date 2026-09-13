@@ -1,6 +1,10 @@
 import { resolve } from 'node:path';
 import sirv from 'sirv';
 import type { Plugin, ViteDevServer } from 'vite';
+import {
+    createViteTransportChannel,
+    type ViteTransportChannel
+} from './viteTransport.js';
 
 export interface ReactDevtoolsVitePluginOptions {
     /**
@@ -29,6 +33,10 @@ export interface ReactDevtoolsVitePluginOptions {
      * URL for the overlay bundle that mounts the floating toggle.
      */
     overlayScriptPath?: string;
+    /**
+     * Receives the namespaced Vite websocket transport channel.
+     */
+    onViteTransport?: (channel: ViteTransportChannel) => void;
 }
 
 export const DEFAULT_CLIENT_BASE_PATH = '/__devtools__/';
@@ -147,6 +155,7 @@ export function reactDevtools(
         configureServer(server) {
             createClientMiddleware(options, server);
             createOverlayMiddleware(options, server);
+            options.onViteTransport?.(createViteTransportChannel(server));
         },
         transform(code, id, transformOptions) {
             if (transformOptions?.ssr) {

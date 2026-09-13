@@ -11,6 +11,10 @@ import {
     normalizeServePath,
     reactDevtools
 } from '../src';
+import {
+    VITE_TRANSPORT_EVENT,
+    createViteTransportChannel
+} from '../src/viteTransport';
 
 class MockServerResponse extends Writable {
     readonly headers = new Map<string, number | string | string[]>();
@@ -268,5 +272,92 @@ describe('reactDevtools', () => {
         expect(getDefaultOverlayDir()).toContain(
             'node_modules/@devtools/devtools-overlay/dist'
         );
+    });
+
+    it('wires a namespaced Vite websocket transport channel', () => {
+        const send = jest.fn();
+        const on = jest.fn();
+        const onViteTransport = jest.fn();
+        const plugin = reactDevtools({
+            clientDir: '/tmp/client',
+            onViteTransport
+        });
+        const configureServer = plugin.configureServer as (
+            server: never
+        ) => void;
+
+        configureServer({
+            middlewares: {
+                use: jest.fn()
+            },
+            ws: {
+                on,
+                send
+            }
+        } as never);
+
+        expect(onViteTransport).toHaveBeenCalledWith(
+            expect.objectContaining({
+                on: expect.any(Function),
+                post: expect.any(Function)
+            })
+        );
+
+        const channel = onViteTransport.mock.calls[0][0];
+        channel.post({ type: 'tree:get', payload: { rootId: 1 } });
+
+        expect(send).toHaveBeenCalledWith(
+            VITE_TRANSPORT_EVENT,
+            JSON.stringify({ type: 'tree:get', payload: { rootId: 1 } })
+        );
+    });
+
+    it('uses the Vite hot server transport when available', () => {
+        const hotSend = jest.fn();
+        const wsSend = jest.fn();
+        const channel = createViteTransportChannel({
+            hot: {
+                on: jest.fn(),
+                send: hotSend
+            },
+            ws: {
+                on: jest.fn(),
+                send: wsSend
+            }
+        });
+
+        channel.post({ type: 'ping' });
+
+        expect(hotSend).toHaveBeenCalledWith(
+            VITE_TRANSPORT_EVENT,
+            JSON.stringify({ type: 'ping' })
+        );
+        expect(wsSend).not.toHaveBeenCalled();
+    });
+
+    it('receives transport messages on only the React DevTools event', () => {
+        const handlers = new Map<string, (payload: string) => void>();
+        const received: unknown[] = [];
+        const channel = createViteTransportChannel({
+            ws: {
+                on: jest.fn(
+                    (event: string, handler: (payload: string) => void) => {
+                        handlers.set(event, handler);
+                    }
+                ),
+                send: jest.fn()
+            }
+        });
+
+        channel.on((payload) => {
+            received.push(payload);
+        });
+        handlers.get(VITE_TRANSPORT_EVENT)?.(
+            JSON.stringify({ type: 'tree:response', payload: [] })
+        );
+        handlers.get('vite:beforeUpdate')?.(JSON.stringify({ type: 'hmr' }));
+
+        expect(received).toEqual([{ type: 'tree:response', payload: [] }]);
+        expect(handlers.has('vite:beforeUpdate')).toBe(false);
     });
 });
