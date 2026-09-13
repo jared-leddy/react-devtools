@@ -52,4 +52,4 @@ counter.$onAction(({ name }) => log(`${name}() called`));
 counter.$subscribe((mutation) => log(`state changed (${mutation.type})`));
 ```
 
-See the playground app's `ActivityLog` component for a complete, running example of this pattern.
+The legacy playground example has been removed while this repo is being rebuilt around React DevTools.
