@@ -3,19 +3,10 @@ import Link from 'next/link';
 import { ActivityLog } from '../../components/ActivityLog';
 import { CounterDemo } from '../../components/CounterDemo';
 import { TodoDemo } from '../../components/TodoDemo';
-import { getActiveNekuta, withNekutaSSR } from '../../lib/nekuta-store-shim';
-import { useCounterStore } from '../../stores/counterStore';
-import { useTodoStore } from '../../stores/todoStore';
 
-export const getServerSideProps = withNekutaSSR(async () => {
-    // Demonstrates touching stores during actual SSR data-fetching — withNekutaSSR() has already
-    // made a fresh Nekuta instance active for this request by the time this runs.
-    const nekuta = getActiveNekuta();
-    useCounterStore(nekuta);
-    useTodoStore(nekuta);
-
+export const getServerSideProps = async () => {
     return { props: {} };
-});
+};
 
 export default function PagesDemoPage(
     _props: InferGetServerSidePropsType<typeof getServerSideProps>
@@ -27,9 +18,8 @@ export default function PagesDemoPage(
             </p>
             <h1>Pages Router demo</h1>
             <p>
-                getServerSideProps is wrapped with withNekutaSSR(), which
-                serializes state onto pageProps.__NEKUTA_STATE__ for
-                _app.tsx&apos;s NekutaAppProvider to hydrate.
+                getServerSideProps keeps this route rendered through the Pages
+                Router while the old store demos are being removed.
             </p>
             <CounterDemo />
             <TodoDemo />

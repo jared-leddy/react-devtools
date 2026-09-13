@@ -1,32 +1,45 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
-import { useStore } from '../lib/nekuta-shim';
-import { useCounterStore } from '../stores/counterStore';
-import { useTodoStore } from '../stores/todoStore';
+import { useMemo, useState, type FormEvent } from 'react';
+
+interface TodoItem {
+    id: number;
+    text: string;
+    done: boolean;
+}
 
 export function TodoDemo() {
-    const todos = useStore(useTodoStore);
-    // Combining two stores here, at the component level, rather than via a getter calling the
-    // other store's bare accessor — see todoStore.ts's note on why that pattern isn't SSR-safe
-    // under the App Router. useStore() resolves through Context, which works everywhere.
-    const counter = useStore(useCounterStore);
+    const [items, setItems] = useState<TodoItem[]>([]);
+    const [nextId, setNextId] = useState(1);
     const [text, setText] = useState('');
+    const completedCount = useMemo(
+        () => items.filter((item) => item.done).length,
+        [items]
+    );
+    const remainingCount = items.length - completedCount;
 
     function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        todos.addTodo(text);
+        const trimmed = text.trim();
+
+        if (!trimmed) {
+            return;
+        }
+
+        setItems((currentItems) => [
+            ...currentItems,
+            { id: nextId, text: trimmed, done: false }
+        ]);
+        setNextId((value) => value + 1);
         setText('');
     }
 
     return (
         <section>
-            <h2>Todo store</h2>
+            <h2>Todo demo</h2>
             <p>
-                remaining: <strong>{todos.remainingCount}</strong> · completed:{' '}
-                <strong>{todos.completedCount}</strong> · remaining + counter
-                (combined across two stores):{' '}
-                <strong>{todos.remainingCount + counter.count}</strong>
+                remaining: <strong>{remainingCount}</strong> · completed:{' '}
+                <strong>{completedCount}</strong>
             </p>
 
             <form onSubmit={handleSubmit} className="buttons">
@@ -36,19 +49,37 @@ export function TodoDemo() {
                     placeholder="Add a todo…"
                 />
                 <button type="submit">add</button>
-                <button type="button" onClick={() => todos.clearCompleted()}>
+                <button
+                    type="button"
+                    onClick={() =>
+                        setItems((currentItems) =>
+                            currentItems.filter((item) => !item.done)
+                        )
+                    }
+                >
                     clear completed
                 </button>
             </form>
 
             <ul>
-                {todos.items.map((item) => (
+                {items.map((item) => (
                     <li key={item.id}>
                         <label>
                             <input
                                 type="checkbox"
                                 checked={item.done}
-                                onChange={() => todos.toggleTodo(item.id)}
+                                onChange={() =>
+                                    setItems((currentItems) =>
+                                        currentItems.map((currentItem) =>
+                                            currentItem.id === item.id
+                                                ? {
+                                                      ...currentItem,
+                                                      done: !currentItem.done
+                                                  }
+                                                : currentItem
+                                        )
+                                    )
+                                }
                             />
                             <span
                                 style={{
@@ -60,7 +91,16 @@ export function TodoDemo() {
                                 {item.text}
                             </span>
                         </label>
-                        <button onClick={() => todos.removeTodo(item.id)}>
+                        <button
+                            onClick={() =>
+                                setItems((currentItems) =>
+                                    currentItems.filter(
+                                        (currentItem) =>
+                                            currentItem.id !== item.id
+                                    )
+                                )
+                            }
+                        >
                             remove
                         </button>
                     </li>
