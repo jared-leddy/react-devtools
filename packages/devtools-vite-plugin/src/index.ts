@@ -18,7 +18,7 @@ export interface ReactDevtoolsVitePluginOptions {
     overlayScriptPath?: string;
 }
 
-export const DEFAULT_CLIENT_BASE_PATH = '/__react-devtools-client__/';
+export const DEFAULT_CLIENT_BASE_PATH = '/__devtools__/';
 export const DEFAULT_OVERLAY_SCRIPT_PATH = '/@react-devtools/overlay';
 
 export function getDefaultClientDir() {
