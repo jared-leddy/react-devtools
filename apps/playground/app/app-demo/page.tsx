@@ -1,9 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { ActivityLog } from '../../components/ActivityLog';
-import { CounterDemo } from '../../components/CounterDemo';
-import { TodoDemo } from '../../components/TodoDemo';
 
 export default function AppDemoPage() {
     return (
@@ -13,13 +10,9 @@ export default function AppDemoPage() {
             </p>
             <h1>App Router demo</h1>
             <p>
-                Server Component root layout creates the Nekuta instance via
-                getServerNekuta() and hands it to a Client Component boundary
-                (NekutaClientProvider).
+                Legacy store demos were removed. Plain React demo coverage will
+                land here next.
             </p>
-            <CounterDemo />
-            <TodoDemo />
-            <ActivityLog />
         </main>
     );
 }
