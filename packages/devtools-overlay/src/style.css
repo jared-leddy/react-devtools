@@ -1,0 +1,82 @@
+.react-devtools-overlay {
+    --react-devtools-overlay-bg: #101216;
+    --react-devtools-overlay-fg: #f7f9fc;
+    --react-devtools-overlay-ring: #61dafb;
+    --react-devtools-overlay-shadow: rgba(0, 0, 0, 0.24);
+
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 2147483645;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    pointer-events: none;
+}
+
+.react-devtools-overlay__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    color: var(--react-devtools-overlay-fg);
+    cursor: pointer;
+    pointer-events: auto;
+    background:
+        radial-gradient(
+            circle at 50% 45%,
+            rgba(97, 218, 251, 0.32),
+            transparent 58%
+        ),
+        var(--react-devtools-overlay-bg);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 999px;
+    box-shadow:
+        0 12px 32px var(--react-devtools-overlay-shadow),
+        0 0 0 1px rgba(97, 218, 251, 0.16);
+    transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.react-devtools-overlay__toggle:hover,
+.react-devtools-overlay__toggle:focus-visible {
+    border-color: rgba(97, 218, 251, 0.75);
+    box-shadow:
+        0 14px 36px var(--react-devtools-overlay-shadow),
+        0 0 0 3px rgba(97, 218, 251, 0.22);
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.react-devtools-overlay__toggle[aria-pressed='true'] {
+    border-color: var(--react-devtools-overlay-ring);
+    box-shadow:
+        0 14px 36px var(--react-devtools-overlay-shadow),
+        0 0 0 4px rgba(97, 218, 251, 0.26);
+}
+
+.react-devtools-overlay__mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    font: 800 16px/1 system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+        sans-serif;
+    color: #101216;
+    letter-spacing: 0;
+    background: var(--react-devtools-overlay-ring);
+    border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .react-devtools-overlay__toggle {
+        transition: none;
+    }
+}
