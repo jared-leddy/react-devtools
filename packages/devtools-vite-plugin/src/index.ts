@@ -1,8 +1,13 @@
 import { resolve } from 'node:path';
 import sirv from 'sirv';
-import type { IndexHtmlTransformResult, Plugin, ViteDevServer } from 'vite';
+import type { Plugin, ViteDevServer } from 'vite';
 
 export interface ReactDevtoolsVitePluginOptions {
+    /**
+     * Append the overlay import to a module instead of injecting index.html.
+     * Useful for apps that do not use an HTML file as their entry.
+     */
+    appendTo?: RegExp | string;
     /**
      * Path to the built devtools-client standalone bundle.
      * The default points at the package-local future client directory.
@@ -13,18 +18,35 @@ export interface ReactDevtoolsVitePluginOptions {
      */
     clientBasePath?: string;
     /**
+     * Path to the built devtools-overlay bundle.
+     */
+    overlayDir?: string;
+    /**
+     * URL where the overlay bundle directory is served by Vite middleware.
+     */
+    overlayBasePath?: string;
+    /**
      * URL for the overlay bundle that mounts the floating toggle.
      */
     overlayScriptPath?: string;
 }
 
 export const DEFAULT_CLIENT_BASE_PATH = '/__devtools__/';
-export const DEFAULT_OVERLAY_SCRIPT_PATH = '/@react-devtools/overlay';
+export const DEFAULT_OVERLAY_BASE_PATH = '/@react-devtools/overlay/';
+export const DEFAULT_OVERLAY_SCRIPT_PATH =
+    '/@react-devtools/overlay/devtools-overlay.js';
 
 export function getDefaultClientDir() {
     return resolve(
         process.cwd(),
         'node_modules/@devtools/devtools-client/dist'
+    );
+}
+
+export function getDefaultOverlayDir() {
+    return resolve(
+        process.cwd(),
+        'node_modules/@devtools/devtools-overlay/dist'
     );
 }
 
@@ -51,19 +73,68 @@ function createClientMiddleware(
     );
 }
 
-function createOverlayInjection(
-    options: ReactDevtoolsVitePluginOptions
-): IndexHtmlTransformResult {
-    return [
-        {
-            tag: 'script',
-            injectTo: 'head-prepend',
-            attrs: {
-                type: 'module',
-                src: options.overlayScriptPath ?? DEFAULT_OVERLAY_SCRIPT_PATH
-            }
-        }
-    ];
+function createOverlayMiddleware(
+    options: ReactDevtoolsVitePluginOptions,
+    server: ViteDevServer
+) {
+    const overlayDir = options.overlayDir ?? getDefaultOverlayDir();
+    const servePath = normalizeServePath(
+        options.overlayBasePath ?? DEFAULT_OVERLAY_BASE_PATH
+    );
+
+    server.middlewares.use(
+        servePath,
+        sirv(overlayDir, {
+            dev: true
+        })
+    );
+}
+
+export function createOverlayScriptTag(
+    scriptPath = DEFAULT_OVERLAY_SCRIPT_PATH
+) {
+    return `<script type="module" src="${scriptPath}"></script>`;
+}
+
+export function injectOverlayScript(
+    html: string,
+    scriptPath = DEFAULT_OVERLAY_SCRIPT_PATH
+) {
+    const scriptTag = createOverlayScriptTag(scriptPath);
+
+    if (html.includes(scriptTag)) {
+        return html;
+    }
+
+    if (html.includes('<head>')) {
+        return html.replace('<head>', `<head>\n        ${scriptTag}`);
+    }
+
+    return `${scriptTag}\n${html}`;
+}
+
+function matchesAppendTarget(appendTo: RegExp | string, id: string) {
+    const [filename] = id.split('?', 2);
+
+    return typeof appendTo === 'string'
+        ? filename.endsWith(appendTo)
+        : appendTo.test(filename);
+}
+
+function createOverlayImport(
+    options: ReactDevtoolsVitePluginOptions,
+    code: string,
+    id: string
+) {
+    if (!options.appendTo || !matchesAppendTarget(options.appendTo, id)) {
+        return undefined;
+    }
+
+    const scriptPath = options.overlayScriptPath ?? DEFAULT_OVERLAY_SCRIPT_PATH;
+    return {
+        code: `import '${scriptPath}';\n${code}`,
+        map: null
+    };
 }
 
 export function reactDevtools(
@@ -75,9 +146,21 @@ export function reactDevtools(
         enforce: 'pre',
         configureServer(server) {
             createClientMiddleware(options, server);
+            createOverlayMiddleware(options, server);
         },
-        transformIndexHtml() {
-            return createOverlayInjection(options);
+        transform(code, id, transformOptions) {
+            if (transformOptions?.ssr) {
+                return undefined;
+            }
+
+            return createOverlayImport(options, code, id);
+        },
+        transformIndexHtml(html) {
+            if (options.appendTo) {
+                return html;
+            }
+
+            return injectOverlayScript(html, options.overlayScriptPath);
         }
     };
 }
