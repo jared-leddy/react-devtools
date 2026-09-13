@@ -1,7 +1,7 @@
 'use client';
 
-import { useStore } from '@devtools/core';
 import { useEffect, useState } from 'react';
+import { useStore } from '../lib/nekuta-shim';
 import { useCounterStore } from '../stores/counterStore';
 import { useTodoStore } from '../stores/todoStore';
 

@@ -1,7 +1,7 @@
 'use client';
 
-import { connectStore, useStore, type MappedStores } from '@devtools/core';
 import { Component } from 'react';
+import { connectStore, useStore, type MappedStores } from '../lib/nekuta-shim';
 import { useCounterStore } from '../stores/counterStore';
 
 function CounterFunctional() {

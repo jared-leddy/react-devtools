@@ -1,5 +1,6 @@
-import { createNekuta, NekutaStore } from '@devtools/core';
 import { act, render, screen } from '@testing-library/react';
+import { NekutaStore } from '../lib/nekuta-shim';
+import { createNekuta } from '../lib/nekuta-store-shim';
 import { CounterDemo } from './CounterDemo';
 
 function renderDemo() {
@@ -53,5 +54,20 @@ describe('CounterDemo', () => {
         expect(screen.getByTestId('static-class-count')).toHaveTextContent(
             '10'
         );
+    });
+
+    it('supports decrementing and resetting the shared store', () => {
+        renderDemo();
+
+        act(() => {
+            screen.getByText('+1').click();
+            screen.getByText('-1').click();
+            screen.getByText('+10').click();
+            screen.getByText('reset').click();
+        });
+
+        expect(screen.getByTestId('functional-count')).toHaveTextContent('0');
+        expect(screen.getByTestId('class-count')).toHaveTextContent('0');
+        expect(screen.getByTestId('static-class-count')).toHaveTextContent('0');
     });
 });
