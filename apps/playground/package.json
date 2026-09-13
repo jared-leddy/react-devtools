@@ -1,9 +1,9 @@
 {
     "name": "@devtools/playground",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "private": true,
     "license": "UNLICENSED",
-    "description": "Live demo dogfooding nekuta + @devtools/next across the Pages Router and the App Router.",
+    "description": "Live demo playground for React DevTools development across the Pages Router and the App Router.",
     "type": "module",
     "scripts": {
         "start:dev": "next dev --port 3000",
@@ -15,8 +15,6 @@
         "test:watch": "jest --coverage --watch --passWithNoTests --config jest.config.ts"
     },
     "dependencies": {
-        "@devtools/core": "file:../nekuta",
-        "@devtools/next": "file:../next",
         "next": "^15.5.0",
         "react": "^19.1.1",
         "react-dom": "^19.1.1"

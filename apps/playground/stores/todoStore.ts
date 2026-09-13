@@ -1,4 +1,4 @@
-import { defineStore } from '@devtools/core';
+import { defineStore } from '../lib/nekuta-store-shim';
 
 export interface TodoItem {
     id: number;
@@ -21,9 +21,9 @@ export const useTodoStore = defineStore({
     id: 'todos',
     state: createInitialTodoState,
     getters: {
-        remainingCount: (state) =>
+        remainingCount: (state: TodoState) =>
             state.items.filter((item) => !item.done).length,
-        completedCount: (state) =>
+        completedCount: (state: TodoState) =>
             state.items.filter((item) => item.done).length
         // A getter CAN call another store's bare accessor (`useCounterStore()`) to combine
         // cross-store state, the same pattern Pinia supports — but that accessor resolves via the

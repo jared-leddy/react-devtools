@@ -1,5 +1,6 @@
 # Vendored reference source — not ours to reformat
 pinia
+devtools
 
 # Compiled/generated output
 dist

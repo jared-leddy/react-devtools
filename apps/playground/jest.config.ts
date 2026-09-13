@@ -11,7 +11,15 @@ const config: Config.InitialOptions = {
     setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
     testEnvironment: 'jsdom',
     collectCoverageFrom: ['components/**/*.tsx', 'stores/**/*.ts'],
-    coverageReporters: ['html', 'json', 'lcov', 'text-summary']
+    coverageReporters: ['html', 'json', 'lcov', 'text-summary'],
+    coverageThreshold: {
+        global: {
+            branches: 80,
+            functions: 80,
+            lines: 80,
+            statements: 80
+        }
+    }
 };
 
 export default createJestConfig(config);

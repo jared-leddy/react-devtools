@@ -1,10 +1,16 @@
-import { defineStore } from '@devtools/core';
+import { defineStore } from '../lib/nekuta-store-shim';
+
+type CounterState = ReturnType<typeof createInitialCounterState>;
+
+function createInitialCounterState() {
+    return { count: 0 };
+}
 
 export const useCounterStore = defineStore({
     id: 'counter',
-    state: () => ({ count: 0 }),
+    state: createInitialCounterState,
     getters: {
-        doubleCount: (state) => state.count * 2
+        doubleCount: (state: CounterState) => state.count * 2
     },
     actions: {
         increment(this: { count: number }, by = 1) {

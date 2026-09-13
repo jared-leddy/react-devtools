@@ -1,10 +1,9 @@
-import { getActiveNekuta } from '@devtools/core';
-import { withNekutaSSR } from '@devtools/next';
 import type { InferGetServerSidePropsType } from 'next';
 import Link from 'next/link';
 import { ActivityLog } from '../../components/ActivityLog';
 import { CounterDemo } from '../../components/CounterDemo';
 import { TodoDemo } from '../../components/TodoDemo';
+import { getActiveNekuta, withNekutaSSR } from '../../lib/nekuta-store-shim';
 import { useCounterStore } from '../../stores/counterStore';
 import { useTodoStore } from '../../stores/todoStore';
 
