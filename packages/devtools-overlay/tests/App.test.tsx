@@ -41,6 +41,36 @@ describe('DevtoolsOverlay', () => {
         expect(onToggle).toHaveBeenLastCalledWith(false);
     });
 
+    it('creates one iframe lazily and reuses it across toggle clicks', () => {
+        render(<DevtoolsOverlay clientUrl="/client/" />);
+
+        const button = screen.getByRole('button', {
+            name: 'Toggle React DevTools panel'
+        });
+
+        expect(document.querySelectorAll('iframe')).toHaveLength(0);
+
+        fireEvent.click(button);
+
+        const iframe = document.querySelector('iframe');
+
+        expect(document.querySelectorAll('iframe')).toHaveLength(1);
+        expect(iframe).toHaveAttribute('src', '/client/');
+        expect(iframe).not.toHaveAttribute('hidden');
+
+        fireEvent.click(button);
+
+        expect(document.querySelectorAll('iframe')).toHaveLength(1);
+        expect(document.querySelector('iframe')).toBe(iframe);
+        expect(iframe).toHaveAttribute('hidden');
+
+        fireEvent.click(button);
+
+        expect(document.querySelectorAll('iframe')).toHaveLength(1);
+        expect(document.querySelector('iframe')).toBe(iframe);
+        expect(iframe).not.toHaveAttribute('hidden');
+    });
+
     it('keeps the overlay fixed to the viewport corner', () => {
         const styles = readFileSync(
             join(process.cwd(), 'src/style.css'),
