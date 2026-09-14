@@ -7,6 +7,10 @@ import type {
 import { createBirpc, createBirpcGroup } from 'birpc';
 import SuperJSON from 'superjson';
 
+import { getIframeRpcChannel } from './presets/iframe/index.js';
+
+export * from './presets/iframe/index.js';
+
 export type Presets = 'iframe' | 'vite' | 'extension' | 'broadcast-channel';
 export type RpcHost = 'client' | 'proxy' | 'server';
 export type RpcChannel = Pick<ChannelOptions, 'off' | 'on' | 'post'>;
@@ -133,10 +137,18 @@ function resolveRpcChannel(
     }
 
     if (options.preset) {
-        throw new Error(
-            `RPC preset "${options.preset}" is not available until its channel factory is registered.`
-        );
+        return getDefaultPresetChannel(options.preset, host);
     }
 
     throw new Error('RPC channel is required when no preset is provided.');
+}
+
+function getDefaultPresetChannel(preset: Presets, host: RpcHost): RpcChannel {
+    if (preset === 'iframe') {
+        return getIframeRpcChannel(host);
+    }
+
+    throw new Error(
+        `RPC preset "${preset}" is not available until its channel factory is registered.`
+    );
 }
