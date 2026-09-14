@@ -1,6 +1,6 @@
 {
     "name": "@devtools/kit",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "private": true,
     "license": "UNLICENSED",
     "description": "Core hook, transport, and plugin primitives for React DevTools.",
