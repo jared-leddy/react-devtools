@@ -1,6 +1,6 @@
 {
     "name": "@devtools/kit",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "private": true,
     "license": "UNLICENSED",
     "description": "Core hook, transport, and plugin primitives for React DevTools.",
@@ -29,7 +29,8 @@
         "@devtools/shared": "*",
         "birpc": "^4.2.0",
         "hookable": "^6.1.1",
-        "superjson": "^2.2.6"
+        "superjson": "^2.2.6",
+        "vite-hot-client": "^2.2.0"
     },
     "devDependencies": {
         "@devtools/eslint-config": "*",
