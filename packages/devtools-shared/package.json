@@ -1,6 +1,6 @@
 {
     "name": "@devtools/shared",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "private": true,
     "license": "UNLICENSED",
     "description": "Shared utilities and types for React DevTools packages.",
