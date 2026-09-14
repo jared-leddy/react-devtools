@@ -15,6 +15,7 @@ const config: Config.InitialOptions = {
         ]
     },
     moduleNameMapper: {
+        '^@devtools/shared$': '<rootDir>/../devtools-shared/src/index.ts',
         '^(\\.{1,2}/.*)\\.js$': '$1'
     },
     collectCoverageFrom: ['src/**/*.ts', '!src/**/*.d.ts'],
