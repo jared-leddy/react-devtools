@@ -26,7 +26,7 @@ export interface InspectorTreeNode {
     tags?: string[];
 }
 
-export interface InspectorState {
+export interface ContextInspectorState {
     data: unknown;
     id: string;
     label?: string;
@@ -60,7 +60,7 @@ export interface ReactDevToolsContextHookPayloads {
         inspectorId: string;
         nodeId: string;
         requestId: string;
-        state: InspectorState[];
+        state: ContextInspectorState[];
     };
     [ReactDevToolsContextHookKeys.EDIT_STATE_REQUEST]: EditStateRequest;
     [ReactDevToolsContextHookKeys.COMMIT_FIBER_ROOT]: {
