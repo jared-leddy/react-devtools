@@ -147,9 +147,9 @@ describe('messaging RPC core', () => {
                         return 'test-client';
                     }
                 },
-                { preset: 'extension' }
+                { preset: 'broadcast-channel' }
             )
-        ).toThrow('RPC preset "extension" is not available');
+        ).toThrow('RPC preset "broadcast-channel" is not available');
     });
 
     it('throws when neither a channel nor preset is provided', () => {
