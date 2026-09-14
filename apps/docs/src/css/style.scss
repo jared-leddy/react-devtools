@@ -1,8 +1,6 @@
 /**
- * React DevTools documentation theme — structurally inspired by Pinia's docs site (dark-first,
- * hero + feature-grid homepage), with Pinia's near-black swapped for a deep
- * navy blue, and the existing warm accent palette as the accent instead of
- * Pinia's green. The accent stops below are temporary and will be revisited with the final DevTools visual system.
+ * React DevTools documentation theme. The accent stops below are temporary and
+ * will be revisited with the final DevTools visual system.
  */
 
 :root {
@@ -44,10 +42,8 @@
     --ifm-code-font-size: 90%;
     --ifm-code-border-radius: 6px;
 
-    /* Infima widens .container to 1320px past 1400px viewports by default —
-       capping it at the base width keeps content in a tighter, more "boxed"
-       column on wide screens, matching Pinia's own tighter layout instead of
-       stretching edge to edge. */
+    /* Infima widens .container to 1320px past 1400px viewports by default.
+       Capping it keeps long docs pages easier to scan on wide screens. */
     --ifm-container-width-xl: 1140px;
 
     --ifm-color-primary: #e8721e;

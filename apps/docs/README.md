@@ -1,8 +1,8 @@
 # @devtools/docs
 
-The Nekuta documentation site, built with [Docusaurus](https://docusaurus.io/).
+The React DevTools documentation site, built with [Docusaurus](https://docusaurus.io/).
 
-Part of the `devtools` Turborepo — see the [root README](../../readme.md) for monorepo-wide setup.
+Part of the `react-devtools` Turborepo. See the [root README](../../README.md) for monorepo-wide setup.
 
 ## Development
 
