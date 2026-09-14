@@ -1,6 +1,6 @@
 {
     "name": "@devtools/kit",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "private": true,
     "license": "UNLICENSED",
     "description": "Core hook, transport, and plugin primitives for React DevTools.",
@@ -20,6 +20,7 @@
         "build": "tsc",
         "lint": "eslint . --max-warnings=0",
         "prototype:global-hook": "node prototypes/react-global-hook-coexistence.mjs",
+        "prototype:messaging": "npm run build && node prototypes/messaging-roundtrip.mjs",
         "test:unit": "jest --coverage --config jest.config.ts",
         "test:watch": "jest --coverage --watch --config jest.config.ts",
         "typecheck": "tsc --noEmit"
