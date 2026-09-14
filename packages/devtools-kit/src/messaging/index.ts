@@ -8,8 +8,10 @@ import { createBirpc, createBirpcGroup } from 'birpc';
 import SuperJSON from 'superjson';
 
 import { getIframeRpcChannel } from './presets/iframe/index.js';
+import { getViteRpcChannel } from './presets/vite/index.js';
 
 export * from './presets/iframe/index.js';
+export * from './presets/vite/index.js';
 
 export type Presets = 'iframe' | 'vite' | 'extension' | 'broadcast-channel';
 export type RpcHost = 'client' | 'proxy' | 'server';
@@ -146,6 +148,10 @@ function resolveRpcChannel(
 function getDefaultPresetChannel(preset: Presets, host: RpcHost): RpcChannel {
     if (preset === 'iframe') {
         return getIframeRpcChannel(host);
+    }
+
+    if (preset === 'vite') {
+        return getViteRpcChannel(host);
     }
 
     throw new Error(
