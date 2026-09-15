@@ -44,6 +44,66 @@ describe('DevToolsPluginAPI', () => {
         expect(getRegisteredDevToolsPlugins()).toHaveLength(1);
     });
 
+    it('runs setup once when a plugin is registered before any root appears', () => {
+        const context = createDevToolsContext();
+        const setup = jest.fn();
+
+        setupDevToolsPlugin(
+            {
+                id: 'rootless-plugin',
+                label: 'Rootless Plugin'
+            },
+            setup
+        );
+        registerDevToolsPluginContext({ context, hasRoot: false });
+
+        expect(setup).not.toHaveBeenCalled();
+        expect(getRegisteredDevToolsPlugins()).toHaveLength(0);
+
+        registerDevToolsPluginContext({ context, hasRoot: true });
+        registerDevToolsPluginContext({ context, hasRoot: true });
+
+        expect(setup).toHaveBeenCalledTimes(1);
+        expect(setup.mock.calls[0][0]).toBeInstanceOf(DevToolsPluginAPI);
+        expect(getRegisteredDevToolsPlugins()).toHaveLength(1);
+        expect(getRegisteredDevToolsPlugins()[0]?.descriptor.id).toBe(
+            'rootless-plugin'
+        );
+    });
+
+    it('deduplicates duplicate plugin ids buffered before any root appears', () => {
+        const context = createDevToolsContext();
+        const firstSetup = jest.fn();
+        const duplicateSetup = jest.fn();
+
+        setupDevToolsPlugin(
+            {
+                id: 'buffered-once',
+                label: 'Buffered Once'
+            },
+            firstSetup
+        );
+        setupDevToolsPlugin(
+            {
+                id: 'buffered-once',
+                label: 'Buffered Duplicate'
+            },
+            duplicateSetup
+        );
+
+        expect(firstSetup).not.toHaveBeenCalled();
+        expect(duplicateSetup).not.toHaveBeenCalled();
+
+        registerDevToolsPluginContext({ context, hasRoot: true });
+
+        expect(firstSetup).toHaveBeenCalledTimes(1);
+        expect(duplicateSetup).not.toHaveBeenCalled();
+        expect(getRegisteredDevToolsPlugins()).toHaveLength(1);
+        expect(getRegisteredDevToolsPlugins()[0]?.descriptor.label).toBe(
+            'Buffered Once'
+        );
+    });
+
     it('supports the setupDevtoolsPlugin alias', () => {
         const context = createDevToolsContext();
         const setup = jest.fn();
