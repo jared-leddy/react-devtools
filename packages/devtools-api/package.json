@@ -1,9 +1,9 @@
 {
-    "name": "@devtools/kit",
-    "version": "0.0.12",
-    "private": true,
+    "name": "@devtools/api",
+    "version": "0.0.1",
+    "private": false,
     "license": "UNLICENSED",
-    "description": "Core hook, transport, and plugin primitives for React DevTools.",
+    "description": "Public plugin-author API for React DevTools.",
     "type": "module",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -19,18 +19,12 @@
     "scripts": {
         "build": "tsc",
         "lint": "eslint . --max-warnings=0",
-        "prototype:global-hook": "node prototypes/react-global-hook-coexistence.mjs",
-        "prototype:messaging": "npm run build && node prototypes/messaging-roundtrip.mjs",
         "test:unit": "jest --coverage --config jest.config.ts",
         "test:watch": "jest --coverage --watch --config jest.config.ts",
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
-        "@devtools/shared": "*",
-        "birpc": "^4.2.0",
-        "hookable": "^6.1.1",
-        "superjson": "^2.2.6",
-        "vite-hot-client": "^2.2.0"
+        "@devtools/kit": "*"
     },
     "devDependencies": {
         "@devtools/eslint-config": "*",
