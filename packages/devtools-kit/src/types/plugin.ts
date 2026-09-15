@@ -1,4 +1,5 @@
 import type {
+    CustomInspectorNode,
     CustomInspectorOptions,
     InspectorState,
     SerializableValue
@@ -63,14 +64,116 @@ export interface PluginSetupContext<
 > {
     app?: AppContext;
     descriptor: PluginDescriptor<AppContext>;
+    on: {
+        editInspectorState(
+            inspectorId: string,
+            handler: (
+                payload: EditInspectorStateRequest
+            ) => Promise<void> | void
+        ): void;
+        getInspectorState(
+            inspectorId: string,
+            handler: (
+                payload: InspectorStateRequest
+            ) =>
+                | InspectorState<StateCategory, StateValue>
+                | InspectorStateResponse<StateCategory, StateValue>
+                | Promise<
+                      | InspectorState<StateCategory, StateValue>
+                      | InspectorStateResponse<StateCategory, StateValue>
+                  >
+        ): void;
+        getInspectorTree(
+            inspectorId: string,
+            handler: (
+                payload: InspectorTreeRequest
+            ) =>
+                | Array<CustomInspectorNode>
+                | InspectorTreeResponse
+                | Promise<Array<CustomInspectorNode> | InspectorTreeResponse>
+        ): void;
+    };
+    addInspector(options: CustomInspectorOptions): void;
+    addTimelineEvent(options: TimelineEventOptions): void;
+    addTimelineLayer(options: TimelineLayerOptions): void;
+    editInspectorState(payload: EditInspectorStateRequest): Promise<void>;
     getSettings(): Record<string, PluginSettingValue>;
     notify(message: string): void;
     registerInspector(options: CustomInspectorOptions): void;
+    selectInspectorNode(inspectorId: string, nodeId: string): void;
+    sendInspectorState(
+        inspectorId: string,
+        nodeId: string
+    ): Promise<InspectorStateResponse<StateCategory, StateValue>>;
+    sendInspectorTree(
+        inspectorId: string,
+        filter?: string
+    ): Promise<InspectorTreeResponse>;
+    setSettings(settings: Record<string, PluginSettingValue>): void;
     setInspectorState(
         inspectorId: string,
         nodeId: string,
         state: InspectorState<StateCategory, StateValue>
     ): void;
+    now(): number;
+}
+
+export interface InspectorTreeRequest {
+    filter?: string;
+    inspectorId: string;
+}
+
+export interface InspectorTreeResponse<NodeMetadata = unknown> {
+    inspectorId: string;
+    rootNodes: Array<CustomInspectorNode<NodeMetadata>>;
+}
+
+export interface InspectorStateRequest {
+    inspectorId: string;
+    nodeId: string;
+}
+
+export interface InspectorStateResponse<
+    StateCategory extends string = string,
+    StateValue = SerializableValue | unknown
+> {
+    inspectorId: string;
+    nodeId: string;
+    state: InspectorState<StateCategory, StateValue>;
+}
+
+export interface EditInspectorStatePayload {
+    newKey?: string | null;
+    remove?: boolean;
+    value?: unknown;
+}
+
+export interface EditInspectorStateRequest {
+    inspectorId: string;
+    nodeId: string;
+    path: Array<number | string>;
+    state: EditInspectorStatePayload;
+    type?: string;
+}
+
+export interface TimelineLayerOptions {
+    color?: number | string;
+    id: string;
+    label: string;
+}
+
+export interface TimelineEventOptions<Data = unknown> {
+    data?: Data;
+    groupId?: string;
+    layerId: string;
+    subtitle?: string;
+    time?: number;
+    title: string;
+}
+
+export interface PluginSettingsStorage {
+    getItem(key: string): null | string;
+    setItem(key: string, value: string): void;
 }
 
 export type PluginSetupFunction<
