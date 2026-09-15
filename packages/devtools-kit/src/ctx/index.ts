@@ -10,6 +10,9 @@ import type {
 
 export enum ReactDevToolsContextHookKeys {
     ADD_INSPECTOR = 'inspector:add',
+    CUSTOM_COMMAND_ADDED = 'custom-command:added',
+    CUSTOM_COMMAND_REMOVED = 'custom-command:removed',
+    CUSTOM_TAB_ADDED = 'custom-tab:added',
     CUSTOM_INSPECTOR_SELECT_NODE = 'inspector:select-node',
     INSPECTOR_TREE_REQUEST = 'inspector-tree:request',
     INSPECTOR_TREE_RESPONSE = 'inspector-tree:response',
@@ -68,6 +71,15 @@ export interface ReactDevToolsContextHookPayloads {
         inspectorId: string;
         nodeId: string;
         plugin: unknown;
+    };
+    [ReactDevToolsContextHookKeys.CUSTOM_COMMAND_ADDED]: {
+        command: unknown;
+    };
+    [ReactDevToolsContextHookKeys.CUSTOM_COMMAND_REMOVED]: {
+        commandId: string;
+    };
+    [ReactDevToolsContextHookKeys.CUSTOM_TAB_ADDED]: {
+        tab: unknown;
     };
     [ReactDevToolsContextHookKeys.INSPECTOR_TREE_REQUEST]: {
         filter?: string;

@@ -1,10 +1,15 @@
 import {
     DevToolsPluginAPI,
     ReactDevToolsContextHookKeys,
+    addCustomCommand,
+    addCustomTab,
     createDevToolsContext,
+    getCustomCommands,
+    getCustomTabs,
     getPluginSettingsKey,
     getRegisteredDevToolsPlugins,
     registerDevToolsPluginContext,
+    removeCustomCommand,
     resetDevToolsPluginRegistry,
     setupDevToolsPlugin,
     setupDevtoolsPlugin,
@@ -304,6 +309,54 @@ describe('DevToolsPluginAPI', () => {
             nodeId: 'node',
             state: {}
         });
+    });
+
+    it('registers custom tabs and commands idempotently', () => {
+        const context = createDevToolsContext();
+        const tabs: unknown[] = [];
+        const commands: unknown[] = [];
+        const removedCommands: unknown[] = [];
+
+        context.hooks.hook(
+            ReactDevToolsContextHookKeys.CUSTOM_TAB_ADDED,
+            (payload) => {
+                tabs.push(payload);
+            }
+        );
+        context.hooks.hook(
+            ReactDevToolsContextHookKeys.CUSTOM_COMMAND_ADDED,
+            (payload) => {
+                commands.push(payload);
+            }
+        );
+        context.hooks.hook(
+            ReactDevToolsContextHookKeys.CUSTOM_COMMAND_REMOVED,
+            (payload) => {
+                removedCommands.push(payload);
+            }
+        );
+        registerDevToolsPluginContext({ context });
+
+        addCustomTab({ name: 'routes', title: 'Routes' });
+        addCustomTab({ name: 'routes', title: 'Routes Again' });
+        addCustomCommand({ id: 'open-docs', label: 'Open Docs', url: '/docs' });
+        addCustomCommand({ id: 'open-docs', label: 'Open Docs Again' });
+        removeCustomCommand('missing');
+        removeCustomCommand('open-docs');
+
+        expect(getCustomTabs()).toEqual([{ name: 'routes', title: 'Routes' }]);
+        expect(getCustomCommands()).toEqual([]);
+        expect(tabs).toEqual([{ tab: { name: 'routes', title: 'Routes' } }]);
+        expect(commands).toEqual([
+            {
+                command: {
+                    id: 'open-docs',
+                    label: 'Open Docs',
+                    url: '/docs'
+                }
+            }
+        ]);
+        expect(removedCommands).toEqual([{ commandId: 'open-docs' }]);
     });
 });
 

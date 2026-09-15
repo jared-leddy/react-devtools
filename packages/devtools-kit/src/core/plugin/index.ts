@@ -7,6 +7,8 @@ import { ReactDevToolsContextHookKeys } from '../../ctx/index.js';
 import type {
     CustomInspectorNode,
     CustomInspectorOptions,
+    CustomCommand,
+    CustomTab,
     DevToolsPlugin,
     EditInspectorStateRequest,
     InspectorState,
@@ -62,6 +64,8 @@ interface BufferedPlugin {
 }
 
 const bufferedPlugins: BufferedPlugin[] = [];
+const customCommands = new Map<string, CustomCommand>();
+const customTabs = new Map<string, CustomTab>();
 const installedPlugins = new Map<string, DevToolsPlugin>();
 let activeContext: DevToolsContext | null = null;
 let activeStorage: PluginSettingsStorage | null | undefined;
@@ -297,6 +301,49 @@ export function setupDevtoolsPlugin(
     setupDevToolsPlugin(descriptor, setupFn, options);
 }
 
+export function addCustomTab(tab: CustomTab): void {
+    if (customTabs.has(tab.name)) {
+        return;
+    }
+
+    customTabs.set(tab.name, tab);
+    void activeContext?.hooks.callHook(
+        ReactDevToolsContextHookKeys.CUSTOM_TAB_ADDED,
+        { tab }
+    );
+}
+
+export function addCustomCommand(command: CustomCommand): void {
+    if (customCommands.has(command.id)) {
+        return;
+    }
+
+    customCommands.set(command.id, command);
+    void activeContext?.hooks.callHook(
+        ReactDevToolsContextHookKeys.CUSTOM_COMMAND_ADDED,
+        { command }
+    );
+}
+
+export function removeCustomCommand(commandId: string): void {
+    if (!customCommands.delete(commandId)) {
+        return;
+    }
+
+    void activeContext?.hooks.callHook(
+        ReactDevToolsContextHookKeys.CUSTOM_COMMAND_REMOVED,
+        { commandId }
+    );
+}
+
+export function getCustomCommands(): CustomCommand[] {
+    return Array.from(customCommands.values());
+}
+
+export function getCustomTabs(): CustomTab[] {
+    return Array.from(customTabs.values());
+}
+
 export function registerDevToolsPluginContext(
     options: RegisterDevToolsPluginContextOptions
 ): void {
@@ -325,6 +372,8 @@ export function resetDevToolsPluginRegistry(): void {
     activeStorage = undefined;
     rootIsAvailable = false;
     bufferedPlugins.length = 0;
+    customCommands.clear();
+    customTabs.clear();
     installedPlugins.clear();
     clearPluginSettingsMemory();
 }

@@ -176,6 +176,26 @@ export interface PluginSettingsStorage {
     setItem(key: string, value: string): void;
 }
 
+export interface CustomTab {
+    category?: string;
+    icon?: string;
+    name: string;
+    path?: string;
+    title: string;
+    view?: unknown;
+}
+
+export interface CustomCommand {
+    action?: () => Promise<void> | void;
+    children?: CustomCommand[];
+    icon?: string;
+    id: string;
+    label: string;
+    order?: number;
+    route?: string;
+    url?: string;
+}
+
 export type PluginSetupFunction<
     AppContext = unknown,
     StateCategory extends string = string,
