@@ -206,10 +206,12 @@ function getFiberTags(fiber: ReactFiber): string[] {
     }
 
     if (isReactSuspenseFiber(fiber)) {
+        tags.push('boundary');
         tags.push('suspense');
     }
 
     if (fiber.tag === ReactFiberTag.OffscreenComponent) {
+        tags.push('boundary');
         tags.push('offscreen');
     }
 
@@ -228,6 +230,10 @@ function getComponentTypeLabel(fiber: ReactFiber): string {
             return 'context-provider';
         case ReactFiberTag.ContextConsumer:
             return 'context-consumer';
+        case ReactFiberTag.SuspenseComponent:
+            return 'suspense';
+        case ReactFiberTag.OffscreenComponent:
+            return 'offscreen';
         default:
             return getReactFiberTagName(fiber.tag);
     }
