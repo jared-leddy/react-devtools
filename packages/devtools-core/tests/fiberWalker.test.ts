@@ -159,6 +159,76 @@ describe('FiberWalker', () => {
         );
     });
 
+    it('walks class components with class metadata and the resolved display name', () => {
+        class ClassCounter {
+            public state = { count: 0 };
+
+            public setState() {
+                return undefined;
+            }
+        }
+
+        const hostRoot = createFiberFixture({ tag: ReactFiberTag.HostRoot });
+        const counter = createFiberFixture({
+            memoizedProps: { label: 'Clicks' },
+            memoizedState: { count: 0 },
+            returnFiber: hostRoot,
+            stateNode: new ClassCounter(),
+            tag: ReactFiberTag.ClassComponent,
+            type: ClassCounter
+        });
+
+        hostRoot.child = counter;
+
+        const [counterNode] = createFiberWalker().getComponentTree(hostRoot, {
+            rootId: 'class-root'
+        });
+
+        expect(counterNode).toMatchObject({
+            displayName: 'ClassCounter',
+            fiberTag: 'ClassComponent',
+            id: 'class-root:0:ClassComponent:ClassCounter',
+            key: null,
+            name: 'ClassCounter',
+            rootId: 'class-root',
+            tags: ['ClassComponent', 'component', 'class'],
+            type: 'class'
+        });
+    });
+
+    it('keeps class component ids stable across setState re-renders', () => {
+        class ClassCounter {
+            public state = { count: 0 };
+
+            public setState() {
+                return undefined;
+            }
+        }
+
+        const instance = new ClassCounter();
+        const current = createFiberFixture({
+            memoizedProps: { label: 'Clicks' },
+            memoizedState: { count: 0 },
+            stateNode: instance,
+            tag: ReactFiberTag.ClassComponent,
+            type: ClassCounter
+        });
+        const workInProgress = createFiberFixture({
+            memoizedProps: { label: 'Clicks' },
+            memoizedState: { count: 1 },
+            stateNode: instance,
+            tag: ReactFiberTag.ClassComponent,
+            type: ClassCounter
+        });
+
+        current.alternate = workInProgress;
+        workInProgress.alternate = current;
+
+        expect(createFiberComponentId('root', [0], current)).toBe(
+            createFiberComponentId('root', [0], workInProgress)
+        );
+    });
+
     it('attaches existing context and diagnostic metadata to surfaced nodes', () => {
         class Boundary {
             public componentDidCatch() {
@@ -319,6 +389,7 @@ function createFiberFixture(options: {
     memoizedProps?: unknown;
     memoizedState?: unknown;
     returnFiber?: null | ReactFiber;
+    stateNode?: unknown;
     tag: ReactFiberTag;
     type?: unknown;
 }): ReactFiber {
@@ -343,7 +414,7 @@ function createFiberFixture(options: {
         return: options.returnFiber ?? null,
         selfBaseDuration: 0,
         sibling: null,
-        stateNode: null,
+        stateNode: options.stateNode ?? null,
         subtreeFlags: 0,
         tag: options.tag,
         treeBaseDuration: 0,
