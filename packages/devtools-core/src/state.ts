@@ -3,8 +3,10 @@ import type {
     ComponentNode,
     ComponentStateResponse,
     CustomInspectorRecord,
+    DetectionDiagnosticRecord,
     DevToolsCoreState,
     DevToolsCoreStatePatch,
+    FiberRootEventRecord,
     ModuleGraphNode,
     RendererRecord,
     RootRecord,
@@ -25,11 +27,13 @@ export interface DevToolsCoreStateStore {
     addTimelineEvent(event: TimelineEventRecord): DevToolsCoreState;
     addTimelineLayer(layer: TimelineLayerRecord): DevToolsCoreState;
     getState(): DevToolsCoreState;
+    recordFiberRootEvent(rootEvent: FiberRootEventRecord): DevToolsCoreState;
     registerCustomCommand(command: CustomCommand): DevToolsCoreState;
     registerCustomInspector(
         inspector: CustomInspectorRecord
     ): DevToolsCoreState;
     registerCustomTab(tab: CustomTab): DevToolsCoreState;
+    reportDiagnostic(diagnostic: DetectionDiagnosticRecord): DevToolsCoreState;
     removeCustomCommand(commandId: string): DevToolsCoreState;
     replaceState(state: DevToolsCoreState): DevToolsCoreState;
     selectComponent(componentId: null | string): DevToolsCoreState;
@@ -55,9 +59,11 @@ export function createInitialDevToolsCoreState(): DevToolsCoreState {
         components: [],
         customInspectors: [],
         customTabs: [],
+        diagnostics: [],
         graph: [],
         highlightedComponentId: null,
         renderers: [],
+        rootEvents: [],
         roots: [],
         routes: [],
         selectedComponentId: null,
@@ -100,6 +106,34 @@ export function createDevToolsCoreStateStore(
         getState() {
             return state;
         },
+        recordFiberRootEvent(rootEvent) {
+            const currentRoot = state.roots.find(
+                (root) => root.id === rootEvent.rootId
+            );
+            return update({
+                rootEvents: [...state.rootEvents, rootEvent],
+                roots: upsertById(state.roots, {
+                    ...currentRoot,
+                    commitCount:
+                        (currentRoot?.commitCount ?? 0) +
+                        (rootEvent.lifecycle === 'committed' ? 1 : 0),
+                    disconnectedAt:
+                        rootEvent.lifecycle === 'disconnected'
+                            ? rootEvent.timestamp
+                            : currentRoot?.disconnectedAt,
+                    id: rootEvent.rootId,
+                    lifecycle: rootEvent.lifecycle,
+                    mountedAt:
+                        currentRoot?.mountedAt ??
+                        (rootEvent.lifecycle === 'added'
+                            ? rootEvent.timestamp
+                            : undefined),
+                    rendererId: rootEvent.rendererId,
+                    targetId: rootEvent.targetId,
+                    updatedAt: rootEvent.timestamp
+                })
+            });
+        },
         registerCustomCommand(command) {
             return update({ commands: upsertById(state.commands, command) });
         },
@@ -111,6 +145,11 @@ export function createDevToolsCoreStateStore(
         registerCustomTab(tab) {
             return update({
                 customTabs: upsertByKey(state.customTabs, tab, 'name')
+            });
+        },
+        reportDiagnostic(diagnostic) {
+            return update({
+                diagnostics: upsertById(state.diagnostics, diagnostic)
             });
         },
         removeCustomCommand(commandId) {
@@ -183,8 +222,10 @@ function cloneState(state: DevToolsCoreState): DevToolsCoreState {
         components: [...state.components],
         customInspectors: [...state.customInspectors],
         customTabs: [...state.customTabs],
+        diagnostics: [...state.diagnostics],
         graph: [...state.graph],
         renderers: [...state.renderers],
+        rootEvents: [...state.rootEvents],
         roots: [...state.roots],
         routes: [...state.routes],
         settings: { ...state.settings },

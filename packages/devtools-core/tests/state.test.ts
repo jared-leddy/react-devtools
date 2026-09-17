@@ -118,4 +118,94 @@ describe('devtools-core state store', () => {
         expect(replaced.roots).toEqual([{ id: 'replacement-root' }]);
         expect(store.getState().roots).toEqual([{ id: 'replacement-root' }]);
     });
+
+    it('tracks renderer detection metadata, root lifecycle events, and diagnostics', () => {
+        const store = createDevToolsCoreStateStore();
+
+        store.setRenderers([
+            {
+                capabilities: {
+                    hasFiberRoots: true,
+                    hasRendererInterface: true,
+                    supportsProfiling: false
+                },
+                detectedAt: 100,
+                id: 7,
+                name: 'react-dom',
+                packageName: 'react-dom',
+                targetId: 'top',
+                version: '19.1.1'
+            }
+        ]);
+        store.recordFiberRootEvent({
+            id: 'event:1',
+            lifecycle: 'added',
+            rendererId: 7,
+            rootId: 'target:top/renderer:7/root:1',
+            source: 'getFiberRoots',
+            targetId: 'top',
+            timestamp: 110
+        });
+        store.recordFiberRootEvent({
+            didError: false,
+            id: 'event:2',
+            lifecycle: 'committed',
+            rendererId: 7,
+            rootId: 'target:top/renderer:7/root:1',
+            source: 'onCommitFiberRoot',
+            targetId: 'top',
+            timestamp: 120
+        });
+        store.reportDiagnostic({
+            code: 'renderer-unsupported',
+            id: 'diagnostic:1',
+            message: 'React renderer internals are not supported.',
+            rendererId: 7,
+            severity: 'warning',
+            targetId: 'top',
+            timestamp: 130
+        });
+        store.reportDiagnostic({
+            code: 'renderer-unsupported',
+            id: 'diagnostic:1',
+            message: 'React renderer internals are partially supported.',
+            rendererId: 7,
+            severity: 'info',
+            targetId: 'top',
+            timestamp: 140
+        });
+
+        expect(store.getState()).toMatchObject({
+            diagnostics: [
+                {
+                    id: 'diagnostic:1',
+                    message:
+                        'React renderer internals are partially supported.',
+                    severity: 'info'
+                }
+            ],
+            renderers: [
+                {
+                    id: 7,
+                    packageName: 'react-dom',
+                    targetId: 'top'
+                }
+            ],
+            rootEvents: [
+                { id: 'event:1', lifecycle: 'added' },
+                { id: 'event:2', lifecycle: 'committed' }
+            ],
+            roots: [
+                {
+                    commitCount: 1,
+                    id: 'target:top/renderer:7/root:1',
+                    lifecycle: 'committed',
+                    mountedAt: 110,
+                    rendererId: 7,
+                    targetId: 'top',
+                    updatedAt: 120
+                }
+            ]
+        });
+    });
 });

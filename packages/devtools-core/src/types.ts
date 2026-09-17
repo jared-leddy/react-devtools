@@ -12,6 +12,9 @@ export enum DevToolsCoreRpcEvent {
     HANDSHAKE = 'core:handshake',
     STATE_UPDATED = 'core:state-updated',
     ROOTS_UPDATED = 'roots:updated',
+    RENDERERS_UPDATED = 'renderers:updated',
+    ROOT_EVENT_RECORDED = 'roots:event-recorded',
+    DETECTION_DIAGNOSTIC_REPORTED = 'detection:diagnostic-reported',
     COMPONENTS_UPDATED = 'components:updated',
     COMPONENT_STATE_REQUESTED = 'component-state:requested',
     HIGHLIGHT_REQUESTED = 'highlight:requested',
@@ -30,18 +33,81 @@ export enum DevToolsCoreRpcEvent {
 }
 
 export type TransportStatus = 'connected' | 'connecting' | 'disconnected';
+export type DetectionTargetKind = 'iframe' | 'window' | 'worker';
+export type FiberRootLifecycle =
+    'added' | 'committed' | 'disconnected' | 'unmounted' | 'updated';
+export type DetectionDiagnosticSeverity = 'error' | 'info' | 'warning';
+
+export interface DetectionTargetContext {
+    framePath?: string[];
+    id: string;
+    kind: DetectionTargetKind;
+    origin?: string;
+    parentId?: string;
+}
 
 export interface RendererRecord {
     bundleType?: number;
+    capabilities?: {
+        hasFiberRoots?: boolean;
+        hasRendererInterface?: boolean;
+        supportsProfiling?: boolean;
+    };
+    detectedAt?: number;
     id: number | string;
+    packageName?: string;
     name?: string;
+    reconcilerVersion?: string;
+    targetId?: string;
     version?: string;
 }
 
 export interface RootRecord {
+    commitCount?: number;
+    disconnectedAt?: number;
+    iframeId?: string;
     id: string;
     label?: string;
+    lifecycle?: FiberRootLifecycle;
+    mountedAt?: number;
+    parentRootId?: string;
+    portalContainerId?: string;
     rendererId?: number | string;
+    targetId?: string;
+    updatedAt?: number;
+}
+
+export interface FiberRootEventRecord {
+    didError?: boolean;
+    id: string;
+    lifecycle: FiberRootLifecycle;
+    priorityLevel?: unknown;
+    rendererId: number | string;
+    rootId: string;
+    source:
+        | 'getFiberRoots'
+        | 'onCommitFiberRoot'
+        | 'onCommitFiberUnmount'
+        | 'onPostCommitFiberRoot';
+    targetId: string;
+    timestamp: number;
+}
+
+export interface DetectionDiagnosticRecord {
+    code:
+        | 'existing-hook-incompatible'
+        | 'fiber-root-unavailable'
+        | 'react-internals-unavailable'
+        | 'renderer-unsupported'
+        | 'unknown-detector-error';
+    details?: Record<string, unknown>;
+    id: string;
+    message: string;
+    rendererId?: number | string;
+    rootId?: string;
+    severity: DetectionDiagnosticSeverity;
+    targetId?: string;
+    timestamp: number;
 }
 
 export interface ComponentNode {
@@ -117,9 +183,11 @@ export interface DevToolsCoreState {
     components: ComponentNode[];
     customInspectors: CustomInspectorRecord[];
     customTabs: CustomTab[];
+    diagnostics: DetectionDiagnosticRecord[];
     graph: ModuleGraphNode[];
     highlightedComponentId: null | string;
     renderers: RendererRecord[];
+    rootEvents: FiberRootEventRecord[];
     roots: RootRecord[];
     routes: RouteRecord[];
     selectedComponentId: null | string;
@@ -148,6 +216,24 @@ export interface RootsRequest {
 
 export interface RootsResponse {
     roots: RootRecord[];
+}
+
+export interface RenderersResponse {
+    renderers: RendererRecord[];
+}
+
+export interface RootEventResponse {
+    rootEvent: FiberRootEventRecord;
+    roots: RootRecord[];
+}
+
+export interface DetectionDiagnosticsRequest {
+    severity?: DetectionDiagnosticSeverity;
+    targetId?: string;
+}
+
+export interface DetectionDiagnosticsResponse {
+    diagnostics: DetectionDiagnosticRecord[];
 }
 
 export interface ComponentsRequest {

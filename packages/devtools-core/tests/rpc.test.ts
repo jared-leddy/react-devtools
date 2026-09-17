@@ -21,9 +21,42 @@ describe('devtools-core RPC facade', () => {
         const client = createDevToolsCoreClient({ channel: clientChannel });
 
         const handshake = await client.handshake({ clientId: 'client' });
+        await client.updateRenderers([
+            {
+                capabilities: {
+                    hasFiberRoots: true,
+                    hasRendererInterface: true,
+                    supportsProfiling: true
+                },
+                detectedAt: 100,
+                id: 1,
+                name: 'react-dom',
+                packageName: 'react-dom',
+                targetId: 'top',
+                version: '19.1.1'
+            }
+        ]);
         await client.updateRoots([
             { id: 'root:1', label: 'Root 1', rendererId: 1 }
         ]);
+        await client.recordFiberRootEvent({
+            id: 'root-event:1',
+            lifecycle: 'committed',
+            rendererId: 1,
+            rootId: 'root:1',
+            source: 'onCommitFiberRoot',
+            targetId: 'top',
+            timestamp: 110
+        });
+        await client.reportDetectionDiagnostic({
+            code: 'react-internals-unavailable',
+            id: 'diagnostic:1',
+            message: 'React internals are unavailable for this renderer.',
+            rendererId: 1,
+            severity: 'warning',
+            targetId: 'top',
+            timestamp: 120
+        });
         await client.updateState({
             assets: [{ id: 'asset:1', path: '/logo.svg', type: 'image' }],
             graph: [{ id: 'module:1', imports: ['module:2'] }],
@@ -44,6 +77,11 @@ describe('devtools-core RPC facade', () => {
         });
 
         const roots = await client.getRoots();
+        const renderers = await client.getRenderers();
+        const diagnostics = await client.getDetectionDiagnostics({
+            severity: 'warning',
+            targetId: 'top'
+        });
         const assets = await client.getAssets({ type: 'image' });
         const graph = await client.getGraph();
         const routes = await client.getRoutes();
@@ -60,7 +98,29 @@ describe('devtools-core RPC facade', () => {
             state: { transportStatus: 'connected' }
         });
         expect(roots.roots).toEqual([
-            { id: 'root:1', label: 'Root 1', rendererId: 1 }
+            expect.objectContaining({
+                commitCount: 1,
+                id: 'root:1',
+                label: 'Root 1',
+                lifecycle: 'committed',
+                rendererId: 1,
+                targetId: 'top',
+                updatedAt: 110
+            })
+        ]);
+        expect(renderers.renderers).toEqual([
+            expect.objectContaining({
+                id: 1,
+                packageName: 'react-dom',
+                targetId: 'top'
+            })
+        ]);
+        expect(diagnostics.diagnostics).toEqual([
+            expect.objectContaining({
+                code: 'react-internals-unavailable',
+                severity: 'warning',
+                targetId: 'top'
+            })
         ]);
         expect(assets.assets).toEqual([
             { id: 'asset:1', path: '/logo.svg', type: 'image' }

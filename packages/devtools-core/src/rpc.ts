@@ -21,14 +21,21 @@ import type {
     CustomInspectorStateResponse,
     CustomInspectorTreeRequest,
     CustomInspectorTreeResponse,
+    DetectionDiagnosticRecord,
+    DetectionDiagnosticsRequest,
+    DetectionDiagnosticsResponse,
     DevToolsCoreHandshakeRequest,
     DevToolsCoreHandshakeResponse,
     DevToolsCoreState,
     DevToolsCoreStatePatch,
+    FiberRootEventRecord,
     GraphRequest,
     GraphResponse,
     HighlightRequest,
+    RendererRecord,
+    RenderersResponse,
     RootRecord,
+    RootEventResponse,
     RootsRequest,
     RootsResponse,
     RoutesRequest,
@@ -57,7 +64,11 @@ export interface DevToolsCoreServerFunctions {
         request: ComponentStateRequest
     ) => ComponentStateResponse | undefined;
     getComponents: (request: ComponentsRequest) => ComponentsResponse;
+    getDetectionDiagnostics: (
+        request?: DetectionDiagnosticsRequest
+    ) => DetectionDiagnosticsResponse;
     getGraph: (request?: GraphRequest) => GraphResponse;
+    getRenderers: () => RenderersResponse;
     getRoutes: (request?: RoutesRequest) => RoutesResponse;
     getRoots: (request?: RootsRequest) => RootsResponse;
     getState: () => DevToolsCoreState;
@@ -65,11 +76,17 @@ export interface DevToolsCoreServerFunctions {
         request: DevToolsCoreHandshakeRequest
     ) => DevToolsCoreHandshakeResponse;
     highlightComponent: (request: HighlightRequest) => DevToolsCoreState;
+    recordFiberRootEvent: (
+        rootEvent: FiberRootEventRecord
+    ) => RootEventResponse;
     registerCustomCommand: (command: CustomCommand) => DevToolsCoreState;
     registerCustomInspector: (
         inspector: CustomInspectorRecord
     ) => DevToolsCoreState;
     registerCustomTab: (tab: CustomTab) => DevToolsCoreState;
+    reportDetectionDiagnostic: (
+        diagnostic: DetectionDiagnosticRecord
+    ) => DevToolsCoreState;
     removeCustomCommand: (commandId: string) => DevToolsCoreState;
     selectComponent: (componentId: null | string) => DevToolsCoreState;
     selectRoot: (rootId: null | string) => DevToolsCoreState;
@@ -79,6 +96,7 @@ export interface DevToolsCoreServerFunctions {
     sendInspectorTree: (
         request: CustomInspectorTreeRequest
     ) => CustomInspectorTreeResponse;
+    updateRenderers: (renderers: RendererRecord[]) => DevToolsCoreState;
     updateRoots: (roots: RootRecord[]) => DevToolsCoreState;
     updateState: (patch: DevToolsCoreStatePatch) => DevToolsCoreState;
 }
@@ -169,6 +187,22 @@ export function createDevToolsCoreServerFunctions(
         getGraph(_request) {
             return { graph: store.getState().graph };
         },
+        getDetectionDiagnostics(request) {
+            const diagnostics = store
+                .getState()
+                .diagnostics.filter(
+                    (diagnostic) =>
+                        (!request?.severity ||
+                            diagnostic.severity === request.severity) &&
+                        (!request?.targetId ||
+                            diagnostic.targetId === request.targetId)
+                );
+
+            return { diagnostics };
+        },
+        getRenderers() {
+            return { renderers: store.getState().renderers };
+        },
         getRoutes(_request) {
             return { routes: store.getState().routes };
         },
@@ -199,6 +233,14 @@ export function createDevToolsCoreServerFunctions(
                 highlightedComponentId: request.componentId
             });
         },
+        recordFiberRootEvent(rootEvent) {
+            const state = store.recordFiberRootEvent(rootEvent);
+
+            return {
+                rootEvent,
+                roots: state.roots
+            };
+        },
         registerCustomCommand(command) {
             return store.registerCustomCommand(command);
         },
@@ -207,6 +249,9 @@ export function createDevToolsCoreServerFunctions(
         },
         registerCustomTab(tab) {
             return store.registerCustomTab(tab);
+        },
+        reportDetectionDiagnostic(diagnostic) {
+            return store.reportDiagnostic(diagnostic);
         },
         removeCustomCommand(commandId) {
             return store.removeCustomCommand(commandId);
@@ -239,6 +284,9 @@ export function createDevToolsCoreServerFunctions(
         },
         updateRoots(roots) {
             return store.setRoots(roots);
+        },
+        updateRenderers(renderers) {
+            return store.setRenderers(renderers);
         },
         updateState(patch) {
             return store.update(patch);
