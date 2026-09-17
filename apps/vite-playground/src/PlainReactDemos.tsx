@@ -7,7 +7,8 @@ import {
     useContext,
     useReducer,
     useState,
-    type ComponentType
+    type ComponentType,
+    type ReactNode
 } from 'react';
 
 type ThemeTone = 'quiet' | 'active';
@@ -200,6 +201,59 @@ export class ClassStateDemo extends Component<object, { count: number }> {
     }
 }
 
+class PlaygroundErrorBoundary extends Component<
+    { children: ReactNode },
+    { errorMessage: null | string }
+> {
+    public state = { errorMessage: null };
+
+    public static getDerivedStateFromError(error: Error) {
+        return { errorMessage: error.message };
+    }
+
+    public componentDidCatch() {
+        return undefined;
+    }
+
+    public override render() {
+        if (this.state.errorMessage) {
+            return (
+                <div className="demo-result" data-testid="boundary-fallback">
+                    Captured error: {this.state.errorMessage}
+                </div>
+            );
+        }
+
+        return this.props.children;
+    }
+}
+
+function ThrowingFixture({ shouldThrow }: { shouldThrow: boolean }) {
+    if (shouldThrow) {
+        throw new Error('Playground boundary failure');
+    }
+
+    return (
+        <div className="demo-result" data-testid="boundary-child">
+            Error boundary child is healthy
+        </div>
+    );
+}
+
+export function ErrorBoundaryDemo() {
+    const [shouldThrow, setShouldThrow] = useState(false);
+
+    return (
+        <article className="card">
+            <h3>error boundary fixture</h3>
+            <PlaygroundErrorBoundary>
+                <ThrowingFixture shouldThrow={shouldThrow} />
+            </PlaygroundErrorBoundary>
+            <button onClick={() => setShouldThrow(true)}>Trigger error</button>
+        </article>
+    );
+}
+
 export function PlainReactDemos() {
     return (
         <section aria-labelledby="plain-react-demos-heading">
@@ -210,6 +264,7 @@ export function PlainReactDemos() {
                 <ContextProviderDemo />
                 <MemoStatusDemo label="Memo status" />
                 <SuspenseLazyDemo />
+                <ErrorBoundaryDemo />
                 <ClassStateDemo />
             </div>
         </section>

@@ -1,5 +1,10 @@
 import type { DetectionDiagnosticRecord } from './types.js';
-import type { ComponentContextKind, ComponentContextRecord } from './types.js';
+import type {
+    ComponentContextKind,
+    ComponentContextRecord,
+    ComponentDiagnosticRecord,
+    ComponentDiagnosticStatus
+} from './types.js';
 
 export enum ReactFiberTag {
     FunctionComponent = 0,
@@ -307,6 +312,56 @@ export function inspectReactFiberContexts(
     }
 
     return dedupeContextRecords(records);
+}
+
+export function isReactErrorBoundaryFiber(fiber: ReactFiber): boolean {
+    if (fiber.tag !== ReactFiberTag.ClassComponent) {
+        return false;
+    }
+
+    const componentType = getComponentTypeRecord(fiber.type);
+    const componentPrototype = getRecord(componentType?.prototype);
+    const stateNode = getRecord(fiber.stateNode);
+
+    return (
+        typeof componentType?.getDerivedStateFromError === 'function' ||
+        typeof componentPrototype?.componentDidCatch === 'function' ||
+        typeof stateNode?.componentDidCatch === 'function'
+    );
+}
+
+export function isReactSuspenseFiber(fiber: ReactFiber): boolean {
+    return fiber.tag === ReactFiberTag.SuspenseComponent;
+}
+
+export function inspectReactFiberDiagnostics(
+    fiber: ReactFiber
+): ComponentDiagnosticRecord[] {
+    const diagnostics: ComponentDiagnosticRecord[] = [];
+
+    if (isReactErrorBoundaryFiber(fiber)) {
+        const capturedError = getReactFiberCapturedError(fiber);
+
+        diagnostics.push(
+            stripUndefinedDiagnosticFields({
+                capturedError,
+                displayName: getReactFiberDisplayName(fiber, 'ErrorBoundary'),
+                kind: 'error-boundary',
+                message: getErrorMessage(capturedError),
+                status: capturedError === undefined ? 'idle' : 'captured'
+            })
+        );
+    }
+
+    if (isReactSuspenseFiber(fiber)) {
+        diagnostics.push({
+            displayName: getReactFiberDisplayName(fiber, 'Suspense'),
+            kind: 'suspense',
+            status: getReactSuspenseStatus(fiber)
+        });
+    }
+
+    return diagnostics;
 }
 
 export function isReactHostFiberTag(tag: number): boolean {
@@ -805,6 +860,142 @@ function stripUndefinedContextFields(
             ? { observedBits: record.observedBits }
             : {}),
         ...(record.value !== undefined ? { value: record.value } : {})
+    };
+}
+
+function getReactFiberCapturedError(fiber: ReactFiber): unknown {
+    const memoizedState = getRecord(fiber.memoizedState);
+    const stateNode = getRecord(fiber.stateNode);
+    const updateQueue = getRecord(fiber.updateQueue);
+
+    return (
+        getRecordValue(memoizedState, ['error', 'capturedError']) ??
+        getRecordValue(stateNode, ['error', 'capturedError']) ??
+        getCapturedErrorFromUpdateQueue(updateQueue)
+    );
+}
+
+function getCapturedErrorFromUpdateQueue(
+    updateQueue: null | Record<PropertyKey, unknown>
+): unknown {
+    if (!updateQueue) {
+        return undefined;
+    }
+
+    const capturedValues = updateQueue.capturedValues;
+
+    if (capturedValues instanceof Map && capturedValues.size > 0) {
+        return capturedValues.values().next().value;
+    }
+
+    if (Array.isArray(capturedValues) && capturedValues.length > 0) {
+        return capturedValues[0];
+    }
+
+    return getRecordValue(updateQueue, ['error', 'capturedError']);
+}
+
+function getReactSuspenseStatus(fiber: ReactFiber): ComponentDiagnosticStatus {
+    const memoizedState = getRecord(fiber.memoizedState);
+
+    if (!memoizedState) {
+        return 'resolved';
+    }
+
+    if ('dehydrated' in memoizedState && memoizedState.dehydrated !== null) {
+        return 'pending';
+    }
+
+    if (
+        'treeContext' in memoizedState ||
+        'retryLane' in memoizedState ||
+        'retryCache' in memoizedState
+    ) {
+        return 'pending';
+    }
+
+    return 'unknown';
+}
+
+function getReactFiberDisplayName(fiber: ReactFiber, fallback: string): string {
+    const typeName = getReactTypeDisplayName(fiber.type);
+    const elementTypeName = getReactTypeDisplayName(fiber.elementType);
+
+    return typeName ?? elementTypeName ?? fallback;
+}
+
+function getReactTypeDisplayName(value: unknown): null | string {
+    if (typeof value === 'function') {
+        const record = value as Function & { displayName?: string };
+        return record.displayName || record.name || null;
+    }
+
+    if (typeof value === 'string' && value.trim() !== '') {
+        return value;
+    }
+
+    const record = getRecord(value);
+    const displayName = record?.displayName;
+    const name = record?.name;
+
+    if (typeof displayName === 'string' && displayName.trim() !== '') {
+        return displayName;
+    }
+
+    return typeof name === 'string' && name.trim() !== '' ? name : null;
+}
+
+function getComponentTypeRecord(
+    value: unknown
+): null | (Record<PropertyKey, unknown> & { prototype?: unknown }) {
+    if (typeof value === 'function') {
+        return value as unknown as Record<PropertyKey, unknown> & {
+            prototype?: unknown;
+        };
+    }
+
+    return getRecord(value) as
+        null | (Record<PropertyKey, unknown> & { prototype?: unknown });
+}
+
+function getErrorMessage(error: unknown): string | undefined {
+    if (error instanceof Error) {
+        return error.message;
+    }
+
+    const message = getRecord(error)?.message;
+
+    return typeof message === 'string' ? message : undefined;
+}
+
+function getRecordValue(
+    record: null | Record<PropertyKey, unknown>,
+    keys: string[]
+): unknown {
+    if (!record) {
+        return undefined;
+    }
+
+    for (const key of keys) {
+        if (key in record && record[key] !== undefined) {
+            return record[key];
+        }
+    }
+
+    return undefined;
+}
+
+function stripUndefinedDiagnosticFields(
+    record: ComponentDiagnosticRecord
+): ComponentDiagnosticRecord {
+    return {
+        displayName: record.displayName,
+        kind: record.kind,
+        status: record.status,
+        ...(record.capturedError !== undefined
+            ? { capturedError: record.capturedError }
+            : {}),
+        ...(record.message !== undefined ? { message: record.message } : {})
     };
 }
 
