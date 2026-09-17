@@ -1,6 +1,7 @@
 import {
     FiberWalker,
     ReactFiberTag,
+    createFiberComponentId,
     createFiberWalker,
     getFiberDisplayName
 } from '../src/index.js';
@@ -18,17 +19,33 @@ describe('FiberWalker', () => {
         ).toEqual([
             {
                 children: [
-                    { children: [], id: 'fixture:0.0.0', name: 'HeaderPanel' },
-                    { children: [], id: 'fixture:0.0.1', name: 'MemoPanel' },
                     {
                         children: [],
-                        id: 'fixture:0.0.2',
+                        id: 'fixture:0.0.0:FunctionComponent:HeaderPanel',
+                        name: 'HeaderPanel'
+                    },
+                    {
+                        children: [],
+                        id: 'fixture:0.0.1:Memo:MemoPanel',
+                        name: 'MemoPanel'
+                    },
+                    {
+                        children: [],
+                        id: 'fixture:0.0.2:ForwardRef:ForwardedInput',
                         name: 'ForwardedInput'
                     },
-                    { children: [], id: 'fixture:0.0.3', name: 'LazyPanel' },
-                    { children: [], id: 'fixture:0.0.4', name: 'section' }
+                    {
+                        children: [],
+                        id: 'fixture:0.0.3:Lazy:LazyPanel',
+                        name: 'LazyPanel'
+                    },
+                    {
+                        children: [],
+                        id: 'fixture:0.0.4:HostComponent:section',
+                        name: 'section'
+                    }
                 ],
-                id: 'fixture:0',
+                id: 'fixture:0:FunctionComponent:key~3Dapp-key:App',
                 name: 'App'
             }
         ]);
@@ -102,6 +119,44 @@ describe('FiberWalker', () => {
         expect(getFiberDisplayName(lazyFiber)).toBe('LazyWidget');
         expect(getFiberDisplayName(classFiber)).toBe('ClassWidget');
         expect(getFiberDisplayName(anonymousFiber)).toBe('Anonymous');
+    });
+
+    it('keeps function component ids stable across alternate fiber swaps', () => {
+        function Counter() {}
+
+        const current = createFiberFixture({
+            tag: ReactFiberTag.FunctionComponent,
+            type: Counter
+        });
+        const workInProgress = createFiberFixture({
+            tag: ReactFiberTag.FunctionComponent,
+            type: Counter
+        });
+
+        current.alternate = workInProgress;
+        workInProgress.alternate = current;
+
+        expect(createFiberComponentId('root', [0, 1], current)).toBe(
+            createFiberComponentId('root', [0, 1], workInProgress)
+        );
+    });
+
+    it('does not reuse ids for different component types at the same tree position', () => {
+        function FirstComponent() {}
+        function SecondComponent() {}
+
+        const first = createFiberFixture({
+            tag: ReactFiberTag.FunctionComponent,
+            type: FirstComponent
+        });
+        const second = createFiberFixture({
+            tag: ReactFiberTag.FunctionComponent,
+            type: SecondComponent
+        });
+
+        expect(createFiberComponentId('root', [0], first)).not.toBe(
+            createFiberComponentId('root', [0], second)
+        );
     });
 
     it('attaches existing context and diagnostic metadata to surfaced nodes', () => {
