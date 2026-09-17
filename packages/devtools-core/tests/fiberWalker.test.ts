@@ -121,6 +121,26 @@ describe('FiberWalker', () => {
         expect(getFiberDisplayName(anonymousFiber)).toBe('Anonymous');
     });
 
+    it('uses resolved wrapper display names in walked component nodes', () => {
+        const tree = createKnownTreeFixture();
+        const [app] = createFiberWalker().getComponentTree(tree.root, {
+            rootId: 'fixture'
+        });
+
+        expect(app.children[1]).toMatchObject({
+            fiberTag: 'Memo',
+            name: 'MemoPanel'
+        });
+        expect(app.children[2]).toMatchObject({
+            fiberTag: 'ForwardRef',
+            name: 'ForwardedInput'
+        });
+        expect(app.children[3]).toMatchObject({
+            fiberTag: 'Lazy',
+            name: 'LazyPanel'
+        });
+    });
+
     it('keeps function component ids stable across alternate fiber swaps', () => {
         function Counter() {}
 
@@ -227,6 +247,133 @@ describe('FiberWalker', () => {
         expect(createFiberComponentId('root', [0], current)).toBe(
             createFiberComponentId('root', [0], workInProgress)
         );
+    });
+
+    it('walks Suspense pending fallback and resolved lazy content', () => {
+        function LoadingFallback() {}
+        function LazyContent() {}
+
+        const pendingRoot = createFiberFixture({ tag: ReactFiberTag.HostRoot });
+        const pendingSuspense = createFiberFixture({
+            memoizedState: {
+                retryLane: 1,
+                treeContext: {}
+            },
+            returnFiber: pendingRoot,
+            tag: ReactFiberTag.SuspenseComponent
+        });
+        const fallback = createFiberFixture({
+            returnFiber: pendingSuspense,
+            tag: ReactFiberTag.FunctionComponent,
+            type: LoadingFallback
+        });
+
+        pendingRoot.child = pendingSuspense;
+        pendingSuspense.child = fallback;
+
+        const [pendingNode] = createFiberWalker().getComponentTree(
+            pendingRoot,
+            { rootId: 'suspense-root' }
+        );
+
+        expect(pendingNode).toMatchObject({
+            diagnostics: [
+                {
+                    displayName: 'Suspense',
+                    kind: 'suspense',
+                    status: 'pending'
+                }
+            ],
+            fiberTag: 'Suspense',
+            name: 'Suspense',
+            tags: ['Suspense', 'boundary', 'suspense'],
+            type: 'suspense'
+        });
+        expect(pendingNode.children).toHaveLength(1);
+        expect(pendingNode.children[0]).toMatchObject({
+            name: 'LoadingFallback',
+            type: 'function'
+        });
+
+        const resolvedRoot = createFiberFixture({
+            tag: ReactFiberTag.HostRoot
+        });
+        const resolvedSuspense = createFiberFixture({
+            returnFiber: resolvedRoot,
+            tag: ReactFiberTag.SuspenseComponent
+        });
+        const lazyContent = createFiberFixture({
+            returnFiber: resolvedSuspense,
+            tag: ReactFiberTag.LazyComponent,
+            type: {
+                _payload: {
+                    _result: LazyContent,
+                    _status: 1
+                }
+            }
+        });
+
+        resolvedRoot.child = resolvedSuspense;
+        resolvedSuspense.child = lazyContent;
+
+        const [resolvedNode] = createFiberWalker().getComponentTree(
+            resolvedRoot,
+            { rootId: 'suspense-root' }
+        );
+
+        expect(resolvedNode).toMatchObject({
+            diagnostics: [
+                {
+                    displayName: 'Suspense',
+                    kind: 'suspense',
+                    status: 'resolved'
+                }
+            ],
+            fiberTag: 'Suspense',
+            name: 'Suspense',
+            type: 'suspense'
+        });
+        expect(resolvedNode.children).toHaveLength(1);
+        expect(resolvedNode.children[0]).toMatchObject({
+            fiberTag: 'Lazy',
+            name: 'LazyContent'
+        });
+    });
+
+    it('surfaces Offscreen boundaries while walking into their children', () => {
+        function HiddenPanel() {}
+
+        const hostRoot = createFiberFixture({ tag: ReactFiberTag.HostRoot });
+        const offscreen = createFiberFixture({
+            memoizedState: { baseLanes: 0 },
+            returnFiber: hostRoot,
+            tag: ReactFiberTag.OffscreenComponent
+        });
+        const hiddenPanel = createFiberFixture({
+            returnFiber: offscreen,
+            tag: ReactFiberTag.FunctionComponent,
+            type: HiddenPanel
+        });
+
+        hostRoot.child = offscreen;
+        offscreen.child = hiddenPanel;
+
+        const [offscreenNode] = createFiberWalker().getComponentTree(hostRoot, {
+            rootId: 'offscreen-root'
+        });
+
+        expect(offscreenNode).toMatchObject({
+            fiberTag: 'Offscreen',
+            hasChildren: true,
+            name: 'Offscreen',
+            tags: ['Offscreen', 'boundary', 'offscreen'],
+            type: 'offscreen'
+        });
+        expect(offscreenNode.children).toHaveLength(1);
+        expect(offscreenNode.children[0]).toMatchObject({
+            name: 'HiddenPanel',
+            type: 'function'
+        });
     });
 
     it('attaches existing context and diagnostic metadata to surfaced nodes', () => {
