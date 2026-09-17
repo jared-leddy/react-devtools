@@ -1,8 +1,12 @@
 import {
+    findNearestInspectableOwnerFiber,
+    findReactRootBoundaryFiber,
     getReactFiberTagName,
     getReactMajorVersion,
+    getReactFiberFromHostInstance,
     isInspectableReactFiberTag,
     ReactFiberTag,
+    resolveReactFiberFromHostInstance,
     validateReactFiber,
     validateReactFiberRoot,
     validateReactRenderer
@@ -197,6 +201,179 @@ describe('React Fiber model guards', () => {
         expect(getReactMajorVersion(undefined)).toBeNull();
         expect(getReactMajorVersion('experimental')).toBeNull();
     });
+
+    it('discovers React Fiber keys on host nodes without hardcoding suffixes', () => {
+        const hostFiber = createFiberFixture({
+            tag: ReactFiberTag.HostComponent,
+            type: 'button'
+        });
+        const hostNode = createHostNodeFixture();
+
+        attachReactFiber(
+            hostNode,
+            '__reactFiber$random-build-suffix',
+            hostFiber
+        );
+
+        expect(getReactFiberFromHostInstance(hostNode)).toEqual({
+            fiber: hostFiber,
+            internalKey: '__reactFiber$random-build-suffix'
+        });
+    });
+
+    it('falls back from text nodes to the closest host parent Fiber', () => {
+        const component = createFiberFixture({
+            tag: ReactFiberTag.FunctionComponent,
+            type: function Label() {
+                return null;
+            }
+        });
+        const hostFiber = createFiberFixture({
+            returnFiber: component,
+            tag: ReactFiberTag.HostComponent,
+            type: 'span'
+        });
+        const parentNode = createHostNodeFixture();
+        const textNode = createHostNodeFixture({ nodeType: 3, parentNode });
+
+        attachReactFiber(parentNode, '__reactFiber$text-parent', hostFiber);
+
+        expect(
+            resolveReactFiberFromHostInstance(textNode, {
+                rendererId: 1,
+                rootId: 'root:text',
+                targetId: 'top',
+                timestamp: 400
+            })
+        ).toMatchObject({
+            diagnostics: [],
+            fiber: hostFiber,
+            inspectedFiber: component,
+            internalKey: '__reactFiber$text-parent'
+        });
+    });
+
+    it('walks from nested host fibers to the nearest composite owner', () => {
+        const app = createFiberFixture({
+            tag: ReactFiberTag.FunctionComponent,
+            type: function App() {
+                return null;
+            }
+        });
+        const fragment = createFiberFixture({
+            returnFiber: app,
+            tag: ReactFiberTag.Fragment
+        });
+        const button = createFiberFixture({
+            returnFiber: fragment,
+            tag: ReactFiberTag.HostComponent,
+            type: 'button'
+        });
+        const hostNode = createHostNodeFixture();
+
+        attachReactFiber(hostNode, '__reactInternalInstance$nested', button);
+
+        const resolved = resolveReactFiberFromHostInstance(hostNode, {
+            rendererId: 1,
+            rootId: 'root:nested',
+            targetId: 'top',
+            timestamp: 401
+        });
+
+        expect(resolved).toMatchObject({
+            diagnostics: [],
+            fiber: button,
+            inspectedFiber: app,
+            internalKey: '__reactInternalInstance$nested'
+        });
+        expect(findNearestInspectableOwnerFiber(button)).toBe(app);
+    });
+
+    it('keeps portal roots distinct while resolving portal content owners', () => {
+        const root = createFiberFixture({ tag: ReactFiberTag.HostRoot });
+        const portal = createFiberFixture({
+            returnFiber: root,
+            tag: ReactFiberTag.HostPortal
+        });
+        const modal = createFiberFixture({
+            returnFiber: portal,
+            tag: ReactFiberTag.FunctionComponent,
+            type: function Modal() {
+                return null;
+            }
+        });
+        const host = createFiberFixture({
+            returnFiber: modal,
+            tag: ReactFiberTag.HostComponent,
+            type: 'div'
+        });
+        const hostNode = createHostNodeFixture();
+
+        attachReactFiber(hostNode, '__reactFiber$portal', host);
+
+        expect(
+            resolveReactFiberFromHostInstance(hostNode, {
+                rendererId: 1,
+                rootId: 'root:portal',
+                targetId: 'top',
+                timestamp: 402
+            })
+        ).toMatchObject({
+            diagnostics: [],
+            fiber: host,
+            inspectedFiber: modal,
+            rootFiber: portal
+        });
+        expect(findReactRootBoundaryFiber(host)).toBe(portal);
+    });
+
+    it('walks across Suspense and Offscreen boundaries to find composite owners', () => {
+        const app = createFiberFixture({
+            tag: ReactFiberTag.FunctionComponent,
+            type: function App() {
+                return null;
+            }
+        });
+        const suspense = createFiberFixture({
+            returnFiber: app,
+            tag: ReactFiberTag.SuspenseComponent
+        });
+        const offscreen = createFiberFixture({
+            returnFiber: suspense,
+            tag: ReactFiberTag.OffscreenComponent
+        });
+        const host = createFiberFixture({
+            returnFiber: offscreen,
+            tag: ReactFiberTag.HostComponent,
+            type: 'section'
+        });
+
+        expect(findNearestInspectableOwnerFiber(host)).toBe(app);
+    });
+
+    it('reports a typed diagnostic when a host node has no React Fiber key', () => {
+        expect(
+            resolveReactFiberFromHostInstance(createHostNodeFixture(), {
+                rendererId: 1,
+                targetId: 'top',
+                timestamp: 403
+            })
+        ).toEqual({
+            diagnostics: [
+                expect.objectContaining({
+                    code: 'fiber-host-node-unavailable',
+                    severity: 'warning',
+                    targetId: 'top',
+                    timestamp: 403
+                })
+            ],
+            fiber: null,
+            hostFiber: null,
+            inspectedFiber: null,
+            internalKey: null,
+            rootFiber: null
+        });
+    });
 });
 
 function createFiberRootFixture(version: '18' | '19'): ReactFiberRoot {
@@ -267,5 +444,29 @@ function createFiberFixture(options: {
         treeBaseDuration: 0,
         type: options.type ?? null,
         updateQueue: null
+    };
+}
+
+function attachReactFiber(
+    hostNode: Record<PropertyKey, unknown>,
+    key: string,
+    fiber: ReactFiber
+): void {
+    Object.defineProperty(hostNode, key, {
+        configurable: true,
+        enumerable: false,
+        value: fiber
+    });
+}
+
+function createHostNodeFixture(
+    options: {
+        nodeType?: number;
+        parentNode?: null | Record<PropertyKey, unknown>;
+    } = {}
+): Record<PropertyKey, unknown> {
+    return {
+        nodeType: options.nodeType ?? 1,
+        parentNode: options.parentNode ?? null
     };
 }

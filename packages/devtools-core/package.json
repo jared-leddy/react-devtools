@@ -1,6 +1,6 @@
 {
     "name": "@devtools/core",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "private": false,
     "license": "UNLICENSED",
     "description": "Runtime state and RPC facade for React DevTools clients and servers.",
