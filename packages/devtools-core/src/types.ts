@@ -100,9 +100,12 @@ export interface DetectionDiagnosticRecord {
     code:
         | 'auto-paused'
         | 'existing-hook-incompatible'
+        | 'fiber-field-missing'
         | 'fiber-root-unavailable'
+        | 'fiber-tag-unknown'
         | 'refresh-throttled'
         | 'react-internals-unavailable'
+        | 'renderer-version-unsupported'
         | 'renderer-unsupported'
         | 'tree-depth-truncated'
         | 'tree-node-limit-truncated'
