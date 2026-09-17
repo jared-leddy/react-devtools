@@ -13,6 +13,13 @@ describe('devtools-core state store', () => {
         store.setRoots([{ id: 'root:1', label: 'Root', rendererId: 1 }]);
         store.setComponents([
             {
+                contexts: [
+                    {
+                        displayName: 'ThemeContext',
+                        kind: 'provider',
+                        value: 'dark'
+                    }
+                ],
                 displayName: 'App',
                 id: 'fiber:1',
                 rootId: 'root:1',
@@ -35,6 +42,18 @@ describe('devtools-core state store', () => {
 
         expect(store.getState()).toMatchObject({
             commands: [{ id: 'open', label: 'Open' }],
+            components: [
+                {
+                    contexts: [
+                        {
+                            displayName: 'ThemeContext',
+                            kind: 'provider',
+                            value: 'dark'
+                        }
+                    ],
+                    id: 'fiber:1'
+                }
+            ],
             customInspectors: [{ id: 'inspector', label: 'Inspector' }],
             customTabs: [{ name: 'routes', title: 'Routes' }],
             selectedComponentId: 'fiber:1',
@@ -77,6 +96,13 @@ describe('devtools-core state store', () => {
         store.setAssets([{ id: 'logo', path: '/logo.svg', type: 'image' }]);
         store.setComponentState({
             componentId: 'component:1',
+            contexts: [
+                {
+                    displayName: 'LocaleContext',
+                    kind: 'dependency',
+                    value: 'en-US'
+                }
+            ],
             rootId: 'root:1',
             sections: [
                 { fields: [{ name: 'name', value: 'App' }], name: 'state' }
@@ -94,6 +120,13 @@ describe('devtools-core state store', () => {
             componentState: {
                 'component:1': {
                     componentId: 'component:1',
+                    contexts: [
+                        {
+                            displayName: 'LocaleContext',
+                            kind: 'dependency',
+                            value: 'en-US'
+                        }
+                    ],
                     rootId: 'root:1',
                     sections: [
                         {

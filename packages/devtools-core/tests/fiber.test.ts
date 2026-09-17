@@ -1,10 +1,14 @@
 import {
     findNearestInspectableOwnerFiber,
     findReactRootBoundaryFiber,
+    getReactContextDisplayName,
     getReactFiberTagName,
     getReactMajorVersion,
     getReactFiberFromHostInstance,
+    inspectReactFiberContexts,
     isInspectableReactFiberTag,
+    isReactContextConsumerFiber,
+    isReactContextProviderFiber,
     ReactFiberTag,
     resolveReactFiberFromHostInstance,
     validateReactFiber,
@@ -200,6 +204,116 @@ describe('React Fiber model guards', () => {
         expect(getReactMajorVersion('19.0.0-rc-123')).toBe(19);
         expect(getReactMajorVersion(undefined)).toBeNull();
         expect(getReactMajorVersion('experimental')).toBeNull();
+    });
+
+    it('identifies context provider fibers and exposes their values', () => {
+        const themeContext = {
+            _currentValue: 'fallback',
+            displayName: 'ThemeContext'
+        };
+        const provider = createFiberFixture({
+            memoizedProps: { value: 'dark' },
+            tag: ReactFiberTag.ContextProvider,
+            type: {
+                _context: themeContext
+            }
+        });
+
+        expect(isReactContextProviderFiber(provider)).toBe(true);
+        expect(inspectReactFiberContexts(provider)).toEqual([
+            {
+                displayName: 'ThemeContext',
+                kind: 'provider',
+                value: 'dark'
+            }
+        ]);
+    });
+
+    it('supports React 19 renderable context provider fibers', () => {
+        const localeContext = {
+            _currentValue: 'en-US',
+            Consumer: {},
+            Provider: {},
+            displayName: 'LocaleContext'
+        };
+        const provider = createFiberFixture({
+            pendingProps: { value: 'fr-CA' },
+            tag: ReactFiberTag.ContextProvider,
+            type: localeContext
+        });
+
+        expect(inspectReactFiberContexts(provider)).toEqual([
+            {
+                displayName: 'LocaleContext',
+                kind: 'provider',
+                value: 'fr-CA'
+            }
+        ]);
+    });
+
+    it('identifies context consumers and dependency records', () => {
+        const themeContext = {
+            _currentValue: 'quiet',
+            displayName: 'ThemeContext'
+        };
+        const localeContext = {
+            _currentValue: 'en-US',
+            displayName: 'LocaleContext'
+        };
+        const consumer = createFiberFixture({
+            dependencies: {
+                firstContext: {
+                    context: localeContext,
+                    memoizedValue: 'de-DE',
+                    observedBits: 7
+                }
+            },
+            tag: ReactFiberTag.ContextConsumer,
+            type: {
+                _context: themeContext
+            }
+        });
+
+        expect(isReactContextConsumerFiber(consumer)).toBe(true);
+        expect(inspectReactFiberContexts(consumer)).toEqual([
+            {
+                displayName: 'ThemeContext',
+                kind: 'consumer'
+            },
+            {
+                displayName: 'LocaleContext',
+                kind: 'dependency',
+                observedBits: 7,
+                value: 'de-DE'
+            }
+        ]);
+    });
+
+    it('falls back for anonymous contexts and malformed dependency chains', () => {
+        const cyclicDependency: Record<string, unknown> = {
+            context: {},
+            memoizedValue: 'anonymous'
+        };
+        cyclicDependency.next = cyclicDependency;
+
+        const provider = createFiberFixture({
+            dependencies: { firstContext: cyclicDependency },
+            tag: ReactFiberTag.ContextProvider,
+            type: { _context: {} }
+        });
+
+        expect(getReactContextDisplayName({ displayName: '' })).toBe('Context');
+        expect(inspectReactFiberContexts(provider)).toEqual([
+            {
+                displayName: 'Context',
+                kind: 'provider'
+            },
+            {
+                displayName: 'Context',
+                kind: 'dependency',
+                value: 'anonymous'
+            }
+        ]);
     });
 
     it('discovers React Fiber keys on host nodes without hardcoding suffixes', () => {
@@ -412,7 +526,10 @@ function createFiberRootFixture(version: '18' | '19'): ReactFiberRoot {
 }
 
 function createFiberFixture(options: {
+    dependencies?: ReactFiber['dependencies'];
+    memoizedProps?: unknown;
     memoizedState?: unknown;
+    pendingProps?: unknown;
     returnFiber?: null | ReactFiber;
     tag: ReactFiberTag;
     type?: unknown;
@@ -424,16 +541,16 @@ function createFiberFixture(options: {
         child: null,
         childLanes: 0,
         deletions: null,
-        dependencies: null,
+        dependencies: options.dependencies ?? null,
         elementType: options.type ?? null,
         flags: 0,
         index: 0,
         key: null,
         lanes: 0,
-        memoizedProps: null,
+        memoizedProps: options.memoizedProps ?? null,
         memoizedState: options.memoizedState ?? null,
         mode: 1,
-        pendingProps: null,
+        pendingProps: options.pendingProps ?? null,
         ref: null,
         return: options.returnFiber ?? null,
         selfBaseDuration: 0,
