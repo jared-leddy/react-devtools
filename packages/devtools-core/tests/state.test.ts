@@ -208,4 +208,140 @@ describe('devtools-core state store', () => {
             ]
         });
     });
+
+    it('enforces high-performance tree limits and reports partial results', () => {
+        const store = createDevToolsCoreStateStore();
+
+        store.setPerformanceSettings({
+            enabled: true,
+            maxNodeCount: 3,
+            maxTreeDepth: 2
+        });
+        store.setComponents([
+            {
+                children: [
+                    {
+                        children: [
+                            {
+                                displayName: 'TooDeep',
+                                id: 'fiber:too-deep',
+                                rootId: 'root:1'
+                            }
+                        ],
+                        displayName: 'Child',
+                        id: 'fiber:child',
+                        rootId: 'root:1'
+                    },
+                    {
+                        displayName: 'Sibling',
+                        id: 'fiber:sibling',
+                        rootId: 'root:1'
+                    },
+                    {
+                        displayName: 'Overflow',
+                        id: 'fiber:overflow',
+                        rootId: 'root:1'
+                    }
+                ],
+                displayName: 'App',
+                id: 'fiber:app',
+                rootId: 'root:1'
+            }
+        ]);
+
+        expect(store.getState().components).toEqual([
+            {
+                children: [
+                    {
+                        children: [],
+                        displayName: 'Child',
+                        id: 'fiber:child',
+                        rootId: 'root:1'
+                    },
+                    {
+                        displayName: 'Sibling',
+                        id: 'fiber:sibling',
+                        rootId: 'root:1'
+                    }
+                ],
+                displayName: 'App',
+                id: 'fiber:app',
+                rootId: 'root:1'
+            }
+        ]);
+        expect(store.getState().diagnostics).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: 'tree-depth-truncated',
+                    severity: 'warning'
+                }),
+                expect.objectContaining({
+                    code: 'tree-node-limit-truncated',
+                    severity: 'warning'
+                })
+            ])
+        );
+    });
+
+    it('throttles tree refreshes and auto-pauses expensive work in high-performance mode', () => {
+        const store = createDevToolsCoreStateStore();
+
+        store.setPerformanceSettings({
+            autoPauseCommitThreshold: 2,
+            autoPauseWindowMs: 100,
+            commitDebounceMs: 50,
+            enabled: true,
+            pauseExpensiveTreeRefreshes: true,
+            pausePluginSetup: true
+        });
+
+        expect(
+            store.recordTreeRefreshRequest({
+                reason: 'commit',
+                requestedAt: 100
+            })
+        ).toEqual({ allowed: true });
+
+        const throttled = store.recordTreeRefreshRequest({
+            reason: 'commit',
+            requestedAt: 125
+        });
+
+        store.recordFiberRootEvent({
+            id: 'root-event:1',
+            lifecycle: 'committed',
+            rendererId: 1,
+            rootId: 'root:1',
+            source: 'onCommitFiberRoot',
+            targetId: 'top',
+            timestamp: 140
+        });
+        store.recordFiberRootEvent({
+            id: 'root-event:2',
+            lifecycle: 'committed',
+            rendererId: 1,
+            rootId: 'root:1',
+            source: 'onCommitFiberRoot',
+            targetId: 'top',
+            timestamp: 150
+        });
+
+        expect(throttled).toMatchObject({
+            allowed: false,
+            diagnostic: { code: 'refresh-throttled' },
+            nextAllowedAt: 150
+        });
+        expect(store.getState().performance.flags).toMatchObject({
+            commitCountInWindow: 2,
+            pluginSetupPaused: true,
+            treeRefreshPaused: true,
+            windowStartedAt: 140
+        });
+        expect(store.getState().diagnostics).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ code: 'refresh-throttled' }),
+                expect.objectContaining({ code: 'auto-paused' })
+            ])
+        );
+    });
 });

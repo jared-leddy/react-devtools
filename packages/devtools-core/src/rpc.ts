@@ -32,6 +32,8 @@ import type {
     GraphRequest,
     GraphResponse,
     HighlightRequest,
+    PerformanceModeSettingsPatch,
+    PerformanceStateResponse,
     RendererRecord,
     RenderersResponse,
     RootRecord,
@@ -40,6 +42,8 @@ import type {
     RootsResponse,
     RoutesRequest,
     RoutesResponse,
+    TreeRefreshDecision,
+    TreeRefreshRequest,
     TransportStatus
 } from './types.js';
 import type {
@@ -68,6 +72,7 @@ export interface DevToolsCoreServerFunctions {
         request?: DetectionDiagnosticsRequest
     ) => DetectionDiagnosticsResponse;
     getGraph: (request?: GraphRequest) => GraphResponse;
+    getPerformanceState: () => PerformanceStateResponse;
     getRenderers: () => RenderersResponse;
     getRoutes: (request?: RoutesRequest) => RoutesResponse;
     getRoots: (request?: RootsRequest) => RootsResponse;
@@ -87,9 +92,11 @@ export interface DevToolsCoreServerFunctions {
     reportDetectionDiagnostic: (
         diagnostic: DetectionDiagnosticRecord
     ) => DevToolsCoreState;
+    requestTreeRefresh: (request: TreeRefreshRequest) => TreeRefreshDecision;
     removeCustomCommand: (commandId: string) => DevToolsCoreState;
     selectComponent: (componentId: null | string) => DevToolsCoreState;
     selectRoot: (rootId: null | string) => DevToolsCoreState;
+    setHighPerformanceMode: (enabled: boolean) => DevToolsCoreState;
     sendInspectorState: (
         request: CustomInspectorStateRequest
     ) => CustomInspectorStateResponse;
@@ -97,6 +104,9 @@ export interface DevToolsCoreServerFunctions {
         request: CustomInspectorTreeRequest
     ) => CustomInspectorTreeResponse;
     updateRenderers: (renderers: RendererRecord[]) => DevToolsCoreState;
+    updatePerformanceSettings: (
+        settings: PerformanceModeSettingsPatch
+    ) => DevToolsCoreState;
     updateRoots: (roots: RootRecord[]) => DevToolsCoreState;
     updateState: (patch: DevToolsCoreStatePatch) => DevToolsCoreState;
 }
@@ -200,6 +210,9 @@ export function createDevToolsCoreServerFunctions(
 
             return { diagnostics };
         },
+        getPerformanceState() {
+            return { performance: store.getState().performance };
+        },
         getRenderers() {
             return { renderers: store.getState().renderers };
         },
@@ -253,8 +266,14 @@ export function createDevToolsCoreServerFunctions(
         reportDetectionDiagnostic(diagnostic) {
             return store.reportDiagnostic(diagnostic);
         },
+        requestTreeRefresh(request) {
+            return store.recordTreeRefreshRequest(request);
+        },
         removeCustomCommand(commandId) {
             return store.removeCustomCommand(commandId);
+        },
+        setHighPerformanceMode(enabled) {
+            return store.setHighPerformanceMode(enabled);
         },
         selectComponent(componentId) {
             return store.selectComponent(componentId);
@@ -284,6 +303,9 @@ export function createDevToolsCoreServerFunctions(
         },
         updateRoots(roots) {
             return store.setRoots(roots);
+        },
+        updatePerformanceSettings(settings) {
+            return store.setPerformanceSettings(settings);
         },
         updateRenderers(renderers) {
             return store.setRenderers(renderers);
