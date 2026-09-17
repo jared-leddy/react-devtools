@@ -82,6 +82,21 @@ describe('devtools-core RPC facade', () => {
             severity: 'warning',
             targetId: 'top'
         });
+        await client.updatePerformanceSettings({
+            commitDebounceMs: 75,
+            maxNodeCount: 10,
+            maxTreeDepth: 4
+        });
+        await client.setHighPerformanceMode(true);
+        const firstRefresh = await client.requestTreeRefresh({
+            reason: 'commit',
+            requestedAt: 200
+        });
+        const throttledRefresh = await client.requestTreeRefresh({
+            reason: 'commit',
+            requestedAt: 225
+        });
+        const performance = await client.getPerformanceState();
         const assets = await client.getAssets({ type: 'image' });
         const graph = await client.getGraph();
         const routes = await client.getRoutes();
@@ -122,6 +137,24 @@ describe('devtools-core RPC facade', () => {
                 targetId: 'top'
             })
         ]);
+        expect(firstRefresh).toEqual({ allowed: true });
+        expect(throttledRefresh).toMatchObject({
+            allowed: false,
+            diagnostic: { code: 'refresh-throttled' },
+            nextAllowedAt: 275
+        });
+        expect(performance.performance).toMatchObject({
+            flags: {
+                lastTreeRefreshAt: 200,
+                treeRefreshPaused: true
+            },
+            settings: {
+                commitDebounceMs: 75,
+                enabled: true,
+                maxNodeCount: 10,
+                maxTreeDepth: 4
+            }
+        });
         expect(assets.assets).toEqual([
             { id: 'asset:1', path: '/logo.svg', type: 'image' }
         ]);

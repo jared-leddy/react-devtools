@@ -36,6 +36,15 @@ describe('devtools-core public exports', () => {
         expect(
             rootEntry.DevToolsCoreRpcEvent.DETECTION_DIAGNOSTIC_REPORTED
         ).toBe('detection:diagnostic-reported');
+        expect(rootEntry.DevToolsCoreRpcEvent.PERFORMANCE_MODE_TOGGLED).toBe(
+            'performance:mode-toggled'
+        );
+        expect(
+            rootEntry.DevToolsCoreRpcEvent.PERFORMANCE_SETTINGS_UPDATED
+        ).toBe('performance:settings-updated');
+        expect(
+            rootEntry.DevToolsCoreRpcEvent.PERFORMANCE_REFRESH_THROTTLED
+        ).toBe('performance:refresh-throttled');
         expect(rootEntry.createDevToolsCoreStateStore).toEqual(
             expect.any(Function)
         );

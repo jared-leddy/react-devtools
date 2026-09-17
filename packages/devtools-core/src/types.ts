@@ -15,6 +15,9 @@ export enum DevToolsCoreRpcEvent {
     RENDERERS_UPDATED = 'renderers:updated',
     ROOT_EVENT_RECORDED = 'roots:event-recorded',
     DETECTION_DIAGNOSTIC_REPORTED = 'detection:diagnostic-reported',
+    PERFORMANCE_MODE_TOGGLED = 'performance:mode-toggled',
+    PERFORMANCE_SETTINGS_UPDATED = 'performance:settings-updated',
+    PERFORMANCE_REFRESH_THROTTLED = 'performance:refresh-throttled',
     COMPONENTS_UPDATED = 'components:updated',
     COMPONENT_STATE_REQUESTED = 'component-state:requested',
     HIGHLIGHT_REQUESTED = 'highlight:requested',
@@ -95,10 +98,14 @@ export interface FiberRootEventRecord {
 
 export interface DetectionDiagnosticRecord {
     code:
+        | 'auto-paused'
         | 'existing-hook-incompatible'
         | 'fiber-root-unavailable'
+        | 'refresh-throttled'
         | 'react-internals-unavailable'
         | 'renderer-unsupported'
+        | 'tree-depth-truncated'
+        | 'tree-node-limit-truncated'
         | 'unknown-detector-error';
     details?: Record<string, unknown>;
     id: string;
@@ -108,6 +115,42 @@ export interface DetectionDiagnosticRecord {
     severity: DetectionDiagnosticSeverity;
     targetId?: string;
     timestamp: number;
+}
+
+export interface PerformanceModeSettings {
+    autoPauseCommitThreshold: number;
+    autoPauseWindowMs: number;
+    commitDebounceMs: number;
+    enabled: boolean;
+    maxNodeCount: number;
+    maxTreeDepth: number;
+    pauseExpensiveTreeRefreshes: boolean;
+    pausePluginSetup: boolean;
+}
+
+export interface PerformanceRuntimeFlags {
+    commitCountInWindow: number;
+    lastCommitAt: null | number;
+    lastTreeRefreshAt: null | number;
+    pluginSetupPaused: boolean;
+    treeRefreshPaused: boolean;
+    windowStartedAt: null | number;
+}
+
+export interface PerformanceModeState {
+    flags: PerformanceRuntimeFlags;
+    settings: PerformanceModeSettings;
+}
+
+export interface TreeRefreshRequest {
+    reason: 'commit' | 'manual' | 'selection' | string;
+    requestedAt: number;
+}
+
+export interface TreeRefreshDecision {
+    allowed: boolean;
+    diagnostic?: DetectionDiagnosticRecord;
+    nextAllowedAt?: number;
 }
 
 export interface ComponentNode {
@@ -186,6 +229,7 @@ export interface DevToolsCoreState {
     diagnostics: DetectionDiagnosticRecord[];
     graph: ModuleGraphNode[];
     highlightedComponentId: null | string;
+    performance: PerformanceModeState;
     renderers: RendererRecord[];
     rootEvents: FiberRootEventRecord[];
     roots: RootRecord[];
@@ -199,6 +243,7 @@ export interface DevToolsCoreState {
 }
 
 export type DevToolsCoreStatePatch = Partial<DevToolsCoreState>;
+export type PerformanceModeSettingsPatch = Partial<PerformanceModeSettings>;
 
 export interface DevToolsCoreHandshakeRequest {
     clientId: string;
@@ -234,6 +279,10 @@ export interface DetectionDiagnosticsRequest {
 
 export interface DetectionDiagnosticsResponse {
     diagnostics: DetectionDiagnosticRecord[];
+}
+
+export interface PerformanceStateResponse {
+    performance: PerformanceModeState;
 }
 
 export interface ComponentsRequest {
