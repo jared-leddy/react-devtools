@@ -1,10 +1,17 @@
 import { resolve } from 'node:path';
 import sirv from 'sirv';
+import type { SourceMapInput } from 'rollup';
 import type { Plugin, ViteDevServer } from 'vite';
 import {
     createViteTransportChannel,
     type ViteTransportChannel
 } from './viteTransport.js';
+import {
+    shouldTransformSourceMetadata,
+    transformReactSourceMetadata,
+    type SourceMetadataOptions
+} from './sourceMetadata.js';
+export * from './sourceMetadata.js';
 
 export interface ReactDevtoolsVitePluginOptions {
     /**
@@ -37,12 +44,21 @@ export interface ReactDevtoolsVitePluginOptions {
      * Receives the namespaced Vite websocket transport channel.
      */
     onViteTransport?: (channel: ViteTransportChannel) => void;
+    /**
+     * Enables dev-only JSX source metadata annotations. Set false to opt out.
+     */
+    sourceMetadata?: false | SourceMetadataOptions;
 }
 
 export const DEFAULT_CLIENT_BASE_PATH = '/__devtools__/';
 export const DEFAULT_OVERLAY_BASE_PATH = '/@react-devtools/overlay/';
 export const DEFAULT_OVERLAY_SCRIPT_PATH =
     '/@react-devtools/overlay/devtools-overlay.js';
+
+interface CodeTransformResult {
+    code: string;
+    map?: null | SourceMapInput;
+}
 
 export function getDefaultClientDir() {
     return resolve(
@@ -145,6 +161,24 @@ function createOverlayImport(
     };
 }
 
+function composeTransformResults(
+    first: CodeTransformResult | undefined,
+    second: CodeTransformResult | undefined
+): CodeTransformResult | undefined {
+    if (!first) {
+        return second;
+    }
+
+    if (!second) {
+        return first;
+    }
+
+    return {
+        code: second.code,
+        map: second.map ?? first.map
+    };
+}
+
 export function reactDevtools(
     options: ReactDevtoolsVitePluginOptions = {}
 ): Plugin {
@@ -162,7 +196,20 @@ export function reactDevtools(
                 return undefined;
             }
 
-            return createOverlayImport(options, code, id);
+            const overlayTransform = createOverlayImport(options, code, id);
+            const sourceCode = overlayTransform?.code ?? code;
+            const sourceTransform = shouldTransformSourceMetadata(
+                id,
+                options.sourceMetadata
+            )
+                ? transformReactSourceMetadata(
+                      sourceCode,
+                      id,
+                      options.sourceMetadata || undefined
+                  )
+                : undefined;
+
+            return composeTransformResults(overlayTransform, sourceTransform);
         },
         transformIndexHtml(html) {
             if (options.appendTo) {
