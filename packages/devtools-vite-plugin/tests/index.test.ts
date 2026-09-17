@@ -9,7 +9,9 @@ import {
     getDefaultOverlayDir,
     injectOverlayScript,
     normalizeServePath,
-    reactDevtools
+    reactDevtools,
+    shouldTransformSourceMetadata,
+    transformReactSourceMetadata
 } from '../src';
 import {
     VITE_TRANSPORT_EVENT,
@@ -241,6 +243,94 @@ describe('reactDevtools', () => {
         expect(transform('console.log("app");', '/project/src/other.tsx')).toBe(
             undefined
         );
+    });
+
+    it('annotates JSX modules with source metadata in development', () => {
+        const plugin = reactDevtools();
+        const transform = plugin.transform as (
+            code: string,
+            id: string
+        ) => {
+            code: string;
+            map: {
+                sources: string[];
+                sourcesContent: string[];
+                version: number;
+            };
+        };
+        const code = [
+            'export function App() {',
+            '    return <main><Button label="Save" /></main>;',
+            '}'
+        ].join('\n');
+        const result = transform(code, '/project/src/App.tsx');
+
+        expect(result.code).toContain(
+            '<main data-react-devtools-source="/project/src/App.tsx:2:13">'
+        );
+        expect(result.code).toContain(
+            '<Button label="Save" data-react-devtools-source="/project/src/App.tsx:2:19" />'
+        );
+        expect(result.map.version).toBe(3);
+        expect(result.map.sources).toEqual(['/project/src/App.tsx']);
+        expect(result.map.sourcesContent).toEqual([code]);
+    });
+
+    it('composes source metadata with appendTo overlay imports', () => {
+        const plugin = reactDevtools({ appendTo: /src\/main\.tsx$/ });
+        const transform = plugin.transform as (
+            code: string,
+            id: string
+        ) => {
+            code: string;
+        };
+        const result = transform('<App />', '/project/src/main.tsx');
+
+        expect(result.code).toBe(
+            `import '${DEFAULT_OVERLAY_SCRIPT_PATH}';\n<App data-react-devtools-source="/project/src/main.tsx:2:2" />`
+        );
+    });
+
+    it('supports source metadata include/exclude filters and opt-out', () => {
+        expect(
+            shouldTransformSourceMetadata('/project/src/App.tsx', false)
+        ).toBe(false);
+        expect(
+            shouldTransformSourceMetadata('/project/src/App.tsx', {
+                exclude: 'src/App'
+            })
+        ).toBe(false);
+        expect(
+            shouldTransformSourceMetadata('/project/src/App.tsx', {
+                include: /src\/App\.tsx$/
+            })
+        ).toBe(true);
+        expect(shouldTransformSourceMetadata('/project/src/App.ts', {})).toBe(
+            false
+        );
+    });
+
+    it('leaves production-like files and existing annotations unchanged', () => {
+        expect(
+            transformReactSourceMetadata(
+                '<App data-react-devtools-source="manual" />',
+                '/project/src/App.tsx'
+            )
+        ).toBe(undefined);
+        expect(
+            transformReactSourceMetadata(
+                'const text = "<App />";\n// <Ignored />',
+                '/project/src/App.tsx'
+            )
+        ).toBe(undefined);
+
+        const plugin = reactDevtools({ sourceMetadata: false });
+        const transform = plugin.transform as (
+            code: string,
+            id: string
+        ) => unknown;
+
+        expect(transform('<App />', '/project/src/App.tsx')).toBe(undefined);
     });
 
     it('skips HTML injection when appendTo is configured', () => {

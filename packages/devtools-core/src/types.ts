@@ -157,12 +157,19 @@ export interface TreeRefreshDecision {
     nextAllowedAt?: number;
 }
 
+export interface ComponentSourceLocation {
+    columnNumber: number;
+    fileName: string;
+    lineNumber: number;
+}
+
 export interface ComponentNode {
     children?: ComponentNode[];
     displayName: string;
     id: string;
     key?: null | string;
     rootId: string;
+    source?: ComponentSourceLocation;
     type?: string;
 }
 
@@ -179,6 +186,7 @@ export interface ComponentStateResponse {
     componentId: string;
     rootId: string;
     sections: ComponentStateSection[];
+    source?: ComponentSourceLocation;
 }
 
 export interface HighlightRequest {
