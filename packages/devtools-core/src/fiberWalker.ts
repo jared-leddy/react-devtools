@@ -133,7 +133,7 @@ function walkFiber(
             displayName: name,
             fiberTag: getReactFiberTagName(fiber.tag),
             hasChildren: children.length > 0,
-            id: createComponentId(context.rootId, context.path),
+            id: createComponentId(context.rootId, context.path, fiber),
             key: fiber.key,
             name,
             rootId: context.rootId,
@@ -233,8 +233,32 @@ function getComponentTypeLabel(fiber: ReactFiber): string {
     }
 }
 
-function createComponentId(rootId: string, path: number[]): string {
-    return `${rootId}:${path.length > 0 ? path.join('.') : '0'}`;
+export function createFiberComponentId(
+    rootId: string,
+    path: number[],
+    fiber: ReactFiber
+): string {
+    return createComponentId(rootId, path, fiber);
+}
+
+function createComponentId(
+    rootId: string,
+    path: number[],
+    fiber: ReactFiber
+): string {
+    const pathKey = path.length > 0 ? path.join('.') : '0';
+    return `${sanitizeIdPart(rootId)}:${pathKey}:${getFiberTypeSignature(fiber)}`;
+}
+
+function getFiberTypeSignature(fiber: ReactFiber): string {
+    return [
+        getReactFiberTagName(fiber.tag),
+        fiber.key ? `key=${fiber.key}` : null,
+        getFiberDisplayName(fiber)
+    ]
+        .filter((part): part is string => part !== null)
+        .map(sanitizeIdPart)
+        .join(':');
 }
 
 function getRootFiber(root: ReactFiber | ReactFiberRoot): null | ReactFiber {
@@ -318,6 +342,10 @@ function getContextRecord(value: unknown): null | Record<PropertyKey, unknown> {
             '_currentValue2' in record)
         ? record
         : null;
+}
+
+function sanitizeIdPart(value: string): string {
+    return encodeURIComponent(value.trim()).replaceAll('%', '~');
 }
 
 function getRecord(value: unknown): null | Record<PropertyKey, unknown> {
