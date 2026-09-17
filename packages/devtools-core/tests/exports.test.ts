@@ -27,6 +27,15 @@ describe('devtools-core public exports', () => {
 
     it('exposes the combined root entry point', () => {
         expect(rootEntry.DevToolsCoreRpcEvent.HANDSHAKE).toBe('core:handshake');
+        expect(rootEntry.DevToolsCoreRpcEvent.RENDERERS_UPDATED).toBe(
+            'renderers:updated'
+        );
+        expect(rootEntry.DevToolsCoreRpcEvent.ROOT_EVENT_RECORDED).toBe(
+            'roots:event-recorded'
+        );
+        expect(
+            rootEntry.DevToolsCoreRpcEvent.DETECTION_DIAGNOSTIC_REPORTED
+        ).toBe('detection:diagnostic-reported');
         expect(rootEntry.createDevToolsCoreStateStore).toEqual(
             expect.any(Function)
         );
