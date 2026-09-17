@@ -11,8 +11,15 @@ import {
 } from 'react';
 
 type ThemeTone = 'quiet' | 'active';
+type LocaleCode = 'en-US' | 'fr-CA';
 
 const ThemeContext = createContext<ThemeTone>('quiet');
+ThemeContext.displayName = 'ThemeContext';
+
+const LocaleContext = createContext<LocaleCode>('en-US');
+LocaleContext.displayName = 'LocaleContext';
+
+const AnonymousContext = createContext('anonymous-default');
 
 function reducer(state: number, action: 'increment' | 'decrement' | 'reset') {
     switch (action) {
@@ -88,29 +95,45 @@ export function ReducerCounterDemo() {
 
 function ContextConsumerDemo() {
     const tone = useContext(ThemeContext);
+    const locale = useContext(LocaleContext);
+    const anonymousValue = useContext(AnonymousContext);
 
     return (
-        <div className="demo-result" data-testid="context-tone">
-            Current context tone: {tone}
+        <div className="demo-result" data-testid="context-values">
+            Current context tone: {tone}; locale: {locale}; anonymous:{' '}
+            {anonymousValue}
         </div>
     );
 }
 
 export function ContextProviderDemo() {
     const [tone, setTone] = useState<ThemeTone>('quiet');
+    const [locale, setLocale] = useState<LocaleCode>('en-US');
 
     return (
         <ThemeContext.Provider value={tone}>
-            <article className="card">
-                <h3>useContext provider</h3>
-                <ContextConsumerDemo />
-                <div className="buttons">
-                    <button onClick={() => setTone('active')}>
-                        Set active
-                    </button>
-                    <button onClick={() => setTone('quiet')}>Set quiet</button>
-                </div>
-            </article>
+            <LocaleContext.Provider value={locale}>
+                <AnonymousContext.Provider value="anonymous-nested">
+                    <article className="card">
+                        <h3>nested context providers</h3>
+                        <ContextConsumerDemo />
+                        <div className="buttons">
+                            <button onClick={() => setTone('active')}>
+                                Set active
+                            </button>
+                            <button onClick={() => setTone('quiet')}>
+                                Set quiet
+                            </button>
+                            <button onClick={() => setLocale('fr-CA')}>
+                                Set French Canada
+                            </button>
+                            <button onClick={() => setLocale('en-US')}>
+                                Set US English
+                            </button>
+                        </div>
+                    </article>
+                </AnonymousContext.Provider>
+            </LocaleContext.Provider>
         </ThemeContext.Provider>
     );
 }

@@ -1,4 +1,5 @@
 import type { DetectionDiagnosticRecord } from './types.js';
+import type { ComponentContextKind, ComponentContextRecord } from './types.js';
 
 export enum ReactFiberTag {
     FunctionComponent = 0,
@@ -75,6 +76,22 @@ export interface ReactFiberOwner {
 export interface ReactFiberDependencies {
     firstContext?: unknown;
     lanes?: ReactLaneSet;
+}
+
+export interface ReactContextLike {
+    $$typeof?: unknown;
+    Consumer?: unknown;
+    Provider?: unknown;
+    _currentValue?: unknown;
+    _currentValue2?: unknown;
+    displayName?: unknown;
+}
+
+export interface ReactFiberContextDependency {
+    context?: unknown;
+    memoizedValue?: unknown;
+    next?: unknown;
+    observedBits?: unknown;
 }
 
 export interface ReactFiber {
@@ -210,6 +227,86 @@ export function isCompositeInspectableReactFiberTag(tag: number): boolean {
         tag === ReactFiberTag.LazyComponent ||
         tag === ReactFiberTag.Profiler
     );
+}
+
+export function isReactContextProviderFiber(fiber: ReactFiber): boolean {
+    return fiber.tag === ReactFiberTag.ContextProvider;
+}
+
+export function isReactContextConsumerFiber(fiber: ReactFiber): boolean {
+    return fiber.tag === ReactFiberTag.ContextConsumer;
+}
+
+export function getReactContextDisplayName(
+    context: null | ReactContextLike | undefined,
+    fallback = 'Context'
+): string {
+    return typeof context?.displayName === 'string' &&
+        context.displayName.trim() !== ''
+        ? context.displayName
+        : fallback;
+}
+
+export function getReactContextFromFiber(
+    fiber: ReactFiber
+): null | ReactContextLike {
+    return (
+        getReactContextFromType(fiber.type) ??
+        getReactContextFromType(fiber.elementType)
+    );
+}
+
+export function getReactContextValueFromFiber(
+    fiber: ReactFiber,
+    context: null | ReactContextLike = getReactContextFromFiber(fiber)
+): unknown {
+    const pendingValue = getProviderPropValue(fiber.pendingProps);
+
+    if (pendingValue.found) {
+        return pendingValue.value;
+    }
+
+    const memoizedValue = getProviderPropValue(fiber.memoizedProps);
+
+    if (memoizedValue.found) {
+        return memoizedValue.value;
+    }
+
+    return context?._currentValue ?? context?._currentValue2;
+}
+
+export function inspectReactFiberContexts(
+    fiber: ReactFiber
+): ComponentContextRecord[] {
+    const records: ComponentContextRecord[] = [];
+    const primaryContext = getReactContextFromFiber(fiber);
+
+    if (isReactContextProviderFiber(fiber)) {
+        records.push(
+            createContextRecord('provider', primaryContext, {
+                value: getReactContextValueFromFiber(fiber, primaryContext)
+            })
+        );
+    } else if (isReactContextConsumerFiber(fiber)) {
+        records.push(createContextRecord('consumer', primaryContext));
+    }
+
+    for (const dependency of getReactFiberContextDependencies(fiber)) {
+        const context = getReactContextFromUnknown(dependency.context);
+        const observedBits =
+            typeof dependency.observedBits === 'number'
+                ? dependency.observedBits
+                : undefined;
+
+        records.push(
+            createContextRecord('dependency', context, {
+                ...(observedBits !== undefined ? { observedBits } : {}),
+                value: dependency.memoizedValue
+            })
+        );
+    }
+
+    return dedupeContextRecords(records);
 }
 
 export function isReactHostFiberTag(tag: number): boolean {
@@ -603,4 +700,126 @@ function findReactInternalKey(
 
 function isHostNode(value: unknown): value is ReactFiberHostNode {
     return isRecord(value) && 'nodeType' in value;
+}
+
+function getReactContextFromType(value: unknown): null | ReactContextLike {
+    const record = getRecord(value);
+    const nestedContext = getRecord(record?._context);
+
+    if (nestedContext) {
+        return nestedContext as ReactContextLike;
+    }
+
+    if (isLikelyReactContext(record)) {
+        return record as ReactContextLike;
+    }
+
+    return null;
+}
+
+function getReactContextFromUnknown(value: unknown): null | ReactContextLike {
+    const record = getRecord(value);
+    return record ? (record as ReactContextLike) : null;
+}
+
+function getProviderPropValue(props: unknown): {
+    found: boolean;
+    value: unknown;
+} {
+    const record = getRecord(props);
+
+    if (!record || !('value' in record)) {
+        return { found: false, value: undefined };
+    }
+
+    return { found: true, value: record.value };
+}
+
+function getReactFiberContextDependencies(
+    fiber: ReactFiber
+): ReactFiberContextDependency[] {
+    const dependencies: ReactFiberContextDependency[] = [];
+    let current = fiber.dependencies?.firstContext;
+    const visited = new Set<unknown>();
+
+    while (isRecord(current) && !visited.has(current)) {
+        visited.add(current);
+        dependencies.push(current as ReactFiberContextDependency);
+        current = current.next;
+    }
+
+    return dependencies;
+}
+
+function createContextRecord(
+    kind: ComponentContextKind,
+    context: null | ReactContextLike,
+    options: {
+        observedBits?: number;
+        value?: unknown;
+    } = {}
+): ComponentContextRecord {
+    return {
+        displayName: getReactContextDisplayName(context),
+        kind,
+        ...(options.observedBits !== undefined
+            ? { observedBits: options.observedBits }
+            : {}),
+        ...(options.value !== undefined ? { value: options.value } : {})
+    };
+}
+
+function dedupeContextRecords(
+    records: ComponentContextRecord[]
+): ComponentContextRecord[] {
+    const seen = new Set<string>();
+    const uniqueRecords: ComponentContextRecord[] = [];
+
+    for (const record of records) {
+        const key = [
+            record.kind,
+            record.displayName,
+            record.observedBits,
+            Object.is(record.value, undefined) ? 'unset' : 'set'
+        ].join(':');
+
+        if (seen.has(key)) {
+            continue;
+        }
+
+        seen.add(key);
+        uniqueRecords.push(stripUndefinedContextFields(record));
+    }
+
+    return uniqueRecords;
+}
+
+function stripUndefinedContextFields(
+    record: ComponentContextRecord
+): ComponentContextRecord {
+    return {
+        displayName: record.displayName,
+        kind: record.kind,
+        ...(record.id !== undefined ? { id: record.id } : {}),
+        ...(record.observedBits !== undefined
+            ? { observedBits: record.observedBits }
+            : {}),
+        ...(record.value !== undefined ? { value: record.value } : {})
+    };
+}
+
+function isLikelyReactContext(
+    value: null | Record<PropertyKey, unknown>
+): value is Record<PropertyKey, unknown> & ReactContextLike {
+    return (
+        value !== null &&
+        ('Provider' in value ||
+            'Consumer' in value ||
+            '_currentValue' in value ||
+            '_currentValue2' in value)
+    );
+}
+
+function getRecord(value: unknown): null | Record<PropertyKey, unknown> {
+    return isRecord(value) ? value : null;
 }

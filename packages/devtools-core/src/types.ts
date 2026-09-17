@@ -166,6 +166,16 @@ export interface ComponentSourceLocation {
     lineNumber: number;
 }
 
+export type ComponentContextKind = 'consumer' | 'dependency' | 'provider';
+
+export interface ComponentContextRecord {
+    displayName: string;
+    id?: string;
+    kind: ComponentContextKind;
+    observedBits?: number;
+    value?: unknown;
+}
+
 export interface InspectTargetRecord {
     componentId?: null | string;
     displayName?: string;
@@ -188,6 +198,7 @@ export interface InspectModeState {
 
 export interface ComponentNode {
     children?: ComponentNode[];
+    contexts?: ComponentContextRecord[];
     displayName: string;
     id: string;
     key?: null | string;
@@ -207,6 +218,7 @@ export interface ComponentStateSection {
 
 export interface ComponentStateResponse {
     componentId: string;
+    contexts?: ComponentContextRecord[];
     rootId: string;
     sections: ComponentStateSection[];
     source?: ComponentSourceLocation;

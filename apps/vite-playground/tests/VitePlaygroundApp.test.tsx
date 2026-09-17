@@ -60,19 +60,29 @@ describe('plain React playground demos', () => {
     it('mounts the useContext provider and updates the provided value', () => {
         render(<ContextProviderDemo />);
 
-        expect(screen.getByTestId('context-tone')).toHaveTextContent('quiet');
+        expect(screen.getByTestId('context-values')).toHaveTextContent('quiet');
+        expect(screen.getByTestId('context-values')).toHaveTextContent('en-US');
+        expect(screen.getByTestId('context-values')).toHaveTextContent(
+            'anonymous-nested'
+        );
 
         act(() => {
             screen.getByRole('button', { name: 'Set active' }).click();
+            screen.getByRole('button', { name: 'Set French Canada' }).click();
         });
 
-        expect(screen.getByTestId('context-tone')).toHaveTextContent('active');
+        expect(screen.getByTestId('context-values')).toHaveTextContent(
+            'active'
+        );
+        expect(screen.getByTestId('context-values')).toHaveTextContent('fr-CA');
 
         act(() => {
             screen.getByRole('button', { name: 'Set quiet' }).click();
+            screen.getByRole('button', { name: 'Set US English' }).click();
         });
 
-        expect(screen.getByTestId('context-tone')).toHaveTextContent('quiet');
+        expect(screen.getByTestId('context-values')).toHaveTextContent('quiet');
+        expect(screen.getByTestId('context-values')).toHaveTextContent('en-US');
     });
 
     it('mounts the memo component and keeps its own interaction state', () => {
@@ -116,7 +126,9 @@ describe('plain React playground demos', () => {
 
         expect(screen.getByText('useState component')).toBeInTheDocument();
         expect(screen.getByText('useReducer component')).toBeInTheDocument();
-        expect(screen.getByText('useContext provider')).toBeInTheDocument();
+        expect(
+            screen.getByText('nested context providers')
+        ).toBeInTheDocument();
         expect(screen.getByText('memo component')).toBeInTheDocument();
         expect(screen.getByText('Suspense boundary')).toBeInTheDocument();
         expect(screen.getByText('class component')).toBeInTheDocument();
