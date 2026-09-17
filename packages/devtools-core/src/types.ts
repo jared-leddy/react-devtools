@@ -101,6 +101,7 @@ export interface DetectionDiagnosticRecord {
         | 'auto-paused'
         | 'existing-hook-incompatible'
         | 'fiber-field-missing'
+        | 'fiber-host-node-unavailable'
         | 'fiber-root-unavailable'
         | 'fiber-tag-unknown'
         | 'refresh-throttled'
