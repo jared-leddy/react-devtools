@@ -97,6 +97,23 @@ describe('devtools-core RPC facade', () => {
             requestedAt: 225
         });
         const performance = await client.getPerformanceState();
+        await client.setInspectMode(true);
+        await client.updateInspectHover({
+            componentId: 'component:1',
+            displayName: 'App',
+            rootId: 'root:1',
+            source: {
+                columnNumber: 10,
+                fileName: '/src/App.tsx',
+                lineNumber: 2
+            }
+        });
+        const inspectMode = await client.getInspectMode();
+        await client.selectInspectTarget({
+            componentId: 'component:1',
+            rootId: 'root:1'
+        });
+        await client.toggleInspectMode();
         const assets = await client.getAssets({ type: 'image' });
         const graph = await client.getGraph();
         const routes = await client.getRoutes();
@@ -155,6 +172,14 @@ describe('devtools-core RPC facade', () => {
                 maxTreeDepth: 4
             }
         });
+        expect(inspectMode.inspectMode).toMatchObject({
+            enabled: true,
+            hoveredTarget: {
+                componentId: 'component:1',
+                displayName: 'App',
+                rootId: 'root:1'
+            }
+        });
         expect(assets.assets).toEqual([
             { id: 'asset:1', path: '/logo.svg', type: 'image' }
         ]);
@@ -168,7 +193,16 @@ describe('devtools-core RPC facade', () => {
         });
         expect(store.getState()).toMatchObject({
             timelineEvents: [{ layerId: 'react', title: 'Commit' }],
-            timelineLayers: [{ id: 'react', label: 'React' }]
+            timelineLayers: [{ id: 'react', label: 'React' }],
+            inspectMode: {
+                enabled: true,
+                lastSelectedTarget: {
+                    componentId: 'component:1',
+                    rootId: 'root:1'
+                }
+            },
+            selectedComponentId: 'component:1',
+            selectedRootId: 'root:1'
         });
     });
 

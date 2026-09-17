@@ -32,6 +32,8 @@ import type {
     GraphRequest,
     GraphResponse,
     HighlightRequest,
+    InspectModeResponse,
+    InspectTargetRecord,
     PerformanceModeSettingsPatch,
     PerformanceStateResponse,
     RendererRecord,
@@ -72,6 +74,7 @@ export interface DevToolsCoreServerFunctions {
         request?: DetectionDiagnosticsRequest
     ) => DetectionDiagnosticsResponse;
     getGraph: (request?: GraphRequest) => GraphResponse;
+    getInspectMode: () => InspectModeResponse;
     getPerformanceState: () => PerformanceStateResponse;
     getRenderers: () => RenderersResponse;
     getRoutes: (request?: RoutesRequest) => RoutesResponse;
@@ -92,11 +95,14 @@ export interface DevToolsCoreServerFunctions {
     reportDetectionDiagnostic: (
         diagnostic: DetectionDiagnosticRecord
     ) => DevToolsCoreState;
+    selectInspectTarget: (target: InspectTargetRecord) => DevToolsCoreState;
     requestTreeRefresh: (request: TreeRefreshRequest) => TreeRefreshDecision;
     removeCustomCommand: (commandId: string) => DevToolsCoreState;
     selectComponent: (componentId: null | string) => DevToolsCoreState;
     selectRoot: (rootId: null | string) => DevToolsCoreState;
+    setInspectMode: (enabled: boolean) => DevToolsCoreState;
     setHighPerformanceMode: (enabled: boolean) => DevToolsCoreState;
+    toggleInspectMode: () => DevToolsCoreState;
     sendInspectorState: (
         request: CustomInspectorStateRequest
     ) => CustomInspectorStateResponse;
@@ -106,6 +112,9 @@ export interface DevToolsCoreServerFunctions {
     updateRenderers: (renderers: RendererRecord[]) => DevToolsCoreState;
     updatePerformanceSettings: (
         settings: PerformanceModeSettingsPatch
+    ) => DevToolsCoreState;
+    updateInspectHover: (
+        target: InspectTargetRecord | null
     ) => DevToolsCoreState;
     updateRoots: (roots: RootRecord[]) => DevToolsCoreState;
     updateState: (patch: DevToolsCoreStatePatch) => DevToolsCoreState;
@@ -197,6 +206,9 @@ export function createDevToolsCoreServerFunctions(
         getGraph(_request) {
             return { graph: store.getState().graph };
         },
+        getInspectMode() {
+            return { inspectMode: store.getState().inspectMode };
+        },
         getDetectionDiagnostics(request) {
             const diagnostics = store
                 .getState()
@@ -266,6 +278,9 @@ export function createDevToolsCoreServerFunctions(
         reportDetectionDiagnostic(diagnostic) {
             return store.reportDiagnostic(diagnostic);
         },
+        selectInspectTarget(target) {
+            return store.recordInspectSelection(target);
+        },
         requestTreeRefresh(request) {
             return store.recordTreeRefreshRequest(request);
         },
@@ -275,11 +290,17 @@ export function createDevToolsCoreServerFunctions(
         setHighPerformanceMode(enabled) {
             return store.setHighPerformanceMode(enabled);
         },
+        setInspectMode(enabled) {
+            return store.setInspectMode(enabled);
+        },
         selectComponent(componentId) {
             return store.selectComponent(componentId);
         },
         selectRoot(rootId) {
             return store.selectRoot(rootId);
+        },
+        toggleInspectMode() {
+            return store.setInspectMode(!store.getState().inspectMode.enabled);
         },
         sendInspectorState(request) {
             const inspector = getInspector(store, request.inspectorId);
@@ -306,6 +327,9 @@ export function createDevToolsCoreServerFunctions(
         },
         updatePerformanceSettings(settings) {
             return store.setPerformanceSettings(settings);
+        },
+        updateInspectHover(target) {
+            return store.recordInspectHover(target);
         },
         updateRenderers(renderers) {
             return store.setRenderers(renderers);

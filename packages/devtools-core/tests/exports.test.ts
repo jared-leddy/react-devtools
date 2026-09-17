@@ -45,6 +45,15 @@ describe('devtools-core public exports', () => {
         expect(
             rootEntry.DevToolsCoreRpcEvent.PERFORMANCE_REFRESH_THROTTLED
         ).toBe('performance:refresh-throttled');
+        expect(rootEntry.DevToolsCoreRpcEvent.INSPECT_MODE_UPDATED).toBe(
+            'inspect:mode-updated'
+        );
+        expect(rootEntry.DevToolsCoreRpcEvent.INSPECT_TARGET_HOVERED).toBe(
+            'inspect:target-hovered'
+        );
+        expect(rootEntry.DevToolsCoreRpcEvent.INSPECT_TARGET_SELECTED).toBe(
+            'inspect:target-selected'
+        );
         expect(rootEntry.createDevToolsCoreStateStore).toEqual(
             expect.any(Function)
         );
