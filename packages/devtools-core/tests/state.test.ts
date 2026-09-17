@@ -344,4 +344,58 @@ describe('devtools-core state store', () => {
             ])
         );
     });
+
+    it('tracks inspect mode hover and selection state', () => {
+        const store = createDevToolsCoreStateStore();
+
+        store.setInspectMode(true);
+        store.recordInspectHover({
+            componentId: 'component:button',
+            displayName: 'Button',
+            domRect: { height: 20, width: 80, x: 10, y: 15 },
+            rootId: 'root:1',
+            source: {
+                columnNumber: 12,
+                fileName: '/src/Button.tsx',
+                lineNumber: 4
+            }
+        });
+
+        expect(store.getState().inspectMode).toMatchObject({
+            enabled: true,
+            hoveredTarget: {
+                componentId: 'component:button',
+                rootId: 'root:1'
+            }
+        });
+
+        store.recordInspectSelection({
+            componentId: 'component:button',
+            displayName: 'Button',
+            rootId: 'root:1'
+        });
+
+        expect(store.getState()).toMatchObject({
+            inspectMode: {
+                enabled: false,
+                hoveredTarget: null,
+                lastSelectedTarget: {
+                    componentId: 'component:button',
+                    displayName: 'Button',
+                    rootId: 'root:1'
+                }
+            },
+            selectedComponentId: 'component:button',
+            selectedRootId: 'root:1'
+        });
+
+        store.setInspectMode(true);
+        store.recordInspectHover({ componentId: 'component:input' });
+        store.setInspectMode(false);
+
+        expect(store.getState().inspectMode).toMatchObject({
+            enabled: false,
+            hoveredTarget: null
+        });
+    });
 });

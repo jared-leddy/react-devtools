@@ -18,6 +18,9 @@ export enum DevToolsCoreRpcEvent {
     PERFORMANCE_MODE_TOGGLED = 'performance:mode-toggled',
     PERFORMANCE_SETTINGS_UPDATED = 'performance:settings-updated',
     PERFORMANCE_REFRESH_THROTTLED = 'performance:refresh-throttled',
+    INSPECT_MODE_UPDATED = 'inspect:mode-updated',
+    INSPECT_TARGET_HOVERED = 'inspect:target-hovered',
+    INSPECT_TARGET_SELECTED = 'inspect:target-selected',
     COMPONENTS_UPDATED = 'components:updated',
     COMPONENT_STATE_REQUESTED = 'component-state:requested',
     HIGHLIGHT_REQUESTED = 'highlight:requested',
@@ -163,6 +166,26 @@ export interface ComponentSourceLocation {
     lineNumber: number;
 }
 
+export interface InspectTargetRecord {
+    componentId?: null | string;
+    displayName?: string;
+    domRect?: {
+        height: number;
+        width: number;
+        x: number;
+        y: number;
+    };
+    rootId?: null | string;
+    source?: ComponentSourceLocation;
+    targetId?: string;
+}
+
+export interface InspectModeState {
+    enabled: boolean;
+    hoveredTarget: InspectTargetRecord | null;
+    lastSelectedTarget: InspectTargetRecord | null;
+}
+
 export interface ComponentNode {
     children?: ComponentNode[];
     displayName: string;
@@ -241,6 +264,7 @@ export interface DevToolsCoreState {
     diagnostics: DetectionDiagnosticRecord[];
     graph: ModuleGraphNode[];
     highlightedComponentId: null | string;
+    inspectMode: InspectModeState;
     performance: PerformanceModeState;
     renderers: RendererRecord[];
     rootEvents: FiberRootEventRecord[];
@@ -295,6 +319,10 @@ export interface DetectionDiagnosticsResponse {
 
 export interface PerformanceStateResponse {
     performance: PerformanceModeState;
+}
+
+export interface InspectModeResponse {
+    inspectMode: InspectModeState;
 }
 
 export interface ComponentsRequest {

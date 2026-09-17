@@ -7,6 +7,8 @@ import type {
     DevToolsCoreState,
     DevToolsCoreStatePatch,
     FiberRootEventRecord,
+    InspectModeState,
+    InspectTargetRecord,
     ModuleGraphNode,
     PerformanceModeSettings,
     PerformanceModeSettingsPatch,
@@ -32,6 +34,8 @@ export interface DevToolsCoreStateStore {
     addTimelineLayer(layer: TimelineLayerRecord): DevToolsCoreState;
     getState(): DevToolsCoreState;
     recordFiberRootEvent(rootEvent: FiberRootEventRecord): DevToolsCoreState;
+    recordInspectHover(target: InspectTargetRecord | null): DevToolsCoreState;
+    recordInspectSelection(target: InspectTargetRecord): DevToolsCoreState;
     recordTreeRefreshRequest(request: TreeRefreshRequest): TreeRefreshDecision;
     registerCustomCommand(command: CustomCommand): DevToolsCoreState;
     registerCustomInspector(
@@ -48,6 +52,7 @@ export interface DevToolsCoreStateStore {
     setComponents(components: ComponentNode[]): DevToolsCoreState;
     setGraph(graph: ModuleGraphNode[]): DevToolsCoreState;
     setHighPerformanceMode(enabled: boolean): DevToolsCoreState;
+    setInspectMode(enabled: boolean): DevToolsCoreState;
     setPerformanceSettings(
         settings: PerformanceModeSettingsPatch
     ): DevToolsCoreState;
@@ -71,6 +76,7 @@ export function createInitialDevToolsCoreState(): DevToolsCoreState {
         diagnostics: [],
         graph: [],
         highlightedComponentId: null,
+        inspectMode: createDefaultInspectModeState(),
         performance: createDefaultPerformanceModeState(),
         renderers: [],
         rootEvents: [],
@@ -164,6 +170,26 @@ export function createDevToolsCoreStateStore(
                     targetId: rootEvent.targetId,
                     updatedAt: rootEvent.timestamp
                 })
+            });
+        },
+        recordInspectHover(target) {
+            return update({
+                inspectMode: {
+                    ...state.inspectMode,
+                    hoveredTarget: target
+                }
+            });
+        },
+        recordInspectSelection(target) {
+            return update({
+                inspectMode: {
+                    enabled: false,
+                    hoveredTarget: null,
+                    lastSelectedTarget: target
+                },
+                selectedComponentId:
+                    target.componentId ?? state.selectedComponentId,
+                selectedRootId: target.rootId ?? state.selectedRootId
             });
         },
         recordTreeRefreshRequest(request) {
@@ -316,6 +342,17 @@ export function createDevToolsCoreStateStore(
                 }
             });
         },
+        setInspectMode(enabled) {
+            return update({
+                inspectMode: {
+                    ...state.inspectMode,
+                    enabled,
+                    hoveredTarget: enabled
+                        ? state.inspectMode.hoveredTarget
+                        : null
+                }
+            });
+        },
         setPerformanceSettings(settings) {
             const nextSettings = {
                 ...state.performance.settings,
@@ -375,6 +412,13 @@ function cloneState(state: DevToolsCoreState): DevToolsCoreState {
         customTabs: [...state.customTabs],
         diagnostics: [...state.diagnostics],
         graph: [...state.graph],
+        inspectMode: {
+            ...state.inspectMode,
+            hoveredTarget: cloneInspectTarget(state.inspectMode.hoveredTarget),
+            lastSelectedTarget: cloneInspectTarget(
+                state.inspectMode.lastSelectedTarget
+            )
+        },
         performance: {
             flags: { ...state.performance.flags },
             settings: { ...state.performance.settings }
@@ -386,6 +430,14 @@ function cloneState(state: DevToolsCoreState): DevToolsCoreState {
         settings: { ...state.settings },
         timelineEvents: [...state.timelineEvents],
         timelineLayers: [...state.timelineLayers]
+    };
+}
+
+function createDefaultInspectModeState(): InspectModeState {
+    return {
+        enabled: false,
+        hoveredTarget: null,
+        lastSelectedTarget: null
     };
 }
 
@@ -409,6 +461,20 @@ function createDefaultPerformanceModeState(): DevToolsCoreState['performance'] {
             pauseExpensiveTreeRefreshes: true,
             pausePluginSetup: false
         }
+    };
+}
+
+function cloneInspectTarget(
+    target: InspectTargetRecord | null
+): InspectTargetRecord | null {
+    if (!target) {
+        return null;
+    }
+
+    return {
+        ...target,
+        domRect: target.domRect ? { ...target.domRect } : undefined,
+        source: target.source ? { ...target.source } : undefined
     };
 }
 
