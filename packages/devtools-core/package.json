@@ -1,6 +1,6 @@
 {
     "name": "@devtools/core",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "private": false,
     "license": "UNLICENSED",
     "description": "Runtime state and RPC facade for React DevTools clients and servers.",
@@ -19,6 +19,10 @@
         "./node": {
             "types": "./dist/node.d.ts",
             "import": "./dist/node.js"
+        },
+        "./fiber": {
+            "types": "./dist/fiber.d.ts",
+            "import": "./dist/fiber.js"
         }
     },
     "files": [
