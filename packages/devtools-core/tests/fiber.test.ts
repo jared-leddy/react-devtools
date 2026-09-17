@@ -5,10 +5,13 @@ import {
     getReactFiberTagName,
     getReactMajorVersion,
     getReactFiberFromHostInstance,
+    inspectReactFiberDiagnostics,
     inspectReactFiberContexts,
     isInspectableReactFiberTag,
+    isReactErrorBoundaryFiber,
     isReactContextConsumerFiber,
     isReactContextProviderFiber,
+    isReactSuspenseFiber,
     ReactFiberTag,
     resolveReactFiberFromHostInstance,
     validateReactFiber,
@@ -316,6 +319,167 @@ describe('React Fiber model guards', () => {
         ]);
     });
 
+    it('identifies class error boundaries and captured error state', () => {
+        class FixtureBoundary {
+            public static getDerivedStateFromError() {
+                return { error: true };
+            }
+        }
+
+        const capturedError = new Error('Boundary exploded');
+        const boundary = createFiberFixture({
+            memoizedState: { error: capturedError },
+            tag: ReactFiberTag.ClassComponent,
+            type: FixtureBoundary
+        });
+
+        expect(isReactErrorBoundaryFiber(boundary)).toBe(true);
+        expect(inspectReactFiberDiagnostics(boundary)).toEqual([
+            {
+                capturedError,
+                displayName: 'FixtureBoundary',
+                kind: 'error-boundary',
+                message: 'Boundary exploded',
+                status: 'captured'
+            }
+        ]);
+    });
+
+    it('detects idle componentDidCatch boundaries without captured state', () => {
+        class FixtureBoundary {
+            public componentDidCatch() {
+                return undefined;
+            }
+        }
+
+        const boundary = createFiberFixture({
+            tag: ReactFiberTag.ClassComponent,
+            type: FixtureBoundary
+        });
+
+        expect(inspectReactFiberDiagnostics(boundary)).toEqual([
+            {
+                displayName: 'FixtureBoundary',
+                kind: 'error-boundary',
+                status: 'idle'
+            }
+        ]);
+    });
+
+    it('reads captured errors from boundary update queues when available', () => {
+        class FixtureBoundary {
+            public componentDidCatch() {
+                return undefined;
+            }
+        }
+
+        const capturedError = { message: 'Queued boundary failure' };
+        const boundary = createFiberFixture({
+            tag: ReactFiberTag.ClassComponent,
+            type: FixtureBoundary,
+            updateQueue: {
+                capturedValues: new Map([[boundaryKey, capturedError]])
+            }
+        });
+
+        expect(inspectReactFiberDiagnostics(boundary)).toEqual([
+            {
+                capturedError,
+                displayName: 'FixtureBoundary',
+                kind: 'error-boundary',
+                message: 'Queued boundary failure',
+                status: 'captured'
+            }
+        ]);
+    });
+
+    it('detects boundary instances and object-shaped component names', () => {
+        const boundary = createFiberFixture({
+            stateNode: {
+                componentDidCatch() {
+                    return undefined;
+                }
+            },
+            tag: ReactFiberTag.ClassComponent,
+            type: {
+                displayName: 'ObjectBoundary'
+            }
+        });
+        const notBoundary = createFiberFixture({
+            tag: ReactFiberTag.FunctionComponent,
+            type: function PlainFunction() {
+                return null;
+            }
+        });
+
+        expect(isReactErrorBoundaryFiber(boundary)).toBe(true);
+        expect(isReactErrorBoundaryFiber(notBoundary)).toBe(false);
+        expect(inspectReactFiberDiagnostics(boundary)).toEqual([
+            {
+                displayName: 'ObjectBoundary',
+                kind: 'error-boundary',
+                status: 'idle'
+            }
+        ]);
+    });
+
+    it('surfaces Suspense resolved and pending states', () => {
+        const resolved = createFiberFixture({
+            tag: ReactFiberTag.SuspenseComponent
+        });
+        const pending = createFiberFixture({
+            memoizedState: {
+                dehydrated: null,
+                retryLane: 1,
+                treeContext: {}
+            },
+            tag: ReactFiberTag.SuspenseComponent
+        });
+
+        expect(isReactSuspenseFiber(resolved)).toBe(true);
+        expect(inspectReactFiberDiagnostics(resolved)).toEqual([
+            {
+                displayName: 'Suspense',
+                kind: 'suspense',
+                status: 'resolved'
+            }
+        ]);
+        expect(inspectReactFiberDiagnostics(pending)).toEqual([
+            {
+                displayName: 'Suspense',
+                kind: 'suspense',
+                status: 'pending'
+            }
+        ]);
+    });
+
+    it('surfaces dehydrated and unknown Suspense states defensively', () => {
+        const dehydrated = createFiberFixture({
+            memoizedState: { dehydrated: {} },
+            tag: ReactFiberTag.SuspenseComponent
+        });
+        const unknown = createFiberFixture({
+            memoizedState: { suspenseState: true },
+            tag: ReactFiberTag.SuspenseComponent,
+            type: { name: 'NamedSuspense' }
+        });
+
+        expect(inspectReactFiberDiagnostics(dehydrated)).toEqual([
+            {
+                displayName: 'Suspense',
+                kind: 'suspense',
+                status: 'pending'
+            }
+        ]);
+        expect(inspectReactFiberDiagnostics(unknown)).toEqual([
+            {
+                displayName: 'NamedSuspense',
+                kind: 'suspense',
+                status: 'unknown'
+            }
+        ]);
+    });
+
     it('discovers React Fiber keys on host nodes without hardcoding suffixes', () => {
         const hostFiber = createFiberFixture({
             tag: ReactFiberTag.HostComponent,
@@ -531,8 +695,10 @@ function createFiberFixture(options: {
     memoizedState?: unknown;
     pendingProps?: unknown;
     returnFiber?: null | ReactFiber;
+    stateNode?: unknown;
     tag: ReactFiberTag;
     type?: unknown;
+    updateQueue?: unknown;
 }): ReactFiber {
     return {
         actualDuration: 0,
@@ -555,14 +721,16 @@ function createFiberFixture(options: {
         return: options.returnFiber ?? null,
         selfBaseDuration: 0,
         sibling: null,
-        stateNode: null,
+        stateNode: options.stateNode ?? null,
         subtreeFlags: 0,
         tag: options.tag,
         treeBaseDuration: 0,
         type: options.type ?? null,
-        updateQueue: null
+        updateQueue: options.updateQueue ?? null
     };
 }
+
+const boundaryKey = {};
 
 function attachReactFiber(
     hostNode: Record<PropertyKey, unknown>,

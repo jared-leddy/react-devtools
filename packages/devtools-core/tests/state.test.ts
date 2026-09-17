@@ -20,6 +20,13 @@ describe('devtools-core state store', () => {
                         value: 'dark'
                     }
                 ],
+                diagnostics: [
+                    {
+                        displayName: 'Suspense',
+                        kind: 'suspense',
+                        status: 'pending'
+                    }
+                ],
                 displayName: 'App',
                 id: 'fiber:1',
                 rootId: 'root:1',
@@ -49,6 +56,13 @@ describe('devtools-core state store', () => {
                             displayName: 'ThemeContext',
                             kind: 'provider',
                             value: 'dark'
+                        }
+                    ],
+                    diagnostics: [
+                        {
+                            displayName: 'Suspense',
+                            kind: 'suspense',
+                            status: 'pending'
                         }
                     ],
                     id: 'fiber:1'
@@ -103,6 +117,14 @@ describe('devtools-core state store', () => {
                     value: 'en-US'
                 }
             ],
+            diagnostics: [
+                {
+                    displayName: 'DemoBoundary',
+                    kind: 'error-boundary',
+                    message: 'Boom',
+                    status: 'captured'
+                }
+            ],
             rootId: 'root:1',
             sections: [
                 { fields: [{ name: 'name', value: 'App' }], name: 'state' }
@@ -125,6 +147,14 @@ describe('devtools-core state store', () => {
                             displayName: 'LocaleContext',
                             kind: 'dependency',
                             value: 'en-US'
+                        }
+                    ],
+                    diagnostics: [
+                        {
+                            displayName: 'DemoBoundary',
+                            kind: 'error-boundary',
+                            message: 'Boom',
+                            status: 'captured'
                         }
                     ],
                     rootId: 'root:1',

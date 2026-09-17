@@ -2,6 +2,7 @@ import { act, render, screen } from '@testing-library/react';
 import {
     ClassStateDemo,
     ContextProviderDemo,
+    ErrorBoundaryDemo,
     MemoStatusDemo,
     PlainReactDemos,
     ReducerCounterDemo,
@@ -109,6 +110,30 @@ describe('plain React playground demos', () => {
         expect(screen.getByTestId('class-count')).toHaveTextContent('1');
     });
 
+    it('mounts the error boundary fixture and captures thrown errors', () => {
+        const consoleErrorSpy = jest
+            .spyOn(console, 'error')
+            .mockImplementation(() => undefined);
+
+        render(<ErrorBoundaryDemo />);
+
+        try {
+            expect(screen.getByTestId('boundary-child')).toHaveTextContent(
+                'healthy'
+            );
+
+            act(() => {
+                screen.getByRole('button', { name: 'Trigger error' }).click();
+            });
+
+            expect(screen.getByTestId('boundary-fallback')).toHaveTextContent(
+                'Playground boundary failure'
+            );
+        } finally {
+            consoleErrorSpy.mockRestore();
+        }
+    });
+
     it('renders the combined fixture surface', async () => {
         render(<PlainReactDemos />);
 
@@ -119,6 +144,7 @@ describe('plain React playground demos', () => {
         ).toBeInTheDocument();
         expect(screen.getByText('memo component')).toBeInTheDocument();
         expect(screen.getByText('Suspense boundary')).toBeInTheDocument();
+        expect(screen.getByText('error boundary fixture')).toBeInTheDocument();
         expect(screen.getByText('class component')).toBeInTheDocument();
         expect(await screen.findByTestId('lazy-panel')).toBeInTheDocument();
     });

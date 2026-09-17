@@ -176,6 +176,18 @@ export interface ComponentContextRecord {
     value?: unknown;
 }
 
+export type ComponentDiagnosticKind = 'error-boundary' | 'suspense';
+export type ComponentDiagnosticStatus =
+    'captured' | 'idle' | 'pending' | 'resolved' | 'unknown';
+
+export interface ComponentDiagnosticRecord {
+    capturedError?: unknown;
+    displayName: string;
+    kind: ComponentDiagnosticKind;
+    message?: string;
+    status: ComponentDiagnosticStatus;
+}
+
 export interface InspectTargetRecord {
     componentId?: null | string;
     displayName?: string;
@@ -199,6 +211,7 @@ export interface InspectModeState {
 export interface ComponentNode {
     children?: ComponentNode[];
     contexts?: ComponentContextRecord[];
+    diagnostics?: ComponentDiagnosticRecord[];
     displayName: string;
     id: string;
     key?: null | string;
@@ -219,6 +232,7 @@ export interface ComponentStateSection {
 export interface ComponentStateResponse {
     componentId: string;
     contexts?: ComponentContextRecord[];
+    diagnostics?: ComponentDiagnosticRecord[];
     rootId: string;
     sections: ComponentStateSection[];
     source?: ComponentSourceLocation;
