@@ -1,5 +1,6 @@
 export * from './browser.js';
 export * from './fiber.js';
+export * from './fiber/filter.js';
 export * from './fiberWalker.js';
 export * from './node.js';
 export * from './rpc.js';
