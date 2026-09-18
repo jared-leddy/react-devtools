@@ -57,6 +57,8 @@ describe('devtools-core public exports', () => {
         expect(rootEntry.createDevToolsCoreStateStore).toEqual(
             expect.any(Function)
         );
+        expect(rootEntry.createComponentFilter).toEqual(expect.any(Function));
+        expect(rootEntry.filterComponentTree).toEqual(expect.any(Function));
         expect(rootEntry.createFiberWalker).toEqual(expect.any(Function));
         expect(rootEntry.FiberWalker).toEqual(expect.any(Function));
         expect(rootEntry.ReactFiberTag.FunctionComponent).toBe(0);
