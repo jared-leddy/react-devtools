@@ -1,6 +1,6 @@
 {
     "name": "@devtools/core",
-    "version": "0.0.15",
+    "version": "0.0.16",
     "private": false,
     "license": "UNLICENSED",
     "description": "Runtime state and RPC facade for React DevTools clients and servers.",
@@ -27,6 +27,10 @@
         "./fiber/filter": {
             "types": "./dist/fiber/filter.d.ts",
             "import": "./dist/fiber/filter.js"
+        },
+        "./fiber/record": {
+            "types": "./dist/fiber/record.d.ts",
+            "import": "./dist/fiber/record.js"
         },
         "./fiber-walker": {
             "types": "./dist/fiberWalker.d.ts",
