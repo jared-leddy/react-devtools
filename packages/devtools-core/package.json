@@ -1,6 +1,6 @@
 {
     "name": "@devtools/core",
-    "version": "0.0.18",
+    "version": "0.0.19",
     "private": false,
     "license": "UNLICENSED",
     "description": "Runtime state and RPC facade for React DevTools clients and servers.",
@@ -39,6 +39,10 @@
         "./fiber-walker": {
             "types": "./dist/fiberWalker.d.ts",
             "import": "./dist/fiberWalker.js"
+        },
+        "./value-format": {
+            "types": "./dist/valueFormat.d.ts",
+            "import": "./dist/valueFormat.js"
         }
     },
     "files": [
