@@ -1,4 +1,5 @@
 import * as browserEntry from '../src/browser.js';
+import * as highlighterEntry from '../src/highlighter.js';
 import * as nodeEntry from '../src/node.js';
 import * as rootEntry from '../src/index.js';
 import * as valueFormatEntry from '../src/valueFormat.js';
@@ -28,6 +29,14 @@ describe('devtools-core public exports', () => {
 
     it('exposes displayable value formatting helpers separately', () => {
         expect(valueFormatEntry.formatDisplayableValue).toEqual(
+            expect.any(Function)
+        );
+    });
+
+    it('exposes component highlighter helpers separately', () => {
+        expect(highlighterEntry.getBoundingRect).toEqual(expect.any(Function));
+        expect(highlighterEntry.highlightElement).toEqual(expect.any(Function));
+        expect(highlighterEntry.unhighlightElement).toEqual(
             expect.any(Function)
         );
     });
@@ -73,6 +82,9 @@ describe('devtools-core public exports', () => {
         expect(rootEntry.getProps).toEqual(expect.any(Function));
         expect(rootEntry.getPropsStateSection).toEqual(expect.any(Function));
         expect(rootEntry.formatDisplayableValue).toEqual(expect.any(Function));
+        expect(rootEntry.getBoundingRect).toEqual(expect.any(Function));
+        expect(rootEntry.highlightElement).toEqual(expect.any(Function));
+        expect(rootEntry.unhighlightElement).toEqual(expect.any(Function));
         expect(rootEntry.createFiberWalker).toEqual(expect.any(Function));
         expect(rootEntry.FiberWalker).toEqual(expect.any(Function));
         expect(rootEntry.ReactFiberTag.FunctionComponent).toBe(0);
