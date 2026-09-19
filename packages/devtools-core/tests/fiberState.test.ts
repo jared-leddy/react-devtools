@@ -196,10 +196,61 @@ describe('fiber state extraction', () => {
         expect(getHooksStateSection(fiber)).toEqual({
             fields: [
                 { name: 'Hook 0 (state)', value: false },
-                { name: 'Hook 1 (ref)', value: { current: null } },
+                {
+                    name: 'Hook 1 (ref)',
+                    value: {
+                        _custom: {
+                            display: 'Object',
+                            type: 'object',
+                            value: { current: null }
+                        }
+                    }
+                },
                 { name: 'Hook 2 (context)', value: 'light' }
             ],
             name: 'hooks'
+        });
+    });
+
+    it('formats props section values for transport-safe display', () => {
+        function onClick(): void {}
+
+        const fiber = createFiberFixture({
+            memoizedProps: {
+                domNode: {
+                    nodeName: 'DIV',
+                    nodeType: 1,
+                    tagName: 'DIV'
+                },
+                onClick
+            },
+            tag: ReactFiberTag.FunctionComponent
+        });
+
+        expect(getPropsStateSection(fiber)).toEqual({
+            fields: [
+                {
+                    name: 'domNode',
+                    value: {
+                        _custom: {
+                            display: '<div>',
+                            readOnly: true,
+                            type: 'dom-node'
+                        }
+                    }
+                },
+                {
+                    name: 'onClick',
+                    value: {
+                        _custom: {
+                            display: 'ƒ onClick()',
+                            readOnly: true,
+                            type: 'function'
+                        }
+                    }
+                }
+            ],
+            name: 'props'
         });
     });
 

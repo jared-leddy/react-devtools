@@ -1,5 +1,6 @@
 import type { ReactFiber, ReactFiberContextDependency } from '../fiber.js';
 import type { ComponentStateSection } from '../types.js';
+import { formatDisplayableValue } from '../valueFormat.js';
 
 export interface FiberPropsOptions {
     includeChildren?: boolean;
@@ -43,7 +44,7 @@ export function getPropsStateSection(
         fields: Object.entries(getProps(fiber, options)).map(
             ([name, value]) => ({
                 name,
-                value
+                value: formatDisplayableValue(value)
             })
         ),
         name: 'props'
@@ -85,7 +86,7 @@ export function getHooksStateSection(fiber: ReactFiber): ComponentStateSection {
     return {
         fields: getHooks(fiber).map((hook) => ({
             name: `${hook.name} (${hook.type})`,
-            value: hook.value
+            value: formatDisplayableValue(hook.value)
         })),
         name: 'hooks'
     };

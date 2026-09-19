@@ -1,6 +1,7 @@
 import * as browserEntry from '../src/browser.js';
 import * as nodeEntry from '../src/node.js';
 import * as rootEntry from '../src/index.js';
+import * as valueFormatEntry from '../src/valueFormat.js';
 
 describe('devtools-core public exports', () => {
     it('exposes browser-safe helpers', () => {
@@ -23,6 +24,12 @@ describe('devtools-core public exports', () => {
             expect.any(Function)
         );
         expect(nodeEntry.createPresetCoreServer).toEqual(expect.any(Function));
+    });
+
+    it('exposes displayable value formatting helpers separately', () => {
+        expect(valueFormatEntry.formatDisplayableValue).toEqual(
+            expect.any(Function)
+        );
     });
 
     it('exposes the combined root entry point', () => {
@@ -65,6 +72,7 @@ describe('devtools-core public exports', () => {
         expect(rootEntry.getHooksStateSection).toEqual(expect.any(Function));
         expect(rootEntry.getProps).toEqual(expect.any(Function));
         expect(rootEntry.getPropsStateSection).toEqual(expect.any(Function));
+        expect(rootEntry.formatDisplayableValue).toEqual(expect.any(Function));
         expect(rootEntry.createFiberWalker).toEqual(expect.any(Function));
         expect(rootEntry.FiberWalker).toEqual(expect.any(Function));
         expect(rootEntry.ReactFiberTag.FunctionComponent).toBe(0);
