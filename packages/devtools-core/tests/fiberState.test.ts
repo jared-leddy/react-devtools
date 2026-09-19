@@ -1,4 +1,10 @@
-import { ReactFiberTag, getProps, getPropsStateSection } from '../src/index.js';
+import {
+    ReactFiberTag,
+    getHooks,
+    getHooksStateSection,
+    getProps,
+    getPropsStateSection
+} from '../src/index.js';
 import type { ReactFiber } from '../src/index.js';
 
 describe('fiber state extraction', () => {
@@ -95,10 +101,138 @@ describe('fiber state extraction', () => {
             name: 'props'
         });
     });
+
+    it('extracts state and reducer hooks from the memoized hook list', () => {
+        const reducerState = { count: 1 };
+        const fiber = createFiberFixture({
+            memoizedState: createHookList(
+                {
+                    memoizedState: 3,
+                    queue: {}
+                },
+                {
+                    memoizedState: reducerState,
+                    queue: { lastRenderedReducer: function counterReducer() {} }
+                }
+            ),
+            tag: ReactFiberTag.FunctionComponent
+        });
+
+        expect(getHooks(fiber)).toEqual([
+            { index: 0, name: 'Hook 0', type: 'state', value: 3 },
+            {
+                index: 1,
+                name: 'Hook 1',
+                type: 'reducer',
+                value: reducerState
+            }
+        ]);
+    });
+
+    it('extracts ref, effect, and memo hooks with best-effort values', () => {
+        const ref = { current: { id: 'button' } };
+        const deps = ['count'];
+        const fiber = createFiberFixture({
+            memoizedState: createHookList(
+                { memoizedState: ref },
+                { memoizedState: { create: jest.fn(), deps, destroy: null } },
+                { memoizedState: ['memoized value', ['input']] }
+            ),
+            tag: ReactFiberTag.FunctionComponent
+        });
+
+        expect(getHooks(fiber)).toEqual([
+            { index: 0, name: 'Hook 0', type: 'ref', value: ref },
+            { index: 1, name: 'Hook 1', type: 'effect', value: deps },
+            {
+                index: 2,
+                name: 'Hook 2',
+                type: 'memo',
+                value: 'memoized value'
+            }
+        ]);
+    });
+
+    it('extracts useContext dependencies after memoized hook slots', () => {
+        const context = { displayName: 'ThemeContext' };
+        const fiber = createFiberFixture({
+            dependencies: {
+                firstContext: {
+                    context,
+                    memoizedValue: 'dark',
+                    next: {
+                        context: { displayName: 'LocaleContext' },
+                        memoizedValue: 'en-US',
+                        next: null
+                    }
+                }
+            },
+            memoizedState: createHookList({ memoizedState: 0, queue: {} }),
+            tag: ReactFiberTag.FunctionComponent
+        });
+
+        expect(getHooks(fiber)).toEqual([
+            { index: 0, name: 'Hook 0', type: 'state', value: 0 },
+            { index: 1, name: 'Hook 1', type: 'context', value: 'dark' },
+            { index: 2, name: 'Hook 2', type: 'context', value: 'en-US' }
+        ]);
+    });
+
+    it('creates a displayable hooks section with inferred type annotations', () => {
+        const fiber = createFiberFixture({
+            dependencies: {
+                firstContext: {
+                    memoizedValue: 'light',
+                    next: null
+                }
+            },
+            memoizedState: createHookList(
+                { memoizedState: false, queue: {} },
+                { memoizedState: { current: null } }
+            ),
+            tag: ReactFiberTag.FunctionComponent
+        });
+
+        expect(getHooksStateSection(fiber)).toEqual({
+            fields: [
+                { name: 'Hook 0 (state)', value: false },
+                { name: 'Hook 1 (ref)', value: { current: null } },
+                { name: 'Hook 2 (context)', value: 'light' }
+            ],
+            name: 'hooks'
+        });
+    });
+
+    it('stops hook extraction when hook or context dependency lists cycle', () => {
+        const hook: HookFixture = {
+            memoizedState: 'first',
+            next: null,
+            queue: {}
+        };
+        hook.next = hook;
+        const contextDependency = {
+            memoizedValue: 'cyclic',
+            next: null as null | Record<string, unknown>
+        };
+        contextDependency.next = contextDependency;
+
+        const fiber = createFiberFixture({
+            dependencies: { firstContext: contextDependency },
+            memoizedState: hook,
+            tag: ReactFiberTag.FunctionComponent
+        });
+
+        expect(getHooks(fiber)).toEqual([
+            { index: 0, name: 'Hook 0', type: 'state', value: 'first' },
+            { index: 1, name: 'Hook 1', type: 'context', value: 'cyclic' }
+        ]);
+    });
 });
 
 function createFiberFixture(options: {
+    dependencies?: ReactFiber['dependencies'];
     memoizedProps?: unknown;
+    memoizedState?: unknown;
     tag: ReactFiberTag;
 }): ReactFiber {
     return {
@@ -108,14 +242,14 @@ function createFiberFixture(options: {
         child: null,
         childLanes: 0,
         deletions: null,
-        dependencies: null,
+        dependencies: options.dependencies ?? null,
         elementType: null,
         flags: 0,
         index: 0,
         key: null,
         lanes: 0,
         memoizedProps: options.memoizedProps ?? null,
-        memoizedState: null,
+        memoizedState: options.memoizedState ?? null,
         mode: 1,
         pendingProps: null,
         ref: null,
@@ -129,4 +263,23 @@ function createFiberFixture(options: {
         type: null,
         updateQueue: null
     };
+}
+
+interface HookFixture {
+    memoizedState: unknown;
+    next?: null | HookFixture;
+    queue?: unknown;
+}
+
+function createHookList(
+    firstHook: HookFixture,
+    ...remainingHooks: HookFixture[]
+): HookFixture {
+    const hooks = [firstHook, ...remainingHooks];
+
+    for (let index = 0; index < hooks.length; index += 1) {
+        hooks[index].next = hooks[index + 1] ?? null;
+    }
+
+    return firstHook;
 }
