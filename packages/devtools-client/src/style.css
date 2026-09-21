@@ -1,0 +1,10 @@
+.dt-client-shell {
+    box-sizing: border-box;
+    min-height: 100vh;
+    padding: 16px;
+}
+
+.dt-client-shell__copy {
+    color: var(--dt-fg-muted);
+    margin: 0;
+}
