@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
 
+export type NotificationTone = 'info' | 'success' | 'warning' | 'danger';
+
 export function Card({
     children,
     title
