@@ -4,7 +4,69 @@
     padding: 16px;
 }
 
+.dt-client-shell__header {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.dt-client-shell__header h1 {
+    font-size: 18px;
+    line-height: 1.25;
+    margin: 0;
+}
+
+.dt-client-shell__nav {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.dt-client-shell__tab {
+    border: 1px solid var(--dt-border);
+    border-radius: 6px;
+    color: var(--dt-fg-muted);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 7px 10px;
+    text-decoration: none;
+}
+
+.dt-client-shell__tab--active {
+    background: var(--dt-accent);
+    border-color: var(--dt-accent);
+    color: #ffffff;
+}
+
+.dt-client-shell__page {
+    align-items: flex-start;
+    display: grid;
+    gap: 12px;
+}
+
 .dt-client-shell__copy {
     color: var(--dt-fg-muted);
     margin: 0;
+}
+
+.dt-client-shell__badge {
+    border: 1px solid var(--dt-border);
+    border-radius: 999px;
+    color: var(--dt-fg-muted);
+    display: inline-flex;
+    font-size: 12px;
+    font-weight: 700;
+    justify-self: start;
+    padding: 4px 8px;
+}
+
+.dt-client-shell__badge--success {
+    border-color: var(--dt-success);
+    color: var(--dt-success);
+}
+
+.dt-client-shell__badge--info {
+    border-color: var(--dt-info);
+    color: var(--dt-info);
 }

@@ -21,6 +21,7 @@ const config: Config.InitialOptions = {
     },
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
     moduleNameMapper: {
+        '^@devtools/kit$': '<rootDir>/tests/kitMock.ts',
         '^@devtools/ui$': '<rootDir>/tests/uiMock.tsx',
         '^@devtools/ui/style.css$': 'identity-obj-proxy',
         '\\.(css)$': 'identity-obj-proxy'
