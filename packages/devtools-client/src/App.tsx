@@ -11,6 +11,7 @@ import {
 import { Card, ThemeProvider, type NotificationTone } from '@devtools/ui';
 import '@devtools/ui/style.css';
 import './style.css';
+import { ResizableSplitPane } from './components/layout';
 import {
     BUILT_IN_ROUTES,
     initializeClientRouteRegistry,
@@ -110,6 +111,10 @@ function ClientShell() {
 }
 
 function RoutePage({ route }: { route: ClientRoute }) {
+    if (route.id === 'components') {
+        return <ComponentsPage />;
+    }
+
     return (
         <Card title={route.label}>
             <section
@@ -126,6 +131,68 @@ function RoutePage({ route }: { route: ClientRoute }) {
                     {route.kind}
                 </span>
             </section>
+        </Card>
+    );
+}
+
+function ComponentsPage() {
+    return (
+        <section
+            aria-label="Components page"
+            className="dt-client-shell__page dt-client-shell__page--flush"
+        >
+            <ResizableSplitPane
+                left={<ComponentTreePlaceholder />}
+                leftLabel="Component tree"
+                right={<ComponentDetailPlaceholder />}
+                rightLabel="Component details"
+                storageKey="devtools.client.components.splitRatio"
+            />
+        </section>
+    );
+}
+
+function ComponentTreePlaceholder() {
+    return (
+        <Card title="Component tree">
+            <div className="dt-components-tree">
+                <button className="dt-components-tree__node" type="button">
+                    App
+                </button>
+                <button
+                    className="dt-components-tree__node dt-components-tree__node--child"
+                    type="button"
+                >
+                    RouterProvider
+                </button>
+                <button
+                    className="dt-components-tree__node dt-components-tree__node--child"
+                    type="button"
+                >
+                    DevToolsPanel
+                </button>
+            </div>
+        </Card>
+    );
+}
+
+function ComponentDetailPlaceholder() {
+    return (
+        <Card title="Selected component">
+            <dl className="dt-components-detail">
+                <div>
+                    <dt>Name</dt>
+                    <dd>DevToolsPanel</dd>
+                </div>
+                <div>
+                    <dt>Props</dt>
+                    <dd>Inspectable state will appear here.</dd>
+                </div>
+                <div>
+                    <dt>Hooks</dt>
+                    <dd>Hook values are reserved for the next panel pass.</dd>
+                </div>
+            </dl>
         </Card>
     );
 }
