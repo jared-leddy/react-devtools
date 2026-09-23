@@ -6,7 +6,6 @@ const config: Config.InitialOptions = {
         '!src/**/*.d.ts',
         '!src/main.tsx',
         '!src/pages/**',
-        '!src/components/tree/**',
         '!src/components/state/**'
     ],
     coverageDirectory: 'coverage',
