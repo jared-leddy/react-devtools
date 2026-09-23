@@ -8,19 +8,37 @@ import {
 
 export interface ComponentTreeNode {
     children?: ComponentTreeNode[];
+    elementId?: string;
     id: string;
     label: string;
+    rootId?: string;
+    tags?: string[];
     type?: string;
+}
+
+export interface TreeHighlightRequest {
+    componentId: string;
+    elementId?: string;
+    rootId: string;
+}
+
+export interface TreeHighlightBridge {
+    highlightComponent?: (request: TreeHighlightRequest) => void;
+    highlightElement?: (request: TreeHighlightRequest) => void;
+    unhighlightElement?: () => void;
 }
 
 export interface VirtualizedComponentTreeProps {
     defaultExpandedIds?: string[];
     height?: number;
+    highlightBridge?: TreeHighlightBridge;
     initialSelectedId?: string;
     nodes: ComponentTreeNode[];
+    onSelectedIdChange?: (id: string) => void;
     overscanCount?: number;
     rowHeight?: number;
     scrollToId?: string;
+    selectedId?: string;
 }
 
 interface FlattenedTreeNode {
@@ -31,6 +49,7 @@ interface FlattenedTreeNode {
 
 interface TreeRowProps {
     expandedIds: Set<string>;
+    highlightBridge?: TreeHighlightBridge;
     onSelect: (id: string) => void;
     onToggle: (id: string) => void;
     rows: FlattenedTreeNode[];
@@ -43,11 +62,14 @@ const DEFAULT_TREE_HEIGHT = 360;
 export function VirtualizedComponentTree({
     defaultExpandedIds,
     height = DEFAULT_TREE_HEIGHT,
+    highlightBridge,
     initialSelectedId,
     nodes,
+    onSelectedIdChange,
     overscanCount = 6,
     rowHeight = DEFAULT_ROW_HEIGHT,
-    scrollToId
+    scrollToId,
+    selectedId: controlledSelectedId
 }: VirtualizedComponentTreeProps) {
     const listRef = useRef<ListImperativeAPI | null>(null);
     const computedDefaultExpandedIds = useMemo(
@@ -60,11 +82,14 @@ export function VirtualizedComponentTree({
     const [selectedId, setSelectedId] = useState(
         () => initialSelectedId ?? findFirstNodeId(nodes) ?? ''
     );
+    const activeSelectedId = controlledSelectedId ?? selectedId;
     const rows = useMemo(
         () => flattenTree(nodes, expandedIds),
         [expandedIds, nodes]
     );
-    const selectedIndex = rows.findIndex((row) => row.node.id === selectedId);
+    const selectedIndex = rows.findIndex(
+        (row) => row.node.id === activeSelectedId
+    );
     const requestedScrollIndex = rows.findIndex(
         (row) => row.node.id === scrollToId
     );
@@ -91,6 +116,13 @@ export function VirtualizedComponentTree({
             return nextIds;
         });
     }, []);
+    const selectNode = useCallback(
+        (id: string) => {
+            setSelectedId(id);
+            onSelectedIdChange?.(id);
+        },
+        [onSelectedIdChange]
+    );
 
     const rowKey = useCallback(
         (index: number, data: TreeRowProps) =>
@@ -118,10 +150,11 @@ export function VirtualizedComponentTree({
                 rowKey={rowKey}
                 rowProps={{
                     expandedIds,
-                    onSelect: setSelectedId,
+                    highlightBridge,
+                    onSelect: selectNode,
                     onToggle: toggleNode,
                     rows,
-                    selectedId
+                    selectedId: activeSelectedId
                 }}
                 style={{ height }}
             />
@@ -136,10 +169,18 @@ export function generateSyntheticComponentTree(
     return Array.from({ length: groupCount }, (_, groupIndex) => ({
         id: `component-group-${groupIndex}`,
         label: `ComponentGroup${groupIndex}`,
+        rootId: 'synthetic-root',
+        tags: ['root'],
         type: 'section',
         children: Array.from({ length: childrenPerGroup }, (_, childIndex) => ({
+            elementId: `element-${groupIndex}-${childIndex}`,
             id: `component-group-${groupIndex}-child-${childIndex}`,
             label: `ComponentLeaf${groupIndex}_${childIndex}`,
+            rootId: 'synthetic-root',
+            tags:
+                childIndex % 5 === 0
+                    ? ['memoized', 'interactive']
+                    : ['rendered'],
             type: childIndex % 3 === 0 ? 'memo' : 'function'
         }))
     }));
@@ -161,6 +202,7 @@ export function collectExpandableIds(nodes: ComponentTreeNode[]): string[] {
 function TreeRow({
     ariaAttributes,
     expandedIds,
+    highlightBridge,
     index,
     onSelect,
     onToggle,
@@ -176,6 +218,12 @@ function TreeRow({
 
     const isExpanded = expandedIds.has(row.node.id);
     const isSelected = row.node.id === selectedId;
+    const rootId = row.node.rootId ?? 'unknown-root';
+    const highlightRequest: TreeHighlightRequest = {
+        componentId: row.node.id,
+        elementId: row.node.elementId,
+        rootId
+    };
 
     return (
         <div
@@ -187,6 +235,13 @@ function TreeRow({
                 isSelected ? ' dt-components-tree__row--selected' : ''
             }`}
             data-node-id={row.node.id}
+            onMouseEnter={() => {
+                highlightBridge?.highlightElement?.(highlightRequest);
+                highlightBridge?.highlightComponent?.(highlightRequest);
+            }}
+            onMouseLeave={() => {
+                highlightBridge?.unhighlightElement?.();
+            }}
             style={style}
         >
             <button
@@ -208,6 +263,7 @@ function TreeRow({
                 {row.hasChildren ? (isExpanded ? 'v' : '>') : ''}
             </button>
             <button
+                aria-pressed={isSelected}
                 className="dt-components-tree__node"
                 onClick={() => {
                     onSelect(row.node.id);
@@ -222,9 +278,33 @@ function TreeRow({
                         {row.node.type}
                     </span>
                 ) : null}
+                {row.node.tags?.map((tag) => (
+                    <span className="dt-components-tree__tag" key={tag}>
+                        {tag}
+                    </span>
+                ))}
             </button>
         </div>
     );
+}
+
+export function findComponentTreeNode(
+    nodes: ComponentTreeNode[],
+    id: string
+): ComponentTreeNode | undefined {
+    for (const node of nodes) {
+        if (node.id === id) {
+            return node;
+        }
+
+        const childMatch = findComponentTreeNode(node.children ?? [], id);
+
+        if (childMatch) {
+            return childMatch;
+        }
+    }
+
+    return undefined;
 }
 
 function flattenTree(

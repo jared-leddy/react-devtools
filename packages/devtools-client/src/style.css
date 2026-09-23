@@ -205,6 +205,11 @@
     outline: 0;
 }
 
+.dt-components-tree__node[aria-pressed='true'] {
+    color: var(--dt-accent);
+    font-weight: 700;
+}
+
 .dt-components-tree__label {
     min-width: 0;
     overflow: hidden;
@@ -216,6 +221,16 @@
     color: var(--dt-fg-muted);
     flex: 0 0 auto;
     font-size: 12px;
+}
+
+.dt-components-tree__tag {
+    border: 1px solid var(--dt-border);
+    border-radius: 999px;
+    color: var(--dt-fg-muted);
+    flex: 0 0 auto;
+    font-size: 11px;
+    line-height: 1;
+    padding: 3px 6px;
 }
 
 .dt-components-detail {
