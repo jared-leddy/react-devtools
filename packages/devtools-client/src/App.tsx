@@ -13,6 +13,7 @@ import { Card, ThemeProvider, type NotificationTone } from '@devtools/ui';
 import '@devtools/ui/style.css';
 import './style.css';
 import { ResizableSplitPane } from './components/layout';
+import { StateViewer } from './components/state';
 import {
     VirtualizedComponentTree,
     findComponentTreeNode,
@@ -207,20 +208,23 @@ function ComponentDetailPlaceholder({
 }) {
     return (
         <Card title="Selected component">
-            <dl className="dt-components-detail">
-                <div>
-                    <dt>Name</dt>
-                    <dd>{node?.label ?? 'No component selected'}</dd>
-                </div>
-                <div>
-                    <dt>Component id</dt>
-                    <dd>{node?.id ?? 'None'}</dd>
-                </div>
-                <div>
-                    <dt>Tags</dt>
-                    <dd>{node?.tags?.join(', ') ?? 'None'}</dd>
-                </div>
-            </dl>
+            <div className="dt-components-detail">
+                <dl className="dt-components-detail__summary">
+                    <div>
+                        <dt>Name</dt>
+                        <dd>{node?.label ?? 'No component selected'}</dd>
+                    </div>
+                    <div>
+                        <dt>Component id</dt>
+                        <dd>{node?.id ?? 'None'}</dd>
+                    </div>
+                    <div>
+                        <dt>Tags</dt>
+                        <dd>{node?.tags?.join(', ') ?? 'None'}</dd>
+                    </div>
+                </dl>
+                <StateViewer sections={node?.stateSections ?? []} />
+            </div>
         </Card>
     );
 }

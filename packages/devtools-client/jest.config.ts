@@ -5,8 +5,7 @@ const config: Config.InitialOptions = {
         'src/**/*.{ts,tsx}',
         '!src/**/*.d.ts',
         '!src/main.tsx',
-        '!src/pages/**',
-        '!src/components/state/**'
+        '!src/pages/**'
     ],
     coverageDirectory: 'coverage',
     coverageReporters: ['text', 'html', 'lcov'],

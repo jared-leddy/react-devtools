@@ -239,18 +239,144 @@
     margin: 0;
 }
 
-.dt-components-detail div {
+.dt-components-detail__summary {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+}
+
+.dt-components-detail__summary div {
     display: grid;
     gap: 4px;
 }
 
-.dt-components-detail dt {
+.dt-components-detail__summary dt {
     color: var(--dt-fg-muted);
     font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
 }
 
-.dt-components-detail dd {
+.dt-components-detail__summary dd {
+    margin: 0;
+}
+
+.dt-state-viewer {
+    border-top: 1px solid var(--dt-border);
+    display: grid;
+    gap: 14px;
+    padding-top: 12px;
+}
+
+.dt-state-viewer__toolbar {
+    align-items: center;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.dt-state-viewer__status,
+.dt-state-viewer__readonly,
+.dt-state-viewer__type {
+    border: 1px solid var(--dt-border);
+    border-radius: 999px;
+    color: var(--dt-fg-muted);
+    display: inline-flex;
+    flex: 0 0 auto;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 3px 6px;
+}
+
+.dt-state-viewer__section {
+    display: grid;
+    gap: 8px;
+}
+
+.dt-state-viewer__section h3 {
+    font-size: 13px;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.dt-state-viewer__fields,
+.dt-state-viewer__children {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+}
+
+.dt-state-viewer__children {
+    border-left: 1px solid var(--dt-border);
+    margin-top: 6px;
+    padding-left: 10px;
+}
+
+ol.dt-state-viewer__children {
+    list-style: none;
+    padding-left: 10px;
+}
+
+.dt-state-viewer__field,
+.dt-state-viewer__child {
+    align-items: baseline;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: minmax(88px, 0.34fr) minmax(0, 1fr);
+    min-width: 0;
+}
+
+.dt-state-viewer__field dt,
+.dt-state-viewer__key {
+    color: var(--dt-fg-muted);
+    font-family:
+        ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        'Liberation Mono', 'Courier New', monospace;
+    font-size: 12px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.dt-state-viewer__field dd,
+.dt-state-viewer__child dd {
+    margin: 0;
+    min-width: 0;
+}
+
+.dt-state-viewer__value,
+.dt-state-viewer__preview {
+    font-family:
+        ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        'Liberation Mono', 'Courier New', monospace;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.dt-state-viewer__value--boolean,
+.dt-state-viewer__value--number {
+    color: var(--dt-accent);
+}
+
+.dt-state-viewer__value--null,
+.dt-state-viewer__value--custom,
+.dt-state-viewer__preview {
+    color: var(--dt-fg-muted);
+}
+
+.dt-state-viewer__custom,
+.dt-state-viewer__custom-summary {
+    display: inline-grid;
+    gap: 6px;
+    min-width: 0;
+}
+
+.dt-state-viewer__custom-summary {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.dt-state-viewer__empty {
+    color: var(--dt-fg-muted);
     margin: 0;
 }
