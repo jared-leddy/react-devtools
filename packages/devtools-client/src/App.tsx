@@ -6,6 +6,7 @@ import {
     Navigate,
     Route,
     Routes,
+    useSearchParams,
     type MemoryRouterProps
 } from 'react-router';
 import { Card, ThemeProvider, type NotificationTone } from '@devtools/ui';
@@ -14,6 +15,7 @@ import './style.css';
 import { ResizableSplitPane } from './components/layout';
 import {
     VirtualizedComponentTree,
+    findComponentTreeNode,
     generateSyntheticComponentTree
 } from './components/tree';
 import {
@@ -141,15 +143,37 @@ function RoutePage({ route }: { route: ClientRoute }) {
 }
 
 function ComponentsPage() {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const requestedComponentId = searchParams.get('componentId');
+    const selectedComponent =
+        (requestedComponentId
+            ? findComponentTreeNode(
+                  syntheticComponentTree,
+                  requestedComponentId
+              )
+            : undefined) ??
+        findComponentTreeNode(
+            syntheticComponentTree,
+            'component-group-0-child-0'
+        );
+    const selectedComponentId = selectedComponent?.id;
+
     return (
         <section
             aria-label="Components page"
             className="dt-client-shell__page dt-client-shell__page--flush"
         >
             <ResizableSplitPane
-                left={<ComponentTreePlaceholder />}
+                left={
+                    <ComponentTreePlaceholder
+                        onSelectedIdChange={(componentId) => {
+                            setSearchParams({ componentId });
+                        }}
+                        selectedId={selectedComponentId}
+                    />
+                }
                 leftLabel="Component tree"
-                right={<ComponentDetailPlaceholder />}
+                right={<ComponentDetailPlaceholder node={selectedComponent} />}
                 rightLabel="Component details"
                 storageKey="devtools.client.components.splitRatio"
             />
@@ -157,32 +181,44 @@ function ComponentsPage() {
     );
 }
 
-function ComponentTreePlaceholder() {
+function ComponentTreePlaceholder({
+    onSelectedIdChange,
+    selectedId
+}: {
+    onSelectedIdChange: (id: string) => void;
+    selectedId?: string;
+}) {
     return (
         <Card title="Component tree">
             <VirtualizedComponentTree
                 initialSelectedId="component-group-0-child-0"
                 nodes={syntheticComponentTree}
+                onSelectedIdChange={onSelectedIdChange}
+                selectedId={selectedId}
             />
         </Card>
     );
 }
 
-function ComponentDetailPlaceholder() {
+function ComponentDetailPlaceholder({
+    node
+}: {
+    node?: ReturnType<typeof findComponentTreeNode>;
+}) {
     return (
         <Card title="Selected component">
             <dl className="dt-components-detail">
                 <div>
                     <dt>Name</dt>
-                    <dd>DevToolsPanel</dd>
+                    <dd>{node?.label ?? 'No component selected'}</dd>
                 </div>
                 <div>
-                    <dt>Props</dt>
-                    <dd>Inspectable state will appear here.</dd>
+                    <dt>Component id</dt>
+                    <dd>{node?.id ?? 'None'}</dd>
                 </div>
                 <div>
-                    <dt>Hooks</dt>
-                    <dd>Hook values are reserved for the next panel pass.</dd>
+                    <dt>Tags</dt>
+                    <dd>{node?.tags?.join(', ') ?? 'None'}</dd>
                 </div>
             </dl>
         </Card>

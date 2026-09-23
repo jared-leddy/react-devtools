@@ -142,6 +142,29 @@ describe('@devtools/client App routing', () => {
         ).toHaveAttribute('aria-valuenow', '42');
     });
 
+    it('syncs selected component state from the route and updates details after selection', () => {
+        render(
+            <App
+                initialEntries={[
+                    '/components?componentId=component-group-0-child-5'
+                ]}
+            />
+        );
+
+        expect(screen.getAllByText('ComponentLeaf0_5')).toHaveLength(2);
+        expect(
+            screen.getByText('component-group-0-child-5')
+        ).toBeInTheDocument();
+
+        const nextTreeLabel = screen.getAllByText('ComponentLeaf0_6')[0];
+        fireEvent.click(nextTreeLabel.closest('button') as Element);
+
+        expect(screen.getAllByText('ComponentLeaf0_6')).toHaveLength(2);
+        expect(
+            screen.getByText('component-group-0-child-6')
+        ).toBeInTheDocument();
+    });
+
     it('updates and persists the components split ratio after dragging the divider', () => {
         const { unmount } = render(<App initialEntries={['/components']} />);
         const splitPane = screen.getByRole('region', {

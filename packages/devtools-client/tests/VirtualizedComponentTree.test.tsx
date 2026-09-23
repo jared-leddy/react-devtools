@@ -105,4 +105,51 @@ describe('VirtualizedComponentTree', () => {
             ).toHaveAttribute('aria-selected', 'true');
         });
     });
+
+    it('selects a row and reports hover highlight lifecycle through the bridge', () => {
+        const highlightElement = jest.fn();
+        const highlightComponent = jest.fn();
+        const unhighlightElement = jest.fn();
+        const handleSelectedIdChange = jest.fn();
+
+        render(
+            <VirtualizedComponentTree
+                height={180}
+                highlightBridge={{
+                    highlightComponent,
+                    highlightElement,
+                    unhighlightElement
+                }}
+                nodes={largeTree}
+                onSelectedIdChange={handleSelectedIdChange}
+                rowHeight={30}
+            />
+        );
+
+        const targetLabel = screen.getByText('ComponentLeaf0_5');
+        const targetRow = targetLabel.closest('[data-node-id]');
+
+        expect(targetRow).toBeInTheDocument();
+
+        fireEvent.mouseEnter(targetRow as Element);
+        expect(highlightElement).toHaveBeenCalledWith({
+            componentId: 'component-group-0-child-5',
+            elementId: 'element-0-5',
+            rootId: 'synthetic-root'
+        });
+        expect(highlightComponent).toHaveBeenCalledWith({
+            componentId: 'component-group-0-child-5',
+            elementId: 'element-0-5',
+            rootId: 'synthetic-root'
+        });
+
+        fireEvent.mouseLeave(targetRow as Element);
+        expect(unhighlightElement).toHaveBeenCalledTimes(1);
+
+        fireEvent.click(targetLabel.closest('button') as Element);
+        expect(handleSelectedIdChange).toHaveBeenCalledWith(
+            'component-group-0-child-5'
+        );
+        expect(targetRow).toHaveAttribute('aria-selected', 'true');
+    });
 });
