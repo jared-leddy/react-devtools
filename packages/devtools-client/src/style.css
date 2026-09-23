@@ -45,6 +45,10 @@
     gap: 12px;
 }
 
+.dt-client-shell__page--flush {
+    align-items: stretch;
+}
+
 .dt-client-shell__copy {
     color: var(--dt-fg-muted);
     margin: 0;
@@ -69,4 +73,110 @@
 .dt-client-shell__badge--info {
     border-color: var(--dt-info);
     color: var(--dt-info);
+}
+
+.dt-split-pane {
+    align-items: stretch;
+    border: 1px solid var(--dt-border);
+    border-radius: 8px;
+    box-sizing: border-box;
+    display: flex;
+    min-height: 420px;
+    overflow: hidden;
+}
+
+.dt-split-pane--resizing {
+    cursor: col-resize;
+    user-select: none;
+}
+
+.dt-split-pane__pane {
+    box-sizing: border-box;
+    min-width: 0;
+    overflow: auto;
+    padding: 12px;
+}
+
+.dt-split-pane__pane--left {
+    background: var(--dt-bg-muted);
+}
+
+.dt-split-pane__pane--right {
+    background: var(--dt-bg);
+}
+
+.dt-split-pane__divider {
+    align-self: stretch;
+    background: var(--dt-border);
+    border: 0;
+    cursor: col-resize;
+    flex: 0 0 10px;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+.dt-split-pane__divider::after {
+    background: var(--dt-fg-muted);
+    border-radius: 999px;
+    content: '';
+    height: 48px;
+    left: 50%;
+    opacity: 0.55;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 2px;
+}
+
+.dt-split-pane__divider:focus-visible {
+    outline: 2px solid var(--dt-accent);
+    outline-offset: -2px;
+}
+
+.dt-components-tree {
+    display: grid;
+    gap: 6px;
+}
+
+.dt-components-tree__node {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: var(--dt-fg);
+    font: inherit;
+    padding: 6px 8px;
+    text-align: left;
+}
+
+.dt-components-tree__node--child {
+    margin-left: 16px;
+}
+
+.dt-components-tree__node:focus-visible,
+.dt-components-tree__node:hover {
+    background: var(--dt-bg);
+    border-color: var(--dt-border);
+}
+
+.dt-components-detail {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+}
+
+.dt-components-detail div {
+    display: grid;
+    gap: 4px;
+}
+
+.dt-components-detail dt {
+    color: var(--dt-fg-muted);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.dt-components-detail dd {
+    margin: 0;
 }
