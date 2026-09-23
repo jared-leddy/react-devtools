@@ -10,6 +10,6 @@
         "tests",
         "jest.setup.ts",
         "vite.config.ts",
-        "vite.standalone.config.ts"
+        "vite.lib.config.ts"
     ]
 }
