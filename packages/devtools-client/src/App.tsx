@@ -13,6 +13,10 @@ import '@devtools/ui/style.css';
 import './style.css';
 import { ResizableSplitPane } from './components/layout';
 import {
+    VirtualizedComponentTree,
+    generateSyntheticComponentTree
+} from './components/tree';
+import {
     BUILT_IN_ROUTES,
     initializeClientRouteRegistry,
     subscribeToClientRoutes,
@@ -31,6 +35,7 @@ const placeholderToneByKind: Record<ClientRoute['kind'], NotificationTone> = {
     customTab: 'info',
     page: 'success'
 };
+const syntheticComponentTree = generateSyntheticComponentTree();
 
 function ClientShell() {
     const routeSnapshot = useSyncExternalStore(
@@ -155,23 +160,10 @@ function ComponentsPage() {
 function ComponentTreePlaceholder() {
     return (
         <Card title="Component tree">
-            <div className="dt-components-tree">
-                <button className="dt-components-tree__node" type="button">
-                    App
-                </button>
-                <button
-                    className="dt-components-tree__node dt-components-tree__node--child"
-                    type="button"
-                >
-                    RouterProvider
-                </button>
-                <button
-                    className="dt-components-tree__node dt-components-tree__node--child"
-                    type="button"
-                >
-                    DevToolsPanel
-                </button>
-            </div>
+            <VirtualizedComponentTree
+                initialSelectedId="component-group-0-child-0"
+                nodes={syntheticComponentTree}
+            />
         </Card>
     );
 }
