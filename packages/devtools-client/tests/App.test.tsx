@@ -21,6 +21,7 @@ import {
     resetClientRouteRegistryForTests,
     resetClientSettingsForTests,
     setClientSettingsStorageForTests,
+    setClientSetting,
     setClientRouteEnvironment,
     setClientRuntimeState
 } from '../src';
@@ -38,11 +39,6 @@ describe('@devtools/client App routing', () => {
 
     it.each([
         [
-            '/overview',
-            'Overview',
-            'High-level runtime and connection overview.'
-        ],
-        [
             '/timeline',
             'Timeline',
             'Timeline route reserved for future profiling work.'
@@ -59,6 +55,70 @@ describe('@devtools/client App routing', () => {
         expect(screen.getByLabelText(`${heading} page`)).toHaveTextContent(
             summary
         );
+    });
+
+    it('renders the Overview tab with runtime diagnostics', () => {
+        render(<App initialEntries={['/overview']} />);
+
+        expect(
+            screen.getByRole('heading', { name: 'Overview' })
+        ).toBeInTheDocument();
+        expect(screen.getByLabelText('Overview page')).toHaveTextContent(
+            'Standalone'
+        );
+        expect(screen.getByText('Primary renderer')).toBeInTheDocument();
+        expect(screen.getByText('React 18.3.1')).toBeInTheDocument();
+        expect(screen.getByText('App root')).toBeInTheDocument();
+        expect(screen.getByText('#root')).toBeInTheDocument();
+        expect(screen.getByText('Standalone client')).toBeInTheDocument();
+        expect(screen.getAllByText('12.4 ms')).toHaveLength(2);
+    });
+
+    it('renders Overview diagnostics for integrations and performance settings', () => {
+        addCustomTab({
+            category: 'third-party',
+            name: 'module-health',
+            title: 'Module Health'
+        });
+        setClientRouteEnvironment({
+            capabilities: ['react-router', 'source-inspector'],
+            transport: 'vite'
+        });
+        setClientSetting('highPerformanceMode', true);
+        setClientSetting('timelineRecording', true);
+
+        render(<App initialEntries={['/overview']} />);
+
+        expect(screen.getByLabelText('Overview page')).toHaveTextContent(
+            'Vite'
+        );
+        expect(screen.getAllByText('React Router')).toHaveLength(2);
+        expect(screen.getAllByText('Source Inspector')).toHaveLength(2);
+        expect(screen.getAllByText('Module Health')).toHaveLength(2);
+        expect(
+            screen.getByText('High performance mode').nextSibling
+        ).toHaveTextContent('Enabled');
+        expect(
+            screen.getByText('Timeline recording').nextSibling
+        ).toHaveTextContent('Enabled');
+    });
+
+    it('uses Overview to explain missing React trees', () => {
+        setClientRouteEnvironment({ transport: 'iframe' });
+        setClientRuntimeState({
+            reactStatus: 'not-detected',
+            rootStatus: 'empty'
+        });
+
+        render(<App initialEntries={['/overview']} />);
+
+        expect(
+            screen.getByRole('heading', { name: 'Overview' })
+        ).toBeInTheDocument();
+        expect(screen.getByText('Overlay iframe')).toBeInTheDocument();
+        expect(screen.getByText('No renderers detected')).toBeInTheDocument();
+        expect(screen.getByText('No roots found')).toBeInTheDocument();
+        expect(screen.getAllByText('No commits recorded')).toHaveLength(2);
     });
 
     it('renders the Settings page controls', () => {
@@ -112,7 +172,7 @@ describe('@devtools/client App routing', () => {
         (connectionStatus, heading, label, copy) => {
             setClientRuntimeState({ connectionStatus });
 
-            render(<App initialEntries={['/overview']} />);
+            render(<App initialEntries={['/components']} />);
 
             expect(
                 screen.getByRole('heading', { name: heading })
@@ -124,7 +184,7 @@ describe('@devtools/client App routing', () => {
     it('renders a no-React-detected state after connection', () => {
         setClientRuntimeState({ reactStatus: 'not-detected' });
 
-        render(<App initialEntries={['/overview']} />);
+        render(<App initialEntries={['/components']} />);
 
         expect(
             screen.getByRole('heading', { name: 'No React detected' })
