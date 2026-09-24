@@ -6,3 +6,4 @@ export * from './commands';
 export * from './mount';
 export * from './routing';
 export * from './runtime';
+export * from './settings';

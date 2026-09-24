@@ -15,9 +15,12 @@ import {
 } from '@devtools/kit';
 import {
     App,
+    getClientSettingsSnapshot,
     resetClientCommandRegistryForTests,
     resetClientRuntimeForTests,
     resetClientRouteRegistryForTests,
+    resetClientSettingsForTests,
+    setClientSettingsStorageForTests,
     setClientRouteEnvironment,
     setClientRuntimeState
 } from '../src';
@@ -28,6 +31,7 @@ describe('@devtools/client App routing', () => {
         resetClientCommandRegistryForTests();
         resetClientRuntimeForTests();
         resetClientRouteRegistryForTests();
+        resetClientSettingsForTests();
         resetDevToolsPluginRegistry();
         jest.restoreAllMocks();
     });
@@ -42,8 +46,7 @@ describe('@devtools/client App routing', () => {
             '/timeline',
             'Timeline',
             'Timeline route reserved for future profiling work.'
-        ],
-        ['/settings', 'Settings', 'Panel preferences and plugin settings.']
+        ]
     ])('renders %s', (path, heading, summary) => {
         render(<App initialEntries={[path]} />);
 
@@ -56,6 +59,17 @@ describe('@devtools/client App routing', () => {
         expect(screen.getByLabelText(`${heading} page`)).toHaveTextContent(
             summary
         );
+    });
+
+    it('renders the Settings page controls', () => {
+        render(<App initialEntries={['/settings']} />);
+
+        expect(
+            screen.getByRole('heading', { name: 'Settings' })
+        ).toBeInTheDocument();
+        expect(screen.getByLabelText('Theme')).toBeInTheDocument();
+        expect(screen.getByLabelText('Panel layout')).toBeInTheDocument();
+        expect(screen.getByLabelText('Settings JSON')).toBeInTheDocument();
     });
 
     it('redirects the root route to overview', () => {
@@ -292,7 +306,7 @@ describe('@devtools/client App routing', () => {
         ).toBeInTheDocument();
     });
 
-    it('toggles the client theme from the shell header', () => {
+    it('toggles and persists the client theme from the shell header', async () => {
         render(<App initialEntries={['/overview']} />);
 
         const themeToggle = screen.getByRole('button', { name: 'Dark' });
@@ -302,10 +316,109 @@ describe('@devtools/client App routing', () => {
 
         fireEvent.click(themeToggle);
 
-        expect(themeRoot).toHaveAttribute('data-theme', 'light');
+        await waitFor(() => {
+            expect(themeRoot).toHaveAttribute('data-theme', 'light');
+        });
         expect(
             screen.getByRole('button', { name: 'Light' })
         ).toBeInTheDocument();
+        expect(
+            window.localStorage.getItem('devtools.client.settings')
+        ).toContain('"theme":"light"');
+    });
+
+    it('persists settings across remounts', () => {
+        const { unmount } = render(<App initialEntries={['/settings']} />);
+
+        fireEvent.change(screen.getByLabelText('Panel layout'), {
+            target: { value: 'compact' }
+        });
+        fireEvent.click(screen.getByLabelText('High performance mode'));
+        fireEvent.change(screen.getByLabelText('Tree filter'), {
+            target: { value: 'Provider' }
+        });
+
+        expect(
+            window.localStorage.getItem('devtools.client.settings')
+        ).toContain('"panelLayout":"compact"');
+
+        unmount();
+        render(<App initialEntries={['/settings']} />);
+
+        expect(screen.getByLabelText('Panel layout')).toHaveValue('compact');
+        expect(screen.getByLabelText('High performance mode')).toBeChecked();
+        expect(screen.getByLabelText('Tree filter')).toHaveValue('Provider');
+    });
+
+    it('imports, exports, and resets settings from the Settings page', async () => {
+        render(<App initialEntries={['/settings']} />);
+
+        fireEvent.change(screen.getByLabelText('Theme'), {
+            target: { value: 'light' }
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Export' }));
+
+        expect(
+            (screen.getByLabelText('Settings JSON') as HTMLTextAreaElement)
+                .value
+        ).toContain('"theme": "light"');
+
+        fireEvent.change(screen.getByLabelText('Settings JSON'), {
+            target: {
+                value: JSON.stringify({
+                    highPerformanceMode: true,
+                    panelLayout: 'compact',
+                    reduceMotion: true,
+                    stateFilter: 'hooks',
+                    theme: 'dark',
+                    timelineRecording: true,
+                    treeFilter: 'Provider'
+                })
+            }
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Import' }));
+
+        expect(
+            await screen.findByText('Settings imported.')
+        ).toBeInTheDocument();
+        expect(screen.getByLabelText('Theme')).toHaveValue('dark');
+        expect(screen.getByLabelText('Panel layout')).toHaveValue('compact');
+        expect(screen.getByLabelText('Reduce motion')).toBeChecked();
+        expect(screen.getByLabelText('Timeline recording')).toBeChecked();
+        expect(screen.getByLabelText('State filter')).toHaveValue('hooks');
+
+        fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+
+        expect(screen.getByLabelText('Theme')).toHaveValue('dark');
+        expect(screen.getByLabelText('Panel layout')).toHaveValue(
+            'comfortable'
+        );
+        expect(screen.getByLabelText('Reduce motion')).not.toBeChecked();
+        expect(screen.getByLabelText('Settings JSON')).toHaveValue('');
+    });
+
+    it('can persist settings through a custom storage adapter', () => {
+        const values = new Map<string, string>();
+
+        setClientSettingsStorageForTests({
+            getItem: (key) => values.get(key) ?? null,
+            removeItem: (key) => {
+                values.delete(key);
+            },
+            setItem: (key, value) => {
+                values.set(key, value);
+            }
+        });
+
+        render(<App initialEntries={['/settings']} />);
+        fireEvent.change(screen.getByLabelText('State filter'), {
+            target: { value: 'stateful' }
+        });
+
+        expect(getClientSettingsSnapshot().stateFilter).toBe('stateful');
+        expect(Array.from(values.values()).join('\n')).toContain(
+            '"stateFilter":"stateful"'
+        );
     });
 
     it('opens the command palette with the keyboard shortcut and filters commands', () => {

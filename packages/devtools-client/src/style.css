@@ -48,6 +48,21 @@
     outline: 0;
 }
 
+.dt-client-shell[data-panel-layout='compact'] {
+    padding: 10px;
+}
+
+.dt-client-shell[data-panel-layout='compact'] .dt-client-shell__header {
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.dt-client-shell[data-reduce-motion='true'] *,
+.dt-client-shell[data-reduce-motion='true'] *::before,
+.dt-client-shell[data-reduce-motion='true'] *::after {
+    transition-duration: 0s;
+}
+
 .dt-client-shell__nav {
     align-items: center;
     display: flex;
@@ -151,6 +166,92 @@
 }
 
 .dt-empty-pane p {
+    margin: 0;
+}
+
+.dt-client-filters,
+.dt-settings-grid,
+.dt-settings-actions {
+    align-items: end;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.dt-client-filters label,
+.dt-settings-page label {
+    color: var(--dt-fg-muted);
+    display: grid;
+    flex: 1 1 180px;
+    font-size: 12px;
+    font-weight: 700;
+    gap: 5px;
+}
+
+.dt-client-filters input,
+.dt-settings-page input,
+.dt-settings-page select,
+.dt-settings-page textarea {
+    background: var(--dt-bg-muted);
+    border: 1px solid var(--dt-border);
+    border-radius: 6px;
+    box-sizing: border-box;
+    color: var(--dt-fg);
+    font: inherit;
+    min-height: 34px;
+    padding: 0 10px;
+}
+
+.dt-settings-page {
+    display: grid;
+    gap: 14px;
+}
+
+.dt-settings-check {
+    align-items: center;
+    color: var(--dt-fg);
+    display: flex;
+    flex: 0 1 220px;
+    font-size: 13px;
+    gap: 8px;
+}
+
+.dt-settings-check input {
+    min-height: auto;
+    padding: 0;
+}
+
+.dt-settings-actions button {
+    background: var(--dt-bg-muted);
+    border: 1px solid var(--dt-border);
+    border-radius: 6px;
+    color: var(--dt-fg);
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    min-height: 34px;
+    padding: 0 12px;
+}
+
+.dt-settings-actions button:focus-visible,
+.dt-settings-actions button:hover,
+.dt-client-filters input:focus,
+.dt-settings-page input:focus,
+.dt-settings-page select:focus,
+.dt-settings-page textarea:focus {
+    border-color: var(--dt-focus);
+    outline: 0;
+}
+
+.dt-settings-page textarea {
+    min-height: 120px;
+    padding: 10px;
+    resize: vertical;
+}
+
+.dt-settings-status {
+    color: var(--dt-fg-muted);
     margin: 0;
 }
 

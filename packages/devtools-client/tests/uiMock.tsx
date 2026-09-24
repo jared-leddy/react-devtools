@@ -6,6 +6,7 @@ export type NotificationTone = 'info' | 'success' | 'warning' | 'danger';
 type ThemeMode = 'dark' | 'light';
 
 const ThemeContext = createContext<{
+    setTheme: (theme: ThemeMode) => void;
     theme: ThemeMode;
     toggleTheme: () => void;
 } | null>(null);
@@ -25,10 +26,17 @@ export function Card({
     );
 }
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
-    const [theme, setTheme] = useState<ThemeMode>('dark');
+export function ThemeProvider({
+    children,
+    defaultTheme = 'dark'
+}: {
+    children: ReactNode;
+    defaultTheme?: ThemeMode;
+}) {
+    const [theme, setTheme] = useState<ThemeMode>(defaultTheme);
     const value = useMemo(
         () => ({
+            setTheme,
             theme,
             toggleTheme: () => {
                 setTheme((current) => (current === 'dark' ? 'light' : 'dark'));
@@ -46,12 +54,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     );
 }
 
-export function ThemeToggle() {
+export function useTheme() {
     const context = useContext(ThemeContext);
 
     if (!context) {
-        throw new Error('ThemeToggle must be used within ThemeProvider.');
+        throw new Error('useTheme must be used within ThemeProvider.');
     }
+
+    return context;
+}
+
+export function ThemeToggle() {
+    const context = useTheme();
 
     return (
         <button onClick={context.toggleTheme}>
