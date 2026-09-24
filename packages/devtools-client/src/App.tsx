@@ -44,6 +44,7 @@ import {
     subscribeToClientCommands,
     type ClientCommand
 } from './commands';
+import { AssetsPage } from './assets';
 import { ResizableSplitPane } from './components/layout';
 import {
     StateViewer,
@@ -487,6 +488,10 @@ function RoutePage({
                 settingsSnapshot={settingsSnapshot}
             />
         );
+    }
+
+    if (route.id === 'assets') {
+        return <AssetsPage />;
     }
 
     if (route.id === 'settings') {

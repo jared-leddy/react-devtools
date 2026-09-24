@@ -10,9 +10,12 @@ import {
 import {
     addCustomCommand,
     addCustomTab,
+    clearViteClientContext,
     resetDevToolsPluginRegistry,
     removeCustomCommand,
-    setupDevToolsPlugin
+    setupDevToolsPlugin,
+    setViteClientContext,
+    type ViteHotContextLike
 } from '@devtools/kit';
 import {
     App,
@@ -27,6 +30,106 @@ import {
     setClientRuntimeState
 } from '../src';
 
+const VITE_TRANSPORT_EVENT = 'react-devtools:vite-transport-message';
+const VITE_ASSET_RPC_LIST_REQUEST = 'devtools:assets:list';
+const VITE_ASSET_RPC_LIST_RESPONSE = 'devtools:assets:list:response';
+const VITE_ASSET_RPC_READ_REQUEST = 'devtools:assets:read';
+const VITE_ASSET_RPC_READ_RESPONSE = 'devtools:assets:read:response';
+const VITE_ASSET_UPDATE_EVENT = 'devtools:assets:update';
+
+interface TestAssetRecord {
+    filePath: string;
+    image?: {
+        height?: number;
+        type: string;
+        width?: number;
+    };
+    importers?: string[];
+    kind: 'audio' | 'font' | 'image' | 'other' | 'text' | 'video' | 'wasm';
+    mtime: number;
+    publicPath: string;
+    relativePath: string;
+    size: number;
+}
+
+interface TestAssetHotContext extends ViteHotContextLike {
+    emitAssetUpdate: () => void;
+    setAssets: (assets: TestAssetRecord[]) => void;
+}
+
+function createAssetRecord(
+    asset: Partial<TestAssetRecord> &
+        Pick<TestAssetRecord, 'kind' | 'relativePath'>
+): TestAssetRecord {
+    return {
+        ...asset,
+        filePath: `/project/${asset.relativePath}`,
+        kind: asset.kind,
+        mtime: Date.UTC(2026, 8, 24, 4, 0, 0),
+        publicPath: `/@fs/project/${asset.relativePath}`,
+        relativePath: asset.relativePath,
+        size: asset.size ?? 128
+    };
+}
+
+function createAssetHotContext(
+    assets: TestAssetRecord[],
+    options: { readResult?: unknown } = {}
+): TestAssetHotContext {
+    const handlers = new Map<string, Set<(payload: unknown) => void>>();
+    let currentAssets = assets;
+    const emit = (event: string, payload: unknown) => {
+        handlers.get(event)?.forEach((handler) => {
+            handler(JSON.stringify(payload));
+        });
+    };
+
+    return {
+        emitAssetUpdate() {
+            emit(VITE_TRANSPORT_EVENT, { type: VITE_ASSET_UPDATE_EVENT });
+        },
+        off(event, handler) {
+            handlers.get(event)?.delete(handler);
+        },
+        on(event, handler) {
+            const eventHandlers = handlers.get(event) ?? new Set();
+            eventHandlers.add(handler);
+            handlers.set(event, eventHandlers);
+        },
+        send(event, payload) {
+            const request =
+                typeof payload === 'string'
+                    ? (JSON.parse(payload) as Record<string, unknown>)
+                    : {};
+
+            if (request.type === VITE_ASSET_RPC_LIST_REQUEST) {
+                emit(event, {
+                    assets: currentAssets,
+                    requestId: request.requestId,
+                    type: VITE_ASSET_RPC_LIST_RESPONSE
+                });
+            }
+
+            if (request.type === VITE_ASSET_RPC_READ_REQUEST) {
+                emit(event, {
+                    requestId: request.requestId,
+                    result: options.readResult ?? {
+                        content: 'body { color: red; }',
+                        encoding: 'utf8',
+                        filePath: request.filePath,
+                        kind: 'text',
+                        truncated: false
+                    },
+                    type: VITE_ASSET_RPC_READ_RESPONSE
+                });
+            }
+        },
+        setAssets(nextAssets) {
+            currentAssets = nextAssets;
+        }
+    };
+}
+
 describe('@devtools/client App routing', () => {
     afterEach(() => {
         window.localStorage.clear();
@@ -34,6 +137,7 @@ describe('@devtools/client App routing', () => {
         resetClientRuntimeForTests();
         resetClientRouteRegistryForTests();
         resetClientSettingsForTests();
+        clearViteClientContext();
         resetDevToolsPluginRegistry();
         jest.restoreAllMocks();
     });
@@ -258,6 +362,203 @@ describe('@devtools/client App routing', () => {
         expect(
             screen.getByRole('heading', { name: 'Not found' })
         ).toBeInTheDocument();
+    });
+
+    it('renders the Vite Assets tab with filters, previews, importers, and editor actions', async () => {
+        const fetchMock = jest.fn().mockResolvedValue({ ok: true } as Response);
+        Object.defineProperty(window, 'fetch', {
+            configurable: true,
+            value: fetchMock
+        });
+        setClientRouteEnvironment({ transport: 'vite' });
+        setViteClientContext(
+            createAssetHotContext([
+                createAssetRecord({
+                    image: { height: 24, type: 'png', width: 32 },
+                    importers: ['src/App.tsx'],
+                    kind: 'image',
+                    relativePath: 'src/logo.png',
+                    size: 2048
+                }),
+                createAssetRecord({
+                    kind: 'text',
+                    relativePath: 'src/notes.txt',
+                    size: 18
+                }),
+                createAssetRecord({
+                    kind: 'font',
+                    relativePath: 'public/inter.woff2',
+                    size: 4096
+                })
+            ])
+        );
+
+        render(<App initialEntries={['/assets']} />);
+
+        expect(await screen.findAllByText('logo.png')).toHaveLength(2);
+        expect(screen.getByLabelText('Assets page')).toHaveTextContent(
+            '3 of 3 assets'
+        );
+        expect(screen.getByText('src/App.tsx')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole('button', { name: 'Open in editor' }));
+        await waitFor(() => {
+            expect(fetchMock).toHaveBeenCalledWith(
+                '/__open-in-editor?file=/project/src/logo.png'
+            );
+        });
+        expect(
+            await screen.findByText('Editor request sent')
+        ).toBeInTheDocument();
+
+        fireEvent.change(screen.getByLabelText('Search assets'), {
+            target: { value: 'notes' }
+        });
+        expect(screen.getAllByText('notes.txt')).toHaveLength(2);
+        expect(
+            await screen.findByText('body { color: red; }')
+        ).toBeInTheDocument();
+
+        fireEvent.change(screen.getByLabelText('Filter assets by type'), {
+            target: { value: 'font' }
+        });
+        expect(screen.getByText('No matching assets')).toBeInTheDocument();
+
+        fireEvent.change(screen.getByLabelText('Search assets'), {
+            target: { value: '' }
+        });
+        expect(screen.getAllByText('inter.woff2')).toHaveLength(2);
+
+        fireEvent.click(screen.getByRole('button', { name: 'List' }));
+        expect(screen.getByRole('button', { name: 'List' })).toHaveAttribute(
+            'aria-pressed',
+            'true'
+        );
+    });
+
+    it('shows an Assets tab connection failure without a Vite hot context', async () => {
+        setClientRouteEnvironment({ transport: 'vite' });
+
+        render(<App initialEntries={['/assets']} />);
+
+        expect(
+            await screen.findByText('Asset explorer unavailable')
+        ).toBeInTheDocument();
+        expect(screen.getByText('No matching assets')).toBeInTheDocument();
+        expect(screen.getByText('Select an asset')).toBeInTheDocument();
+    });
+
+    it('renders alternate asset previews and handles editor failures', async () => {
+        const fetchMock = jest
+            .fn()
+            .mockRejectedValue(new Error('missing route'));
+        Object.defineProperty(window, 'fetch', {
+            configurable: true,
+            value: fetchMock
+        });
+        setClientRouteEnvironment({ transport: 'vite' });
+        setViteClientContext(
+            createAssetHotContext([
+                createAssetRecord({
+                    kind: 'font',
+                    relativePath: 'public/inter.woff2',
+                    size: 2048 * 1024
+                }),
+                createAssetRecord({
+                    kind: 'video',
+                    relativePath: 'public/clip.mp4',
+                    size: 512
+                }),
+                createAssetRecord({
+                    kind: 'wasm',
+                    relativePath: 'src/module.wasm',
+                    size: 512
+                })
+            ])
+        );
+
+        render(<App initialEntries={['/assets']} />);
+
+        expect(
+            await screen.findByText('Aa Bb Cc 123 React DevTools')
+        ).toBeInTheDocument();
+        expect(screen.getByText('2.0 MB')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole('button', { name: 'Open in editor' }));
+        expect(
+            await screen.findByText('Editor unavailable')
+        ).toBeInTheDocument();
+
+        fireEvent.change(screen.getByLabelText('Filter assets by type'), {
+            target: { value: 'video' }
+        });
+        expect(screen.getAllByText('Video').length).toBeGreaterThan(0);
+
+        fireEvent.change(screen.getByLabelText('Filter assets by type'), {
+            target: { value: 'all' }
+        });
+        fireEvent.change(screen.getByLabelText('Filter assets by extension'), {
+            target: { value: '.wasm' }
+        });
+        expect(screen.getAllByText('Wasm').length).toBeGreaterThan(0);
+    });
+
+    it('falls back when text asset preview payloads are invalid', async () => {
+        setClientRouteEnvironment({ transport: 'vite' });
+        setViteClientContext(
+            createAssetHotContext(
+                [
+                    createAssetRecord({
+                        kind: 'text',
+                        relativePath: 'src/broken.txt',
+                        size: 32
+                    })
+                ],
+                { readResult: { content: false } }
+            )
+        );
+
+        render(<App initialEntries={['/assets']} />);
+
+        expect(
+            await screen.findByText('Text preview unavailable')
+        ).toBeInTheDocument();
+    });
+
+    it('caps large Vite asset lists and refreshes after update events', async () => {
+        const hot = createAssetHotContext(
+            Array.from({ length: 250 }, (_, index) =>
+                createAssetRecord({
+                    kind: 'image',
+                    relativePath: `src/assets/icon-${index}.png`,
+                    size: index + 1
+                })
+            )
+        );
+        setClientRouteEnvironment({ transport: 'vite' });
+        setViteClientContext(hot);
+
+        render(<App initialEntries={['/assets']} />);
+
+        expect(await screen.findAllByText('icon-0.png')).toHaveLength(2);
+        expect(screen.getByText(/showing first 240/)).toBeInTheDocument();
+        expect(screen.queryByText('icon-249.png')).not.toBeInTheDocument();
+
+        hot.setAssets([
+            createAssetRecord({
+                kind: 'image',
+                relativePath: 'src/assets/refreshed.png',
+                size: 128
+            })
+        ]);
+        act(() => {
+            hot.emitAssetUpdate();
+        });
+
+        expect(await screen.findAllByText('refreshed.png')).toHaveLength(2);
+        expect(screen.getByLabelText('Assets page')).toHaveTextContent(
+            '1 of 1 assets'
+        );
     });
 
     it('shows adapter routes after integration detection', () => {

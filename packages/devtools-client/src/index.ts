@@ -1,4 +1,5 @@
 export * from './App';
+export * from './assets';
 export * from './components/layout';
 export * from './components/state';
 export * from './components/tree';
