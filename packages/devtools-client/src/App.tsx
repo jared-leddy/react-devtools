@@ -39,6 +39,13 @@ import {
     generateSyntheticComponentTree
 } from './components/tree';
 import {
+    getClientOverviewSnapshot,
+    type ClientOverviewIntegration,
+    type ClientOverviewRenderer,
+    type ClientOverviewRoot,
+    type ClientOverviewSnapshot
+} from './overview';
+import {
     getClientRouteCategories,
     getPersistedLastClientRoutePath,
     getVisibleClientRoutes,
@@ -380,6 +387,18 @@ function RoutePage({
 }) {
     const runtimeBlock = getRuntimeBlock(runtimeSnapshot);
 
+    if (route.id === 'overview') {
+        const routeSnapshot = initializeClientRouteRegistry();
+        const overviewSnapshot = getClientOverviewSnapshot({
+            routeSnapshot,
+            runtimeSnapshot,
+            settingsSnapshot,
+            visibleRouteCount: getVisibleClientRoutes(routeSnapshot).length
+        });
+
+        return <OverviewPage snapshot={overviewSnapshot} />;
+    }
+
     if (runtimeBlock) {
         return <RuntimeStatePage state={runtimeBlock} />;
     }
@@ -414,6 +433,171 @@ function RoutePage({
                 </span>
             </section>
         </Card>
+    );
+}
+
+function OverviewPage({ snapshot }: { snapshot: ClientOverviewSnapshot }) {
+    return (
+        <section
+            aria-label="Overview page"
+            className="dt-client-shell__page dt-overview-page"
+        >
+            <Card title="Overview">
+                <div className="dt-overview-summary">
+                    <OverviewMetric
+                        label="Transport"
+                        value={formatOverviewValue(
+                            snapshot.diagnostics.deliveryMode
+                        )}
+                    />
+                    <OverviewMetric
+                        label="Connection"
+                        value={formatOverviewValue(
+                            snapshot.diagnostics.connectionStatus
+                        )}
+                    />
+                    <OverviewMetric
+                        label="Last commit"
+                        value={snapshot.diagnostics.lastCommitTime}
+                    />
+                    <OverviewMetric
+                        label="Routes"
+                        value={String(snapshot.diagnostics.visibleRouteCount)}
+                    />
+                </div>
+            </Card>
+            <div className="dt-overview-grid">
+                <Card title="React renderers">
+                    <RendererList renderers={snapshot.renderers} />
+                </Card>
+                <Card title="Roots">
+                    <RootList roots={snapshot.roots} />
+                </Card>
+                <Card title="Integrations">
+                    <IntegrationList integrations={snapshot.integrations} />
+                </Card>
+                <Card title="Performance diagnostics">
+                    <dl className="dt-overview-details">
+                        <OverviewDetail
+                            label="High performance mode"
+                            value={
+                                snapshot.diagnostics.highPerformanceMode
+                                    ? 'Enabled'
+                                    : 'Disabled'
+                            }
+                        />
+                        <OverviewDetail
+                            label="Timeline recording"
+                            value={
+                                snapshot.diagnostics.timelineRecording
+                                    ? 'Enabled'
+                                    : 'Disabled'
+                            }
+                        />
+                        <OverviewDetail
+                            label="Last commit time"
+                            value={snapshot.diagnostics.lastCommitTime}
+                        />
+                    </dl>
+                </Card>
+            </div>
+        </section>
+    );
+}
+
+function OverviewMetric({ label, value }: { label: string; value: string }) {
+    return (
+        <dl className="dt-overview-metric">
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+        </dl>
+    );
+}
+
+function OverviewDetail({ label, value }: { label: string; value: string }) {
+    return (
+        <div>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+        </div>
+    );
+}
+
+function RendererList({ renderers }: { renderers: ClientOverviewRenderer[] }) {
+    if (renderers.length === 0) {
+        return (
+            <EmptyPane
+                label="No renderers detected"
+                message="The inspected page is connected, but no React renderer has reported yet."
+            />
+        );
+    }
+
+    return (
+        <ul className="dt-overview-list">
+            {renderers.map((renderer) => (
+                <li key={renderer.id}>
+                    <strong>{renderer.name}</strong>
+                    <span>{renderer.rendererPackage}</span>
+                    <span>React {renderer.reactVersion}</span>
+                    <span
+                        className={`dt-client-shell__badge dt-client-shell__badge--${
+                            renderer.status === 'unsupported'
+                                ? 'warning'
+                                : 'success'
+                        }`}
+                    >
+                        {formatOverviewValue(renderer.status)}
+                    </span>
+                </li>
+            ))}
+        </ul>
+    );
+}
+
+function RootList({ roots }: { roots: ClientOverviewRoot[] }) {
+    if (roots.length === 0) {
+        return (
+            <EmptyPane
+                label="No roots found"
+                message="React was not detected yet, so there are no mounted roots to inspect."
+            />
+        );
+    }
+
+    return (
+        <ul className="dt-overview-list">
+            {roots.map((root) => (
+                <li key={root.id}>
+                    <strong>{root.name}</strong>
+                    <span>{root.id}</span>
+                    <span>{root.mountContainer}</span>
+                    <span>Renderer {root.rendererId}</span>
+                    <div className="dt-overview-tags">
+                        <span>{formatOverviewValue(root.status)}</span>
+                        {root.isIframe ? <span>iframe</span> : null}
+                        {root.isPortal ? <span>portal</span> : null}
+                    </div>
+                </li>
+            ))}
+        </ul>
+    );
+}
+
+function IntegrationList({
+    integrations
+}: {
+    integrations: ClientOverviewIntegration[];
+}) {
+    return (
+        <ul className="dt-overview-list">
+            {integrations.map((integration) => (
+                <li key={integration.id}>
+                    <strong>{integration.label}</strong>
+                    <span>{formatOverviewValue(integration.source)}</span>
+                </li>
+            ))}
+        </ul>
     );
 }
 
@@ -814,6 +998,13 @@ function EmptyPane({ label, message }: { label: string; message: string }) {
             <p>{message}</p>
         </div>
     );
+}
+
+function formatOverviewValue(value: string): string {
+    return value
+        .split('-')
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(' ');
 }
 
 function getRuntimeBlock(snapshot: ClientRuntimeSnapshot): {
