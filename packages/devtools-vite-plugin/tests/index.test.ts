@@ -11,13 +11,20 @@ import {
     VITE_ASSET_RPC_READ_REQUEST,
     VITE_ASSET_RPC_READ_RESPONSE,
     VITE_ASSET_UPDATE_EVENT,
+    VITE_GRAPH_RPC_GET_REQUEST,
+    VITE_GRAPH_RPC_GET_RESPONSE,
+    VITE_GRAPH_UPDATE_EVENT,
     classifyAsset,
+    classifyViteGraphModule,
     createOverlayScriptTag,
     getDefaultClientDir,
     getDefaultOverlayDir,
+    getViteModuleGraphSnapshot,
     handleViteAssetRpcPayload,
+    handleViteGraphRpcPayload,
     injectOverlayScript,
     installViteAssetRpc,
+    installViteGraphRpc,
     listViteAssets,
     normalizeServePath,
     reactDevtools,
@@ -153,6 +160,90 @@ function createWebpBuffer(width: number, height: number) {
     buffer.writeUIntLE(height - 1, 27, 3);
 
     return buffer;
+}
+
+interface TestModuleNode {
+    file?: string;
+    id: string;
+    importedModules: Set<TestModuleNode>;
+    importers: Set<TestModuleNode>;
+    isEntry?: boolean;
+    url: string;
+}
+
+function createModuleNode(
+    id: string,
+    options: { file?: string; isEntry?: boolean; url?: string } = {}
+): TestModuleNode {
+    return {
+        file: options.file,
+        id,
+        importedModules: new Set(),
+        importers: new Set(),
+        isEntry: options.isEntry,
+        url: options.url ?? id
+    };
+}
+
+function linkModule(
+    importer: TestModuleNode,
+    dependency: TestModuleNode
+): void {
+    importer.importedModules.add(dependency);
+    dependency.importers.add(importer);
+}
+
+function createModuleGraphFixture() {
+    const root = '/project';
+    const app = createModuleNode('/project/src/App.tsx', {
+        file: '/project/src/App.tsx',
+        isEntry: true,
+        url: '/src/App.tsx'
+    });
+    const button = createModuleNode('/project/src/Button.jsx', {
+        file: '/project/src/Button.jsx',
+        url: '/src/Button.jsx'
+    });
+    const theme = createModuleNode('/project/src/theme.css', {
+        file: '/project/src/theme.css',
+        url: '/src/theme.css'
+    });
+    const data = createModuleNode('/project/src/data.json', {
+        file: '/project/src/data.json',
+        url: '/src/data.json'
+    });
+    const logo = createModuleNode('/project/public/logo.svg', {
+        file: '/project/public/logo.svg',
+        url: '/public/logo.svg'
+    });
+    const html = createModuleNode('/project/index.html', {
+        file: '/project/index.html',
+        isEntry: true,
+        url: '/index.html'
+    });
+
+    linkModule(html, app);
+    linkModule(app, button);
+    linkModule(app, theme);
+    linkModule(app, data);
+    linkModule(app, logo);
+
+    const modules = [app, button, theme, data, logo, html];
+
+    return {
+        modules,
+        root,
+        server: {
+            moduleGraph: {
+                idToModuleMap: new Map(
+                    modules.map((moduleNode) => [moduleNode.id, moduleNode])
+                ),
+                urlToModuleMap: new Map(
+                    modules.map((moduleNode) => [moduleNode.url, moduleNode])
+                )
+            }
+        }
+    };
 }
 
 async function requestMiddleware(
@@ -697,6 +788,7 @@ describe('reactDevtools', () => {
         const on = jest.fn();
         const plugin = reactDevtools({
             assets: false,
+            graph: false,
             clientDir: '/tmp/client'
         });
         const configureServer = plugin.configureServer as (
@@ -717,6 +809,217 @@ describe('reactDevtools', () => {
             VITE_TRANSPORT_EVENT,
             expect.any(Function)
         );
+    });
+
+    it('normalizes the Vite module graph into modules and import edges', () => {
+        const { root, server } = createModuleGraphFixture();
+        const graph = getViteModuleGraphSnapshot(server as never, { root });
+
+        expect(
+            graph.modules.map((moduleNode) => moduleNode.relativePath)
+        ).toEqual([
+            'index.html',
+            'public/logo.svg',
+            'src/App.tsx',
+            'src/Button.jsx',
+            'src/data.json',
+            'src/theme.css'
+        ]);
+        expect(
+            graph.modules.map((moduleNode) => [
+                moduleNode.relativePath,
+                moduleNode.kind
+            ])
+        ).toEqual([
+            ['index.html', 'html'],
+            ['public/logo.svg', 'asset'],
+            ['src/App.tsx', 'tsx'],
+            ['src/Button.jsx', 'jsx'],
+            ['src/data.json', 'json'],
+            ['src/theme.css', 'css']
+        ]);
+        expect(graph.edges).toEqual([
+            {
+                from: '/project/index.html',
+                kind: 'import',
+                to: '/project/src/App.tsx'
+            },
+            {
+                from: '/project/src/App.tsx',
+                kind: 'import',
+                to: '/project/public/logo.svg'
+            },
+            {
+                from: '/project/src/App.tsx',
+                kind: 'import',
+                to: '/project/src/Button.jsx'
+            },
+            {
+                from: '/project/src/App.tsx',
+                kind: 'import',
+                to: '/project/src/data.json'
+            },
+            {
+                from: '/project/src/App.tsx',
+                kind: 'import',
+                to: '/project/src/theme.css'
+            }
+        ]);
+    });
+
+    it('supports Vite module graph dependency and importer traversal', () => {
+        const { root, server } = createModuleGraphFixture();
+        const dependencies = getViteModuleGraphSnapshot(
+            server as never,
+            { root },
+            {
+                depth: 1,
+                direction: 'dependencies',
+                rootId: '/project/src/App.tsx'
+            }
+        );
+        const importers = getViteModuleGraphSnapshot(
+            server as never,
+            { root },
+            {
+                direction: 'importers',
+                rootId: '/project/src/Button.jsx'
+            }
+        );
+
+        expect(dependencies.modules.map((moduleNode) => moduleNode.id)).toEqual(
+            [
+                '/project/public/logo.svg',
+                '/project/src/App.tsx',
+                '/project/src/Button.jsx',
+                '/project/src/data.json',
+                '/project/src/theme.css'
+            ]
+        );
+        expect(importers.modules.map((moduleNode) => moduleNode.id)).toEqual([
+            '/project/index.html',
+            '/project/src/App.tsx',
+            '/project/src/Button.jsx'
+        ]);
+    });
+
+    it('classifies Vite graph modules by source and asset extension', () => {
+        expect(classifyViteGraphModule('/src/main.js')).toBe('js');
+        expect(classifyViteGraphModule('/src/main.ts')).toBe('ts');
+        expect(classifyViteGraphModule('/src/App.tsx')).toBe('tsx');
+        expect(classifyViteGraphModule('/src/App.jsx')).toBe('jsx');
+        expect(classifyViteGraphModule('/src/theme.css?inline')).toBe('css');
+        expect(classifyViteGraphModule('/index.html')).toBe('html');
+        expect(classifyViteGraphModule('/src/data.json')).toBe('json');
+        expect(classifyViteGraphModule('/src/logo.png')).toBe('asset');
+        expect(classifyViteGraphModule('/src/module.wasm')).toBe('other');
+    });
+
+    it('responds to Vite module graph RPC requests and errors', () => {
+        const { root, server } = createModuleGraphFixture();
+        const posted: ViteTransportPayload[] = [];
+        const channel = {
+            on: jest.fn(),
+            post: (payload: ViteTransportPayload) => {
+                posted.push(payload);
+            }
+        };
+
+        handleViteGraphRpcPayload(channel, server as never, {
+            requestId: 'graph:get:1',
+            rootId: '/project/src/App.tsx',
+            type: VITE_GRAPH_RPC_GET_REQUEST
+        });
+        handleViteGraphRpcPayload(channel, server as never, {
+            requestId: 'graph:get:error',
+            rootId: '/project/src/Missing.tsx',
+            type: VITE_GRAPH_RPC_GET_REQUEST
+        });
+        handleViteGraphRpcPayload(channel, server as never, null, { root });
+        handleViteGraphRpcPayload(channel, server as never, {
+            type: 'unknown'
+        });
+
+        expect(posted[0]).toMatchObject({
+            graph: {
+                edges: expect.any(Array),
+                modules: expect.any(Array)
+            },
+            requestId: 'graph:get:1',
+            type: VITE_GRAPH_RPC_GET_RESPONSE
+        });
+        expect(posted[1]).toMatchObject({
+            error: expect.stringContaining('was not found'),
+            requestId: 'graph:get:error',
+            type: VITE_GRAPH_RPC_GET_RESPONSE
+        });
+        expect(posted).toHaveLength(2);
+    });
+
+    it('emits debounced graph update events on watcher changes', () => {
+        jest.useFakeTimers();
+        const posted: ViteTransportPayload[] = [];
+        const watcherHandlers = new Map<string, () => void>();
+
+        try {
+            installViteGraphRpc(
+                {
+                    moduleGraph: {
+                        idToModuleMap: new Map(),
+                        urlToModuleMap: new Map()
+                    },
+                    watcher: {
+                        on: jest.fn((event: string, handler: () => void) => {
+                            watcherHandlers.set(event, handler);
+                        })
+                    }
+                } as never,
+                {
+                    on: jest.fn(),
+                    post: (payload: ViteTransportPayload) => {
+                        posted.push(payload);
+                    }
+                },
+                { updateDebounceMs: 25 }
+            );
+
+            watcherHandlers.get('add')?.();
+            watcherHandlers.get('unlink')?.();
+            jest.advanceTimersByTime(24);
+            expect(posted).toEqual([]);
+
+            jest.advanceTimersByTime(1);
+            expect(posted).toEqual([{ type: VITE_GRAPH_UPDATE_EVENT }]);
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    it('allows graph RPC registration to be disabled independently', () => {
+        const on = jest.fn();
+        const plugin = reactDevtools({
+            clientDir: '/tmp/client',
+            graph: false
+        });
+        const configureServer = plugin.configureServer as (
+            server: never
+        ) => void;
+
+        configureServer({
+            config: { root: '/project' },
+            middlewares: {
+                use: jest.fn()
+            },
+            watcher: {
+                on: jest.fn()
+            },
+            ws: {
+                on,
+                send: jest.fn()
+            }
+        } as never);
+
+        expect(on).toHaveBeenCalledTimes(1);
     });
 
     it('wires a namespaced Vite websocket transport channel', () => {
