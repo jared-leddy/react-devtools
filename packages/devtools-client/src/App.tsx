@@ -46,6 +46,7 @@ import {
 } from './commands';
 import { AssetsPage } from './assets';
 import { ResizableSplitPane } from './components/layout';
+import { GraphPage } from './graph';
 import {
     StateViewer,
     type StateViewerCustomValue,
@@ -492,6 +493,10 @@ function RoutePage({
 
     if (route.id === 'assets') {
         return <AssetsPage />;
+    }
+
+    if (route.id === 'graph') {
+        return <GraphPage />;
     }
 
     if (route.id === 'settings') {

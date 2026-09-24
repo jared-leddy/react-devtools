@@ -36,6 +36,9 @@ const VITE_ASSET_RPC_LIST_RESPONSE = 'devtools:assets:list:response';
 const VITE_ASSET_RPC_READ_REQUEST = 'devtools:assets:read';
 const VITE_ASSET_RPC_READ_RESPONSE = 'devtools:assets:read:response';
 const VITE_ASSET_UPDATE_EVENT = 'devtools:assets:update';
+const VITE_GRAPH_RPC_GET_REQUEST = 'devtools:graph:get';
+const VITE_GRAPH_RPC_GET_RESPONSE = 'devtools:graph:get:response';
+const VITE_GRAPH_UPDATE_EVENT = 'devtools:graph:update';
 
 interface TestAssetRecord {
     filePath: string;
@@ -55,6 +58,42 @@ interface TestAssetRecord {
 interface TestAssetHotContext extends ViteHotContextLike {
     emitAssetUpdate: () => void;
     setAssets: (assets: TestAssetRecord[]) => void;
+}
+
+interface TestGraphModuleRecord {
+    filePath?: string;
+    id: string;
+    importedIds: string[];
+    importerIds: string[];
+    isEntry: boolean;
+    kind:
+        | 'asset'
+        | 'css'
+        | 'html'
+        | 'js'
+        | 'json'
+        | 'jsx'
+        | 'other'
+        | 'ts'
+        | 'tsx';
+    relativePath?: string;
+    url: string;
+}
+
+interface TestGraphEdgeRecord {
+    from: string;
+    kind: 'import';
+    to: string;
+}
+
+interface TestGraphSnapshot {
+    edges: TestGraphEdgeRecord[];
+    modules: TestGraphModuleRecord[];
+}
+
+interface TestGraphHotContext extends ViteHotContextLike {
+    emitGraphUpdate: () => void;
+    setGraph: (graph: TestGraphSnapshot) => void;
 }
 
 function createAssetRecord(
@@ -126,6 +165,75 @@ function createAssetHotContext(
         },
         setAssets(nextAssets) {
             currentAssets = nextAssets;
+        }
+    };
+}
+
+function createGraphModuleRecord(
+    moduleNode: Partial<TestGraphModuleRecord> &
+        Pick<TestGraphModuleRecord, 'id' | 'kind' | 'relativePath'>
+): TestGraphModuleRecord {
+    return {
+        filePath: moduleNode.filePath ?? `/project/${moduleNode.relativePath}`,
+        id: moduleNode.id,
+        importedIds: moduleNode.importedIds ?? [],
+        importerIds: moduleNode.importerIds ?? [],
+        isEntry: moduleNode.isEntry ?? false,
+        kind: moduleNode.kind,
+        relativePath: moduleNode.relativePath,
+        url: moduleNode.url ?? `/${moduleNode.relativePath}`
+    };
+}
+
+function createGraphHotContext(
+    graph: TestGraphSnapshot,
+    options: { responseError?: string } = {}
+): TestGraphHotContext {
+    const handlers = new Map<string, Set<(payload: unknown) => void>>();
+    let currentGraph = graph;
+    const emit = (event: string, payload: unknown) => {
+        handlers.get(event)?.forEach((handler) => {
+            handler(JSON.stringify(payload));
+        });
+    };
+
+    return {
+        emitGraphUpdate() {
+            emit(VITE_TRANSPORT_EVENT, { type: VITE_GRAPH_UPDATE_EVENT });
+        },
+        off(event, handler) {
+            handlers.get(event)?.delete(handler);
+        },
+        on(event, handler) {
+            const eventHandlers = handlers.get(event) ?? new Set();
+            eventHandlers.add(handler);
+            handlers.set(event, eventHandlers);
+        },
+        send(event, payload) {
+            const request =
+                typeof payload === 'string'
+                    ? (JSON.parse(payload) as Record<string, unknown>)
+                    : {};
+
+            if (request.type === VITE_GRAPH_RPC_GET_REQUEST) {
+                emit(
+                    event,
+                    options.responseError
+                        ? {
+                              error: options.responseError,
+                              requestId: request.requestId,
+                              type: VITE_GRAPH_RPC_GET_RESPONSE
+                          }
+                        : {
+                              graph: currentGraph,
+                              requestId: request.requestId,
+                              type: VITE_GRAPH_RPC_GET_RESPONSE
+                          }
+                );
+            }
+        },
+        setGraph(nextGraph) {
+            currentGraph = nextGraph;
         }
     };
 }
@@ -331,11 +439,23 @@ describe('@devtools/client App routing', () => {
         ).not.toBeInTheDocument();
     });
 
-    it('shows Vite-only tabs when the active transport is Vite', () => {
+    it('shows Vite-only tabs when the active transport is Vite', async () => {
         setClientRouteEnvironment({
             capabilities: ['source-inspector'],
             transport: 'vite'
         });
+        setViteClientContext(
+            createGraphHotContext({
+                edges: [],
+                modules: [
+                    createGraphModuleRecord({
+                        id: '/project/src/App.tsx',
+                        kind: 'tsx',
+                        relativePath: 'src/App.tsx'
+                    })
+                ]
+            })
+        );
 
         render(<App initialEntries={['/graph']} />);
 
@@ -346,9 +466,9 @@ describe('@devtools/client App routing', () => {
         expect(
             screen.getByRole('link', { name: 'Source Inspector' })
         ).toBeInTheDocument();
-        expect(screen.getByLabelText('Graph page')).toHaveTextContent(
-            'Vite module graph and dependency edges.'
-        );
+        expect(
+            await screen.findByText('1 of 1 modules · 0 edges')
+        ).toBeInTheDocument();
     });
 
     it('keeps source inspector gated when only the Vite transport is detected', () => {
@@ -559,6 +679,194 @@ describe('@devtools/client App routing', () => {
         expect(screen.getByLabelText('Assets page')).toHaveTextContent(
             '1 of 1 assets'
         );
+    });
+
+    it('renders the Vite Graph tab with search, filters, relationships, pan/zoom, and editor actions', async () => {
+        const fetchMock = jest.fn().mockResolvedValue({ ok: true } as Response);
+        Object.defineProperty(window, 'fetch', {
+            configurable: true,
+            value: fetchMock
+        });
+        const graph: TestGraphSnapshot = {
+            edges: [
+                {
+                    from: '/project/index.html',
+                    kind: 'import',
+                    to: '/project/src/App.tsx'
+                },
+                {
+                    from: '/project/src/App.tsx',
+                    kind: 'import',
+                    to: '/project/src/Button.jsx'
+                },
+                {
+                    from: '/project/src/Button.jsx',
+                    kind: 'import',
+                    to: '/project/src/theme.css'
+                },
+                {
+                    from: '/project/src/theme.css',
+                    kind: 'import',
+                    to: '/project/src/App.tsx'
+                }
+            ],
+            modules: [
+                createGraphModuleRecord({
+                    id: '/project/src/App.tsx',
+                    importedIds: ['/project/src/Button.jsx'],
+                    importerIds: [
+                        '/project/index.html',
+                        '/project/src/theme.css'
+                    ],
+                    isEntry: true,
+                    kind: 'tsx',
+                    relativePath: 'src/App.tsx'
+                }),
+                createGraphModuleRecord({
+                    id: '/project/index.html',
+                    importedIds: ['/project/src/App.tsx'],
+                    isEntry: true,
+                    kind: 'html',
+                    relativePath: 'index.html'
+                }),
+                createGraphModuleRecord({
+                    id: '/project/src/Button.jsx',
+                    importedIds: ['/project/src/theme.css'],
+                    importerIds: ['/project/src/App.tsx'],
+                    kind: 'jsx',
+                    relativePath: 'src/Button.jsx'
+                }),
+                createGraphModuleRecord({
+                    id: '/project/src/theme.css',
+                    importedIds: ['/project/src/App.tsx'],
+                    importerIds: ['/project/src/Button.jsx'],
+                    kind: 'css',
+                    relativePath: 'src/theme.css'
+                })
+            ]
+        };
+        setClientRouteEnvironment({ transport: 'vite' });
+        setViteClientContext(createGraphHotContext(graph));
+
+        render(<App initialEntries={['/graph']} />);
+
+        expect(
+            await screen.findByText('4 of 4 modules · 4 edges')
+        ).toBeInTheDocument();
+        expect(
+            screen.getByLabelText('Module dependency graph')
+        ).toBeInTheDocument();
+        expect(screen.getAllByText('App.tsx')).toHaveLength(2);
+        expect(screen.getAllByText('Dependencies')).toHaveLength(2);
+        expect(
+            screen.getByRole('button', { name: 'src/Button.jsx' })
+        ).toBeInTheDocument();
+        expect(
+            screen.getAllByRole('button', { name: 'index.html' })
+        ).toHaveLength(2);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Open in editor' }));
+        await waitFor(() => {
+            expect(fetchMock).toHaveBeenCalledWith(
+                '/__open-in-editor?file=/project/src/App.tsx'
+            );
+        });
+        expect(
+            await screen.findByText('Editor request sent')
+        ).toBeInTheDocument();
+
+        fireEvent.change(screen.getByLabelText('Search modules'), {
+            target: { value: 'button' }
+        });
+        expect(
+            screen.getByText('1 of 4 modules · 0 edges')
+        ).toBeInTheDocument();
+        expect(screen.getByText('Button.jsx')).toBeInTheDocument();
+
+        fireEvent.change(screen.getByLabelText('Search modules'), {
+            target: { value: '' }
+        });
+        fireEvent.change(screen.getByLabelText('Filter modules by type'), {
+            target: { value: 'css' }
+        });
+        expect(
+            screen.getByText('1 of 4 modules · 0 edges')
+        ).toBeInTheDocument();
+        expect(screen.getByText('theme.css')).toBeInTheDocument();
+
+        fireEvent.change(screen.getByLabelText('Filter modules by type'), {
+            target: { value: 'all' }
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Dependencies' }));
+        expect(
+            screen.getByText('2 of 4 modules · 1 edges')
+        ).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole('button', { name: '+' }));
+        fireEvent.click(
+            screen.getByRole('button', { name: 'Pan graph right' })
+        );
+        fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+        expect(screen.getByRole('button', { name: 'All' })).toHaveAttribute(
+            'aria-pressed',
+            'false'
+        );
+    });
+
+    it('refreshes the Vite Graph tab after update events and handles connection failures', async () => {
+        const initialGraph: TestGraphSnapshot = {
+            edges: [],
+            modules: [
+                createGraphModuleRecord({
+                    id: '/project/src/App.tsx',
+                    kind: 'tsx',
+                    relativePath: 'src/App.tsx'
+                })
+            ]
+        };
+        const hot = createGraphHotContext(initialGraph);
+        setClientRouteEnvironment({ transport: 'vite' });
+        setViteClientContext(hot);
+
+        render(<App initialEntries={['/graph']} />);
+
+        expect(
+            await screen.findByText('1 of 1 modules · 0 edges')
+        ).toBeInTheDocument();
+
+        hot.setGraph({
+            edges: [
+                {
+                    from: '/project/src/App.tsx',
+                    kind: 'import',
+                    to: '/project/src/Next.ts'
+                }
+            ],
+            modules: [
+                ...initialGraph.modules,
+                createGraphModuleRecord({
+                    id: '/project/src/Next.ts',
+                    importerIds: ['/project/src/App.tsx'],
+                    kind: 'ts',
+                    relativePath: 'src/Next.ts'
+                })
+            ]
+        });
+        act(() => {
+            hot.emitGraphUpdate();
+        });
+
+        expect(
+            await screen.findByText('2 of 2 modules · 1 edges')
+        ).toBeInTheDocument();
+
+        clearViteClientContext();
+        render(<App initialEntries={['/graph']} />);
+
+        expect(
+            await screen.findByText('Graph explorer unavailable')
+        ).toBeInTheDocument();
+        expect(screen.getByText('No matching modules')).toBeInTheDocument();
     });
 
     it('shows adapter routes after integration detection', () => {
