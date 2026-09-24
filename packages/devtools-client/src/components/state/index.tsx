@@ -3,6 +3,16 @@ import { useState, type ReactNode } from 'react';
 export type StateViewerValue =
     boolean | null | number | string | StateViewerCustomValue;
 
+export type StateViewerEditOperation =
+    | {
+          newKey?: string;
+          type: 'set';
+          value: StateViewerValue;
+      }
+    | {
+          type: 'remove';
+      };
+
 export interface StateViewerCustomValue {
     _custom: {
         display: string;
@@ -29,7 +39,10 @@ export interface StateViewerSection {
 
 export interface StateViewerProps {
     emptyLabel?: string;
-    onEditField?: (field: StateViewerField, value: StateViewerValue) => void;
+    onEditField?: (
+        field: StateViewerField,
+        operation: StateViewerEditOperation
+    ) => void;
     sections: StateViewerSection[];
 }
 
@@ -94,11 +107,15 @@ function EditableStateValue({
     onEditField
 }: {
     field: StateViewerField;
-    onEditField?: (field: StateViewerField, value: StateViewerValue) => void;
+    onEditField?: (
+        field: StateViewerField,
+        operation: StateViewerEditOperation
+    ) => void;
 }) {
     const [editValue, setEditValue] = useState(() =>
         getEditableInputValue(field.value)
     );
+    const [editKey, setEditKey] = useState(field.name);
     const canEdit = Boolean(field.editable && onEditField);
 
     if (!canEdit) {
@@ -109,7 +126,14 @@ function EditableStateValue({
         <span className="dt-state-viewer__editor">
             <StateValue value={field.value} />
             <input
-                aria-label={`Edit ${field.name}`}
+                aria-label={`Edit ${field.name} key`}
+                onChange={(event) => {
+                    setEditKey(event.target.value);
+                }}
+                value={editKey}
+            />
+            <textarea
+                aria-label={`Edit ${field.name} value`}
                 onChange={(event) => {
                     setEditValue(event.target.value);
                 }}
@@ -117,14 +141,23 @@ function EditableStateValue({
             />
             <button
                 onClick={() => {
-                    onEditField?.(
-                        field,
-                        coerceEditableValue(editValue, field.value)
-                    );
+                    onEditField?.(field, {
+                        newKey: editKey === field.name ? undefined : editKey,
+                        type: 'set',
+                        value: coerceEditableValue(editValue, field.value)
+                    });
                 }}
                 type="button"
             >
                 Save
+            </button>
+            <button
+                onClick={() => {
+                    onEditField?.(field, { type: 'remove' });
+                }}
+                type="button"
+            >
+                Remove
             </button>
         </span>
     );
@@ -151,6 +184,12 @@ function getEditableInputValue(value: StateViewerValue): string {
         return value;
     }
 
+    if (isCustomValue(value)) {
+        return value._custom.value === undefined
+            ? value._custom.display
+            : JSON.stringify(value._custom.value, null, 2);
+    }
+
     return JSON.stringify(value);
 }
 
@@ -165,7 +204,26 @@ function coerceEditableValue(
     try {
         const parsed = JSON.parse(value) as unknown;
 
-        return isStateViewerValue(parsed) ? parsed : value;
+        if (isStateViewerValue(parsed)) {
+            return parsed;
+        }
+
+        if (isCustomValue(previousValue)) {
+            return {
+                _custom: {
+                    ...previousValue._custom,
+                    display: formatCustomDisplay(parsed),
+                    preview:
+                        typeof parsed === 'object' && parsed !== null
+                            ? JSON.stringify(parsed)
+                            : undefined,
+                    type: Array.isArray(parsed) ? 'array' : typeof parsed,
+                    value: toNestedStateViewerValue(parsed)
+                }
+            };
+        }
+
+        return value;
     } catch {
         return value;
     }
@@ -182,6 +240,68 @@ function isStateViewerValue(value: unknown): value is StateViewerValue {
     }
 
     return isCustomValue(value);
+}
+
+function toNestedStateViewerValue(
+    value: unknown
+): StateViewerCustomValue['_custom']['value'] {
+    if (
+        value === null ||
+        typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean'
+    ) {
+        return value;
+    }
+
+    if (Array.isArray(value)) {
+        return value.map((item) => toStateViewerValue(item));
+    }
+
+    if (typeof value === 'object') {
+        return Object.fromEntries(
+            Object.entries(value as Record<string, unknown>).map(
+                ([key, item]) => [key, toStateViewerValue(item)]
+            )
+        );
+    }
+
+    return String(value);
+}
+
+function toStateViewerValue(value: unknown): StateViewerValue {
+    if (
+        value === null ||
+        typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean'
+    ) {
+        return value;
+    }
+
+    return {
+        _custom: {
+            display: formatCustomDisplay(value),
+            preview:
+                typeof value === 'object' && value !== null
+                    ? JSON.stringify(value)
+                    : undefined,
+            type: Array.isArray(value) ? 'array' : typeof value,
+            value: toNestedStateViewerValue(value)
+        }
+    };
+}
+
+function formatCustomDisplay(value: unknown): string {
+    if (Array.isArray(value)) {
+        return `Array(${value.length})`;
+    }
+
+    if (value && typeof value === 'object') {
+        return 'Object';
+    }
+
+    return String(value);
 }
 
 function CustomStateValue({ value }: { value: StateViewerCustomValue }) {

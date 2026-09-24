@@ -1,6 +1,6 @@
 {
     "name": "@devtools/client",
-    "version": "0.0.15",
+    "version": "0.0.16",
     "private": false,
     "license": "UNLICENSED",
     "description": "React DevTools panel client shell.",

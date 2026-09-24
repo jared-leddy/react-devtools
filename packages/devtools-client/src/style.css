@@ -390,6 +390,7 @@
 .dt-custom-inspector__actions button,
 .dt-custom-inspector__subviews button,
 .dt-state-viewer__editor input,
+.dt-state-viewer__editor textarea,
 .dt-state-viewer__editor button {
     background: var(--dt-bg-muted);
     border: 1px solid var(--dt-border);
@@ -485,6 +486,13 @@
 
 .dt-state-viewer__editor input {
     min-width: 140px;
+}
+
+.dt-state-viewer__editor textarea {
+    min-height: 64px;
+    min-width: min(320px, 100%);
+    padding-block: 8px;
+    resize: vertical;
 }
 
 .dt-custom-tab {
