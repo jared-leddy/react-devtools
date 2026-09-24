@@ -209,6 +209,9 @@ function ClientShell() {
                     >
                         {routeCategories.map((group) => (
                             <div
+                                aria-label={`${formatOverviewValue(
+                                    group.category
+                                )} tabs`}
                                 className="dt-client-shell__nav-group"
                                 data-route-category={group.category}
                                 key={group.category}
@@ -299,6 +302,7 @@ function CommandPalette({
     onRunCommand: (command: ClientCommand) => void;
 }) {
     const inputRef = useRef<HTMLInputElement>(null);
+    const [activeIndex, setActiveIndex] = useState(0);
     const filteredCommands = useMemo(() => {
         const normalizedFilter = filter.trim().toLowerCase();
 
@@ -318,6 +322,12 @@ function CommandPalette({
         inputRef.current?.focus();
     }, []);
 
+    useEffect(() => {
+        setActiveIndex(0);
+    }, [filter]);
+
+    const activeCommand = filteredCommands[activeIndex];
+
     return (
         <div
             aria-label="Command palette"
@@ -325,13 +335,46 @@ function CommandPalette({
             className="dt-command-palette"
             onKeyDown={(event) => {
                 if (event.key === 'Escape') {
+                    event.preventDefault();
                     onClose();
+                }
+
+                if (event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    setActiveIndex((currentIndex) =>
+                        filteredCommands.length === 0
+                            ? 0
+                            : (currentIndex + 1) % filteredCommands.length
+                    );
+                }
+
+                if (event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    setActiveIndex((currentIndex) =>
+                        filteredCommands.length === 0
+                            ? 0
+                            : (currentIndex - 1 + filteredCommands.length) %
+                              filteredCommands.length
+                    );
+                }
+
+                if (event.key === 'Enter' && activeCommand) {
+                    event.preventDefault();
+                    onRunCommand(activeCommand);
                 }
             }}
             role="dialog"
         >
             <div className="dt-command-palette__panel">
                 <input
+                    aria-activedescendant={
+                        activeCommand
+                            ? getCommandPaletteOptionId(activeCommand.id)
+                            : undefined
+                    }
+                    aria-autocomplete="list"
+                    aria-controls="dt-command-palette-list"
+                    aria-expanded="true"
                     aria-label="Search commands"
                     className="dt-command-palette__input"
                     onChange={(event) => {
@@ -342,11 +385,21 @@ function CommandPalette({
                     type="search"
                     value={filter}
                 />
-                <div className="dt-command-palette__list" role="listbox">
+                <div
+                    className="dt-command-palette__list"
+                    id="dt-command-palette-list"
+                    role="listbox"
+                >
                     {filteredCommands.length > 0 ? (
-                        filteredCommands.map((command) => (
+                        filteredCommands.map((command, index) => (
                             <button
-                                className="dt-command-palette__item"
+                                aria-selected={index === activeIndex}
+                                className={`dt-command-palette__item${
+                                    index === activeIndex
+                                        ? ' dt-command-palette__item--active'
+                                        : ''
+                                }`}
+                                id={getCommandPaletteOptionId(command.id)}
                                 key={command.id}
                                 onClick={() => {
                                     onRunCommand(command);
@@ -367,6 +420,10 @@ function CommandPalette({
             </div>
         </div>
     );
+}
+
+function getCommandPaletteOptionId(commandId: string): string {
+    return `dt-command-palette-option-${commandId}`;
 }
 
 function TrackedRoutePage({
@@ -885,7 +942,9 @@ function CustomInspectorPage({
                         {(['inspector', 'about', 'settings'] as const).map(
                             (subview) => (
                                 <button
+                                    aria-controls={`dt-inspector-subview-${subview}`}
                                     aria-pressed={activeSubview === subview}
+                                    aria-selected={activeSubview === subview}
                                     key={subview}
                                     onClick={() => {
                                         setActiveSubview(subview);
@@ -915,82 +974,94 @@ function CustomInspectorPage({
             </Card>
 
             {activeSubview === 'inspector' ? (
-                <ResizableSplitPane
-                    left={
-                        <Card title="Inspector tree">
-                            <CustomInspectorTree
-                                nodes={nodes}
-                                onSelectNode={setSelectedNodeId}
-                                selectedNodeId={selectedNodeId}
-                            />
-                        </Card>
-                    }
-                    leftLabel="Inspector tree"
-                    right={
-                        <Card title="Inspector state">
-                            {selectedNode ? (
-                                <div className="dt-custom-inspector__state">
-                                    <div className="dt-custom-inspector__selection">
-                                        <strong>{selectedNode.label}</strong>
-                                        <span>{selectedNode.id}</span>
-                                    </div>
-                                    {inspector.nodeActions?.length ? (
-                                        <ActionList
-                                            actions={inspector.nodeActions}
-                                            label="Node actions"
-                                            onRunAction={(action) => {
-                                                runAction(action, 'node');
-                                            }}
-                                        />
-                                    ) : null}
-                                    <StateViewer
-                                        emptyLabel={
-                                            inspector.noSelectionText ??
-                                            'No state recorded for this inspector node.'
-                                        }
-                                        onEditField={editField}
-                                        sections={stateSections}
-                                    />
-                                </div>
-                            ) : (
-                                <EmptyPane
-                                    label="No inspector node selected"
-                                    message={
-                                        inspector.noSelectionText ??
-                                        'Select a node from the custom inspector tree.'
-                                    }
+                <div id="dt-inspector-subview-inspector" role="tabpanel">
+                    <ResizableSplitPane
+                        ariaLabel={`${inspector.label} inspector layout`}
+                        left={
+                            <Card title="Inspector tree">
+                                <CustomInspectorTree
+                                    nodes={nodes}
+                                    onSelectNode={setSelectedNodeId}
+                                    selectedNodeId={selectedNodeId}
                                 />
-                            )}
-                        </Card>
-                    }
-                    rightLabel="Inspector state"
-                    storageKey={`devtools.client.inspector.${inspector.id}.splitRatio`}
-                />
+                            </Card>
+                        }
+                        leftLabel="Inspector tree"
+                        right={
+                            <Card title="Inspector state">
+                                {selectedNode ? (
+                                    <div className="dt-custom-inspector__state">
+                                        <div className="dt-custom-inspector__selection">
+                                            <strong>
+                                                {selectedNode.label}
+                                            </strong>
+                                            <span>{selectedNode.id}</span>
+                                        </div>
+                                        {inspector.nodeActions?.length ? (
+                                            <ActionList
+                                                actions={inspector.nodeActions}
+                                                label="Node actions"
+                                                onRunAction={(action) => {
+                                                    runAction(action, 'node');
+                                                }}
+                                            />
+                                        ) : null}
+                                        <StateViewer
+                                            emptyLabel={
+                                                inspector.noSelectionText ??
+                                                'No state recorded for this inspector node.'
+                                            }
+                                            onEditField={editField}
+                                            sections={stateSections}
+                                        />
+                                    </div>
+                                ) : (
+                                    <EmptyPane
+                                        label="No inspector node selected"
+                                        message={
+                                            inspector.noSelectionText ??
+                                            'Select a node from the custom inspector tree.'
+                                        }
+                                    />
+                                )}
+                            </Card>
+                        }
+                        rightLabel="Inspector state"
+                        storageKey={`devtools.client.inspector.${inspector.id}.splitRatio`}
+                    />
+                </div>
             ) : null}
 
             {activeSubview === 'about' ? (
-                <Card title="About inspector">
-                    <dl className="dt-overview-details">
-                        <OverviewDetail
-                            label="Inspector id"
-                            value={inspector.id}
-                        />
-                        <OverviewDetail label="Label" value={inspector.label} />
-                        <OverviewDetail
-                            label="Tree nodes"
-                            value={String(countInspectorNodes(nodes))}
-                        />
-                    </dl>
-                </Card>
+                <div id="dt-inspector-subview-about" role="tabpanel">
+                    <Card title="About inspector">
+                        <dl className="dt-overview-details">
+                            <OverviewDetail
+                                label="Inspector id"
+                                value={inspector.id}
+                            />
+                            <OverviewDetail
+                                label="Label"
+                                value={inspector.label}
+                            />
+                            <OverviewDetail
+                                label="Tree nodes"
+                                value={String(countInspectorNodes(nodes))}
+                            />
+                        </dl>
+                    </Card>
+                </div>
             ) : null}
 
             {activeSubview === 'settings' ? (
-                <Card title="Inspector settings">
-                    <EmptyPane
-                        label="No inspector settings"
-                        message="This custom inspector has not registered settings yet."
-                    />
-                </Card>
+                <div id="dt-inspector-subview-settings" role="tabpanel">
+                    <Card title="Inspector settings">
+                        <EmptyPane
+                            label="No inspector settings"
+                            message="This custom inspector has not registered settings yet."
+                        />
+                    </Card>
+                </div>
             ) : null}
         </section>
     );
@@ -1041,8 +1112,53 @@ function CustomInspectorTree({
         );
     }
 
+    const visibleNodeIds = getInspectorTreeNodeIds(nodes);
+    const selectRelativeNode = (offset: number) => {
+        const selectedIndex = Math.max(
+            0,
+            visibleNodeIds.indexOf(selectedNodeId ?? visibleNodeIds[0])
+        );
+        const nextIndex = Math.min(
+            Math.max(selectedIndex + offset, 0),
+            visibleNodeIds.length - 1
+        );
+
+        onSelectNode(visibleNodeIds[nextIndex]);
+    };
+
     return (
-        <ul className="dt-custom-inspector__tree">
+        <ul
+            aria-activedescendant={
+                selectedNodeId
+                    ? getCustomInspectorTreeItemId(selectedNodeId)
+                    : undefined
+            }
+            aria-label="Custom inspector tree"
+            className="dt-custom-inspector__tree"
+            onKeyDown={(event) => {
+                if (event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    selectRelativeNode(1);
+                }
+
+                if (event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    selectRelativeNode(-1);
+                }
+
+                if (event.key === 'Home') {
+                    event.preventDefault();
+                    onSelectNode(visibleNodeIds[0]);
+                }
+
+                if (event.key === 'End') {
+                    event.preventDefault();
+                    onSelectNode(visibleNodeIds[visibleNodeIds.length - 1]);
+                }
+            }}
+            role="tree"
+            tabIndex={0}
+        >
             {nodes.map((node) => (
                 <CustomInspectorTreeNode
                     key={node.id}
@@ -1064,10 +1180,17 @@ function CustomInspectorTreeNode({
     onSelectNode: (nodeId: string) => void;
     selectedNodeId?: string;
 }) {
+    const isSelected = selectedNodeId === node.id;
+
     return (
-        <li>
+        <li
+            aria-expanded={node.children?.length ? true : undefined}
+            aria-selected={isSelected}
+            id={getCustomInspectorTreeItemId(node.id)}
+            role="treeitem"
+        >
             <button
-                aria-pressed={selectedNodeId === node.id}
+                aria-pressed={isSelected}
                 onClick={() => {
                     onSelectNode(node.id);
                 }}
@@ -1079,7 +1202,7 @@ function CustomInspectorTreeNode({
                 ))}
             </button>
             {node.children?.length ? (
-                <ul>
+                <ul role="group">
                     {node.children.map((child) => (
                         <CustomInspectorTreeNode
                             key={child.id}
@@ -1092,6 +1215,20 @@ function CustomInspectorTreeNode({
             ) : null}
         </li>
     );
+}
+
+function getInspectorTreeNodeIds(nodes: Array<CustomInspectorNode>): string[] {
+    return nodes.flatMap((node) => [
+        node.id,
+        ...getInspectorTreeNodeIds(node.children ?? [])
+    ]);
+}
+
+function getCustomInspectorTreeItemId(nodeId: string): string {
+    return `dt-custom-inspector-node-${nodeId.replaceAll(
+        /[^a-zA-Z0-9_-]/g,
+        '-'
+    )}`;
 }
 
 function CustomTabPage({ tab }: { tab: CustomTab }) {

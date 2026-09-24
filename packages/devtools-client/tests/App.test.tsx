@@ -766,7 +766,10 @@ describe('@devtools/client App routing', () => {
         await waitFor(() => {
             expect(screen.getByText('Settings route')).toBeInTheDocument();
         });
-        fireEvent.click(screen.getByRole('button', { name: 'Settings route' }));
+        fireEvent.keyDown(
+            screen.getByRole('tree', { name: 'Custom inspector tree' }),
+            { key: 'ArrowDown' }
+        );
 
         await waitFor(() => {
             expect(screen.getByText('route:settings')).toBeInTheDocument();
@@ -1029,6 +1032,45 @@ describe('@devtools/client App routing', () => {
         ).toBeInTheDocument();
     });
 
+    it('runs the active command palette option with keyboard navigation', () => {
+        render(<App initialEntries={['/overview']} />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Command' }));
+
+        const search = screen.getByRole('searchbox', {
+            name: 'Search commands'
+        });
+        fireEvent.keyDown(search, { key: 'ArrowDown' });
+        fireEvent.keyDown(search, { key: 'Enter' });
+
+        expect(
+            screen.queryByRole('dialog', { name: 'Command palette' })
+        ).not.toBeInTheDocument();
+        expect(
+            screen.getByRole('region', { name: 'Component tree' })
+        ).toBeInTheDocument();
+    });
+
+    it('wraps command palette keyboard selection and closes on Escape', () => {
+        render(<App initialEntries={['/overview']} />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Command' }));
+
+        const search = screen.getByRole('searchbox', {
+            name: 'Search commands'
+        });
+        fireEvent.keyDown(search, { key: 'ArrowUp' });
+
+        expect(
+            screen.getByRole('option', { name: /Open project docs/i })
+        ).toHaveAttribute('aria-selected', 'true');
+
+        fireEvent.keyDown(search, { key: 'Escape' });
+        expect(
+            screen.queryByRole('dialog', { name: 'Command palette' })
+        ).not.toBeInTheDocument();
+    });
+
     it('runs URL commands from the command palette', () => {
         const open = jest.spyOn(window, 'open').mockImplementation();
 
@@ -1107,6 +1149,26 @@ describe('@devtools/client App routing', () => {
         expect(
             screen.getByRole('separator', { name: 'Resize panes' })
         ).toHaveAttribute('aria-valuenow', '42');
+    });
+
+    it('resizes the components split-pane layout from the keyboard', () => {
+        render(<App initialEntries={['/components']} />);
+
+        const divider = screen.getByRole('separator', {
+            name: 'Resize panes'
+        });
+
+        fireEvent.keyDown(divider, { key: 'ArrowRight' });
+        expect(divider).toHaveAttribute('aria-valuenow', '46');
+
+        fireEvent.keyDown(divider, { key: 'ArrowLeft' });
+        expect(divider).toHaveAttribute('aria-valuenow', '42');
+
+        fireEvent.keyDown(divider, { key: 'Home' });
+        expect(divider).toHaveAttribute('aria-valuenow', '24');
+
+        fireEvent.keyDown(divider, { key: 'End' });
+        expect(divider).toHaveAttribute('aria-valuenow', '76');
     });
 
     it('renders empty-root panes when React has no mounted components', () => {
