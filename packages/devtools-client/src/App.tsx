@@ -9,7 +9,12 @@ import {
     useSearchParams,
     type MemoryRouterProps
 } from 'react-router';
-import { Card, ThemeProvider, type NotificationTone } from '@devtools/ui';
+import {
+    Card,
+    ThemeProvider,
+    ThemeToggle,
+    type NotificationTone
+} from '@devtools/ui';
 import '@devtools/ui/style.css';
 import './style.css';
 import { ResizableSplitPane } from './components/layout';
@@ -62,7 +67,10 @@ function ClientShell() {
                 aria-label="React DevTools client"
             >
                 <header className="dt-client-shell__header">
-                    <h1>React DevTools</h1>
+                    <div className="dt-client-shell__masthead">
+                        <h1>React DevTools</h1>
+                        <ThemeToggle />
+                    </div>
                     <nav
                         className="dt-client-shell__nav"
                         aria-label="Panel tabs"

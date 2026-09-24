@@ -128,6 +128,22 @@ describe('@devtools/client App routing', () => {
         ).toBeInTheDocument();
     });
 
+    it('toggles the client theme from the shell header', () => {
+        render(<App initialEntries={['/overview']} />);
+
+        const themeToggle = screen.getByRole('button', { name: 'Dark' });
+        const themeRoot = themeToggle.closest('.dt-ui');
+
+        expect(themeRoot).toHaveAttribute('data-theme', 'dark');
+
+        fireEvent.click(themeToggle);
+
+        expect(themeRoot).toHaveAttribute('data-theme', 'light');
+        expect(
+            screen.getByRole('button', { name: 'Light' })
+        ).toBeInTheDocument();
+    });
+
     it('renders the components split-pane layout', () => {
         render(<App initialEntries={['/components']} />);
 
