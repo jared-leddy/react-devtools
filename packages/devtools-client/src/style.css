@@ -23,6 +23,31 @@
     margin: 0;
 }
 
+.dt-client-shell__actions {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+}
+
+.dt-client-shell__command-button {
+    background: var(--dt-bg-muted);
+    border: 1px solid var(--dt-border);
+    border-radius: 6px;
+    color: var(--dt-fg);
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    min-height: 34px;
+    padding: 0 12px;
+}
+
+.dt-client-shell__command-button:focus-visible,
+.dt-client-shell__command-button:hover {
+    border-color: var(--dt-focus);
+    outline: 0;
+}
+
 .dt-client-shell__nav {
     align-items: center;
     display: flex;
@@ -127,6 +152,89 @@
 
 .dt-empty-pane p {
     margin: 0;
+}
+
+.dt-command-palette {
+    align-items: flex-start;
+    background: rgb(1 4 9 / 56%);
+    box-sizing: border-box;
+    display: flex;
+    inset: 0;
+    justify-content: center;
+    padding: 96px 16px 16px;
+    position: fixed;
+    z-index: 20;
+}
+
+.dt-command-palette__panel {
+    background: var(--dt-bg);
+    border: 1px solid var(--dt-border);
+    border-radius: 8px;
+    box-shadow: var(--dt-shadow);
+    display: grid;
+    gap: 8px;
+    max-height: min(540px, calc(100vh - 128px));
+    max-width: 640px;
+    overflow: hidden;
+    padding: 10px;
+    width: min(100%, 640px);
+}
+
+.dt-command-palette__input {
+    background: var(--dt-bg-muted);
+    border: 1px solid var(--dt-border);
+    border-radius: 6px;
+    box-sizing: border-box;
+    color: var(--dt-fg);
+    font: inherit;
+    min-height: 40px;
+    outline: 0;
+    padding: 0 12px;
+    width: 100%;
+}
+
+.dt-command-palette__input:focus {
+    border-color: var(--dt-focus);
+}
+
+.dt-command-palette__list {
+    display: grid;
+    gap: 4px;
+    max-height: 420px;
+    overflow: auto;
+}
+
+.dt-command-palette__item {
+    align-items: start;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: var(--dt-fg);
+    cursor: pointer;
+    display: grid;
+    font: inherit;
+    gap: 3px;
+    min-height: 48px;
+    padding: 8px 10px;
+    text-align: left;
+}
+
+.dt-command-palette__item:focus-visible,
+.dt-command-palette__item:hover {
+    background: var(--dt-bg-muted);
+    border-color: var(--dt-border);
+    outline: 0;
+}
+
+.dt-command-palette__item small,
+.dt-command-palette__empty {
+    color: var(--dt-fg-muted);
+    font-size: 12px;
+}
+
+.dt-command-palette__empty {
+    margin: 0;
+    padding: 14px 10px;
 }
 
 .dt-split-pane {

@@ -1,5 +1,11 @@
 import type { ReactNode } from 'react';
-import { useEffect, useMemo, useSyncExternalStore } from 'react';
+import {
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+    useSyncExternalStore
+} from 'react';
 import {
     MemoryRouter,
     NavLink,
@@ -7,6 +13,7 @@ import {
     Route,
     Routes,
     useLocation,
+    useNavigate,
     useSearchParams,
     type MemoryRouterProps
 } from 'react-router';
@@ -18,6 +25,12 @@ import {
 } from '@devtools/ui';
 import '@devtools/ui/style.css';
 import './style.css';
+import {
+    getClientCommandSnapshot,
+    getVisibleClientCommands,
+    subscribeToClientCommands,
+    type ClientCommand
+} from './commands';
 import { ResizableSplitPane } from './components/layout';
 import { StateViewer } from './components/state';
 import {
@@ -53,6 +66,9 @@ const placeholderToneByKind: Record<ClientRoute['kind'], NotificationTone> = {
 const syntheticComponentTree = generateSyntheticComponentTree();
 
 function ClientShell() {
+    const navigate = useNavigate();
+    const [commandFilter, setCommandFilter] = useState('');
+    const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
     const routeSnapshot = useSyncExternalStore(
         subscribeToClientRoutes,
         initializeClientRouteRegistry,
@@ -72,6 +88,54 @@ function ClientShell() {
         getClientRuntimeSnapshot,
         getClientRuntimeSnapshot
     );
+    const commandSnapshot = useSyncExternalStore(
+        subscribeToClientCommands,
+        getClientCommandSnapshot,
+        getClientCommandSnapshot
+    );
+    const commands = useMemo(
+        () =>
+            getVisibleClientCommands({
+                customCommands: commandSnapshot.customCommands,
+                routes
+            }),
+        [commandSnapshot.customCommands, routes]
+    );
+
+    useEffect(() => {
+        function handleCommandShortcut(event: KeyboardEvent) {
+            if (
+                (event.metaKey || event.ctrlKey) &&
+                event.key.toLowerCase() === 'k'
+            ) {
+                event.preventDefault();
+                setIsCommandPaletteOpen(true);
+            }
+        }
+
+        window.addEventListener('keydown', handleCommandShortcut);
+
+        return () => {
+            window.removeEventListener('keydown', handleCommandShortcut);
+        };
+    }, []);
+
+    const runCommand = (command: ClientCommand) => {
+        setIsCommandPaletteOpen(false);
+        setCommandFilter('');
+
+        if (command.route) {
+            navigate(command.route);
+            return;
+        }
+
+        if (command.url) {
+            window.open(command.url, '_blank', 'noopener,noreferrer');
+            return;
+        }
+
+        void command.action?.();
+    };
 
     return (
         <ThemeProvider>
@@ -82,7 +146,18 @@ function ClientShell() {
                 <header className="dt-client-shell__header">
                     <div className="dt-client-shell__masthead">
                         <h1>React DevTools</h1>
-                        <ThemeToggle />
+                        <div className="dt-client-shell__actions">
+                            <button
+                                className="dt-client-shell__command-button"
+                                onClick={() => {
+                                    setIsCommandPaletteOpen(true);
+                                }}
+                                type="button"
+                            >
+                                Command
+                            </button>
+                            <ThemeToggle />
+                        </div>
                     </div>
                     <nav
                         className="dt-client-shell__nav"
@@ -148,8 +223,104 @@ function ClientShell() {
                         }
                     />
                 </Routes>
+                {isCommandPaletteOpen ? (
+                    <CommandPalette
+                        commands={commands}
+                        filter={commandFilter}
+                        onClose={() => {
+                            setIsCommandPaletteOpen(false);
+                            setCommandFilter('');
+                        }}
+                        onFilterChange={setCommandFilter}
+                        onRunCommand={runCommand}
+                    />
+                ) : null}
             </main>
         </ThemeProvider>
+    );
+}
+
+function CommandPalette({
+    commands,
+    filter,
+    onClose,
+    onFilterChange,
+    onRunCommand
+}: {
+    commands: ClientCommand[];
+    filter: string;
+    onClose: () => void;
+    onFilterChange: (value: string) => void;
+    onRunCommand: (command: ClientCommand) => void;
+}) {
+    const inputRef = useRef<HTMLInputElement>(null);
+    const filteredCommands = useMemo(() => {
+        const normalizedFilter = filter.trim().toLowerCase();
+
+        if (!normalizedFilter) {
+            return commands;
+        }
+
+        return commands.filter((command) =>
+            [command.label, ...command.group]
+                .join(' ')
+                .toLowerCase()
+                .includes(normalizedFilter)
+        );
+    }, [commands, filter]);
+
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, []);
+
+    return (
+        <div
+            aria-label="Command palette"
+            aria-modal="true"
+            className="dt-command-palette"
+            onKeyDown={(event) => {
+                if (event.key === 'Escape') {
+                    onClose();
+                }
+            }}
+            role="dialog"
+        >
+            <div className="dt-command-palette__panel">
+                <input
+                    aria-label="Search commands"
+                    className="dt-command-palette__input"
+                    onChange={(event) => {
+                        onFilterChange(event.target.value);
+                    }}
+                    placeholder="Search commands"
+                    ref={inputRef}
+                    type="search"
+                    value={filter}
+                />
+                <div className="dt-command-palette__list" role="listbox">
+                    {filteredCommands.length > 0 ? (
+                        filteredCommands.map((command) => (
+                            <button
+                                className="dt-command-palette__item"
+                                key={command.id}
+                                onClick={() => {
+                                    onRunCommand(command);
+                                }}
+                                role="option"
+                                type="button"
+                            >
+                                <span>{command.label}</span>
+                                <small>{command.group.join(' / ')}</small>
+                            </button>
+                        ))
+                    ) : (
+                        <p className="dt-command-palette__empty">
+                            No commands found
+                        </p>
+                    )}
+                </div>
+            </div>
+        </div>
     );
 }
 

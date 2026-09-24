@@ -7,12 +7,15 @@ import {
     waitFor
 } from '@testing-library/react';
 import {
+    addCustomCommand,
     addCustomTab,
     resetDevToolsPluginRegistry,
+    removeCustomCommand,
     setupDevToolsPlugin
 } from '@devtools/kit';
 import {
     App,
+    resetClientCommandRegistryForTests,
     resetClientRuntimeForTests,
     resetClientRouteRegistryForTests,
     setClientRouteEnvironment,
@@ -22,9 +25,11 @@ import {
 describe('@devtools/client App routing', () => {
     afterEach(() => {
         window.localStorage.clear();
+        resetClientCommandRegistryForTests();
         resetClientRuntimeForTests();
         resetClientRouteRegistryForTests();
         resetDevToolsPluginRegistry();
+        jest.restoreAllMocks();
     });
 
     it.each([
@@ -301,6 +306,121 @@ describe('@devtools/client App routing', () => {
         expect(
             screen.getByRole('button', { name: 'Light' })
         ).toBeInTheDocument();
+    });
+
+    it('opens the command palette with the keyboard shortcut and filters commands', () => {
+        render(<App initialEntries={['/overview']} />);
+
+        fireEvent.keyDown(window, { ctrlKey: true, key: 'k' });
+
+        expect(
+            screen.getByRole('dialog', { name: 'Command palette' })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole('option', { name: /Go to Components/i })
+        ).toBeInTheDocument();
+
+        fireEvent.change(
+            screen.getByRole('searchbox', { name: 'Search commands' }),
+            {
+                target: { value: 'settings' }
+            }
+        );
+
+        expect(
+            screen.getByRole('option', { name: /Go to Settings/i })
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByRole('option', { name: /Go to Components/i })
+        ).not.toBeInTheDocument();
+    });
+
+    it('runs navigation commands from the command palette', () => {
+        render(<App initialEntries={['/overview']} />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Command' }));
+        fireEvent.change(
+            screen.getByRole('searchbox', { name: 'Search commands' }),
+            {
+                target: { value: 'settings' }
+            }
+        );
+        fireEvent.click(
+            screen.getByRole('option', { name: /Go to Settings/i })
+        );
+
+        expect(
+            screen.queryByRole('dialog', { name: 'Command palette' })
+        ).not.toBeInTheDocument();
+        expect(
+            screen.getByRole('heading', { name: 'Settings' })
+        ).toBeInTheDocument();
+    });
+
+    it('runs URL commands from the command palette', () => {
+        const open = jest.spyOn(window, 'open').mockImplementation();
+
+        render(<App initialEntries={['/overview']} />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Command' }));
+        fireEvent.change(
+            screen.getByRole('searchbox', { name: 'Search commands' }),
+            {
+                target: { value: 'react docs' }
+            }
+        );
+        fireEvent.click(
+            screen.getByRole('option', { name: /Open React docs/i })
+        );
+
+        expect(open).toHaveBeenCalledWith(
+            'https://react.dev',
+            '_blank',
+            'noopener,noreferrer'
+        );
+    });
+
+    it('shows nested plugin commands and removes them after unregistering', async () => {
+        render(<App initialEntries={['/overview']} />);
+
+        act(() => {
+            addCustomCommand({
+                children: [
+                    {
+                        id: 'open-child-report',
+                        label: 'Open child report',
+                        route: '/timeline'
+                    }
+                ],
+                id: 'plugin-tools',
+                label: 'Plugin tools'
+            });
+        });
+
+        fireEvent.click(screen.getByRole('button', { name: 'Command' }));
+        fireEvent.change(
+            screen.getByRole('searchbox', { name: 'Search commands' }),
+            {
+                target: { value: 'child report' }
+            }
+        );
+
+        await waitFor(() => {
+            expect(
+                screen.getByRole('option', { name: /Open child report/i })
+            ).toBeInTheDocument();
+        });
+        expect(screen.getByText('Plugins / Plugin tools')).toBeInTheDocument();
+
+        act(() => {
+            removeCustomCommand('plugin-tools');
+        });
+
+        await waitFor(() => {
+            expect(
+                screen.queryByRole('option', { name: /Open child report/i })
+            ).not.toBeInTheDocument();
+        });
     });
 
     it('renders the components split-pane layout', () => {

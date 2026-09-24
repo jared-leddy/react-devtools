@@ -6,6 +6,7 @@ import {
     type CustomInspectorOptions,
     type CustomTab
 } from '@devtools/kit';
+import { registerClientCommandContext } from './commands';
 
 export type ClientRouteKind = 'customInspector' | 'customTab' | 'page';
 export type ClientRouteCategory =
@@ -178,6 +179,7 @@ export function initializeClientRouteRegistry(): ClientRouteRegistrySnapshot {
                 notifyRouteListeners();
             }
         );
+        registerClientCommandContext(context);
         registerDevToolsPluginContext({ context, hasRoot: true });
         refreshRouteSnapshot();
     }
