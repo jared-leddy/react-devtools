@@ -295,8 +295,101 @@ describe('@devtools/client App routing', () => {
         expect(
             screen.getByRole('heading', { name: 'Module Health' })
         ).toBeInTheDocument();
-        expect(screen.getByLabelText('Module Health page')).toHaveTextContent(
-            'Custom tab registered for Module Health.'
+        expect(screen.getByText('No custom tab view')).toBeInTheDocument();
+    });
+
+    it('renders iframe custom tabs with URL validation and persistence', async () => {
+        addCustomTab({
+            iframeUrl: 'https://example.com/devtools',
+            name: 'iframe-report',
+            persist: true,
+            sandbox: 'allow-scripts allow-popups allow-top-navigation',
+            title: 'Iframe Report'
+        });
+
+        render(<App initialEntries={['/custom-tab-view/iframe-report']} />);
+
+        await waitFor(() => {
+            expect(
+                screen.getByRole('link', { name: 'Iframe Report' })
+            ).toBeInTheDocument();
+        });
+
+        const iframe = screen.getByTitle('Iframe Report');
+        expect(iframe).toHaveAttribute('src', 'https://example.com/devtools');
+        expect(iframe).toHaveAttribute('sandbox', 'allow-scripts allow-popups');
+        expect(iframe).toHaveAttribute('data-persist', 'true');
+        expect(
+            window.localStorage.getItem(
+                'devtools.client.customTab.iframe-report.iframeUrl'
+            )
+        ).toBe('https://example.com/devtools');
+
+        fireEvent.load(iframe);
+        expect(screen.getByRole('status')).toHaveTextContent(
+            'Custom iframe loaded.'
+        );
+    });
+
+    it('blocks unsafe custom tab iframe URLs', async () => {
+        addCustomTab({
+            iframeUrl: 'javascript:alert(1)',
+            name: 'unsafe-report',
+            title: 'Unsafe Report'
+        });
+
+        render(<App initialEntries={['/custom-tab-view/unsafe-report']} />);
+
+        await waitFor(() => {
+            expect(screen.getByText('Custom tab blocked')).toBeInTheDocument();
+        });
+        expect(screen.queryByTitle('Unsafe Report')).not.toBeInTheDocument();
+        expect(screen.getByText('Blocked iframe')).toBeInTheDocument();
+    });
+
+    it('renders React and dynamic-import custom tabs', async () => {
+        addCustomTab({
+            name: 'react-report',
+            title: 'React Report',
+            view: function ReactReport() {
+                return <div>React custom tab body</div>;
+            }
+        });
+        addCustomTab({
+            name: 'dynamic-report',
+            title: 'Dynamic Report',
+            view: {
+                loader: async () => ({
+                    default: function DynamicReport() {
+                        return <div>Dynamic custom tab body</div>;
+                    }
+                })
+            }
+        });
+
+        const { unmount } = render(
+            <App initialEntries={['/custom-tab-view/react-report']} />
+        );
+
+        await waitFor(() => {
+            expect(
+                screen.getByText('React custom tab body')
+            ).toBeInTheDocument();
+        });
+        expect(screen.getByRole('status')).toHaveTextContent(
+            'Custom React tab loaded.'
+        );
+
+        unmount();
+        render(<App initialEntries={['/custom-tab-view/dynamic-report']} />);
+
+        await waitFor(() => {
+            expect(
+                screen.getByText('Dynamic custom tab body')
+            ).toBeInTheDocument();
+        });
+        expect(screen.getByRole('status')).toHaveTextContent(
+            'Custom dynamic tab loaded.'
         );
     });
 

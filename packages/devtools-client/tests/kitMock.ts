@@ -50,8 +50,11 @@ export interface EditInspectorStateRequest {
 export interface CustomTab {
     category?: string;
     icon?: string;
+    iframeUrl?: string;
     name: string;
     path?: string;
+    persist?: boolean;
+    sandbox?: string;
     title: string;
     view?: unknown;
 }
