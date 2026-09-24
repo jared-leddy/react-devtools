@@ -70,6 +70,14 @@ export interface CustomCommand {
     url?: string;
 }
 
+export type ViteMessageHandler = (payload: unknown) => void;
+
+export interface ViteHotContextLike {
+    off?: (event: string, handler: ViteMessageHandler) => void;
+    on: (event: string, handler: ViteMessageHandler) => void;
+    send: (event: string, payload?: unknown) => void;
+}
+
 type HookPayloads = {
     [ReactDevToolsContextHookKeys.ADD_INSPECTOR]: {
         inspector: unknown;
@@ -113,6 +121,7 @@ const hooks: HookMap = {
     [ReactDevToolsContextHookKeys.CUSTOM_TAB_ADDED]: []
 };
 let activeContext: ReturnType<typeof createDevToolsContext> | null = null;
+let viteClientContext: ViteHotContextLike | null = null;
 
 export function createDevToolsContext() {
     return {
@@ -177,6 +186,22 @@ export function getCustomCommands(): CustomCommand[] {
 
 export function getCustomTabs(): CustomTab[] {
     return Array.from(customTabs.values());
+}
+
+export function getViteClientContext(): ViteHotContextLike | null {
+    return viteClientContext;
+}
+
+export function setViteClientContext(context: ViteHotContextLike): void {
+    viteClientContext = context;
+}
+
+export function clearViteClientContext(): void {
+    viteClientContext = null;
+}
+
+export async function connectViteClientContext(): Promise<ViteHotContextLike | null> {
+    return viteClientContext;
 }
 
 export function setupDevToolsPlugin(
