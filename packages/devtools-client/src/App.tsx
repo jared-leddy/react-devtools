@@ -1,5 +1,7 @@
-import type { ReactNode } from 'react';
+import type { ComponentType, ReactElement, ReactNode } from 'react';
 import {
+    Suspense,
+    useCallback,
     useEffect,
     useMemo,
     useRef,
@@ -30,6 +32,7 @@ import {
     type CustomInspectorAction,
     type CustomInspectorNode,
     type CustomInspectorOptions,
+    type CustomTab,
     type InspectorState,
     type InspectorStateEntry
 } from '@devtools/kit';
@@ -449,6 +452,27 @@ function RoutePage({
                         'The custom inspector route exists, but the plugin inspector registration is no longer available.',
                     label: 'custom-inspector-missing',
                     title: 'Inspector unavailable',
+                    tone: 'warning'
+                }}
+            />
+        );
+    }
+
+    if (route.kind === 'customTab') {
+        const routeSnapshot = initializeClientRouteRegistry();
+        const tab = routeSnapshot.customTabs.find(
+            (item) => `custom-tab:${item.name}` === route.id
+        );
+
+        return tab ? (
+            <CustomTabPage tab={tab} />
+        ) : (
+            <RuntimeStatePage
+                state={{
+                    description:
+                        'The custom tab route exists, but the plugin tab registration is no longer available.',
+                    label: 'custom-tab-missing',
+                    title: 'Custom tab unavailable',
                     tone: 'warning'
                 }}
             />
@@ -1042,6 +1066,194 @@ function CustomInspectorTreeNode({
     );
 }
 
+function CustomTabPage({ tab }: { tab: CustomTab }) {
+    const [status, setStatus] = useState('Custom tab ready.');
+    const renderedTab = getCustomTabRenderState(tab);
+    const setErrorStatus = useCallback((message: string) => {
+        setStatus(message);
+    }, []);
+    const setReactLoaded = useCallback(() => {
+        setStatus('Custom React tab loaded.');
+    }, []);
+    const setDynamicLoaded = useCallback(() => {
+        setStatus('Custom dynamic tab loaded.');
+    }, []);
+
+    return (
+        <section
+            aria-label={`${tab.title} page`}
+            className="dt-client-shell__page dt-custom-tab"
+        >
+            <Card title={tab.title}>
+                <div className="dt-custom-tab__summary">
+                    <span
+                        className={`dt-client-shell__badge dt-client-shell__badge--${
+                            renderedTab.kind === 'error' ? 'warning' : 'info'
+                        }`}
+                    >
+                        {renderedTab.label}
+                    </span>
+                    <span>{tab.name}</span>
+                    {tab.persist ? <span>Persisted iframe</span> : null}
+                </div>
+                <p className="dt-settings-status" role="status">
+                    {status}
+                </p>
+            </Card>
+            <Card title="Custom tab content">
+                {renderedTab.kind === 'iframe' ? (
+                    <iframe
+                        className="dt-custom-tab__iframe"
+                        data-persist={tab.persist ? 'true' : 'false'}
+                        onError={() => {
+                            setStatus('Custom iframe failed to load.');
+                        }}
+                        onLoad={() => {
+                            setStatus('Custom iframe loaded.');
+                        }}
+                        sandbox={renderedTab.sandbox}
+                        src={renderedTab.src}
+                        title={tab.title}
+                    />
+                ) : null}
+                {renderedTab.kind === 'react' ? (
+                    <CustomTabReactView
+                        onError={setErrorStatus}
+                        onLoaded={setReactLoaded}
+                        view={renderedTab.view}
+                    />
+                ) : null}
+                {renderedTab.kind === 'dynamic' ? (
+                    <CustomTabDynamicView
+                        loader={renderedTab.loader}
+                        onError={setErrorStatus}
+                        onLoaded={setDynamicLoaded}
+                    />
+                ) : null}
+                {renderedTab.kind === 'empty' ? (
+                    <EmptyPane
+                        label="No custom tab view"
+                        message="This plugin registered a tab without iframe or React content."
+                    />
+                ) : null}
+                {renderedTab.kind === 'error' ? (
+                    <EmptyPane
+                        label="Custom tab blocked"
+                        message={renderedTab.message}
+                    />
+                ) : null}
+            </Card>
+        </section>
+    );
+}
+
+function CustomTabReactView({
+    onError,
+    onLoaded,
+    view
+}: {
+    onError: (message: string) => void;
+    onLoaded: () => void;
+    view: ComponentType | ReactElement;
+}) {
+    useEffect(() => {
+        onLoaded();
+    }, [onLoaded]);
+
+    try {
+        if (isReactElement(view)) {
+            return <div className="dt-custom-tab__react">{view}</div>;
+        }
+
+        const View = view;
+
+        return (
+            <div className="dt-custom-tab__react">
+                <View />
+            </div>
+        );
+    } catch (error) {
+        onError(
+            error instanceof Error
+                ? error.message
+                : 'Custom React tab failed to render.'
+        );
+
+        return (
+            <EmptyPane
+                label="Custom tab render failed"
+                message="The plugin React view threw while rendering."
+            />
+        );
+    }
+}
+
+function CustomTabDynamicView({
+    loader,
+    onError,
+    onLoaded
+}: {
+    loader: () => Promise<{ default: ComponentType } | ComponentType>;
+    onError: (message: string) => void;
+    onLoaded: () => void;
+}) {
+    const [LoadedView, setLoadedView] = useState<ComponentType | null>(null);
+
+    useEffect(() => {
+        let isMounted = true;
+        void loader()
+            .then((result) => {
+                if (!isMounted) {
+                    return;
+                }
+
+                const View =
+                    typeof result === 'function' ? result : result.default;
+                setLoadedView(() => View);
+                onLoaded();
+            })
+            .catch((error: unknown) => {
+                if (!isMounted) {
+                    return;
+                }
+
+                onError(
+                    error instanceof Error
+                        ? error.message
+                        : 'Custom dynamic tab failed to load.'
+                );
+            });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [loader, onError, onLoaded]);
+
+    if (!LoadedView) {
+        return (
+            <EmptyPane
+                label="Loading custom tab"
+                message="The plugin tab view is loading."
+            />
+        );
+    }
+
+    return (
+        <Suspense
+            fallback={
+                <EmptyPane
+                    label="Loading custom tab"
+                    message="The plugin tab view is loading."
+                />
+            }
+        >
+            <div className="dt-custom-tab__react">
+                <LoadedView />
+            </div>
+        </Suspense>
+    );
+}
+
 function ComponentsPage({
     runtimeSnapshot,
     settingsSnapshot
@@ -1446,6 +1658,203 @@ function formatOverviewValue(value: string): string {
         .split('-')
         .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
         .join(' ');
+}
+
+type CustomTabRenderState =
+    | {
+          kind: 'dynamic';
+          label: string;
+          loader: () => Promise<{ default: ComponentType } | ComponentType>;
+      }
+    | {
+          kind: 'empty';
+          label: string;
+      }
+    | {
+          kind: 'error';
+          label: string;
+          message: string;
+      }
+    | {
+          kind: 'iframe';
+          label: string;
+          sandbox: string;
+          src: string;
+      }
+    | {
+          kind: 'react';
+          label: string;
+          view: ComponentType | ReactElement;
+      };
+
+function getCustomTabRenderState(tab: CustomTab): CustomTabRenderState {
+    const iframeUrl =
+        tab.iframeUrl ?? (typeof tab.view === 'string' ? tab.view : undefined);
+
+    if (iframeUrl) {
+        const validatedUrl = getValidatedCustomTabUrl(tab, iframeUrl);
+
+        if (!validatedUrl) {
+            return {
+                kind: 'error',
+                label: 'Blocked iframe',
+                message:
+                    'Only http, https, and same-origin custom tab iframe URLs are allowed.'
+            };
+        }
+
+        return {
+            kind: 'iframe',
+            label: 'Iframe tab',
+            sandbox: getCustomTabSandbox(tab),
+            src: validatedUrl
+        };
+    }
+
+    if (isDynamicCustomTabView(tab.view)) {
+        return {
+            kind: 'dynamic',
+            label: 'Dynamic React tab',
+            loader: tab.view.loader
+        };
+    }
+
+    if (isComponentCustomTabView(tab.view)) {
+        return {
+            kind: 'react',
+            label: 'React tab',
+            view: tab.view.component
+        };
+    }
+
+    if (isReactElement(tab.view)) {
+        return {
+            kind: 'react',
+            label: 'React tab',
+            view: tab.view
+        };
+    }
+
+    if (typeof tab.view === 'function') {
+        return {
+            kind: 'react',
+            label: 'React tab',
+            view: tab.view as ComponentType
+        };
+    }
+
+    return {
+        kind: 'empty',
+        label: 'Empty tab'
+    };
+}
+
+function getValidatedCustomTabUrl(
+    tab: CustomTab,
+    iframeUrl: string
+): string | null {
+    const persistedUrl = tab.persist
+        ? readCustomTabPersistedUrl(tab.name)
+        : undefined;
+    const rawUrl = persistedUrl ?? iframeUrl;
+
+    try {
+        const baseUrl =
+            typeof window === 'undefined'
+                ? 'http://localhost'
+                : window.location.href;
+        const url = new URL(rawUrl, baseUrl);
+
+        if (!['http:', 'https:'].includes(url.protocol)) {
+            return null;
+        }
+
+        const resolvedUrl = url.toString();
+
+        if (tab.persist) {
+            writeCustomTabPersistedUrl(tab.name, resolvedUrl);
+        }
+
+        return resolvedUrl;
+    } catch {
+        return null;
+    }
+}
+
+function getCustomTabSandbox(tab: CustomTab): string {
+    const requestedSandbox = tab.sandbox?.trim();
+
+    if (!requestedSandbox) {
+        return 'allow-forms allow-scripts allow-same-origin';
+    }
+
+    const allowedTokens = new Set([
+        'allow-downloads',
+        'allow-forms',
+        'allow-modals',
+        'allow-popups',
+        'allow-same-origin',
+        'allow-scripts'
+    ]);
+
+    return requestedSandbox
+        .split(/\s+/)
+        .filter((token) => allowedTokens.has(token))
+        .join(' ');
+}
+
+function readCustomTabPersistedUrl(tabName: string): string | undefined {
+    if (typeof window === 'undefined') {
+        return undefined;
+    }
+
+    return (
+        window.localStorage.getItem(getCustomTabPersistedUrlKey(tabName)) ??
+        undefined
+    );
+}
+
+function writeCustomTabPersistedUrl(tabName: string, url: string): void {
+    if (typeof window === 'undefined') {
+        return;
+    }
+
+    window.localStorage.setItem(getCustomTabPersistedUrlKey(tabName), url);
+}
+
+function getCustomTabPersistedUrlKey(tabName: string): string {
+    return `devtools.client.customTab.${tabName}.iframeUrl`;
+}
+
+function isComponentCustomTabView(
+    view: unknown
+): view is { component: ComponentType | ReactElement } {
+    return Boolean(
+        view &&
+        typeof view === 'object' &&
+        'component' in view &&
+        (typeof view.component === 'function' || isReactElement(view.component))
+    );
+}
+
+function isDynamicCustomTabView(view: unknown): view is {
+    loader: () => Promise<{ default: ComponentType } | ComponentType>;
+} {
+    return Boolean(
+        view &&
+        typeof view === 'object' &&
+        'loader' in view &&
+        typeof view.loader === 'function'
+    );
+}
+
+function isReactElement(value: unknown): value is ReactElement {
+    return Boolean(
+        value &&
+        typeof value === 'object' &&
+        '$$typeof' in value &&
+        'props' in value
+    );
 }
 
 function findInspectorNode(
