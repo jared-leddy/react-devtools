@@ -98,6 +98,37 @@
     color: var(--dt-info);
 }
 
+.dt-client-shell__badge--warning {
+    border-color: var(--dt-warning);
+    color: var(--dt-warning);
+}
+
+.dt-client-shell__badge--danger {
+    border-color: var(--dt-danger);
+    color: var(--dt-danger);
+}
+
+.dt-empty-pane {
+    align-content: center;
+    border: 1px dashed var(--dt-border);
+    border-radius: 6px;
+    box-sizing: border-box;
+    color: var(--dt-fg-muted);
+    display: grid;
+    gap: 6px;
+    min-height: 180px;
+    padding: 18px;
+}
+
+.dt-empty-pane strong {
+    color: var(--dt-fg);
+    font-size: 14px;
+}
+
+.dt-empty-pane p {
+    margin: 0;
+}
+
 .dt-split-pane {
     align-items: stretch;
     border: 1px solid var(--dt-border);
