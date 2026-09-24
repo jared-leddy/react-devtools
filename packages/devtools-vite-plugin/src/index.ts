@@ -11,7 +11,12 @@ import {
     transformReactSourceMetadata,
     type SourceMetadataOptions
 } from './sourceMetadata.js';
+import {
+    installViteAssetRpc,
+    type ViteAssetExplorerOptions
+} from './assets.js';
 export * from './sourceMetadata.js';
+export * from './assets.js';
 
 export interface ReactDevtoolsVitePluginOptions {
     /**
@@ -44,6 +49,10 @@ export interface ReactDevtoolsVitePluginOptions {
      * Receives the namespaced Vite websocket transport channel.
      */
     onViteTransport?: (channel: ViteTransportChannel) => void;
+    /**
+     * Enables project asset explorer RPC over the Vite transport.
+     */
+    assets?: false | ViteAssetExplorerOptions;
     /**
      * Enables dev-only JSX source metadata annotations. Set false to opt out.
      */
@@ -189,7 +198,15 @@ export function reactDevtools(
         configureServer(server) {
             createClientMiddleware(options, server);
             createOverlayMiddleware(options, server);
-            options.onViteTransport?.(createViteTransportChannel(server));
+            const viteTransportChannel = createViteTransportChannel(server);
+            if (options.assets !== false) {
+                installViteAssetRpc(
+                    server,
+                    viteTransportChannel,
+                    options.assets || undefined
+                );
+            }
+            options.onViteTransport?.(viteTransportChannel);
         },
         transform(code, id, transformOptions) {
             if (transformOptions?.ssr) {
