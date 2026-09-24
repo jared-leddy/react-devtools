@@ -1,18 +1,31 @@
 import { Writable } from 'node:stream';
+import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
     DEFAULT_CLIENT_BASE_PATH,
     DEFAULT_OVERLAY_BASE_PATH,
     DEFAULT_OVERLAY_SCRIPT_PATH,
+    VITE_ASSET_RPC_LIST_REQUEST,
+    VITE_ASSET_RPC_LIST_RESPONSE,
+    VITE_ASSET_RPC_READ_REQUEST,
+    VITE_ASSET_RPC_READ_RESPONSE,
+    VITE_ASSET_UPDATE_EVENT,
+    classifyAsset,
     createOverlayScriptTag,
     getDefaultClientDir,
     getDefaultOverlayDir,
+    handleViteAssetRpcPayload,
     injectOverlayScript,
+    installViteAssetRpc,
+    listViteAssets,
     normalizeServePath,
     reactDevtools,
+    readViteAssetText,
     shouldTransformSourceMetadata,
     transformReactSourceMetadata
 } from '../src';
+import type { ViteTransportPayload } from '../src/viteTransport';
 import {
     VITE_TRANSPORT_EVENT,
     createViteTransportChannel
@@ -64,6 +77,82 @@ function createMockViteServer(clientDir: string) {
     } as never);
 
     return use;
+}
+
+async function createAssetFixture() {
+    const root = await mkdtemp(join(tmpdir(), 'devtools-assets-'));
+    await mkdir(join(root, 'src'), { recursive: true });
+    await mkdir(join(root, 'public'), { recursive: true });
+    await mkdir(join(root, 'dist'), { recursive: true });
+    await mkdir(join(root, 'node_modules/pkg'), { recursive: true });
+    await writeFile(join(root, 'src/logo.png'), createPngBuffer(2, 3));
+    await writeFile(join(root, 'src/readme.txt'), 'hello asset explorer');
+    await writeFile(join(root, 'public/theme.css'), 'body { color: red; }');
+    await writeFile(join(root, 'src/sound.mp3'), Buffer.from([0, 1, 2]));
+    await writeFile(join(root, 'src/font.woff2'), Buffer.from([3, 4, 5]));
+    await writeFile(join(root, 'src/module.wasm'), Buffer.from([0, 97, 115]));
+    await writeFile(join(root, 'src/blob.bin'), Buffer.from([6, 7, 8]));
+    await writeFile(join(root, 'dist/ignored.png'), createPngBuffer(1, 1));
+    await writeFile(join(root, 'package-lock.json'), '{}');
+    await writeFile(join(root, 'node_modules/pkg/file.svg'), '<svg />');
+
+    return root;
+}
+
+function createPngBuffer(width: number, height: number) {
+    const buffer = Buffer.alloc(24);
+    buffer[0] = 0x89;
+    buffer.write('PNG', 1, 'ascii');
+    buffer.writeUInt32BE(width, 16);
+    buffer.writeUInt32BE(height, 20);
+
+    return buffer;
+}
+
+function createGifBuffer(width: number, height: number) {
+    const buffer = Buffer.alloc(10);
+    buffer.write('GIF89a', 0, 'ascii');
+    buffer.writeUInt16LE(width, 6);
+    buffer.writeUInt16LE(height, 8);
+
+    return buffer;
+}
+
+function createJpegBuffer(width: number, height: number) {
+    return Buffer.from([
+        0xff,
+        0xd8,
+        0xff,
+        0xc0,
+        0x00,
+        0x11,
+        0x08,
+        (height >> 8) & 0xff,
+        height & 0xff,
+        (width >> 8) & 0xff,
+        width & 0xff,
+        0x03,
+        0x01,
+        0x11,
+        0x00,
+        0x02,
+        0x11,
+        0x00,
+        0x03,
+        0x11,
+        0x00
+    ]);
+}
+
+function createWebpBuffer(width: number, height: number) {
+    const buffer = Buffer.alloc(30);
+    buffer.write('RIFF', 0, 'ascii');
+    buffer.write('WEBP', 8, 'ascii');
+    buffer.write('VP8X', 12, 'ascii');
+    buffer.writeUIntLE(width - 1, 24, 3);
+    buffer.writeUIntLE(height - 1, 27, 3);
+
+    return buffer;
 }
 
 async function requestMiddleware(
@@ -361,6 +450,272 @@ describe('reactDevtools', () => {
         );
         expect(getDefaultOverlayDir()).toContain(
             'node_modules/@devtools/devtools-overlay/dist'
+        );
+    });
+
+    it('lists Vite project assets with classification and image metadata', async () => {
+        const root = await createAssetFixture();
+
+        try {
+            const assets = await listViteAssets(root);
+            const relativePaths = assets.map((asset) => asset.relativePath);
+
+            expect(relativePaths).toEqual([
+                'public/theme.css',
+                'src/blob.bin',
+                'src/font.woff2',
+                'src/logo.png',
+                'src/module.wasm',
+                'src/readme.txt',
+                'src/sound.mp3'
+            ]);
+            expect(
+                assets.map((asset) => [asset.relativePath, asset.kind])
+            ).toEqual([
+                ['public/theme.css', 'text'],
+                ['src/blob.bin', 'other'],
+                ['src/font.woff2', 'font'],
+                ['src/logo.png', 'image'],
+                ['src/module.wasm', 'wasm'],
+                ['src/readme.txt', 'text'],
+                ['src/sound.mp3', 'audio']
+            ]);
+            expect(
+                assets.find((asset) => asset.relativePath === 'src/logo.png')
+                    ?.image
+            ).toEqual({ height: 3, type: 'png', width: 2 });
+            expect(
+                assets.every((asset) => asset.publicPath.startsWith('/@fs/'))
+            ).toBe(true);
+        } finally {
+            await rm(root, { force: true, recursive: true });
+        }
+    });
+
+    it('reads image metadata across browser asset formats', async () => {
+        const root = await mkdtemp(join(tmpdir(), 'devtools-assets-'));
+
+        try {
+            await mkdir(join(root, 'src'), { recursive: true });
+            await writeFile(
+                join(root, 'src/icon.svg'),
+                '<svg width="10px" height="20"></svg>'
+            );
+            await writeFile(
+                join(root, 'src/viewbox.svg'),
+                '<svg viewBox="0 0 30 40"></svg>'
+            );
+            await writeFile(join(root, 'src/pixel.gif'), createGifBuffer(4, 5));
+            await writeFile(
+                join(root, 'src/photo.jpg'),
+                createJpegBuffer(6, 7)
+            );
+            await writeFile(
+                join(root, 'src/image.webp'),
+                createWebpBuffer(8, 9)
+            );
+            await writeFile(
+                join(root, 'src/unknown.avif'),
+                Buffer.from([1, 2])
+            );
+
+            const images = new Map(
+                (await listViteAssets(root)).map((asset) => [
+                    asset.relativePath,
+                    asset.image
+                ])
+            );
+
+            expect(images.get('src/icon.svg')).toEqual({
+                height: 20,
+                type: 'svg',
+                width: 10
+            });
+            expect(images.get('src/viewbox.svg')).toEqual({
+                height: 40,
+                type: 'svg',
+                width: 30
+            });
+            expect(images.get('src/pixel.gif')).toEqual({
+                height: 5,
+                type: 'gif',
+                width: 4
+            });
+            expect(images.get('src/photo.jpg')).toEqual({
+                height: 7,
+                type: 'jpeg',
+                width: 6
+            });
+            expect(images.get('src/image.webp')).toEqual({
+                height: 9,
+                type: 'webp',
+                width: 8
+            });
+            expect(images.get('src/unknown.avif')).toEqual({ type: 'unknown' });
+        } finally {
+            await rm(root, { force: true, recursive: true });
+        }
+    });
+
+    it('classifies video assets and reads text assets with truncation', async () => {
+        const root = await createAssetFixture();
+
+        try {
+            await writeFile(join(root, 'src/movie.mp4'), Buffer.from([1, 2]));
+
+            expect(classifyAsset(join(root, 'src/movie.mp4'))).toBe('video');
+
+            const result = await readViteAssetText(
+                root,
+                join(root, 'src/readme.txt'),
+                { maxTextBytes: 5 }
+            );
+
+            expect(result).toMatchObject({
+                content: 'hello',
+                encoding: 'utf8',
+                kind: 'text',
+                truncated: true
+            });
+            await expect(
+                readViteAssetText(root, join(root, '..', 'outside.txt'))
+            ).rejects.toThrow('outside the Vite project root');
+        } finally {
+            await rm(root, { force: true, recursive: true });
+        }
+    });
+
+    it('responds to Vite asset RPC list/read requests', async () => {
+        const root = await createAssetFixture();
+        const posted: ViteTransportPayload[] = [];
+        const channel = {
+            on: jest.fn(),
+            post: (payload: ViteTransportPayload) => {
+                posted.push(payload);
+            }
+        };
+
+        try {
+            await handleViteAssetRpcPayload(channel, root, {
+                requestId: 'assets:list:1',
+                type: VITE_ASSET_RPC_LIST_REQUEST
+            });
+            await handleViteAssetRpcPayload(channel, root, {
+                filePath: join(root, 'src/readme.txt'),
+                maxBytes: 5,
+                requestId: 'assets:read:1',
+                type: VITE_ASSET_RPC_READ_REQUEST
+            });
+
+            expect(posted[0]).toMatchObject({
+                requestId: 'assets:list:1',
+                type: VITE_ASSET_RPC_LIST_RESPONSE
+            });
+            expect(posted[1]).toMatchObject({
+                requestId: 'assets:read:1',
+                result: {
+                    content: 'hello',
+                    truncated: true
+                },
+                type: VITE_ASSET_RPC_READ_RESPONSE
+            });
+        } finally {
+            await rm(root, { force: true, recursive: true });
+        }
+    });
+
+    it('ignores unknown asset RPC payloads and reports read errors', async () => {
+        const root = await createAssetFixture();
+        const posted: ViteTransportPayload[] = [];
+        const channel = {
+            on: jest.fn(),
+            post: (payload: ViteTransportPayload) => {
+                posted.push(payload);
+            }
+        };
+
+        try {
+            await handleViteAssetRpcPayload(channel, root, null);
+            await handleViteAssetRpcPayload(channel, root, { type: 'unknown' });
+            await handleViteAssetRpcPayload(channel, root, {
+                filePath: join(root, '..', 'outside.txt'),
+                requestId: 'assets:read:error',
+                type: VITE_ASSET_RPC_READ_REQUEST
+            });
+
+            expect(posted).toEqual([
+                expect.objectContaining({
+                    error: expect.stringContaining(
+                        'outside the Vite project root'
+                    ),
+                    requestId: 'assets:read:error',
+                    type: VITE_ASSET_RPC_READ_RESPONSE
+                })
+            ]);
+        } finally {
+            await rm(root, { force: true, recursive: true });
+        }
+    });
+
+    it('emits debounced asset update events on watcher changes', () => {
+        jest.useFakeTimers();
+        const posted: ViteTransportPayload[] = [];
+        const watcherHandlers = new Map<string, () => void>();
+
+        try {
+            installViteAssetRpc(
+                {
+                    config: { root: '/project' },
+                    watcher: {
+                        on: jest.fn((event: string, handler: () => void) => {
+                            watcherHandlers.set(event, handler);
+                        })
+                    }
+                } as never,
+                {
+                    on: jest.fn(),
+                    post: (payload: ViteTransportPayload) => {
+                        posted.push(payload);
+                    }
+                },
+                { updateDebounceMs: 25 }
+            );
+
+            watcherHandlers.get('add')?.();
+            watcherHandlers.get('change')?.();
+            jest.advanceTimersByTime(24);
+            expect(posted).toEqual([]);
+
+            jest.advanceTimersByTime(1);
+            expect(posted).toEqual([{ type: VITE_ASSET_UPDATE_EVENT }]);
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    it('allows asset RPC registration to be disabled', () => {
+        const on = jest.fn();
+        const plugin = reactDevtools({
+            assets: false,
+            clientDir: '/tmp/client'
+        });
+        const configureServer = plugin.configureServer as (
+            server: never
+        ) => void;
+
+        configureServer({
+            middlewares: {
+                use: jest.fn()
+            },
+            ws: {
+                on,
+                send: jest.fn()
+            }
+        } as never);
+
+        expect(on).not.toHaveBeenCalledWith(
+            VITE_TRANSPORT_EVENT,
+            expect.any(Function)
         );
     });
 
