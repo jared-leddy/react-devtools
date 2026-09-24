@@ -4,6 +4,7 @@ export * from './components/layout';
 export * from './components/state';
 export * from './components/tree';
 export * from './commands';
+export * from './graph';
 export * from './mount';
 export * from './overview';
 export * from './routing';
