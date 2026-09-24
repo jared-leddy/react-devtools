@@ -4,6 +4,7 @@ import {
     fireEvent,
     render,
     screen,
+    within,
     waitFor
 } from '@testing-library/react';
 import {
@@ -502,6 +503,7 @@ describe('@devtools/client App routing', () => {
                                 value: ['overview', 'settings']
                             },
                             {
+                                editable: true,
                                 key: 'metadata',
                                 value: { packageName: 'module-plugin' }
                             }
@@ -552,10 +554,16 @@ describe('@devtools/client App routing', () => {
             'Inspector action queued: Refresh inspector.'
         );
 
-        fireEvent.change(screen.getByLabelText('Edit enabled'), {
+        fireEvent.change(screen.getByLabelText('Edit enabled value'), {
             target: { value: 'false' }
         });
-        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        fireEvent.click(
+            within(
+                screen
+                    .getByLabelText('Edit enabled value')
+                    .closest('.dt-state-viewer__editor') as HTMLElement
+            ).getByRole('button', { name: 'Save' })
+        );
 
         await waitFor(() => {
             expect(editHandler).toHaveBeenCalledWith({
@@ -569,6 +577,67 @@ describe('@devtools/client App routing', () => {
         await waitFor(() => {
             expect(screen.getByRole('status')).toHaveTextContent(
                 'Updated enabled.'
+            );
+        });
+
+        const metadataEditor = screen
+            .getByLabelText('Edit metadata value')
+            .closest('.dt-state-viewer__editor') as HTMLElement;
+        fireEvent.change(
+            within(metadataEditor).getByLabelText('Edit metadata key'),
+            {
+                target: { value: 'package' }
+            }
+        );
+        fireEvent.change(
+            within(metadataEditor).getByLabelText('Edit metadata value'),
+            {
+                target: { value: '{"packageName":"module-plugin","hot":true}' }
+            }
+        );
+        fireEvent.click(
+            within(metadataEditor).getByRole('button', { name: 'Save' })
+        );
+
+        await waitFor(() => {
+            expect(editHandler).toHaveBeenCalledWith({
+                inspectorId: 'module-state',
+                nodeId: 'module:app',
+                path: ['State', 3, 'metadata'],
+                state: {
+                    newKey: 'package',
+                    value: { hot: true, packageName: 'module-plugin' }
+                },
+                type: 'set'
+            });
+        });
+        await waitFor(() => {
+            expect(screen.getByText('package')).toBeInTheDocument();
+            expect(screen.getByRole('status')).toHaveTextContent(
+                'Updated package.'
+            );
+        });
+
+        const packageEditor = screen
+            .getByLabelText('Edit package value')
+            .closest('.dt-state-viewer__editor') as HTMLElement;
+        fireEvent.click(
+            within(packageEditor).getByRole('button', { name: 'Remove' })
+        );
+
+        await waitFor(() => {
+            expect(editHandler).toHaveBeenCalledWith({
+                inspectorId: 'module-state',
+                nodeId: 'module:app',
+                path: ['State', 3, 'package'],
+                state: { remove: true },
+                type: 'remove'
+            });
+        });
+        await waitFor(() => {
+            expect(screen.queryByText('package')).not.toBeInTheDocument();
+            expect(screen.getByRole('status')).toHaveTextContent(
+                'Removed package.'
             );
         });
 
@@ -586,6 +655,66 @@ describe('@devtools/client App routing', () => {
 
         fireEvent.click(screen.getByRole('button', { name: 'Settings' }));
         expect(screen.getByText('No inspector settings')).toBeInTheDocument();
+    });
+
+    it('surfaces failed custom inspector edits without optimistic mutation', async () => {
+        const editHandler = jest
+            .fn()
+            .mockRejectedValue(new Error('Plugin edit rejected.'));
+
+        render(
+            <App initialEntries={['/custom-inspector-tab-view/edit-failure']} />
+        );
+
+        act(() => {
+            setupDevToolsPlugin(
+                {
+                    id: 'edit-failure-plugin',
+                    label: 'Edit failure plugin'
+                },
+                (api) => {
+                    api.on.getInspectorTree('edit-failure', () => [
+                        {
+                            id: 'settings',
+                            label: 'Settings'
+                        }
+                    ]);
+                    api.on.getInspectorState('edit-failure', () => ({
+                        State: [
+                            {
+                                editable: true,
+                                key: 'mode',
+                                value: 'light'
+                            }
+                        ]
+                    }));
+                    api.on.editInspectorState('edit-failure', editHandler);
+                    api.addInspector({
+                        id: 'edit-failure',
+                        label: 'Edit Failure'
+                    });
+                }
+            );
+        });
+
+        await waitFor(() => {
+            expect(
+                screen.getByLabelText('Edit mode value')
+            ).toBeInTheDocument();
+        });
+
+        fireEvent.change(screen.getByLabelText('Edit mode value'), {
+            target: { value: 'dark' }
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+        await waitFor(() => {
+            expect(screen.getByRole('status')).toHaveTextContent(
+                'Plugin edit rejected.'
+            );
+        });
+        expect(screen.getByText('"light"')).toBeInTheDocument();
+        expect(screen.queryByText('"dark"')).not.toBeInTheDocument();
     });
 
     it('updates custom inspector selection and filters state fields', async () => {

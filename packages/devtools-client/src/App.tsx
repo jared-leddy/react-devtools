@@ -47,6 +47,8 @@ import {
 import { ResizableSplitPane } from './components/layout';
 import {
     StateViewer,
+    type StateViewerCustomValue,
+    type StateViewerEditOperation,
     type StateViewerField,
     type StateViewerSection,
     type StateViewerValue
@@ -791,23 +793,49 @@ function CustomInspectorPage({
         );
     };
 
-    const editField = (field: StateViewerField, value: StateViewerValue) => {
+    const editField = (
+        field: StateViewerField,
+        operation: StateViewerEditOperation
+    ) => {
         if (!selectedNodeId || !field.path) {
             return;
         }
 
+        setStatus(`Updating ${field.name}.`);
         void editCustomInspectorState({
             inspectorId: inspector.id,
             nodeId: selectedNodeId,
             path: field.path,
-            state: { value },
-            type: 'set'
-        }).then(() => {
-            setInspectorState((currentState) =>
-                updateInspectorStateValue(currentState, field.path!, value)
-            );
-            setStatus(`Updated ${field.name}.`);
-        });
+            state:
+                operation.type === 'remove'
+                    ? { remove: true }
+                    : {
+                          newKey: operation.newKey,
+                          value: fromStateViewerValue(operation.value)
+                      },
+            type: operation.type
+        })
+            .then(() => {
+                setInspectorState((currentState) =>
+                    updateInspectorStateField(
+                        currentState,
+                        field.path!,
+                        operation
+                    )
+                );
+                setStatus(
+                    operation.type === 'remove'
+                        ? `Removed ${field.name}.`
+                        : `Updated ${operation.newKey ?? field.name}.`
+                );
+            })
+            .catch((error: unknown) => {
+                setStatus(
+                    error instanceof Error
+                        ? error.message
+                        : `Failed to update ${field.name}.`
+                );
+            });
     };
 
     return (
@@ -1924,10 +1952,10 @@ function toStateViewerSections(state: InspectorState): StateViewerSection[] {
     }));
 }
 
-function updateInspectorStateValue(
+function updateInspectorStateField(
     state: InspectorState,
     path: Array<number | string>,
-    value: StateViewerValue
+    operation: StateViewerEditOperation
 ): InspectorState {
     const [category, index] = path;
 
@@ -1943,10 +1971,62 @@ function updateInspectorStateValue(
 
     return {
         ...state,
-        [category]: entries.map((entry, entryIndex) =>
-            entryIndex === index ? { ...entry, value } : entry
-        )
+        [category]:
+            operation.type === 'remove'
+                ? entries.filter((_, entryIndex) => entryIndex !== index)
+                : entries.map((entry, entryIndex) =>
+                      entryIndex === index
+                          ? {
+                                ...entry,
+                                key: operation.newKey ?? entry.key,
+                                value: fromStateViewerValue(operation.value)
+                            }
+                          : entry
+                  )
     };
+}
+
+function fromStateViewerValue(value: StateViewerValue): unknown {
+    if (
+        value === null ||
+        typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean'
+    ) {
+        return value;
+    }
+
+    const customValue = value._custom.value;
+
+    if (customValue === undefined) {
+        return value._custom.display;
+    }
+
+    return fromNestedStateViewerValue(customValue);
+}
+
+function fromNestedStateViewerValue(
+    value: Exclude<StateViewerCustomValue['_custom']['value'], undefined>
+): unknown {
+    if (
+        value === null ||
+        typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean'
+    ) {
+        return value;
+    }
+
+    if (Array.isArray(value)) {
+        return value.map((item) => fromStateViewerValue(item));
+    }
+
+    return Object.fromEntries(
+        Object.entries(value).map(([key, item]) => [
+            key,
+            fromStateViewerValue(item)
+        ])
+    );
 }
 
 function toStateViewerValue(
@@ -1967,9 +2047,27 @@ function toStateViewerValue(
             preview:
                 typeof value === 'object' ? JSON.stringify(value) : undefined,
             type: Array.isArray(value) ? 'array' : typeof value,
-            value: undefined
+            value:
+                typeof value === 'object' && value !== null
+                    ? toNestedStateViewerValue(value)
+                    : undefined
         }
     };
+}
+
+function toNestedStateViewerValue(
+    value: object
+): Exclude<StateViewerCustomValue['_custom']['value'], undefined> {
+    if (Array.isArray(value)) {
+        return value.map((item) => toStateViewerValue(item));
+    }
+
+    return Object.fromEntries(
+        Object.entries(value).map(([key, item]) => [
+            key,
+            toStateViewerValue(item)
+        ])
+    );
 }
 
 function formatInspectorStateValue(value: unknown): string {

@@ -104,7 +104,7 @@ const inspectorTreeHandlers = new Map<
 >();
 const editInspectorStateHandlers = new Map<
     string,
-    (payload: EditInspectorStateRequest) => void
+    (payload: EditInspectorStateRequest) => Promise<void> | void
 >();
 const hooks: HookMap = {
     [ReactDevToolsContextHookKeys.ADD_INSPECTOR]: [],
@@ -259,7 +259,7 @@ export async function sendCustomInspectorState(
 export async function editCustomInspectorState(
     payload: EditInspectorStateRequest
 ): Promise<void> {
-    editInspectorStateHandlers.get(payload.inspectorId)?.(payload);
+    await editInspectorStateHandlers.get(payload.inspectorId)?.(payload);
 }
 
 export function resetDevToolsPluginRegistry(): void {

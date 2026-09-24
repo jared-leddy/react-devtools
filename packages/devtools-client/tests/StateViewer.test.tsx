@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { StateViewer, type StateViewerSection } from '../src';
 
 const formattedSections: StateViewerSection[] = [
@@ -119,5 +119,72 @@ describe('StateViewer', () => {
         expect(container.querySelector('input')).not.toBeInTheDocument();
         expect(container.querySelector('textarea')).not.toBeInTheDocument();
         expect(container.querySelector('select')).not.toBeInTheDocument();
+    });
+
+    it('renders edit controls only for explicitly editable fields', () => {
+        const onEditField = jest.fn();
+
+        render(
+            <StateViewer
+                onEditField={onEditField}
+                sections={[
+                    {
+                        fields: [
+                            { name: 'readonly', value: 'fixed' },
+                            {
+                                editable: true,
+                                name: 'options',
+                                value: {
+                                    _custom: {
+                                        display: 'Object',
+                                        preview: '{"enabled":true}',
+                                        type: 'object',
+                                        value: { enabled: true }
+                                    }
+                                }
+                            }
+                        ],
+                        name: 'state'
+                    }
+                ]}
+            />
+        );
+
+        expect(
+            screen.getByText('Editable fields available')
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByLabelText('Edit readonly value')
+        ).not.toBeInTheDocument();
+
+        fireEvent.change(screen.getByLabelText('Edit options key'), {
+            target: { value: 'config' }
+        });
+        fireEvent.change(screen.getByLabelText('Edit options value'), {
+            target: { value: '{"enabled":false}' }
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+        expect(onEditField).toHaveBeenCalledWith(
+            expect.objectContaining({ name: 'options' }),
+            {
+                newKey: 'config',
+                type: 'set',
+                value: {
+                    _custom: {
+                        display: 'Object',
+                        preview: '{"enabled":false}',
+                        type: 'object',
+                        value: { enabled: false }
+                    }
+                }
+            }
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'Remove' }));
+        expect(onEditField).toHaveBeenCalledWith(
+            expect.objectContaining({ name: 'options' }),
+            { type: 'remove' }
+        );
     });
 });
