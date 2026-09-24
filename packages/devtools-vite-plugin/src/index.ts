@@ -15,8 +15,10 @@ import {
     installViteAssetRpc,
     type ViteAssetExplorerOptions
 } from './assets.js';
+import { installViteGraphRpc, type ViteGraphExplorerOptions } from './graph.js';
 export * from './sourceMetadata.js';
 export * from './assets.js';
+export * from './graph.js';
 
 export interface ReactDevtoolsVitePluginOptions {
     /**
@@ -53,6 +55,10 @@ export interface ReactDevtoolsVitePluginOptions {
      * Enables project asset explorer RPC over the Vite transport.
      */
     assets?: false | ViteAssetExplorerOptions;
+    /**
+     * Enables Vite module graph RPC over the Vite transport.
+     */
+    graph?: false | ViteGraphExplorerOptions;
     /**
      * Enables dev-only JSX source metadata annotations. Set false to opt out.
      */
@@ -204,6 +210,13 @@ export function reactDevtools(
                     server,
                     viteTransportChannel,
                     options.assets || undefined
+                );
+            }
+            if (options.graph !== false) {
+                installViteGraphRpc(
+                    server,
+                    viteTransportChannel,
+                    options.graph || undefined
                 );
             }
             options.onViteTransport?.(viteTransportChannel);
