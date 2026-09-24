@@ -11,7 +11,11 @@ import {
     resetDevToolsPluginRegistry,
     setupDevToolsPlugin
 } from '@devtools/kit';
-import { App, resetClientRouteRegistryForTests } from '../src';
+import {
+    App,
+    resetClientRouteRegistryForTests,
+    setClientRouteEnvironment
+} from '../src';
 
 describe('@devtools/client App routing', () => {
     afterEach(() => {
@@ -62,8 +66,73 @@ describe('@devtools/client App routing', () => {
         ).toBeInTheDocument();
     });
 
+    it('hides Vite and adapter tabs until matching capabilities are detected', () => {
+        const { queryByRole } = render(<App initialEntries={['/overview']} />);
+
+        expect(queryByRole('link', { name: 'Assets' })).not.toBeInTheDocument();
+        expect(
+            queryByRole('link', { name: 'React Router' })
+        ).not.toBeInTheDocument();
+        expect(
+            queryByRole('link', { name: 'Pages/Routes' })
+        ).not.toBeInTheDocument();
+    });
+
+    it('shows Vite-only tabs when the active transport is Vite', () => {
+        setClientRouteEnvironment({
+            capabilities: ['source-inspector'],
+            transport: 'vite'
+        });
+
+        render(<App initialEntries={['/graph']} />);
+
+        expect(
+            screen.getByRole('link', { name: 'Assets' })
+        ).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: 'Graph' })).toBeInTheDocument();
+        expect(
+            screen.getByRole('link', { name: 'Source Inspector' })
+        ).toBeInTheDocument();
+        expect(screen.getByLabelText('Graph page')).toHaveTextContent(
+            'Vite module graph and dependency edges.'
+        );
+    });
+
+    it('keeps source inspector gated when only the Vite transport is detected', () => {
+        setClientRouteEnvironment({ transport: 'vite' });
+
+        render(<App initialEntries={['/source-inspector']} />);
+
+        expect(
+            screen.queryByRole('link', { name: 'Source Inspector' })
+        ).not.toBeInTheDocument();
+        expect(
+            screen.getByRole('heading', { name: 'Not found' })
+        ).toBeInTheDocument();
+    });
+
+    it('shows adapter routes after integration detection', () => {
+        setClientRouteEnvironment({
+            capabilities: ['react-router'],
+            transport: 'standalone'
+        });
+
+        render(<App initialEntries={['/react-router']} />);
+
+        expect(
+            screen.getByRole('link', { name: 'Pages/Routes' })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole('link', { name: 'React Router' })
+        ).toBeInTheDocument();
+        expect(screen.getByLabelText('React Router page')).toHaveTextContent(
+            'React Router route tree and navigation state.'
+        );
+    });
+
     it('adds custom tabs from the plugin API as navigable routes', async () => {
         addCustomTab({
+            category: 'third-party',
             name: 'module-health',
             title: 'Module Health'
         });
@@ -81,6 +150,27 @@ describe('@devtools/client App routing', () => {
         expect(screen.getByLabelText('Module Health page')).toHaveTextContent(
             'Custom tab registered for Module Health.'
         );
+    });
+
+    it('groups unknown plugin tabs under the generic custom tab bucket', async () => {
+        addCustomTab({
+            category: 'unknown',
+            name: 'feature-flags',
+            title: 'Feature Flags'
+        });
+
+        const { container } = render(
+            <App initialEntries={['/custom-tab-view/feature-flags']} />
+        );
+
+        await waitFor(() => {
+            expect(
+                screen.getByRole('link', { name: 'Feature Flags' })
+            ).toBeInTheDocument();
+        });
+        expect(
+            container.querySelector('[data-route-category="custom"]')
+        ).toHaveTextContent('Feature Flags');
     });
 
     it('adds custom inspectors registered by setupDevToolsPlugin as navigable tabs', async () => {
@@ -178,6 +268,38 @@ describe('@devtools/client App routing', () => {
         expect(screen.getAllByText('ComponentLeaf0_6')).toHaveLength(2);
         expect(
             screen.getByText('component-group-0-child-6')
+        ).toBeInTheDocument();
+    });
+
+    it('persists the last selected tab and per-tab path state', async () => {
+        const { unmount } = render(
+            <App
+                initialEntries={[
+                    '/components?componentId=component-group-0-child-5'
+                ]}
+            />
+        );
+
+        await waitFor(() => {
+            expect(
+                window.localStorage.getItem('devtools.client.lastRoute')
+            ).toBe('/components');
+        });
+        expect(
+            JSON.parse(
+                window.localStorage.getItem('devtools.client.tabState') ?? '{}'
+            )
+        ).toMatchObject({
+            components: {
+                path: '/components?componentId=component-group-0-child-5'
+            }
+        });
+
+        unmount();
+        render(<App initialEntries={['/']} />);
+
+        expect(
+            screen.getByRole('region', { name: 'Component tree' })
         ).toBeInTheDocument();
     });
 

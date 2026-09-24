@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react';
-import { useMemo, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useSyncExternalStore } from 'react';
 import {
     MemoryRouter,
     NavLink,
     Navigate,
     Route,
     Routes,
+    useLocation,
     useSearchParams,
     type MemoryRouterProps
 } from 'react-router';
@@ -25,11 +26,12 @@ import {
     generateSyntheticComponentTree
 } from './components/tree';
 import {
-    BUILT_IN_ROUTES,
+    getClientRouteCategories,
+    getPersistedLastClientRoutePath,
+    getVisibleClientRoutes,
     initializeClientRouteRegistry,
+    persistClientRouteVisit,
     subscribeToClientRoutes,
-    toCustomInspectorRoute,
-    toCustomTabRoute,
     type ClientRoute
 } from './routing';
 
@@ -52,13 +54,14 @@ function ClientShell() {
         initializeClientRouteRegistry
     );
     const routes = useMemo(
-        () => [
-            ...BUILT_IN_ROUTES,
-            ...routeSnapshot.customInspectors.map(toCustomInspectorRoute),
-            ...routeSnapshot.customTabs.map(toCustomTabRoute)
-        ],
+        () => getVisibleClientRoutes(routeSnapshot),
         [routeSnapshot]
     );
+    const routeCategories = useMemo(
+        () => getClientRouteCategories(routes),
+        [routes]
+    );
+    const defaultRoutePath = getPersistedLastClientRoutePath(routes);
 
     return (
         <ThemeProvider>
@@ -75,20 +78,28 @@ function ClientShell() {
                         className="dt-client-shell__nav"
                         aria-label="Panel tabs"
                     >
-                        {routes.map((route) => (
-                            <NavLink
-                                className={({ isActive }) =>
-                                    `dt-client-shell__tab${
-                                        isActive
-                                            ? ' dt-client-shell__tab--active'
-                                            : ''
-                                    }`
-                                }
-                                key={route.id}
-                                to={route.path}
+                        {routeCategories.map((group) => (
+                            <div
+                                className="dt-client-shell__nav-group"
+                                data-route-category={group.category}
+                                key={group.category}
                             >
-                                {route.label}
-                            </NavLink>
+                                {group.routes.map((route) => (
+                                    <NavLink
+                                        className={({ isActive }) =>
+                                            `dt-client-shell__tab${
+                                                isActive
+                                                    ? ' dt-client-shell__tab--active'
+                                                    : ''
+                                            }`
+                                        }
+                                        key={route.id}
+                                        to={route.path}
+                                    >
+                                        {route.label}
+                                    </NavLink>
+                                ))}
+                            </div>
                         ))}
                     </nav>
                 </header>
@@ -96,11 +107,11 @@ function ClientShell() {
                 <Routes>
                     <Route
                         path="/"
-                        element={<Navigate to="/overview" replace />}
+                        element={<Navigate to={defaultRoutePath} replace />}
                     />
                     {routes.map((route) => (
                         <Route
-                            element={<RoutePage route={route} />}
+                            element={<TrackedRoutePage route={route} />}
                             key={route.id}
                             path={route.path}
                         />
@@ -110,6 +121,7 @@ function ClientShell() {
                         element={
                             <RoutePage
                                 route={{
+                                    category: 'core',
                                     id: 'not-found',
                                     kind: 'page',
                                     label: 'Not found',
@@ -124,6 +136,19 @@ function ClientShell() {
             </main>
         </ThemeProvider>
     );
+}
+
+function TrackedRoutePage({ route }: { route: ClientRoute }) {
+    const location = useLocation();
+
+    useEffect(() => {
+        persistClientRouteVisit(
+            route,
+            `${location.pathname}${location.search}`
+        );
+    }, [location.pathname, location.search, route]);
+
+    return <RoutePage route={route} />;
 }
 
 function RoutePage({ route }: { route: ClientRoute }) {
