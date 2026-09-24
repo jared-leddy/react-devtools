@@ -353,9 +353,286 @@ describe('@devtools/client App routing', () => {
         ).toBeInTheDocument();
         expect(
             screen.getByLabelText('Nekuta Inspector page')
-        ).toHaveTextContent(
-            'Custom inspector registered for Nekuta Inspector.'
+        ).toHaveTextContent('No inspector nodes');
+    });
+
+    it('renders custom inspector tree, state, actions, filters, and editable fields', async () => {
+        const editHandler = jest.fn();
+        let treeFilter = '';
+
+        render(
+            <App initialEntries={['/custom-inspector-tab-view/module-state']} />
         );
+
+        act(() => {
+            setupDevToolsPlugin(
+                {
+                    id: 'module-plugin',
+                    label: 'Module plugin'
+                },
+                (api) => {
+                    api.on.getInspectorTree('module-state', ({ filter }) => {
+                        treeFilter = filter ?? '';
+
+                        return [
+                            {
+                                children: [
+                                    {
+                                        id: 'route:settings',
+                                        label: 'Settings route',
+                                        tags: [{ label: 'route' }]
+                                    }
+                                ],
+                                id: 'module:app',
+                                label: 'App module',
+                                tags: [{ label: 'module' }]
+                            }
+                        ].filter((node) =>
+                            node.label
+                                .toLowerCase()
+                                .includes((filter ?? '').toLowerCase())
+                        );
+                    });
+                    api.on.getInspectorState('module-state', ({ nodeId }) => ({
+                        State: [
+                            {
+                                editable: true,
+                                key: 'enabled',
+                                value: nodeId === 'module:app'
+                            },
+                            {
+                                key: 'owner',
+                                value: 'module-plugin'
+                            },
+                            {
+                                key: 'routes',
+                                value: ['overview', 'settings']
+                            },
+                            {
+                                key: 'metadata',
+                                value: { packageName: 'module-plugin' }
+                            }
+                        ]
+                    }));
+                    api.on.editInspectorState('module-state', editHandler);
+                    api.addInspector({
+                        actions: [
+                            {
+                                action: 'refresh',
+                                label: 'Refresh inspector'
+                            }
+                        ],
+                        id: 'module-state',
+                        label: 'Module State',
+                        nodeActions: [
+                            {
+                                action: 'pin',
+                                label: 'Pin node'
+                            }
+                        ],
+                        stateFilterPlaceholder: 'Filter module state',
+                        treeFilterPlaceholder: 'Filter modules'
+                    });
+                }
+            );
+        });
+
+        await waitFor(() => {
+            expect(screen.getAllByText('App module')).toHaveLength(2);
+        });
+
+        expect(screen.getByText('module')).toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.getByText('enabled')).toBeInTheDocument();
+            expect(screen.getByText('owner')).toBeInTheDocument();
+        });
+        expect(screen.getByText('Array(2)')).toBeInTheDocument();
+        expect(screen.getByText('Object')).toBeInTheDocument();
+        expect(
+            screen.getByRole('button', { name: 'Pin node' })
+        ).toBeInTheDocument();
+
+        fireEvent.click(
+            screen.getByRole('button', { name: 'Refresh inspector' })
+        );
+        expect(screen.getByRole('status')).toHaveTextContent(
+            'Inspector action queued: Refresh inspector.'
+        );
+
+        fireEvent.change(screen.getByLabelText('Edit enabled'), {
+            target: { value: 'false' }
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+        await waitFor(() => {
+            expect(editHandler).toHaveBeenCalledWith({
+                inspectorId: 'module-state',
+                nodeId: 'module:app',
+                path: ['State', 0, 'enabled'],
+                state: { value: false },
+                type: 'set'
+            });
+        });
+        await waitFor(() => {
+            expect(screen.getByRole('status')).toHaveTextContent(
+                'Updated enabled.'
+            );
+        });
+
+        fireEvent.change(screen.getByLabelText('Tree filter'), {
+            target: { value: 'missing' }
+        });
+
+        await waitFor(() => {
+            expect(treeFilter).toBe('missing');
+        });
+        expect(screen.getByText('No inspector nodes')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole('button', { name: 'About' }));
+        expect(screen.getByText('Inspector id')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole('button', { name: 'Settings' }));
+        expect(screen.getByText('No inspector settings')).toBeInTheDocument();
+    });
+
+    it('updates custom inspector selection and filters state fields', async () => {
+        render(
+            <App initialEntries={['/custom-inspector-tab-view/module-state']} />
+        );
+
+        act(() => {
+            setupDevToolsPlugin(
+                {
+                    id: 'module-plugin',
+                    label: 'Module plugin'
+                },
+                (api) => {
+                    api.on.getInspectorTree('module-state', () => [
+                        {
+                            children: [
+                                {
+                                    id: 'route:settings',
+                                    label: 'Settings route'
+                                }
+                            ],
+                            id: 'module:app',
+                            label: 'App module'
+                        }
+                    ]);
+                    api.on.getInspectorState('module-state', ({ nodeId }) => ({
+                        State: [
+                            {
+                                editable: true,
+                                key: 'enabled',
+                                value: nodeId === 'module:app'
+                            },
+                            {
+                                key: 'owner',
+                                value: nodeId
+                            }
+                        ]
+                    }));
+                    api.addInspector({
+                        id: 'module-state',
+                        label: 'Module State',
+                        nodeActions: [{ action: 'pin', label: 'Pin node' }]
+                    });
+                }
+            );
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText('Settings route')).toBeInTheDocument();
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Settings route' }));
+
+        await waitFor(() => {
+            expect(screen.getByText('route:settings')).toBeInTheDocument();
+        });
+        expect(screen.getByText('false')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole('button', { name: 'Pin node' }));
+        expect(screen.getByRole('status')).toHaveTextContent(
+            'Node action queued: Pin node.'
+        );
+
+        fireEvent.change(screen.getByLabelText('State filter'), {
+            target: { value: 'owner' }
+        });
+
+        await waitFor(() => {
+            expect(screen.queryByText('enabled')).not.toBeInTheDocument();
+        });
+        expect(screen.getByText('owner')).toBeInTheDocument();
+    });
+
+    it('surfaces custom inspector tree and state loading failures', async () => {
+        const { unmount } = render(
+            <App initialEntries={['/custom-inspector-tab-view/failing']} />
+        );
+
+        act(() => {
+            setupDevToolsPlugin(
+                {
+                    id: 'failing-plugin',
+                    label: 'Failing plugin'
+                },
+                (api) => {
+                    api.on.getInspectorTree('failing', () => {
+                        throw new Error('Tree unavailable');
+                    });
+                    api.addInspector({
+                        id: 'failing',
+                        label: 'Failing Inspector'
+                    });
+                }
+            );
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText('Tree unavailable')).toBeInTheDocument();
+        });
+
+        unmount();
+        resetDevToolsPluginRegistry();
+        resetClientRouteRegistryForTests();
+        window.localStorage.clear();
+
+        render(
+            <App
+                initialEntries={['/custom-inspector-tab-view/state-failing']}
+            />
+        );
+
+        act(() => {
+            setupDevToolsPlugin(
+                {
+                    id: 'state-failing-plugin',
+                    label: 'State failing plugin'
+                },
+                (api) => {
+                    api.on.getInspectorTree('state-failing', () => [
+                        {
+                            id: 'node:one',
+                            label: 'Node one'
+                        }
+                    ]);
+                    api.on.getInspectorState('state-failing', () => {
+                        throw 'state failed';
+                    });
+                    api.addInspector({
+                        id: 'state-failing',
+                        label: 'State Failing Inspector'
+                    });
+                }
+            );
+        });
+
+        await waitFor(() => {
+            expect(
+                screen.getByText('Inspector state failed to load.')
+            ).toBeInTheDocument();
+        });
     });
 
     it('can render without the default memory router wrapper', () => {

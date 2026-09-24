@@ -6,9 +6,45 @@ export enum ReactDevToolsContextHookKeys {
 }
 
 export interface CustomInspectorOptions {
+    actions?: Array<{ action: string; label?: string; tooltip?: string }>;
     icon?: string;
     id: string;
     label: string;
+    noSelectionText?: string;
+    nodeActions?: Array<{ action: string; label?: string; tooltip?: string }>;
+    stateFilterPlaceholder?: string;
+    treeFilterPlaceholder?: string;
+}
+
+export interface CustomInspectorNode {
+    children?: CustomInspectorNode[];
+    id: string;
+    label: string;
+    tags?: Array<{ label: string }>;
+}
+
+export type InspectorState = Record<
+    string,
+    Array<{ editable?: boolean; key: string; value: unknown }>
+>;
+
+export interface InspectorTreeResponse {
+    inspectorId: string;
+    rootNodes: CustomInspectorNode[];
+}
+
+export interface InspectorStateResponse {
+    inspectorId: string;
+    nodeId: string;
+    state: InspectorState;
+}
+
+export interface EditInspectorStateRequest {
+    inspectorId: string;
+    nodeId: string;
+    path: Array<number | string>;
+    state: { value?: unknown };
+    type?: string;
 }
 
 export interface CustomTab {
@@ -55,6 +91,18 @@ type HookMap = {
 
 const customCommands = new Map<string, CustomCommand>();
 const customTabs = new Map<string, CustomTab>();
+const inspectorStateHandlers = new Map<
+    string,
+    (payload: { inspectorId: string; nodeId: string }) => InspectorState
+>();
+const inspectorTreeHandlers = new Map<
+    string,
+    (payload: { filter?: string; inspectorId: string }) => CustomInspectorNode[]
+>();
+const editInspectorStateHandlers = new Map<
+    string,
+    (payload: EditInspectorStateRequest) => void
+>();
 const hooks: HookMap = {
     [ReactDevToolsContextHookKeys.ADD_INSPECTOR]: [],
     [ReactDevToolsContextHookKeys.CUSTOM_COMMAND_ADDED]: [],
@@ -132,6 +180,26 @@ export function setupDevToolsPlugin(
     descriptor: { id: string; label: string },
     setup: (api: {
         addInspector: (options: CustomInspectorOptions) => void;
+        on: {
+            editInspectorState: (
+                inspectorId: string,
+                handler: (payload: EditInspectorStateRequest) => void
+            ) => void;
+            getInspectorState: (
+                inspectorId: string,
+                handler: (payload: {
+                    inspectorId: string;
+                    nodeId: string;
+                }) => InspectorState
+            ) => void;
+            getInspectorTree: (
+                inspectorId: string,
+                handler: (payload: {
+                    filter?: string;
+                    inspectorId: string;
+                }) => CustomInspectorNode[]
+            ) => void;
+        };
     }) => void
 ): void {
     setup({
@@ -143,14 +211,61 @@ export function setupDevToolsPlugin(
                     plugin: { descriptor }
                 }
             );
+        },
+        on: {
+            editInspectorState: (inspectorId, handler) => {
+                editInspectorStateHandlers.set(inspectorId, handler);
+            },
+            getInspectorState: (inspectorId, handler) => {
+                inspectorStateHandlers.set(inspectorId, handler);
+            },
+            getInspectorTree: (inspectorId, handler) => {
+                inspectorTreeHandlers.set(inspectorId, handler);
+            }
         }
     });
+}
+
+export async function sendCustomInspectorTree(
+    inspectorId: string,
+    filter?: string
+): Promise<InspectorTreeResponse> {
+    return {
+        inspectorId,
+        rootNodes:
+            inspectorTreeHandlers.get(inspectorId)?.({ filter, inspectorId }) ??
+            []
+    };
+}
+
+export async function sendCustomInspectorState(
+    inspectorId: string,
+    nodeId: string
+): Promise<InspectorStateResponse> {
+    return {
+        inspectorId,
+        nodeId,
+        state:
+            inspectorStateHandlers.get(inspectorId)?.({
+                inspectorId,
+                nodeId
+            }) ?? {}
+    };
+}
+
+export async function editCustomInspectorState(
+    payload: EditInspectorStateRequest
+): Promise<void> {
+    editInspectorStateHandlers.get(payload.inspectorId)?.(payload);
 }
 
 export function resetDevToolsPluginRegistry(): void {
     activeContext = null;
     customCommands.clear();
     customTabs.clear();
+    editInspectorStateHandlers.clear();
+    inspectorStateHandlers.clear();
+    inspectorTreeHandlers.clear();
     hooks[ReactDevToolsContextHookKeys.ADD_INSPECTOR] = [];
     hooks[ReactDevToolsContextHookKeys.CUSTOM_COMMAND_ADDED] = [];
     hooks[ReactDevToolsContextHookKeys.CUSTOM_COMMAND_REMOVED] = [];

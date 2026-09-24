@@ -23,6 +23,16 @@ import {
     useTheme,
     type NotificationTone
 } from '@devtools/ui';
+import {
+    editCustomInspectorState,
+    sendCustomInspectorState,
+    sendCustomInspectorTree,
+    type CustomInspectorAction,
+    type CustomInspectorNode,
+    type CustomInspectorOptions,
+    type InspectorState,
+    type InspectorStateEntry
+} from '@devtools/kit';
 import '@devtools/ui/style.css';
 import './style.css';
 import {
@@ -32,7 +42,12 @@ import {
     type ClientCommand
 } from './commands';
 import { ResizableSplitPane } from './components/layout';
-import { StateViewer } from './components/state';
+import {
+    StateViewer,
+    type StateViewerField,
+    type StateViewerSection,
+    type StateViewerValue
+} from './components/state';
 import {
     VirtualizedComponentTree,
     findComponentTreeNode,
@@ -416,6 +431,30 @@ function RoutePage({
         return <SettingsPage settingsSnapshot={settingsSnapshot} />;
     }
 
+    if (route.kind === 'customInspector') {
+        const routeSnapshot = initializeClientRouteRegistry();
+        const inspector = routeSnapshot.customInspectors.find(
+            (item) => `custom-inspector:${item.id}` === route.id
+        );
+
+        return inspector ? (
+            <CustomInspectorPage
+                inspector={inspector}
+                settingsSnapshot={settingsSnapshot}
+            />
+        ) : (
+            <RuntimeStatePage
+                state={{
+                    description:
+                        'The custom inspector route exists, but the plugin inspector registration is no longer available.',
+                    label: 'custom-inspector-missing',
+                    title: 'Inspector unavailable',
+                    tone: 'warning'
+                }}
+            />
+        );
+    }
+
     return (
         <Card title={route.label}>
             <section
@@ -598,6 +637,408 @@ function IntegrationList({
                 </li>
             ))}
         </ul>
+    );
+}
+
+function CustomInspectorPage({
+    inspector,
+    settingsSnapshot
+}: {
+    inspector: CustomInspectorOptions;
+    settingsSnapshot: ClientSettingsSnapshot;
+}) {
+    const [nodes, setNodes] = useState<Array<CustomInspectorNode>>([]);
+    const [selectedNodeId, setSelectedNodeId] = useState<string | undefined>();
+    const [inspectorState, setInspectorState] = useState<InspectorState>({});
+    const [activeSubview, setActiveSubview] = useState<
+        'about' | 'inspector' | 'settings'
+    >('inspector');
+    const [status, setStatus] = useState('Inspector ready.');
+    const [isLoadingTree, setIsLoadingTree] = useState(false);
+    const [isLoadingState, setIsLoadingState] = useState(false);
+    const filteredState = useMemo(
+        () =>
+            filterInspectorState(inspectorState, settingsSnapshot.stateFilter),
+        [inspectorState, settingsSnapshot.stateFilter]
+    );
+    const stateSections = useMemo(
+        () => toStateViewerSections(filteredState),
+        [filteredState]
+    );
+    const selectedNode = selectedNodeId
+        ? findInspectorNode(nodes, selectedNodeId)
+        : undefined;
+
+    useEffect(() => {
+        let isMounted = true;
+        setIsLoadingTree(true);
+        void sendCustomInspectorTree(inspector.id, settingsSnapshot.treeFilter)
+            .then((response) => {
+                if (!isMounted) {
+                    return;
+                }
+
+                setNodes(response.rootNodes);
+                setSelectedNodeId((currentSelectedNodeId) => {
+                    if (
+                        currentSelectedNodeId &&
+                        findInspectorNode(
+                            response.rootNodes,
+                            currentSelectedNodeId
+                        )
+                    ) {
+                        return currentSelectedNodeId;
+                    }
+
+                    return response.rootNodes[0]?.id;
+                });
+                setStatus('Inspector tree loaded.');
+            })
+            .catch((error: unknown) => {
+                if (!isMounted) {
+                    return;
+                }
+
+                setStatus(
+                    error instanceof Error
+                        ? error.message
+                        : 'Inspector tree failed to load.'
+                );
+            })
+            .finally(() => {
+                if (isMounted) {
+                    setIsLoadingTree(false);
+                }
+            });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [inspector.id, settingsSnapshot.treeFilter]);
+
+    useEffect(() => {
+        if (!selectedNodeId) {
+            setInspectorState({});
+            return;
+        }
+
+        let isMounted = true;
+        setIsLoadingState(true);
+        void sendCustomInspectorState(inspector.id, selectedNodeId)
+            .then((response) => {
+                if (!isMounted) {
+                    return;
+                }
+
+                setInspectorState(response.state);
+                setStatus(
+                    `State loaded for ${selectedNode?.label ?? selectedNodeId}.`
+                );
+            })
+            .catch((error: unknown) => {
+                if (!isMounted) {
+                    return;
+                }
+
+                setStatus(
+                    error instanceof Error
+                        ? error.message
+                        : 'Inspector state failed to load.'
+                );
+            })
+            .finally(() => {
+                if (isMounted) {
+                    setIsLoadingState(false);
+                }
+            });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [inspector.id, selectedNode?.label, selectedNodeId]);
+
+    const runAction = (
+        action: CustomInspectorAction,
+        scope: 'inspector' | 'node'
+    ) => {
+        const label = action.label ?? action.action;
+        setStatus(
+            `${scope === 'node' ? 'Node' : 'Inspector'} action queued: ${label}.`
+        );
+    };
+
+    const editField = (field: StateViewerField, value: StateViewerValue) => {
+        if (!selectedNodeId || !field.path) {
+            return;
+        }
+
+        void editCustomInspectorState({
+            inspectorId: inspector.id,
+            nodeId: selectedNodeId,
+            path: field.path,
+            state: { value },
+            type: 'set'
+        }).then(() => {
+            setInspectorState((currentState) =>
+                updateInspectorStateValue(currentState, field.path!, value)
+            );
+            setStatus(`Updated ${field.name}.`);
+        });
+    };
+
+    return (
+        <section
+            aria-label={`${inspector.label} page`}
+            className="dt-client-shell__page dt-custom-inspector"
+        >
+            <Card title={inspector.label}>
+                <div className="dt-custom-inspector__toolbar">
+                    <label>
+                        Tree filter
+                        <input
+                            onChange={(event) => {
+                                setClientSetting(
+                                    'treeFilter',
+                                    event.target.value
+                                );
+                            }}
+                            placeholder={
+                                inspector.treeFilterPlaceholder ?? 'Filter tree'
+                            }
+                            type="search"
+                            value={settingsSnapshot.treeFilter}
+                        />
+                    </label>
+                    <label>
+                        State filter
+                        <input
+                            onChange={(event) => {
+                                setClientSetting(
+                                    'stateFilter',
+                                    event.target.value
+                                );
+                            }}
+                            placeholder={
+                                inspector.stateFilterPlaceholder ??
+                                'Filter state'
+                            }
+                            type="search"
+                            value={settingsSnapshot.stateFilter}
+                        />
+                    </label>
+                    <div
+                        aria-label="Inspector subviews"
+                        className="dt-custom-inspector__subviews"
+                    >
+                        {(['inspector', 'about', 'settings'] as const).map(
+                            (subview) => (
+                                <button
+                                    aria-pressed={activeSubview === subview}
+                                    key={subview}
+                                    onClick={() => {
+                                        setActiveSubview(subview);
+                                    }}
+                                    type="button"
+                                >
+                                    {formatOverviewValue(subview)}
+                                </button>
+                            )
+                        )}
+                    </div>
+                </div>
+                {inspector.actions?.length ? (
+                    <ActionList
+                        actions={inspector.actions}
+                        label="Inspector actions"
+                        onRunAction={(action) => {
+                            runAction(action, 'inspector');
+                        }}
+                    />
+                ) : null}
+                <p className="dt-settings-status" role="status">
+                    {isLoadingTree || isLoadingState
+                        ? 'Loading inspector data.'
+                        : status}
+                </p>
+            </Card>
+
+            {activeSubview === 'inspector' ? (
+                <ResizableSplitPane
+                    left={
+                        <Card title="Inspector tree">
+                            <CustomInspectorTree
+                                nodes={nodes}
+                                onSelectNode={setSelectedNodeId}
+                                selectedNodeId={selectedNodeId}
+                            />
+                        </Card>
+                    }
+                    leftLabel="Inspector tree"
+                    right={
+                        <Card title="Inspector state">
+                            {selectedNode ? (
+                                <div className="dt-custom-inspector__state">
+                                    <div className="dt-custom-inspector__selection">
+                                        <strong>{selectedNode.label}</strong>
+                                        <span>{selectedNode.id}</span>
+                                    </div>
+                                    {inspector.nodeActions?.length ? (
+                                        <ActionList
+                                            actions={inspector.nodeActions}
+                                            label="Node actions"
+                                            onRunAction={(action) => {
+                                                runAction(action, 'node');
+                                            }}
+                                        />
+                                    ) : null}
+                                    <StateViewer
+                                        emptyLabel={
+                                            inspector.noSelectionText ??
+                                            'No state recorded for this inspector node.'
+                                        }
+                                        onEditField={editField}
+                                        sections={stateSections}
+                                    />
+                                </div>
+                            ) : (
+                                <EmptyPane
+                                    label="No inspector node selected"
+                                    message={
+                                        inspector.noSelectionText ??
+                                        'Select a node from the custom inspector tree.'
+                                    }
+                                />
+                            )}
+                        </Card>
+                    }
+                    rightLabel="Inspector state"
+                    storageKey={`devtools.client.inspector.${inspector.id}.splitRatio`}
+                />
+            ) : null}
+
+            {activeSubview === 'about' ? (
+                <Card title="About inspector">
+                    <dl className="dt-overview-details">
+                        <OverviewDetail
+                            label="Inspector id"
+                            value={inspector.id}
+                        />
+                        <OverviewDetail label="Label" value={inspector.label} />
+                        <OverviewDetail
+                            label="Tree nodes"
+                            value={String(countInspectorNodes(nodes))}
+                        />
+                    </dl>
+                </Card>
+            ) : null}
+
+            {activeSubview === 'settings' ? (
+                <Card title="Inspector settings">
+                    <EmptyPane
+                        label="No inspector settings"
+                        message="This custom inspector has not registered settings yet."
+                    />
+                </Card>
+            ) : null}
+        </section>
+    );
+}
+
+function ActionList({
+    actions,
+    label,
+    onRunAction
+}: {
+    actions: CustomInspectorAction[];
+    label: string;
+    onRunAction: (action: CustomInspectorAction) => void;
+}) {
+    return (
+        <div aria-label={label} className="dt-custom-inspector__actions">
+            {actions.map((action) => (
+                <button
+                    key={action.action}
+                    onClick={() => {
+                        onRunAction(action);
+                    }}
+                    title={action.tooltip}
+                    type="button"
+                >
+                    {action.label ?? action.action}
+                </button>
+            ))}
+        </div>
+    );
+}
+
+function CustomInspectorTree({
+    nodes,
+    onSelectNode,
+    selectedNodeId
+}: {
+    nodes: Array<CustomInspectorNode>;
+    onSelectNode: (nodeId: string) => void;
+    selectedNodeId?: string;
+}) {
+    if (nodes.length === 0) {
+        return (
+            <EmptyPane
+                label="No inspector nodes"
+                message="The plugin did not return custom inspector tree nodes."
+            />
+        );
+    }
+
+    return (
+        <ul className="dt-custom-inspector__tree">
+            {nodes.map((node) => (
+                <CustomInspectorTreeNode
+                    key={node.id}
+                    node={node}
+                    onSelectNode={onSelectNode}
+                    selectedNodeId={selectedNodeId}
+                />
+            ))}
+        </ul>
+    );
+}
+
+function CustomInspectorTreeNode({
+    node,
+    onSelectNode,
+    selectedNodeId
+}: {
+    node: CustomInspectorNode;
+    onSelectNode: (nodeId: string) => void;
+    selectedNodeId?: string;
+}) {
+    return (
+        <li>
+            <button
+                aria-pressed={selectedNodeId === node.id}
+                onClick={() => {
+                    onSelectNode(node.id);
+                }}
+                type="button"
+            >
+                <span>{node.label}</span>
+                {node.tags?.map((tag) => (
+                    <small key={tag.label}>{tag.label}</small>
+                ))}
+            </button>
+            {node.children?.length ? (
+                <ul>
+                    {node.children.map((child) => (
+                        <CustomInspectorTreeNode
+                            key={child.id}
+                            node={child}
+                            onSelectNode={onSelectNode}
+                            selectedNodeId={selectedNodeId}
+                        />
+                    ))}
+                </ul>
+            ) : null}
+        </li>
     );
 }
 
@@ -1005,6 +1446,145 @@ function formatOverviewValue(value: string): string {
         .split('-')
         .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
         .join(' ');
+}
+
+function findInspectorNode(
+    nodes: Array<CustomInspectorNode>,
+    nodeId: string
+): CustomInspectorNode | undefined {
+    for (const node of nodes) {
+        if (node.id === nodeId) {
+            return node;
+        }
+
+        const childMatch = findInspectorNode(node.children ?? [], nodeId);
+
+        if (childMatch) {
+            return childMatch;
+        }
+    }
+
+    return undefined;
+}
+
+function countInspectorNodes(nodes: Array<CustomInspectorNode>): number {
+    return nodes.reduce(
+        (count, node) => count + 1 + countInspectorNodes(node.children ?? []),
+        0
+    );
+}
+
+function filterInspectorState(
+    state: InspectorState,
+    filter: string
+): InspectorState {
+    const normalizedFilter = filter.trim().toLowerCase();
+
+    if (!normalizedFilter) {
+        return state;
+    }
+
+    return Object.fromEntries(
+        Object.entries(state)
+            .map(([category, entries]) => [
+                category,
+                entries.filter((entry) =>
+                    [
+                        category,
+                        entry.key,
+                        formatInspectorStateValue(entry.value)
+                    ]
+                        .join(' ')
+                        .toLowerCase()
+                        .includes(normalizedFilter)
+                )
+            ])
+            .filter(([, entries]) => entries.length > 0)
+    );
+}
+
+function toStateViewerSections(state: InspectorState): StateViewerSection[] {
+    return Object.entries(state).map(([category, entries]) => ({
+        fields: entries.map((entry, index) => ({
+            editable: entry.editable,
+            name: entry.key,
+            path: [category, index, entry.key],
+            value: toStateViewerValue(entry.value)
+        })),
+        name: category
+    }));
+}
+
+function updateInspectorStateValue(
+    state: InspectorState,
+    path: Array<number | string>,
+    value: StateViewerValue
+): InspectorState {
+    const [category, index] = path;
+
+    if (typeof category !== 'string' || typeof index !== 'number') {
+        return state;
+    }
+
+    const entries = state[category];
+
+    if (!entries?.[index]) {
+        return state;
+    }
+
+    return {
+        ...state,
+        [category]: entries.map((entry, entryIndex) =>
+            entryIndex === index ? { ...entry, value } : entry
+        )
+    };
+}
+
+function toStateViewerValue(
+    value: InspectorStateEntry['value']
+): StateViewerValue {
+    if (
+        value === null ||
+        typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean'
+    ) {
+        return value;
+    }
+
+    return {
+        _custom: {
+            display: formatInspectorStateValue(value),
+            preview:
+                typeof value === 'object' ? JSON.stringify(value) : undefined,
+            type: Array.isArray(value) ? 'array' : typeof value,
+            value: undefined
+        }
+    };
+}
+
+function formatInspectorStateValue(value: unknown): string {
+    if (typeof value === 'string') {
+        return value;
+    }
+
+    if (
+        value === null ||
+        typeof value === 'number' ||
+        typeof value === 'boolean'
+    ) {
+        return String(value);
+    }
+
+    if (Array.isArray(value)) {
+        return `Array(${value.length})`;
+    }
+
+    if (typeof value === 'object') {
+        return 'Object';
+    }
+
+    return typeof value;
 }
 
 function getRuntimeBlock(snapshot: ClientRuntimeSnapshot): {

@@ -360,6 +360,133 @@
     padding: 3px 7px;
 }
 
+.dt-custom-inspector {
+    align-items: stretch;
+}
+
+.dt-custom-inspector__toolbar,
+.dt-custom-inspector__actions,
+.dt-custom-inspector__subviews {
+    align-items: end;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.dt-custom-inspector__toolbar {
+    margin-bottom: 10px;
+}
+
+.dt-custom-inspector__toolbar label {
+    color: var(--dt-fg-muted);
+    display: grid;
+    flex: 1 1 180px;
+    font-size: 12px;
+    font-weight: 700;
+    gap: 5px;
+}
+
+.dt-custom-inspector__toolbar input,
+.dt-custom-inspector__actions button,
+.dt-custom-inspector__subviews button,
+.dt-state-viewer__editor input,
+.dt-state-viewer__editor button {
+    background: var(--dt-bg-muted);
+    border: 1px solid var(--dt-border);
+    border-radius: 6px;
+    color: var(--dt-fg);
+    font: inherit;
+    min-height: 34px;
+    padding: 0 10px;
+}
+
+.dt-custom-inspector__actions button,
+.dt-custom-inspector__subviews button,
+.dt-state-viewer__editor button {
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.dt-custom-inspector__subviews button[aria-pressed='true'] {
+    background: var(--dt-accent);
+    border-color: var(--dt-accent);
+    color: #ffffff;
+}
+
+.dt-custom-inspector__tree,
+.dt-custom-inspector__tree ul {
+    display: grid;
+    gap: 6px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.dt-custom-inspector__tree ul {
+    border-left: 1px solid var(--dt-border);
+    margin-left: 12px;
+    padding-left: 10px;
+}
+
+.dt-custom-inspector__tree button {
+    align-items: center;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: var(--dt-fg);
+    cursor: pointer;
+    display: flex;
+    gap: 8px;
+    min-height: 32px;
+    padding: 6px 8px;
+    text-align: left;
+    width: 100%;
+}
+
+.dt-custom-inspector__tree button[aria-pressed='true'] {
+    background: var(--dt-bg-muted);
+    border-color: var(--dt-accent);
+}
+
+.dt-custom-inspector__tree small {
+    border: 1px solid var(--dt-border);
+    border-radius: 999px;
+    color: var(--dt-fg-muted);
+    font-size: 11px;
+    padding: 2px 6px;
+}
+
+.dt-custom-inspector__state,
+.dt-custom-inspector__selection {
+    display: grid;
+    gap: 10px;
+}
+
+.dt-custom-inspector__selection {
+    background: var(--dt-bg-muted);
+    border: 1px solid var(--dt-border);
+    border-radius: 6px;
+    gap: 4px;
+    padding: 10px;
+}
+
+.dt-custom-inspector__selection span {
+    color: var(--dt-fg-muted);
+    font-size: 12px;
+}
+
+.dt-state-viewer__editor {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.dt-state-viewer__editor input {
+    min-width: 140px;
+}
+
 .dt-command-palette {
     align-items: flex-start;
     background: rgb(1 4 9 / 56%);
