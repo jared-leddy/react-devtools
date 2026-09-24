@@ -125,6 +125,26 @@ export function VirtualizedComponentTree({
         },
         [onSelectedIdChange]
     );
+    const selectRelativeRow = useCallback(
+        (offset: number) => {
+            if (rows.length === 0) {
+                return;
+            }
+
+            const currentIndex = Math.max(selectedIndex, 0);
+            const nextIndex = Math.min(
+                Math.max(currentIndex + offset, 0),
+                rows.length - 1
+            );
+
+            selectNode(rows[nextIndex].node.id);
+            listRef.current?.scrollToRow({
+                align: 'auto',
+                index: nextIndex
+            });
+        },
+        [rows, selectNode, selectedIndex]
+    );
 
     const rowKey = useCallback(
         (index: number, data: TreeRowProps) =>
@@ -133,7 +153,38 @@ export function VirtualizedComponentTree({
     );
 
     return (
-        <div className="dt-components-tree">
+        <div
+            aria-activedescendant={
+                activeSelectedId
+                    ? getComponentTreeItemId(activeSelectedId)
+                    : undefined
+            }
+            aria-label="Component tree"
+            className="dt-components-tree"
+            onKeyDown={(event) => {
+                if (event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    selectRelativeRow(1);
+                }
+
+                if (event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    selectRelativeRow(-1);
+                }
+
+                if (event.key === 'Home') {
+                    event.preventDefault();
+                    selectRelativeRow(-rows.length);
+                }
+
+                if (event.key === 'End') {
+                    event.preventDefault();
+                    selectRelativeRow(rows.length);
+                }
+            }}
+            role="tree"
+            tabIndex={0}
+        >
             <div className="dt-components-tree__summary">
                 <span>{rows.length} visible nodes</span>
                 <span>
@@ -344,6 +395,7 @@ function TreeRow({
                 isSelected ? ' dt-components-tree__row--selected' : ''
             }`}
             data-node-id={row.node.id}
+            id={getComponentTreeItemId(row.node.id)}
             onMouseEnter={() => {
                 highlightBridge?.highlightElement?.(highlightRequest);
                 highlightBridge?.highlightComponent?.(highlightRequest);
@@ -351,6 +403,7 @@ function TreeRow({
             onMouseLeave={() => {
                 highlightBridge?.unhighlightElement?.();
             }}
+            role="treeitem"
             style={style}
         >
             <button
@@ -395,6 +448,10 @@ function TreeRow({
             </button>
         </div>
     );
+}
+
+function getComponentTreeItemId(nodeId: string): string {
+    return `dt-component-tree-node-${nodeId.replace(/[^a-zA-Z0-9_-]/g, '-')}`;
 }
 
 export function findComponentTreeNode(

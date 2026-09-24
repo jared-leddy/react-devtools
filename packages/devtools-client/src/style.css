@@ -68,6 +68,8 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
 }
 
 .dt-client-shell__nav-group {
@@ -90,10 +92,17 @@
     border: 1px solid var(--dt-border);
     border-radius: 6px;
     color: var(--dt-fg-muted);
+    flex: 0 0 auto;
     font-size: 13px;
     font-weight: 700;
     padding: 7px 10px;
     text-decoration: none;
+}
+
+.dt-client-shell__tab:focus-visible,
+.dt-client-shell__tab:hover {
+    border-color: var(--dt-focus);
+    outline: 0;
 }
 
 .dt-client-shell__tab--active {
@@ -415,6 +424,18 @@
     color: #ffffff;
 }
 
+.dt-custom-inspector__actions button:focus-visible,
+.dt-custom-inspector__actions button:hover,
+.dt-custom-inspector__subviews button:focus-visible,
+.dt-custom-inspector__subviews button:hover,
+.dt-state-viewer__editor button:focus-visible,
+.dt-state-viewer__editor button:hover,
+.dt-state-viewer__editor input:focus,
+.dt-state-viewer__editor textarea:focus {
+    border-color: var(--dt-focus);
+    outline: 0;
+}
+
 .dt-custom-inspector__tree,
 .dt-custom-inspector__tree ul {
     display: grid;
@@ -590,6 +611,7 @@
     text-align: left;
 }
 
+.dt-command-palette__item--active,
 .dt-command-palette__item:focus-visible,
 .dt-command-palette__item:hover {
     background: var(--dt-bg-muted);
@@ -764,6 +786,82 @@
     font-size: 11px;
     line-height: 1;
     padding: 3px 6px;
+}
+
+@media (width <= 640px) {
+    .dt-client-shell {
+        padding: 10px;
+    }
+
+    .dt-client-shell__masthead {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .dt-client-shell__actions,
+    .dt-client-shell__actions > * {
+        width: 100%;
+    }
+
+    .dt-client-shell__command-button {
+        justify-content: center;
+    }
+
+    .dt-client-shell__nav {
+        flex-wrap: nowrap;
+    }
+
+    .dt-client-shell__nav-group {
+        flex-wrap: nowrap;
+    }
+
+    .dt-client-shell__nav-group:not(:last-child)::after {
+        flex: 0 0 1px;
+    }
+
+    .dt-overview-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dt-split-pane {
+        display: grid;
+        min-height: 0;
+    }
+
+    .dt-split-pane__pane {
+        max-height: none;
+        min-height: 260px;
+    }
+
+    .dt-split-pane__pane--left,
+    .dt-split-pane__pane--right {
+        flex-basis: auto !important;
+    }
+
+    .dt-split-pane__divider {
+        cursor: row-resize;
+        flex: 0 0 10px;
+        min-height: 10px;
+        width: 100%;
+    }
+
+    .dt-split-pane__divider::after {
+        height: 2px;
+        width: 48px;
+    }
+
+    .dt-state-viewer__field,
+    .dt-state-viewer__child {
+        grid-template-columns: 1fr;
+    }
+
+    .dt-command-palette {
+        padding: 12px;
+    }
+
+    .dt-command-palette__panel {
+        max-height: calc(100vh - 24px);
+    }
 }
 
 .dt-components-detail {

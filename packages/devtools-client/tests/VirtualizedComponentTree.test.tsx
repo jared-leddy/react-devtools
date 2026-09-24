@@ -152,4 +152,29 @@ describe('VirtualizedComponentTree', () => {
         );
         expect(targetRow).toHaveAttribute('aria-selected', 'true');
     });
+
+    it('selects visible component rows from the keyboard', () => {
+        const handleSelectedIdChange = jest.fn();
+
+        render(
+            <VirtualizedComponentTree
+                height={180}
+                nodes={largeTree}
+                onSelectedIdChange={handleSelectedIdChange}
+                rowHeight={30}
+            />
+        );
+
+        const tree = screen.getByRole('tree', { name: 'Component tree' });
+
+        fireEvent.keyDown(tree, { key: 'ArrowDown' });
+        expect(handleSelectedIdChange).toHaveBeenCalledWith(
+            'component-group-0-child-0'
+        );
+
+        fireEvent.keyDown(tree, { key: 'End' });
+        expect(handleSelectedIdChange).toHaveBeenLastCalledWith(
+            'component-group-19-child-24'
+        );
+    });
 });

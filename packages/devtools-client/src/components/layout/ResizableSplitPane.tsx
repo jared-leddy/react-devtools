@@ -2,6 +2,7 @@ import type { PointerEvent, ReactNode } from 'react';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 
 export interface ResizableSplitPaneProps {
+    ariaLabel?: string;
     defaultRatio?: number;
     left: ReactNode;
     leftLabel: string;
@@ -17,6 +18,7 @@ const DEFAULT_MIN_RATIO = 0.24;
 const DEFAULT_MAX_RATIO = 0.76;
 
 export function ResizableSplitPane({
+    ariaLabel = 'Resizable split pane',
     defaultRatio = DEFAULT_RATIO,
     left,
     leftLabel,
@@ -81,10 +83,15 @@ export function ResizableSplitPane({
 
     const leftPercent = ratio * 100;
     const rightPercent = 100 - leftPercent;
+    const resizeBy = (delta: number) => {
+        setRatio((currentRatio) =>
+            clampRatio(currentRatio + delta, minRatio, maxRatio)
+        );
+    };
 
     return (
         <section
-            aria-label="Resizable split pane"
+            aria-label={ariaLabel}
             className={`dt-split-pane${isResizing ? ' dt-split-pane--resizing' : ''}`}
             ref={containerRef}
         >
@@ -103,6 +110,27 @@ export function ResizableSplitPane({
                 aria-valuenow={Math.round(leftPercent)}
                 className="dt-split-pane__divider"
                 id={dividerId}
+                onKeyDown={(event) => {
+                    if (event.key === 'ArrowLeft') {
+                        event.preventDefault();
+                        resizeBy(-0.04);
+                    }
+
+                    if (event.key === 'ArrowRight') {
+                        event.preventDefault();
+                        resizeBy(0.04);
+                    }
+
+                    if (event.key === 'Home') {
+                        event.preventDefault();
+                        setRatio(minRatio);
+                    }
+
+                    if (event.key === 'End') {
+                        event.preventDefault();
+                        setRatio(maxRatio);
+                    }
+                }}
                 onPointerDown={(event: PointerEvent<HTMLButtonElement>) => {
                     event.currentTarget.setPointerCapture?.(event.pointerId);
                     setIsResizing(true);
