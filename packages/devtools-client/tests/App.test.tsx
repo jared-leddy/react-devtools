@@ -13,13 +13,16 @@ import {
 } from '@devtools/kit';
 import {
     App,
+    resetClientRuntimeForTests,
     resetClientRouteRegistryForTests,
-    setClientRouteEnvironment
+    setClientRouteEnvironment,
+    setClientRuntimeState
 } from '../src';
 
 describe('@devtools/client App routing', () => {
     afterEach(() => {
         window.localStorage.clear();
+        resetClientRuntimeForTests();
         resetClientRouteRegistryForTests();
         resetDevToolsPluginRegistry();
     });
@@ -64,6 +67,72 @@ describe('@devtools/client App routing', () => {
         expect(
             screen.getByRole('heading', { name: 'Not found' })
         ).toBeInTheDocument();
+    });
+
+    it.each([
+        [
+            'waiting',
+            'Waiting for connection',
+            'waiting-for-connection',
+            'waiting for an inspected React runtime to connect'
+        ],
+        [
+            'disconnected',
+            'Runtime disconnected',
+            'transport-disconnected',
+            'The inspected runtime disconnected'
+        ],
+        [
+            'reconnecting',
+            'Reconnecting',
+            'transport-reconnecting',
+            'attempting to reconnect'
+        ]
+    ] as const)(
+        'renders the %s connection state',
+        (connectionStatus, heading, label, copy) => {
+            setClientRuntimeState({ connectionStatus });
+
+            render(<App initialEntries={['/overview']} />);
+
+            expect(
+                screen.getByRole('heading', { name: heading })
+            ).toBeInTheDocument();
+            expect(screen.getByLabelText(label)).toHaveTextContent(copy);
+        }
+    );
+
+    it('renders a no-React-detected state after connection', () => {
+        setClientRuntimeState({ reactStatus: 'not-detected' });
+
+        render(<App initialEntries={['/overview']} />);
+
+        expect(
+            screen.getByRole('heading', { name: 'No React detected' })
+        ).toBeInTheDocument();
+        expect(screen.getByLabelText('no-react-detected')).toHaveTextContent(
+            'no React renderer has been detected'
+        );
+    });
+
+    it('renders an unsupported React version state', () => {
+        setClientRuntimeState({
+            reactStatus: 'unsupported',
+            unsupportedReactVersion: '16.7.0'
+        });
+
+        render(<App initialEntries={['/components']} />);
+
+        expect(
+            screen.getByRole('heading', {
+                name: 'Unsupported React version'
+            })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByLabelText('unsupported-react-version')
+        ).toHaveTextContent(
+            'React 16.7.0 is not supported by this devtools build.'
+        );
     });
 
     it('hides Vite and adapter tabs until matching capabilities are detected', () => {
@@ -246,6 +315,36 @@ describe('@devtools/client App routing', () => {
         expect(
             screen.getByRole('separator', { name: 'Resize panes' })
         ).toHaveAttribute('aria-valuenow', '42');
+    });
+
+    it('renders empty-root panes when React has no mounted components', () => {
+        setClientRuntimeState({ rootStatus: 'empty' });
+
+        render(<App initialEntries={['/components']} />);
+
+        expect(screen.getByText('Empty React root')).toBeInTheDocument();
+        expect(screen.getByText('No component selected')).toBeInTheDocument();
+        expect(
+            screen.getByText(
+                'React is connected, but no mounted components were found in the current root.'
+            )
+        ).toBeInTheDocument();
+    });
+
+    it('renders a deliberate no-selection detail pane', () => {
+        setClientRuntimeState({ selectionStatus: 'none' });
+
+        render(<App initialEntries={['/components']} />);
+
+        expect(
+            screen.getByRole('region', { name: 'Component tree' })
+        ).toBeInTheDocument();
+        expect(screen.getByText('No component selected')).toBeInTheDocument();
+        expect(
+            screen.getByText(
+                'Choose a component from the tree to inspect its props, hooks, and state.'
+            )
+        ).toBeInTheDocument();
     });
 
     it('syncs selected component state from the route and updates details after selection', () => {

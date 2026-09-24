@@ -34,6 +34,11 @@ import {
     subscribeToClientRoutes,
     type ClientRoute
 } from './routing';
+import {
+    getClientRuntimeSnapshot,
+    subscribeToClientRuntime,
+    type ClientRuntimeSnapshot
+} from './runtime';
 
 export interface AppProps {
     initialEntries?: MemoryRouterProps['initialEntries'];
@@ -62,6 +67,11 @@ function ClientShell() {
         [routes]
     );
     const defaultRoutePath = getPersistedLastClientRoutePath(routes);
+    const runtimeSnapshot = useSyncExternalStore(
+        subscribeToClientRuntime,
+        getClientRuntimeSnapshot,
+        getClientRuntimeSnapshot
+    );
 
     return (
         <ThemeProvider>
@@ -111,7 +121,12 @@ function ClientShell() {
                     />
                     {routes.map((route) => (
                         <Route
-                            element={<TrackedRoutePage route={route} />}
+                            element={
+                                <TrackedRoutePage
+                                    route={route}
+                                    runtimeSnapshot={runtimeSnapshot}
+                                />
+                            }
                             key={route.id}
                             path={route.path}
                         />
@@ -138,7 +153,13 @@ function ClientShell() {
     );
 }
 
-function TrackedRoutePage({ route }: { route: ClientRoute }) {
+function TrackedRoutePage({
+    route,
+    runtimeSnapshot
+}: {
+    route: ClientRoute;
+    runtimeSnapshot: ClientRuntimeSnapshot;
+}) {
     const location = useLocation();
 
     useEffect(() => {
@@ -148,12 +169,24 @@ function TrackedRoutePage({ route }: { route: ClientRoute }) {
         );
     }, [location.pathname, location.search, route]);
 
-    return <RoutePage route={route} />;
+    return <RoutePage route={route} runtimeSnapshot={runtimeSnapshot} />;
 }
 
-function RoutePage({ route }: { route: ClientRoute }) {
+function RoutePage({
+    route,
+    runtimeSnapshot = getClientRuntimeSnapshot()
+}: {
+    route: ClientRoute;
+    runtimeSnapshot?: ClientRuntimeSnapshot;
+}) {
+    const runtimeBlock = getRuntimeBlock(runtimeSnapshot);
+
+    if (runtimeBlock) {
+        return <RuntimeStatePage state={runtimeBlock} />;
+    }
+
     if (route.id === 'components') {
-        return <ComponentsPage />;
+        return <ComponentsPage runtimeSnapshot={runtimeSnapshot} />;
     }
 
     return (
@@ -176,21 +209,28 @@ function RoutePage({ route }: { route: ClientRoute }) {
     );
 }
 
-function ComponentsPage() {
+function ComponentsPage({
+    runtimeSnapshot
+}: {
+    runtimeSnapshot: ClientRuntimeSnapshot;
+}) {
     const [searchParams, setSearchParams] = useSearchParams();
     const requestedComponentId = searchParams.get('componentId');
     const selectedComponent =
-        (requestedComponentId
-            ? findComponentTreeNode(
+        runtimeSnapshot.selectionStatus === 'none'
+            ? undefined
+            : ((requestedComponentId
+                  ? findComponentTreeNode(
+                        syntheticComponentTree,
+                        requestedComponentId
+                    )
+                  : undefined) ??
+              findComponentTreeNode(
                   syntheticComponentTree,
-                  requestedComponentId
-              )
-            : undefined) ??
-        findComponentTreeNode(
-            syntheticComponentTree,
-            'component-group-0-child-0'
-        );
+                  'component-group-0-child-0'
+              ));
     const selectedComponentId = selectedComponent?.id;
+    const hasEmptyRoot = runtimeSnapshot.rootStatus === 'empty';
 
     return (
         <section
@@ -199,19 +239,57 @@ function ComponentsPage() {
         >
             <ResizableSplitPane
                 left={
-                    <ComponentTreePlaceholder
-                        onSelectedIdChange={(componentId) => {
-                            setSearchParams({ componentId });
-                        }}
-                        selectedId={selectedComponentId}
-                    />
+                    hasEmptyRoot ? (
+                        <ComponentEmptyRootPane />
+                    ) : (
+                        <ComponentTreePlaceholder
+                            onSelectedIdChange={(componentId) => {
+                                setSearchParams({ componentId });
+                            }}
+                            selectedId={selectedComponentId}
+                        />
+                    )
                 }
                 leftLabel="Component tree"
-                right={<ComponentDetailPlaceholder node={selectedComponent} />}
+                right={
+                    hasEmptyRoot ? (
+                        <ComponentEmptyRootDetailsPane />
+                    ) : (
+                        <ComponentDetailPlaceholder node={selectedComponent} />
+                    )
+                }
                 rightLabel="Component details"
                 storageKey="devtools.client.components.splitRatio"
             />
         </section>
+    );
+}
+
+function RuntimeStatePage({
+    state
+}: {
+    state: {
+        description: string;
+        label: string;
+        title: string;
+        tone: NotificationTone;
+    };
+}) {
+    return (
+        <Card title={state.title}>
+            <section
+                aria-label={state.label}
+                className="dt-client-shell__page"
+                data-runtime-state={state.label}
+            >
+                <p className="dt-client-shell__copy">{state.description}</p>
+                <span
+                    className={`dt-client-shell__badge dt-client-shell__badge--${state.tone}`}
+                >
+                    {state.label}
+                </span>
+            </section>
+        </Card>
     );
 }
 
@@ -234,11 +312,44 @@ function ComponentTreePlaceholder({
     );
 }
 
+function ComponentEmptyRootPane() {
+    return (
+        <Card title="Component tree">
+            <EmptyPane
+                label="Empty React root"
+                message="React is connected, but no mounted components were found in the current root."
+            />
+        </Card>
+    );
+}
+
+function ComponentEmptyRootDetailsPane() {
+    return (
+        <Card title="Selected component">
+            <EmptyPane
+                label="No component selected"
+                message="Select a component after the inspected app mounts React content."
+            />
+        </Card>
+    );
+}
+
 function ComponentDetailPlaceholder({
     node
 }: {
     node?: ReturnType<typeof findComponentTreeNode>;
 }) {
+    if (!node) {
+        return (
+            <Card title="Selected component">
+                <EmptyPane
+                    label="No component selected"
+                    message="Choose a component from the tree to inspect its props, hooks, and state."
+                />
+            </Card>
+        );
+    }
+
     return (
         <Card title="Selected component">
             <div className="dt-components-detail">
@@ -260,6 +371,75 @@ function ComponentDetailPlaceholder({
             </div>
         </Card>
     );
+}
+
+function EmptyPane({ label, message }: { label: string; message: string }) {
+    return (
+        <div className="dt-empty-pane" role="status">
+            <strong>{label}</strong>
+            <p>{message}</p>
+        </div>
+    );
+}
+
+function getRuntimeBlock(snapshot: ClientRuntimeSnapshot): {
+    description: string;
+    label: string;
+    title: string;
+    tone: NotificationTone;
+} | null {
+    if (snapshot.connectionStatus === 'waiting') {
+        return {
+            description:
+                'The devtools client is waiting for an inspected React runtime to connect.',
+            label: 'waiting-for-connection',
+            title: 'Waiting for connection',
+            tone: 'info'
+        };
+    }
+
+    if (snapshot.connectionStatus === 'disconnected') {
+        return {
+            description:
+                'The inspected runtime disconnected. Reopen or refresh the inspected app to reconnect.',
+            label: 'transport-disconnected',
+            title: 'Runtime disconnected',
+            tone: 'warning'
+        };
+    }
+
+    if (snapshot.connectionStatus === 'reconnecting') {
+        return {
+            description:
+                'The transport connection dropped and the devtools client is attempting to reconnect.',
+            label: 'transport-reconnecting',
+            title: 'Reconnecting',
+            tone: 'info'
+        };
+    }
+
+    if (snapshot.reactStatus === 'not-detected') {
+        return {
+            description:
+                'The page is connected, but no React renderer has been detected yet.',
+            label: 'no-react-detected',
+            title: 'No React detected',
+            tone: 'warning'
+        };
+    }
+
+    if (snapshot.reactStatus === 'unsupported') {
+        return {
+            description: snapshot.unsupportedReactVersion
+                ? `React ${snapshot.unsupportedReactVersion} is not supported by this devtools build.`
+                : 'The connected React version is not supported by this devtools build.',
+            label: 'unsupported-react-version',
+            title: 'Unsupported React version',
+            tone: 'danger'
+        };
+    }
+
+    return null;
 }
 
 export function App({ initialEntries, router = 'memory' }: AppProps) {
