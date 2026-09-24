@@ -20,7 +20,7 @@ import {
 import {
     Card,
     ThemeProvider,
-    ThemeToggle,
+    useTheme,
     type NotificationTone
 } from '@devtools/ui';
 import '@devtools/ui/style.css';
@@ -52,6 +52,15 @@ import {
     subscribeToClientRuntime,
     type ClientRuntimeSnapshot
 } from './runtime';
+import {
+    exportClientSettings,
+    getClientSettingsSnapshot,
+    importClientSettings,
+    resetClientSettings,
+    setClientSetting,
+    subscribeToClientSettings,
+    type ClientSettingsSnapshot
+} from './settings';
 
 export interface AppProps {
     initialEntries?: MemoryRouterProps['initialEntries'];
@@ -69,6 +78,11 @@ function ClientShell() {
     const navigate = useNavigate();
     const [commandFilter, setCommandFilter] = useState('');
     const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+    const settingsSnapshot = useSyncExternalStore(
+        subscribeToClientSettings,
+        getClientSettingsSnapshot,
+        getClientSettingsSnapshot
+    );
     const routeSnapshot = useSyncExternalStore(
         subscribeToClientRoutes,
         initializeClientRouteRegistry,
@@ -138,11 +152,14 @@ function ClientShell() {
     };
 
     return (
-        <ThemeProvider>
+        <ThemeProvider defaultTheme={settingsSnapshot.theme}>
             <main
                 className="dt-client-shell"
                 aria-label="React DevTools client"
+                data-panel-layout={settingsSnapshot.panelLayout}
+                data-reduce-motion={settingsSnapshot.reduceMotion}
             >
+                <ClientThemeBridge theme={settingsSnapshot.theme} />
                 <header className="dt-client-shell__header">
                     <div className="dt-client-shell__masthead">
                         <h1>React DevTools</h1>
@@ -156,7 +173,7 @@ function ClientShell() {
                             >
                                 Command
                             </button>
-                            <ThemeToggle />
+                            <ClientThemeToggle theme={settingsSnapshot.theme} />
                         </div>
                     </div>
                     <nav
@@ -200,6 +217,7 @@ function ClientShell() {
                                 <TrackedRoutePage
                                     route={route}
                                     runtimeSnapshot={runtimeSnapshot}
+                                    settingsSnapshot={settingsSnapshot}
                                 />
                             }
                             key={route.id}
@@ -326,10 +344,12 @@ function CommandPalette({
 
 function TrackedRoutePage({
     route,
-    runtimeSnapshot
+    runtimeSnapshot,
+    settingsSnapshot
 }: {
     route: ClientRoute;
     runtimeSnapshot: ClientRuntimeSnapshot;
+    settingsSnapshot: ClientSettingsSnapshot;
 }) {
     const location = useLocation();
 
@@ -340,15 +360,23 @@ function TrackedRoutePage({
         );
     }, [location.pathname, location.search, route]);
 
-    return <RoutePage route={route} runtimeSnapshot={runtimeSnapshot} />;
+    return (
+        <RoutePage
+            route={route}
+            runtimeSnapshot={runtimeSnapshot}
+            settingsSnapshot={settingsSnapshot}
+        />
+    );
 }
 
 function RoutePage({
     route,
-    runtimeSnapshot = getClientRuntimeSnapshot()
+    runtimeSnapshot = getClientRuntimeSnapshot(),
+    settingsSnapshot = getClientSettingsSnapshot()
 }: {
     route: ClientRoute;
     runtimeSnapshot?: ClientRuntimeSnapshot;
+    settingsSnapshot?: ClientSettingsSnapshot;
 }) {
     const runtimeBlock = getRuntimeBlock(runtimeSnapshot);
 
@@ -357,7 +385,16 @@ function RoutePage({
     }
 
     if (route.id === 'components') {
-        return <ComponentsPage runtimeSnapshot={runtimeSnapshot} />;
+        return (
+            <ComponentsPage
+                runtimeSnapshot={runtimeSnapshot}
+                settingsSnapshot={settingsSnapshot}
+            />
+        );
+    }
+
+    if (route.id === 'settings') {
+        return <SettingsPage settingsSnapshot={settingsSnapshot} />;
     }
 
     return (
@@ -381,9 +418,11 @@ function RoutePage({
 }
 
 function ComponentsPage({
-    runtimeSnapshot
+    runtimeSnapshot,
+    settingsSnapshot
 }: {
     runtimeSnapshot: ClientRuntimeSnapshot;
+    settingsSnapshot: ClientSettingsSnapshot;
 }) {
     const [searchParams, setSearchParams] = useSearchParams();
     const requestedComponentId = searchParams.get('componentId');
@@ -408,6 +447,28 @@ function ComponentsPage({
             aria-label="Components page"
             className="dt-client-shell__page dt-client-shell__page--flush"
         >
+            <div className="dt-client-filters">
+                <label>
+                    Tree filter
+                    <input
+                        onChange={(event) => {
+                            setClientSetting('treeFilter', event.target.value);
+                        }}
+                        type="search"
+                        value={settingsSnapshot.treeFilter}
+                    />
+                </label>
+                <label>
+                    State filter
+                    <input
+                        onChange={(event) => {
+                            setClientSetting('stateFilter', event.target.value);
+                        }}
+                        type="search"
+                        value={settingsSnapshot.stateFilter}
+                    />
+                </label>
+            </div>
             <ResizableSplitPane
                 left={
                     hasEmptyRoot ? (
@@ -433,6 +494,208 @@ function ComponentsPage({
                 storageKey="devtools.client.components.splitRatio"
             />
         </section>
+    );
+}
+
+function ClientThemeBridge({
+    theme
+}: {
+    theme: ClientSettingsSnapshot['theme'];
+}) {
+    const { setTheme } = useTheme();
+
+    useEffect(() => {
+        setTheme(theme);
+    }, [setTheme, theme]);
+
+    return null;
+}
+
+function ClientThemeToggle({
+    theme
+}: {
+    theme: ClientSettingsSnapshot['theme'];
+}) {
+    return (
+        <button
+            aria-pressed={theme === 'dark'}
+            className="dt-client-shell__command-button"
+            onClick={() => {
+                setClientSetting('theme', theme === 'dark' ? 'light' : 'dark');
+            }}
+            type="button"
+        >
+            {theme === 'dark' ? 'Dark' : 'Light'}
+        </button>
+    );
+}
+
+function SettingsPage({
+    settingsSnapshot
+}: {
+    settingsSnapshot: ClientSettingsSnapshot;
+}) {
+    const [importValue, setImportValue] = useState('');
+    const [status, setStatus] = useState('Settings are stored locally.');
+
+    return (
+        <Card title="Settings">
+            <section aria-label="Settings page" className="dt-settings-page">
+                <div className="dt-settings-grid">
+                    <label>
+                        Theme
+                        <select
+                            onChange={(event) => {
+                                setClientSetting(
+                                    'theme',
+                                    event.target.value === 'light'
+                                        ? 'light'
+                                        : 'dark'
+                                );
+                            }}
+                            value={settingsSnapshot.theme}
+                        >
+                            <option value="dark">Dark</option>
+                            <option value="light">Light</option>
+                        </select>
+                    </label>
+                    <label>
+                        Panel layout
+                        <select
+                            onChange={(event) => {
+                                setClientSetting(
+                                    'panelLayout',
+                                    event.target.value === 'compact'
+                                        ? 'compact'
+                                        : 'comfortable'
+                                );
+                            }}
+                            value={settingsSnapshot.panelLayout}
+                        >
+                            <option value="comfortable">Comfortable</option>
+                            <option value="compact">Compact</option>
+                        </select>
+                    </label>
+                    <label className="dt-settings-check">
+                        <input
+                            checked={settingsSnapshot.reduceMotion}
+                            onChange={(event) => {
+                                setClientSetting(
+                                    'reduceMotion',
+                                    event.target.checked
+                                );
+                            }}
+                            type="checkbox"
+                        />
+                        Reduce motion
+                    </label>
+                    <label className="dt-settings-check">
+                        <input
+                            checked={settingsSnapshot.highPerformanceMode}
+                            onChange={(event) => {
+                                setClientSetting(
+                                    'highPerformanceMode',
+                                    event.target.checked
+                                );
+                            }}
+                            type="checkbox"
+                        />
+                        High performance mode
+                    </label>
+                    <label className="dt-settings-check">
+                        <input
+                            checked={settingsSnapshot.timelineRecording}
+                            onChange={(event) => {
+                                setClientSetting(
+                                    'timelineRecording',
+                                    event.target.checked
+                                );
+                            }}
+                            type="checkbox"
+                        />
+                        Timeline recording
+                    </label>
+                </div>
+                <div className="dt-settings-grid">
+                    <label>
+                        Tree filter
+                        <input
+                            onChange={(event) => {
+                                setClientSetting(
+                                    'treeFilter',
+                                    event.target.value
+                                );
+                            }}
+                            type="search"
+                            value={settingsSnapshot.treeFilter}
+                        />
+                    </label>
+                    <label>
+                        State filter
+                        <input
+                            onChange={(event) => {
+                                setClientSetting(
+                                    'stateFilter',
+                                    event.target.value
+                                );
+                            }}
+                            type="search"
+                            value={settingsSnapshot.stateFilter}
+                        />
+                    </label>
+                </div>
+                <div className="dt-settings-actions">
+                    <button
+                        onClick={() => {
+                            setImportValue(exportClientSettings());
+                            setStatus('Settings exported.');
+                        }}
+                        type="button"
+                    >
+                        Export
+                    </button>
+                    <button
+                        onClick={() => {
+                            try {
+                                importClientSettings(importValue);
+                                setStatus('Settings imported.');
+                            } catch (error) {
+                                setStatus(
+                                    error instanceof Error
+                                        ? error.message
+                                        : 'Settings import failed.'
+                                );
+                            }
+                        }}
+                        type="button"
+                    >
+                        Import
+                    </button>
+                    <button
+                        onClick={() => {
+                            resetClientSettings();
+                            setImportValue('');
+                            setStatus('Settings reset.');
+                        }}
+                        type="button"
+                    >
+                        Reset
+                    </button>
+                </div>
+                <label>
+                    Settings JSON
+                    <textarea
+                        onChange={(event) => {
+                            setImportValue(event.target.value);
+                        }}
+                        value={importValue}
+                    />
+                </label>
+                <p className="dt-settings-status" role="status">
+                    {status}
+                </p>
+            </section>
+        </Card>
     );
 }
 
