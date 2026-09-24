@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 
 export type StateViewerValue =
     boolean | null | number | string | StateViewerCustomValue;
@@ -18,6 +18,7 @@ export type StateViewerValueMap = Record<string, StateViewerValue>;
 export interface StateViewerField {
     editable?: boolean;
     name: string;
+    path?: Array<number | string>;
     value: StateViewerValue;
 }
 
@@ -28,14 +29,19 @@ export interface StateViewerSection {
 
 export interface StateViewerProps {
     emptyLabel?: string;
+    onEditField?: (field: StateViewerField, value: StateViewerValue) => void;
     sections: StateViewerSection[];
 }
 
 export function StateViewer({
     emptyLabel = 'No props, hooks, or state recorded for this component.',
+    onEditField,
     sections
 }: StateViewerProps) {
     const visibleSections = sections.filter((section) => section.fields.length);
+    const hasEditableFields = sections.some((section) =>
+        section.fields.some((field) => field.editable)
+    );
 
     return (
         <section
@@ -43,7 +49,11 @@ export function StateViewer({
             className="dt-state-viewer"
         >
             <div className="dt-state-viewer__toolbar">
-                <span className="dt-state-viewer__status">Read-only</span>
+                <span className="dt-state-viewer__status">
+                    {hasEditableFields
+                        ? 'Editable fields available'
+                        : 'Read-only'}
+                </span>
             </div>
 
             {visibleSections.length ? (
@@ -62,7 +72,10 @@ export function StateViewer({
                                 >
                                     <dt>{field.name}</dt>
                                     <dd>
-                                        <StateValue value={field.value} />
+                                        <EditableStateValue
+                                            field={field}
+                                            onEditField={onEditField}
+                                        />
                                     </dd>
                                 </div>
                             ))}
@@ -73,6 +86,47 @@ export function StateViewer({
                 <p className="dt-state-viewer__empty">{emptyLabel}</p>
             )}
         </section>
+    );
+}
+
+function EditableStateValue({
+    field,
+    onEditField
+}: {
+    field: StateViewerField;
+    onEditField?: (field: StateViewerField, value: StateViewerValue) => void;
+}) {
+    const [editValue, setEditValue] = useState(() =>
+        getEditableInputValue(field.value)
+    );
+    const canEdit = Boolean(field.editable && onEditField);
+
+    if (!canEdit) {
+        return <StateValue value={field.value} />;
+    }
+
+    return (
+        <span className="dt-state-viewer__editor">
+            <StateValue value={field.value} />
+            <input
+                aria-label={`Edit ${field.name}`}
+                onChange={(event) => {
+                    setEditValue(event.target.value);
+                }}
+                value={editValue}
+            />
+            <button
+                onClick={() => {
+                    onEditField?.(
+                        field,
+                        coerceEditableValue(editValue, field.value)
+                    );
+                }}
+                type="button"
+            >
+                Save
+            </button>
+        </span>
     );
 }
 
@@ -90,6 +144,44 @@ function StateValue({ value }: { value: StateViewerValue }) {
             {formatPrimitiveValue(value)}
         </span>
     );
+}
+
+function getEditableInputValue(value: StateViewerValue): string {
+    if (typeof value === 'string') {
+        return value;
+    }
+
+    return JSON.stringify(value);
+}
+
+function coerceEditableValue(
+    value: string,
+    previousValue: StateViewerValue
+): StateViewerValue {
+    if (typeof previousValue === 'string') {
+        return value;
+    }
+
+    try {
+        const parsed = JSON.parse(value) as unknown;
+
+        return isStateViewerValue(parsed) ? parsed : value;
+    } catch {
+        return value;
+    }
+}
+
+function isStateViewerValue(value: unknown): value is StateViewerValue {
+    if (
+        value === null ||
+        typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean'
+    ) {
+        return true;
+    }
+
+    return isCustomValue(value);
 }
 
 function CustomStateValue({ value }: { value: StateViewerCustomValue }) {

@@ -67,6 +67,7 @@ const bufferedPlugins: BufferedPlugin[] = [];
 const customCommands = new Map<string, CustomCommand>();
 const customTabs = new Map<string, CustomTab>();
 const installedPlugins = new Map<string, DevToolsPlugin>();
+const inspectorApis = new Map<string, DevToolsPluginAPI>();
 let activeContext: DevToolsContext | null = null;
 let activeStorage: PluginSettingsStorage | null | undefined;
 let rootIsAvailable = false;
@@ -137,6 +138,7 @@ export class DevToolsPluginAPI {
 
     addInspector(options: CustomInspectorOptions): void {
         this.inspectors.set(options.id, options);
+        inspectorApis.set(options.id, this);
         void this.context.hooks.callHook(
             ReactDevToolsContextHookKeys.ADD_INSPECTOR,
             {
@@ -344,6 +346,41 @@ export function getCustomTabs(): CustomTab[] {
     return Array.from(customTabs.values());
 }
 
+export async function sendCustomInspectorTree(
+    inspectorId: string,
+    filter?: string
+): Promise<InspectorTreeResponse> {
+    return (
+        (await inspectorApis
+            .get(inspectorId)
+            ?.sendInspectorTree(inspectorId, filter)) ?? {
+            inspectorId,
+            rootNodes: []
+        }
+    );
+}
+
+export async function sendCustomInspectorState(
+    inspectorId: string,
+    nodeId: string
+): Promise<InspectorStateResponse> {
+    return (
+        (await inspectorApis
+            .get(inspectorId)
+            ?.sendInspectorState(inspectorId, nodeId)) ?? {
+            inspectorId,
+            nodeId,
+            state: {}
+        }
+    );
+}
+
+export async function editCustomInspectorState(
+    payload: EditInspectorStateRequest
+): Promise<void> {
+    await inspectorApis.get(payload.inspectorId)?.editInspectorState(payload);
+}
+
 export function registerDevToolsPluginContext(
     options: RegisterDevToolsPluginContextOptions
 ): void {
@@ -375,6 +412,7 @@ export function resetDevToolsPluginRegistry(): void {
     customCommands.clear();
     customTabs.clear();
     installedPlugins.clear();
+    inspectorApis.clear();
     clearPluginSettingsMemory();
 }
 
