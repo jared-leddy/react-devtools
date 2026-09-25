@@ -1,11 +1,27 @@
 import type { SourceMapInput } from 'rollup';
 
 export const DEFAULT_SOURCE_METADATA_ATTRIBUTE = 'data-react-devtools-source';
+export const DEFAULT_COMPONENT_ID_ATTRIBUTE =
+    'data-react-devtools-component-id';
+export const DEFAULT_COMPONENT_DISPLAY_NAME_ATTRIBUTE =
+    'data-react-devtools-display-name';
 
 export interface SourceMetadataOptions {
     attributeName?: string;
     exclude?: RegExp | string;
     include?: RegExp | string;
+}
+
+export interface ComponentInspectorOptions {
+    componentIdAttributeName?: string;
+    displayNameAttributeName?: string;
+    exclude?: RegExp | string;
+    include?: RegExp | string;
+}
+
+export interface ReactMetadataTransformOptions {
+    componentInspector?: false | ComponentInspectorOptions;
+    sourceMetadata?: false | SourceMetadataOptions;
 }
 
 export interface SourceMetadataTransformResult {
@@ -45,14 +61,68 @@ export function shouldTransformSourceMetadata(
     return options?.include ? matchesPattern(options.include, filename) : true;
 }
 
+export function shouldTransformComponentInspector(
+    id: string,
+    options: false | ComponentInspectorOptions | undefined
+): boolean {
+    if (options === false) {
+        return false;
+    }
+
+    return shouldTransformJsxFile(id, options);
+}
+
+export function shouldTransformReactMetadata(
+    id: string,
+    options: ReactMetadataTransformOptions
+): boolean {
+    return (
+        shouldTransformSourceMetadata(id, options.sourceMetadata) ||
+        shouldTransformComponentInspector(id, options.componentInspector)
+    );
+}
+
 export function transformReactSourceMetadata(
     code: string,
     id: string,
     options: SourceMetadataOptions = {}
 ): SourceMetadataTransformResult | undefined {
-    const attributeName =
-        options.attributeName ?? DEFAULT_SOURCE_METADATA_ATTRIBUTE;
-    const tags = findJsxOpeningTags(code, attributeName);
+    return transformReactMetadata(code, id, {
+        componentInspector: false,
+        sourceMetadata: options
+    });
+}
+
+export function transformReactMetadata(
+    code: string,
+    id: string,
+    options: ReactMetadataTransformOptions = {}
+): SourceMetadataTransformResult | undefined {
+    const sourceMetadata = options.sourceMetadata;
+    const componentInspector = options.componentInspector;
+    const sourceAttributeName =
+        sourceMetadata === false
+            ? undefined
+            : (sourceMetadata?.attributeName ??
+              DEFAULT_SOURCE_METADATA_ATTRIBUTE);
+    const componentIdAttributeName =
+        componentInspector === false
+            ? undefined
+            : (componentInspector?.componentIdAttributeName ??
+              DEFAULT_COMPONENT_ID_ATTRIBUTE);
+    const displayNameAttributeName =
+        componentInspector === false
+            ? undefined
+            : (componentInspector?.displayNameAttributeName ??
+              DEFAULT_COMPONENT_DISPLAY_NAME_ATTRIBUTE);
+    const attributeNames = [
+        sourceAttributeName,
+        componentIdAttributeName,
+        displayNameAttributeName
+    ].filter((attributeName): attributeName is string =>
+        Boolean(attributeName)
+    );
+    const tags = findJsxOpeningTags(code, attributeNames);
 
     if (tags.length === 0) {
         return undefined;
@@ -68,8 +138,28 @@ export function transformReactSourceMetadata(
             fileName: normalizeSourceFileName(id),
             lineNumber: position.lineNumber
         });
+        const attributes: string[] = [];
 
-        transformed = `${transformed.slice(0, tag.insertAt)} ${attributeName}="${source}"${transformed.slice(tag.insertAt)}`;
+        if (sourceAttributeName) {
+            attributes.push(`${sourceAttributeName}="${source}"`);
+        }
+
+        if (componentIdAttributeName) {
+            attributes.push(
+                `${componentIdAttributeName}="${encodeComponentId({
+                    source,
+                    tagName: tag.tagName
+                })}"`
+            );
+        }
+
+        if (displayNameAttributeName) {
+            attributes.push(
+                `${displayNameAttributeName}="${escapeHtmlAttributeValue(tag.tagName)}"`
+            );
+        }
+
+        transformed = `${transformed.slice(0, tag.insertAt)} ${attributes.join(' ')}${transformed.slice(tag.insertAt)}`;
     }
 
     return {
@@ -80,7 +170,7 @@ export function transformReactSourceMetadata(
 
 function findJsxOpeningTags(
     code: string,
-    attributeName: string
+    attributeNames: readonly string[]
 ): JsxOpeningTag[] {
     const tags: JsxOpeningTag[] = [];
     let index = 0;
@@ -139,7 +229,7 @@ function findJsxOpeningTags(
             isJsxTagStart(next) &&
             isLikelyJsxStart(code, index)
         ) {
-            const parsed = parseJsxOpeningTag(code, index, attributeName);
+            const parsed = parseJsxOpeningTag(code, index, attributeNames);
 
             if (parsed) {
                 tags.push(parsed);
@@ -157,7 +247,7 @@ function findJsxOpeningTags(
 function parseJsxOpeningTag(
     code: string,
     start: number,
-    attributeName: string
+    attributeNames: readonly string[]
 ): JsxOpeningTag | undefined {
     const nameStart = start + 1;
     let nameEnd = nameStart;
@@ -214,7 +304,11 @@ function parseJsxOpeningTag(
             const insertAt = nextTagInsertOffset(code, index);
             const openingSource = code.slice(start, index);
 
-            if (openingSource.includes(attributeName)) {
+            if (
+                attributeNames.some((attributeName) =>
+                    openingSource.includes(attributeName)
+                )
+            ) {
                 return undefined;
             }
 
@@ -302,8 +396,40 @@ function matchesPattern(
         : pattern.test(filename);
 }
 
+function shouldTransformJsxFile(
+    id: string,
+    options: ComponentInspectorOptions | SourceMetadataOptions | undefined
+): boolean {
+    const [filename] = id.split('?', 2);
+
+    if (!/\.[cm]?[jt]sx$/.test(filename)) {
+        return false;
+    }
+
+    if (matchesPattern(options?.exclude, filename)) {
+        return false;
+    }
+
+    return options?.include ? matchesPattern(options.include, filename) : true;
+}
+
 function normalizeSourceFileName(id: string): string {
     return id.split('?', 2)[0]!;
+}
+
+function encodeComponentId(source: {
+    source: string;
+    tagName: string;
+}): string {
+    return escapeHtmlAttributeValue(`${source.source}:${source.tagName}`);
+}
+
+function escapeHtmlAttributeValue(value: string): string {
+    return value
+        .replaceAll('&', '&amp;')
+        .replaceAll('"', '&quot;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;');
 }
 
 function isJsxTagStart(char: string | undefined): boolean {

@@ -10,8 +10,9 @@ import {
     type ViteTransportChannel
 } from './viteTransport.js';
 import {
-    shouldTransformSourceMetadata,
-    transformReactSourceMetadata,
+    shouldTransformReactMetadata,
+    transformReactMetadata,
+    type ComponentInspectorOptions,
     type SourceMetadataOptions
 } from './sourceMetadata.js';
 import {
@@ -66,6 +67,10 @@ export interface ReactDevtoolsVitePluginOptions {
      * Enables dev-only JSX source metadata annotations. Set false to opt out.
      */
     sourceMetadata?: false | SourceMetadataOptions;
+    /**
+     * Enables click-to-inspect component metadata annotations. Set false to opt out.
+     */
+    componentInspector?: false | ComponentInspectorOptions;
     /**
      * Enables the same-origin open-in-editor endpoint used by the client.
      */
@@ -628,15 +633,14 @@ export function reactDevtools(
 
             const overlayTransform = createOverlayImport(options, code, id);
             const sourceCode = overlayTransform?.code ?? code;
-            const sourceTransform = shouldTransformSourceMetadata(
-                id,
-                options.sourceMetadata
-            )
-                ? transformReactSourceMetadata(
-                      sourceCode,
-                      id,
-                      options.sourceMetadata || undefined
-                  )
+            const sourceTransform = shouldTransformReactMetadata(id, {
+                componentInspector: options.componentInspector,
+                sourceMetadata: options.sourceMetadata
+            })
+                ? transformReactMetadata(sourceCode, id, {
+                      componentInspector: options.componentInspector,
+                      sourceMetadata: options.sourceMetadata
+                  })
                 : undefined;
 
             return composeTransformResults(overlayTransform, sourceTransform);

@@ -1839,9 +1839,9 @@ describe('@devtools/client App routing', () => {
         const fetchMock = jest.fn().mockResolvedValue({ ok: true } as Response);
 
         parentDocument.body.innerHTML = [
-            '<main data-react-devtools-source="/src/VitePlaygroundApp.tsx:12:5">',
-            '<h1 data-react-devtools-source="/src/VitePlaygroundApp.tsx:14:9">React DevTools Vite Playground</h1>',
-            '<section data-testid="state-count" data-react-devtools-source="/src/PlainReactDemos.tsx:28:13">Count: 0</section>',
+            '<main data-react-devtools-component-id="/src/VitePlaygroundApp.tsx:12:5:main" data-react-devtools-display-name="VitePlaygroundApp" data-react-devtools-source="/src/VitePlaygroundApp.tsx:12:5">',
+            '<h1 data-react-devtools-component-id="/src/VitePlaygroundApp.tsx:14:9:h1" data-react-devtools-display-name="HeroTitle" data-react-devtools-source="/src/VitePlaygroundApp.tsx:14:9">React DevTools Vite Playground</h1>',
+            '<section data-testid="state-count" data-react-devtools-component-id="/src/PlainReactDemos.tsx:28:13:section" data-react-devtools-display-name="CounterDemo" data-react-devtools-source="/src/PlainReactDemos.tsx:28:13">Count: 0</section>',
             '</main>'
         ].join('');
         Object.defineProperty(window, 'parent', {
@@ -1856,23 +1856,21 @@ describe('@devtools/client App routing', () => {
         try {
             render(<App initialEntries={['/components']} />);
 
-            expect(
-                screen.getByText('h1: React DevTools Vite Playground')
-            ).toBeInTheDocument();
-            expect(
-                screen.getByText('section: state-count')
-            ).toBeInTheDocument();
+            expect(screen.getAllByText('HeroTitle')[0]).toBeInTheDocument();
+            expect(screen.getAllByText('CounterDemo')[0]).toBeInTheDocument();
             expect(
                 screen.queryByText('ComponentLeaf0_0')
             ).not.toBeInTheDocument();
 
             fireEvent.click(
                 screen
-                    .getByText('section: state-count')
+                    .getAllByText('CounterDemo')[0]
                     .closest('button') as Element
             );
 
-            expect(screen.getByText('live-2')).toBeInTheDocument();
+            expect(
+                screen.getByText('/src/PlainReactDemos.tsx:28:13:section')
+            ).toBeInTheDocument();
             expect(
                 screen.getByText('/src/PlainReactDemos.tsx:28:13')
             ).toBeInTheDocument();
@@ -1887,6 +1885,30 @@ describe('@devtools/client App routing', () => {
             );
             expect(
                 await screen.findByText('Editor request sent')
+            ).toBeInTheDocument();
+
+            act(() => {
+                window.dispatchEvent(
+                    new MessageEvent('message', {
+                        data: {
+                            method: 'selectInspectTarget',
+                            payload: {
+                                componentId:
+                                    '/src/VitePlaygroundApp.tsx:14:9:h1'
+                            },
+                            type: 'react-devtools:inspect-target'
+                        }
+                    })
+                );
+            });
+
+            await waitFor(() => {
+                expect(
+                    screen.getByText('/src/VitePlaygroundApp.tsx:14:9:h1')
+                ).toBeInTheDocument();
+            });
+            expect(
+                screen.getByText('/src/VitePlaygroundApp.tsx:14:9')
             ).toBeInTheDocument();
         } finally {
             Object.defineProperty(window, 'parent', {
