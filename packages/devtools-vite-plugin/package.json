@@ -1,6 +1,6 @@
 {
     "name": "@devtools/vite-plugin",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "private": false,
     "license": "UNLICENSED",
     "type": "module",
@@ -23,8 +23,8 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
-        "@devtools/devtools-overlay": "*",
-        "sirv": "^3.0.2"
+        "@devtools/client": "*",
+        "@devtools/devtools-overlay": "*"
     },
     "devDependencies": {
         "@devtools/eslint-config": "*",
