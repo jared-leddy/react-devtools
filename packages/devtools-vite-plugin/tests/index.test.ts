@@ -31,6 +31,7 @@ import {
     reactDevtools,
     readViteAssetText,
     shouldTransformSourceMetadata,
+    shouldTransformComponentInspector,
     transformReactSourceMetadata
 } from '../src';
 import type { ViteTransportPayload } from '../src/viteTransport';
@@ -645,10 +646,10 @@ describe('reactDevtools', () => {
         const result = transform(code, '/project/src/App.tsx');
 
         expect(result.code).toContain(
-            '<main data-react-devtools-source="/project/src/App.tsx:2:13">'
+            '<main data-react-devtools-source="/project/src/App.tsx:2:13" data-react-devtools-component-id="/project/src/App.tsx:2:13:main" data-react-devtools-display-name="main">'
         );
         expect(result.code).toContain(
-            '<Button label="Save" data-react-devtools-source="/project/src/App.tsx:2:19" />'
+            '<Button label="Save" data-react-devtools-source="/project/src/App.tsx:2:19" data-react-devtools-component-id="/project/src/App.tsx:2:19:Button" data-react-devtools-display-name="Button" />'
         );
         expect(result.map.version).toBe(3);
         expect(result.map.sources).toEqual(['/project/src/App.tsx']);
@@ -687,11 +688,11 @@ describe('reactDevtools', () => {
         const result = transform('<App />', '/project/src/main.tsx');
 
         expect(result.code).toBe(
-            `import '${DEFAULT_OVERLAY_SCRIPT_PATH}';\n<App data-react-devtools-source="/project/src/main.tsx:2:2" />`
+            `import '${DEFAULT_OVERLAY_SCRIPT_PATH}';\n<App data-react-devtools-source="/project/src/main.tsx:2:2" data-react-devtools-component-id="/project/src/main.tsx:2:2:App" data-react-devtools-display-name="App" />`
         );
     });
 
-    it('supports source metadata include/exclude filters and opt-out', () => {
+    it('supports source metadata and component inspector include/exclude filters', () => {
         expect(
             shouldTransformSourceMetadata('/project/src/App.tsx', false)
         ).toBe(false);
@@ -708,9 +709,22 @@ describe('reactDevtools', () => {
         expect(shouldTransformSourceMetadata('/project/src/App.ts', {})).toBe(
             false
         );
+        expect(
+            shouldTransformComponentInspector('/project/src/App.tsx', false)
+        ).toBe(false);
+        expect(
+            shouldTransformComponentInspector('/project/src/App.tsx', {
+                exclude: 'src/App'
+            })
+        ).toBe(false);
+        expect(
+            shouldTransformComponentInspector('/project/src/App.tsx', {
+                include: /src\/App\.tsx$/
+            })
+        ).toBe(true);
     });
 
-    it('leaves production-like files and existing annotations unchanged', () => {
+    it('leaves production-like files and existing source annotations unchanged', () => {
         expect(
             transformReactSourceMetadata(
                 '<App data-react-devtools-source="manual" />',
@@ -724,7 +738,24 @@ describe('reactDevtools', () => {
             )
         ).toBe(undefined);
 
-        const plugin = reactDevtools({ sourceMetadata: false });
+        const componentOnlyPlugin = reactDevtools({ sourceMetadata: false });
+        const componentOnlyTransform = componentOnlyPlugin.transform as (
+            code: string,
+            id: string
+        ) => { code: string };
+        const componentOnlyResult = componentOnlyTransform(
+            '<App />',
+            '/project/src/App.tsx'
+        );
+
+        expect(componentOnlyResult.code).toBe(
+            '<App data-react-devtools-component-id="/project/src/App.tsx:1:2:App" data-react-devtools-display-name="App" />'
+        );
+
+        const plugin = reactDevtools({
+            componentInspector: false,
+            sourceMetadata: false
+        });
         const transform = plugin.transform as (
             code: string,
             id: string

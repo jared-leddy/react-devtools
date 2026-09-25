@@ -104,6 +104,8 @@ const placeholderToneByKind: Record<ClientRoute['kind'], NotificationTone> = {
 };
 const syntheticComponentTree = generateSyntheticComponentTree();
 const SOURCE_ATTRIBUTE = 'data-react-devtools-source';
+const COMPONENT_ID_ATTRIBUTE = 'data-react-devtools-component-id';
+const COMPONENT_DISPLAY_NAME_ATTRIBUTE = 'data-react-devtools-display-name';
 const TEST_ID_ATTRIBUTE = 'data-testid';
 
 function ClientShell() {
@@ -165,6 +167,52 @@ function ClientShell() {
             window.removeEventListener('keydown', handleCommandShortcut);
         };
     }, []);
+
+    useEffect(() => {
+        function handleInspectTargetMessage(event: MessageEvent) {
+            const data = event.data as
+                | {
+                      method?: unknown;
+                      payload?: unknown;
+                      type?: unknown;
+                  }
+                | undefined;
+
+            if (
+                !data ||
+                typeof data !== 'object' ||
+                data.type !== 'react-devtools:inspect-target' ||
+                data.method !== 'selectInspectTarget'
+            ) {
+                return;
+            }
+
+            const payload = data.payload as
+                | {
+                      componentId?: unknown;
+                  }
+                | undefined;
+
+            if (
+                !payload ||
+                typeof payload !== 'object' ||
+                typeof payload.componentId !== 'string' ||
+                payload.componentId.length === 0
+            ) {
+                return;
+            }
+
+            navigate(
+                `/components?componentId=${encodeURIComponent(payload.componentId)}`
+            );
+        }
+
+        window.addEventListener('message', handleInspectTargetMessage);
+
+        return () => {
+            window.removeEventListener('message', handleInspectTargetMessage);
+        };
+    }, [navigate]);
 
     const runCommand = (command: ClientCommand) => {
         setIsCommandPaletteOpen(false);
@@ -1545,7 +1593,7 @@ function getLiveParentComponentTree(): ComponentTreeNode[] {
         const parentDocument = window.parent.document;
         const annotatedElements = Array.from(
             parentDocument.querySelectorAll<HTMLElement>(
-                `[${SOURCE_ATTRIBUTE}]`
+                `[${SOURCE_ATTRIBUTE}], [${COMPONENT_ID_ATTRIBUTE}]`
             )
         );
 
@@ -1588,18 +1636,22 @@ function createLiveComponentTreeNode(
     index: number
 ): ComponentTreeNode {
     const source = element.getAttribute(SOURCE_ATTRIBUTE) ?? '';
+    const componentId = element.getAttribute(COMPONENT_ID_ATTRIBUTE);
+    const displayName = element.getAttribute(COMPONENT_DISPLAY_NAME_ATTRIBUTE);
     const testId = element.getAttribute(TEST_ID_ATTRIBUTE);
     const text = getLiveElementText(element);
     const tagName = element.tagName.toLowerCase();
 
     return {
         elementId: testId ?? `${tagName}-${index}`,
-        id: `live-${index}`,
-        label: createLiveComponentLabel(element, index),
+        id: componentId ?? `live-${index}`,
+        label: displayName ?? createLiveComponentLabel(element, index),
         rootId: 'iframe-parent-document',
         stateSections: [
             {
                 fields: [
+                    { name: 'componentId', value: componentId ?? 'unknown' },
+                    { name: 'displayName', value: displayName ?? tagName },
                     { name: 'source', value: source || 'unknown' },
                     { name: 'testId', value: testId ?? 'none' },
                     { name: 'text', value: text || 'none' }
@@ -1621,7 +1673,9 @@ function createLiveComponentTreeNode(
                 name: 'hooks'
             }
         ],
-        tags: testId ? ['live', testId] : ['live'],
+        tags: [componentId ? 'inspectable' : 'live', testId].filter(
+            (tag): tag is string => Boolean(tag)
+        ),
         type: tagName
     };
 }

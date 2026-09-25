@@ -30,3 +30,27 @@ Notes:
 
 - The manual pass uncovered and fixed three delivery blockers: TypeScript generic syntax was being annotated as JSX, Vite static asset requests could fall through to the app HTML fallback, and the overlay IIFE bundle referenced `process.env.NODE_ENV` at runtime.
 - The Components panel now uses the live same-origin parent document annotations when opened through the Vite overlay iframe, with the synthetic tree retained as the standalone fallback.
+
+## P4-A06 / #25 Component Inspector Verification
+
+Builds under test:
+
+- `@devtools/vite-plugin@0.0.10`
+- `@devtools/client@0.0.22`
+- `@devtools/devtools-overlay@0.0.4`
+
+Automated coverage:
+
+- Vite transform tests assert default JSX annotations include source metadata, stable `data-react-devtools-component-id`, and `data-react-devtools-display-name`.
+- Vite transform tests assert `componentInspector: false` and `sourceMetadata: false` can be used independently.
+- Client tests assert the overlay iframe can receive `react-devtools:inspect-target` messages and select the matching live parent document component.
+
+Manual checklist:
+
+| Verification item                    | Expected result                                                                                  |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| Open Vite playground overlay         | Components tab shows live parent document nodes using component display names when available.    |
+| Toggle inspect mode and click a node | Client navigates to `/components?componentId=...` and selects the clicked annotated React node.  |
+| Open selected source                 | Component details exposes the annotated source and the Open in editor action uses that location. |
+| Disable component inspector          | `reactDevtools({ componentInspector: false })` keeps source metadata without component IDs.      |
+| Disable source metadata              | `reactDevtools({ sourceMetadata: false })` keeps component IDs/display names for selection.      |
