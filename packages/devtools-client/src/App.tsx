@@ -1955,6 +1955,38 @@ function ComponentDetailPlaceholder({
 }: {
     node?: ReturnType<typeof findComponentTreeNode>;
 }) {
+    const [openStatus, setOpenStatus] = useState<string>();
+    const sourceLocation = getComponentSourceLocation(node);
+
+    async function openComponentSource() {
+        if (!sourceLocation) {
+            return;
+        }
+
+        setOpenStatus('Opening editor');
+
+        try {
+            const params = new URLSearchParams({
+                file: sourceLocation.fileName
+            });
+
+            if (sourceLocation.lineNumber) {
+                params.set('line', sourceLocation.lineNumber.toString());
+            }
+
+            if (sourceLocation.columnNumber) {
+                params.set('column', sourceLocation.columnNumber.toString());
+            }
+
+            const response = await fetch(`/__open-in-editor?${params}`);
+            setOpenStatus(
+                response.ok ? 'Editor request sent' : 'Editor unavailable'
+            );
+        } catch {
+            setOpenStatus('Editor unavailable');
+        }
+    }
+
     if (!node) {
         return (
             <Card title="Selected component">
@@ -1969,6 +2001,19 @@ function ComponentDetailPlaceholder({
     return (
         <Card title="Selected component">
             <div className="dt-components-detail">
+                <div className="dt-components-detail__header">
+                    <div>
+                        <h2>{node.label}</h2>
+                        <p>{sourceLocation?.fileName ?? 'No source file'}</p>
+                    </div>
+                    <button
+                        disabled={!sourceLocation}
+                        onClick={openComponentSource}
+                        type="button"
+                    >
+                        Open in editor
+                    </button>
+                </div>
                 <dl className="dt-components-detail__summary">
                     <div>
                         <dt>Name</dt>
@@ -1984,9 +2029,48 @@ function ComponentDetailPlaceholder({
                     </div>
                 </dl>
                 <StateViewer sections={node?.stateSections ?? []} />
+                {openStatus ? (
+                    <p className="dt-components-detail__status" role="status">
+                        {openStatus}
+                    </p>
+                ) : null}
             </div>
         </Card>
     );
+}
+
+function getComponentSourceLocation(
+    node?: ReturnType<typeof findComponentTreeNode>
+): SourceLocation | undefined {
+    const source = node?.stateSections
+        ?.flatMap((section) => section.fields)
+        .find((field) => field.name === 'source')?.value;
+
+    return typeof source === 'string' ? parseSourceLocation(source) : undefined;
+}
+
+interface SourceLocation {
+    columnNumber?: number;
+    fileName: string;
+    lineNumber?: number;
+}
+
+function parseSourceLocation(source: string): SourceLocation | undefined {
+    const parts = source.split(':');
+    const column = Number(parts.at(-1));
+    const line = Number(parts.at(-2));
+    const fileName = parts.slice(0, -2).join(':');
+
+    if (!fileName) {
+        return undefined;
+    }
+
+    return {
+        columnNumber:
+            Number.isInteger(column) && column > 0 ? column : undefined,
+        fileName,
+        lineNumber: Number.isInteger(line) && line > 0 ? line : undefined
+    };
 }
 
 function EmptyPane({ label, message }: { label: string; message: string }) {

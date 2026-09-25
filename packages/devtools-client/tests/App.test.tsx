@@ -1819,7 +1819,7 @@ describe('@devtools/client App routing', () => {
             />
         );
 
-        expect(screen.getAllByText('ComponentLeaf0_5')).toHaveLength(2);
+        expect(screen.getAllByText('ComponentLeaf0_5')).toHaveLength(3);
         expect(
             screen.getByText('component-group-0-child-5')
         ).toBeInTheDocument();
@@ -1827,15 +1827,16 @@ describe('@devtools/client App routing', () => {
         const nextTreeLabel = screen.getAllByText('ComponentLeaf0_6')[0];
         fireEvent.click(nextTreeLabel.closest('button') as Element);
 
-        expect(screen.getAllByText('ComponentLeaf0_6')).toHaveLength(2);
+        expect(screen.getAllByText('ComponentLeaf0_6')).toHaveLength(3);
         expect(
             screen.getByText('component-group-0-child-6')
         ).toBeInTheDocument();
     });
 
-    it('renders a live parent document tree when running inside the overlay iframe', () => {
+    it('renders a live parent document tree when running inside the overlay iframe', async () => {
         const originalParent = window.parent;
         const parentDocument = document.implementation.createHTMLDocument();
+        const fetchMock = jest.fn().mockResolvedValue({ ok: true } as Response);
 
         parentDocument.body.innerHTML = [
             '<main data-react-devtools-source="/src/VitePlaygroundApp.tsx:12:5">',
@@ -1846,6 +1847,10 @@ describe('@devtools/client App routing', () => {
         Object.defineProperty(window, 'parent', {
             configurable: true,
             value: { document: parentDocument }
+        });
+        Object.defineProperty(window, 'fetch', {
+            configurable: true,
+            value: fetchMock
         });
 
         try {
@@ -1872,6 +1877,17 @@ describe('@devtools/client App routing', () => {
                 screen.getByText('/src/PlainReactDemos.tsx:28:13')
             ).toBeInTheDocument();
             expect(screen.getByText('state-count')).toBeInTheDocument();
+
+            fireEvent.click(
+                screen.getByRole('button', { name: 'Open in editor' })
+            );
+
+            expect(fetchMock).toHaveBeenCalledWith(
+                '/__open-in-editor?file=%2Fsrc%2FPlainReactDemos.tsx&line=28&column=13'
+            );
+            expect(
+                await screen.findByText('Editor request sent')
+            ).toBeInTheDocument();
         } finally {
             Object.defineProperty(window, 'parent', {
                 configurable: true,

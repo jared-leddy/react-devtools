@@ -1,3 +1,4 @@
+import { spawn } from 'node:child_process';
 import { createReadStream, statSync } from 'node:fs';
 import type { IncomingHttpHeaders, ServerResponse } from 'node:http';
 import { createRequire } from 'node:module';
@@ -65,12 +66,38 @@ export interface ReactDevtoolsVitePluginOptions {
      * Enables dev-only JSX source metadata annotations. Set false to opt out.
      */
     sourceMetadata?: false | SourceMetadataOptions;
+    /**
+     * Enables the same-origin open-in-editor endpoint used by the client.
+     */
+    openInEditor?: false | OpenInEditorOptions;
+}
+
+export interface OpenInEditorOptions {
+    /**
+     * Editor executable. Defaults to REACT_EDITOR, VISUAL, EDITOR, or code.
+     */
+    command?: string;
+    /**
+     * Optional argument template. Supports {file}, {line}, {column}, and
+     * {location}. When omitted, VS Code-style editors receive -g {location}.
+     */
+    args?: string[];
+    /**
+     * Internal launch hook used by tests and embedders that want full control.
+     */
+    launch?: OpenInEditorLauncher;
 }
 
 export const DEFAULT_CLIENT_BASE_PATH = '/__react-devtools-client__/';
 export const DEFAULT_OVERLAY_BASE_PATH = '/__react-devtools-overlay__/';
 export const DEFAULT_OVERLAY_SCRIPT_PATH =
     '/__react-devtools-overlay__/devtools-overlay.js';
+export const OPEN_IN_EDITOR_PATH = '/__open-in-editor';
+
+export type OpenInEditorLauncher = (
+    command: string,
+    args: string[]
+) => void | Promise<void>;
 
 interface CodeTransformResult {
     code: string;
@@ -155,6 +182,36 @@ function createOverlayMiddleware(
             { requirePrefix: true }
         )
     );
+}
+
+function createOpenInEditorMiddleware(
+    options: ReactDevtoolsVitePluginOptions,
+    server: ViteDevServer
+) {
+    if (options.openInEditor === false) {
+        return;
+    }
+
+    const rootDir = normalize(server.config?.root ?? process.cwd());
+    const editorOptions = options.openInEditor || {};
+
+    prependMiddleware(server, (request, response, next) => {
+        const requestUrl = new URL(request.url ?? '/', 'http://devtools.local');
+
+        if (requestUrl.pathname !== OPEN_IN_EDITOR_PATH) {
+            next?.();
+            return;
+        }
+
+        if (request.method && !['GET', 'HEAD'].includes(request.method)) {
+            sendJsonResponse(response, 405, {
+                error: 'Method not allowed.'
+            });
+            return;
+        }
+
+        handleOpenInEditorRequest(requestUrl, response, rootDir, editorOptions);
+    });
 }
 
 interface StaticRequest {
@@ -324,6 +381,149 @@ function getContentType(filePath: string): string {
     }
 }
 
+function handleOpenInEditorRequest(
+    requestUrl: URL,
+    response: ServerResponse,
+    rootDir: string,
+    options: OpenInEditorOptions
+): void {
+    const file = requestUrl.searchParams.get('file');
+
+    if (!file) {
+        sendJsonResponse(response, 400, {
+            error: 'Missing required file query parameter.'
+        });
+        return;
+    }
+
+    const filePath = resolveOpenInEditorFile(rootDir, file);
+
+    if (!filePath) {
+        sendJsonResponse(response, 403, {
+            error: 'File must be inside the Vite project root.'
+        });
+        return;
+    }
+
+    const line = parsePositiveInteger(requestUrl.searchParams.get('line'));
+    const column = parsePositiveInteger(requestUrl.searchParams.get('column'));
+    const command = getEditorCommand(options);
+    const args = getEditorArgs(command, options, filePath, line, column);
+
+    try {
+        const result = options.launch?.(command, args);
+
+        if (result && typeof result === 'object' && 'then' in result) {
+            void result.catch((error: unknown) => {
+                console.error('[react-devtools] Failed to open editor:', error);
+            });
+        } else if (!options.launch) {
+            launchEditorProcess(command, args);
+        }
+
+        sendJsonResponse(response, 202, {
+            args,
+            command,
+            file: filePath,
+            ok: true
+        });
+    } catch (error) {
+        sendJsonResponse(response, 500, {
+            error:
+                error instanceof Error
+                    ? error.message
+                    : 'Failed to open editor.'
+        });
+    }
+}
+
+function resolveOpenInEditorFile(
+    rootDir: string,
+    file: string
+): string | undefined {
+    const filePath = normalize(resolve(rootDir, file));
+
+    if (filePath !== rootDir && !filePath.startsWith(`${rootDir}${sep}`)) {
+        return undefined;
+    }
+
+    return filePath;
+}
+
+function parsePositiveInteger(value: string | null): number | undefined {
+    if (!value) {
+        return undefined;
+    }
+
+    const parsed = Number(value);
+
+    return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
+}
+
+function getEditorCommand(options: OpenInEditorOptions): string {
+    return (
+        options.command ||
+        process.env.REACT_EDITOR ||
+        process.env.VISUAL ||
+        process.env.EDITOR ||
+        'code'
+    );
+}
+
+function getEditorArgs(
+    command: string,
+    options: OpenInEditorOptions,
+    filePath: string,
+    line?: number,
+    column?: number
+): string[] {
+    const location = [filePath, line, column].filter(Boolean).join(':');
+    const templateArgs =
+        options.args ??
+        (isCodeEditorCommand(command) ? ['-g', '{location}'] : ['{location}']);
+
+    return templateArgs.map((arg) =>
+        arg
+            .replaceAll('{file}', filePath)
+            .replaceAll('{line}', line?.toString() ?? '')
+            .replaceAll('{column}', column?.toString() ?? '')
+            .replaceAll('{location}', location)
+    );
+}
+
+function isCodeEditorCommand(command: string): boolean {
+    const executable = command.split(/[\\/]/).at(-1)?.toLowerCase() ?? command;
+
+    return ['code', 'code-insiders', 'codium'].includes(executable);
+}
+
+function launchEditorProcess(command: string, args: string[]): void {
+    const child = spawn(command, args, {
+        detached: true,
+        stdio: 'ignore'
+    });
+
+    child.on('error', (error) => {
+        console.error('[react-devtools] Failed to open editor:', error);
+    });
+    child.unref();
+}
+
+function sendJsonResponse(
+    response: ServerResponse,
+    statusCode: number,
+    payload: Record<string, unknown>
+): void {
+    const body = JSON.stringify(payload);
+
+    response.writeHead(statusCode, {
+        'Cache-Control': 'no-cache',
+        'Content-Length': Buffer.byteLength(body),
+        'Content-Type': 'application/json;charset=utf-8'
+    });
+    response.end(body);
+}
+
 export function createOverlayScriptTag(
     scriptPath = DEFAULT_OVERLAY_SCRIPT_PATH
 ) {
@@ -397,6 +597,7 @@ export function reactDevtools(
         apply: 'serve',
         enforce: 'pre',
         configureServer(server) {
+            createOpenInEditorMiddleware(options, server);
             createClientMiddleware(options, server);
             createOverlayMiddleware(options, server);
             const viteTransportChannel = createViteTransportChannel(server);

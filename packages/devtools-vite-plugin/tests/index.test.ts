@@ -6,6 +6,7 @@ import {
     DEFAULT_CLIENT_BASE_PATH,
     DEFAULT_OVERLAY_BASE_PATH,
     DEFAULT_OVERLAY_SCRIPT_PATH,
+    OPEN_IN_EDITOR_PATH,
     VITE_ASSET_RPC_LIST_REQUEST,
     VITE_ASSET_RPC_LIST_RESPONSE,
     VITE_ASSET_RPC_READ_REQUEST,
@@ -341,11 +342,136 @@ describe('reactDevtools', () => {
         expect(normalizeServePath('/__devtools__/')).toBe('/__devtools__/');
     });
 
+    it('opens project-root files through the editor endpoint', async () => {
+        const launch = jest.fn();
+        const root = await mkdtemp(join(tmpdir(), 'devtools-editor-'));
+        const use = jest.fn();
+        const plugin = reactDevtools({
+            openInEditor: { command: 'test-editor', launch }
+        });
+        const configureServer = plugin.configureServer as (
+            server: never
+        ) => void;
+
+        try {
+            await mkdir(join(root, 'src'), { recursive: true });
+            await writeFile(join(root, 'src/App.tsx'), '<App />');
+
+            configureServer({
+                config: { root },
+                middlewares: { use }
+            } as never);
+
+            const middleware = use.mock.calls[0][0];
+            const { missed, response } = await requestMiddleware(
+                middleware,
+                `${OPEN_IN_EDITOR_PATH}?file=${encodeURIComponent(
+                    join(root, 'src/App.tsx')
+                )}&line=12&column=8`
+            );
+
+            expect(missed).toBe(false);
+            expect(response.statusCode).toBe(202);
+            expect(response.getHeader('content-type')).toBe(
+                'application/json;charset=utf-8'
+            );
+            expect(launch).toHaveBeenCalledWith('test-editor', [
+                join(root, 'src/App.tsx') + ':12:8'
+            ]);
+            expect(JSON.parse(response.body)).toMatchObject({
+                command: 'test-editor',
+                file: join(root, 'src/App.tsx'),
+                ok: true
+            });
+        } finally {
+            await rm(root, { force: true, recursive: true });
+        }
+    });
+
+    it('supports custom editor arguments', async () => {
+        const launch = jest.fn();
+        const root = await mkdtemp(join(tmpdir(), 'devtools-editor-'));
+        const use = jest.fn();
+        const plugin = reactDevtools({
+            openInEditor: {
+                args: ['--goto', '{file}', '--line', '{line}'],
+                command: 'custom-editor',
+                launch
+            }
+        });
+        const configureServer = plugin.configureServer as (
+            server: never
+        ) => void;
+
+        try {
+            configureServer({
+                config: { root },
+                middlewares: { use }
+            } as never);
+
+            const middleware = use.mock.calls[0][0];
+            await requestMiddleware(
+                middleware,
+                `${OPEN_IN_EDITOR_PATH}?file=src/App.tsx&line=4`
+            );
+
+            expect(launch).toHaveBeenCalledWith('custom-editor', [
+                '--goto',
+                join(root, 'src/App.tsx'),
+                '--line',
+                '4'
+            ]);
+        } finally {
+            await rm(root, { force: true, recursive: true });
+        }
+    });
+
+    it('rejects invalid editor endpoint requests', async () => {
+        const launch = jest.fn();
+        const root = await mkdtemp(join(tmpdir(), 'devtools-editor-'));
+        const use = jest.fn();
+        const plugin = reactDevtools({
+            openInEditor: { command: 'test-editor', launch }
+        });
+        const configureServer = plugin.configureServer as (
+            server: never
+        ) => void;
+
+        try {
+            configureServer({
+                config: { root },
+                middlewares: { use }
+            } as never);
+
+            const middleware = use.mock.calls[0][0];
+            const missingFile = await requestMiddleware(
+                middleware,
+                OPEN_IN_EDITOR_PATH
+            );
+            const rootEscape = await requestMiddleware(
+                middleware,
+                `${OPEN_IN_EDITOR_PATH}?file=${encodeURIComponent('/tmp/escape.tsx')}`
+            );
+
+            expect(missingFile.response.statusCode).toBe(400);
+            expect(JSON.parse(missingFile.response.body)).toMatchObject({
+                error: 'Missing required file query parameter.'
+            });
+            expect(rootEscape.response.statusCode).toBe(403);
+            expect(JSON.parse(rootEscape.response.body)).toMatchObject({
+                error: 'File must be inside the Vite project root.'
+            });
+            expect(launch).not.toHaveBeenCalled();
+        } finally {
+            await rm(root, { force: true, recursive: true });
+        }
+    });
+
     it('returns the standalone client index through the devtools middleware', async () => {
         const use = createMockViteServer(
             join(process.cwd(), 'tests/fixtures/client')
         );
-        const middleware = use.mock.calls[0][1];
+        const middleware = use.mock.calls[1][1];
 
         const { missed, response } = await requestMiddleware(
             middleware,
@@ -364,7 +490,7 @@ describe('reactDevtools', () => {
         const use = createMockViteServer(
             join(process.cwd(), 'tests/fixtures/client')
         );
-        const middleware = use.mock.calls[0][1];
+        const middleware = use.mock.calls[1][1];
 
         const { missed, response } = await requestMiddleware(
             middleware,
@@ -380,7 +506,7 @@ describe('reactDevtools', () => {
         const use = createMockViteServer(
             join(process.cwd(), 'tests/fixtures/client')
         );
-        const middleware = use.mock.calls[0][1];
+        const middleware = use.mock.calls[1][1];
 
         const { missed, response } = await requestMiddleware(
             middleware,
@@ -409,7 +535,7 @@ describe('reactDevtools', () => {
             }
         } as never);
 
-        const middleware = use.mock.calls[2][1];
+        const middleware = use.mock.calls[3][1];
 
         const { missed, response } = await requestMiddleware(
             middleware,
@@ -437,7 +563,7 @@ describe('reactDevtools', () => {
             }
         } as never);
 
-        const middleware = use.mock.calls[2][1];
+        const middleware = use.mock.calls[3][1];
 
         const { missed, response } = await requestMiddleware(
             middleware,

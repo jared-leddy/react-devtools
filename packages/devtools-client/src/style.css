@@ -708,6 +708,7 @@
 .dt-graph-toggle button,
 .dt-graph-pan-controls button,
 .dt-graph-details__header button,
+.dt-components-detail__header button,
 .dt-graph-relations button {
     background: var(--dt-bg-muted);
     border: 1px solid var(--dt-border);
@@ -722,6 +723,7 @@
 .dt-graph-toggle button,
 .dt-graph-pan-controls button,
 .dt-graph-details__header button,
+.dt-components-detail__header button,
 .dt-graph-relations button {
     cursor: pointer;
     font-size: 13px;
@@ -736,6 +738,8 @@
 .dt-graph-pan-controls button:hover,
 .dt-graph-details__header button:focus-visible,
 .dt-graph-details__header button:hover,
+.dt-components-detail__header button:focus-visible,
+.dt-components-detail__header button:hover,
 .dt-graph-relations button:focus-visible,
 .dt-graph-relations button:hover {
     border-color: var(--dt-focus);
@@ -849,7 +853,8 @@
     gap: 12px;
 }
 
-.dt-graph-details__header {
+.dt-graph-details__header,
+.dt-components-detail__header {
     align-items: start;
     display: flex;
     gap: 10px;
@@ -857,17 +862,21 @@
 }
 
 .dt-graph-details__header h2,
-.dt-graph-details__header p {
+.dt-graph-details__header p,
+.dt-components-detail__header h2,
+.dt-components-detail__header p {
     margin: 0;
 }
 
-.dt-graph-details__header h2 {
+.dt-graph-details__header h2,
+.dt-components-detail__header h2 {
     font-size: 16px;
     line-height: 1.3;
     overflow-wrap: anywhere;
 }
 
-.dt-graph-details__header p {
+.dt-graph-details__header p,
+.dt-components-detail__header p {
     color: var(--dt-fg-muted);
     font-size: 12px;
     margin-top: 4px;
@@ -1467,6 +1476,12 @@
 }
 
 .dt-components-detail__summary dd {
+    margin: 0;
+}
+
+.dt-components-detail__status {
+    color: var(--dt-fg-muted);
+    font-size: 12px;
     margin: 0;
 }
 
