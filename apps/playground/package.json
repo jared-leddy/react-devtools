@@ -6,7 +6,7 @@
     "description": "Live demo playground for React DevTools development across the Pages Router and the App Router.",
     "type": "module",
     "scripts": {
-        "start:dev": "next dev --port 3000",
+        "start:dev": "next dev --port 9010",
         "build": "next build",
         "start": "next start",
         "lint": "next lint",

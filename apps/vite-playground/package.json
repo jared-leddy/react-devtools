@@ -6,7 +6,7 @@
     "description": "Vite-based playground for exercising the React DevTools Vite plugin delivery mode.",
     "type": "module",
     "scripts": {
-        "start:dev": "vite --port 3030",
+        "start:dev": "vite --port 9020",
         "build": "vite build",
         "lint": "eslint . --max-warnings=0",
         "test:unit": "jest --coverage --config jest.config.ts",
