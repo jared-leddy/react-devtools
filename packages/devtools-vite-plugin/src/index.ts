@@ -1,5 +1,7 @@
-import { resolve } from 'node:path';
-import sirv from 'sirv';
+import { createReadStream, statSync } from 'node:fs';
+import type { IncomingHttpHeaders, ServerResponse } from 'node:http';
+import { createRequire } from 'node:module';
+import { dirname, extname, join, normalize, resolve, sep } from 'node:path';
 import type { SourceMapInput } from 'rollup';
 import type { Plugin, ViteDevServer } from 'vite';
 import {
@@ -65,28 +67,35 @@ export interface ReactDevtoolsVitePluginOptions {
     sourceMetadata?: false | SourceMetadataOptions;
 }
 
-export const DEFAULT_CLIENT_BASE_PATH = '/__devtools__/';
-export const DEFAULT_OVERLAY_BASE_PATH = '/@react-devtools/overlay/';
+export const DEFAULT_CLIENT_BASE_PATH = '/__react-devtools-client__/';
+export const DEFAULT_OVERLAY_BASE_PATH = '/__react-devtools-overlay__/';
 export const DEFAULT_OVERLAY_SCRIPT_PATH =
-    '/@react-devtools/overlay/devtools-overlay.js';
+    '/__react-devtools-overlay__/devtools-overlay.js';
 
 interface CodeTransformResult {
     code: string;
     map?: null | SourceMapInput;
 }
 
+const requireFromProject = createRequire(
+    resolve(process.cwd(), 'package.json')
+);
+const PREPEND_MIDDLEWARE_MARK = Symbol('react-devtools.prependMiddleware');
+
+type MarkedStaticMiddleware = StaticMiddleware & {
+    [PREPEND_MIDDLEWARE_MARK]?: true;
+};
+
 export function getDefaultClientDir() {
     return resolve(
-        process.cwd(),
-        'node_modules/@devtools/devtools-client/dist'
+        dirname(requireFromProject.resolve('@devtools/client/style.css')),
+        '..',
+        'standalone'
     );
 }
 
 export function getDefaultOverlayDir() {
-    return resolve(
-        process.cwd(),
-        'node_modules/@devtools/devtools-overlay/dist'
-    );
+    return dirname(requireFromProject.resolve('@devtools/devtools-overlay'));
 }
 
 export function normalizeServePath(path: string) {
@@ -105,10 +114,19 @@ function createClientMiddleware(
 
     server.middlewares.use(
         servePath,
-        sirv(clientDir, {
-            dev: true,
-            single: true
-        })
+        createMountedStaticMiddleware(
+            servePath,
+            createStaticFileMiddleware(clientDir, { single: true }),
+            { requirePrefix: false }
+        )
+    );
+    prependMiddleware(
+        server,
+        createMountedStaticMiddleware(
+            servePath,
+            createStaticFileMiddleware(clientDir, { single: true }),
+            { requirePrefix: true }
+        )
     );
 }
 
@@ -123,10 +141,187 @@ function createOverlayMiddleware(
 
     server.middlewares.use(
         servePath,
-        sirv(overlayDir, {
-            dev: true
-        })
+        createMountedStaticMiddleware(
+            servePath,
+            createStaticFileMiddleware(overlayDir),
+            { requirePrefix: false }
+        )
     );
+    prependMiddleware(
+        server,
+        createMountedStaticMiddleware(
+            servePath,
+            createStaticFileMiddleware(overlayDir),
+            { requirePrefix: true }
+        )
+    );
+}
+
+interface StaticRequest {
+    headers: IncomingHttpHeaders;
+    method?: string;
+    url?: string;
+}
+
+type StaticMiddleware = (
+    request: StaticRequest,
+    response: ServerResponse,
+    next?: () => void
+) => void;
+
+function createMountedStaticMiddleware(
+    servePath: string,
+    middleware: StaticMiddleware,
+    options: { requirePrefix: boolean }
+): StaticMiddleware {
+    return (request, response, next) => {
+        const originalUrl = request.url;
+
+        if (originalUrl?.startsWith(servePath)) {
+            request.url = `/${originalUrl.slice(servePath.length)}`;
+            delete (request as typeof request & { _parsedUrl?: unknown })
+                ._parsedUrl;
+        } else if (options.requirePrefix) {
+            next?.();
+            return;
+        }
+
+        middleware(request, response, () => {
+            request.url = originalUrl;
+            next?.();
+        });
+    };
+}
+
+function prependMiddleware(
+    server: ViteDevServer,
+    middleware: StaticMiddleware
+): void {
+    (middleware as MarkedStaticMiddleware)[PREPEND_MIDDLEWARE_MARK] = true;
+    server.middlewares.use(middleware);
+}
+
+function promotePrependedMiddlewares(server: ViteDevServer): void {
+    const stack = getMiddlewareStack(server);
+
+    if (!stack.length) {
+        return;
+    }
+
+    const promoted = stack.filter(isMarkedMiddlewareLayer);
+    const remaining = stack.filter((layer) => !isMarkedMiddlewareLayer(layer));
+
+    stack.splice(0, stack.length, ...promoted, ...remaining);
+}
+
+function getMiddlewareStack(server: ViteDevServer): unknown[] {
+    return (
+        (
+            server.middlewares as typeof server.middlewares & {
+                stack?: unknown[];
+            }
+        ).stack ?? []
+    );
+}
+
+function isMarkedMiddlewareLayer(layer: unknown): boolean {
+    return Boolean(
+        layer &&
+        typeof layer === 'object' &&
+        'handle' in layer &&
+        (layer as { handle?: MarkedStaticMiddleware }).handle?.[
+            PREPEND_MIDDLEWARE_MARK
+        ]
+    );
+}
+
+function createStaticFileMiddleware(
+    rootDir: string,
+    options: { single?: boolean } = {}
+): StaticMiddleware {
+    const normalizedRoot = normalize(rootDir);
+
+    return (request, response, next) => {
+        const filePath = getStaticFilePath(normalizedRoot, request.url ?? '/');
+
+        if (filePath) {
+            sendStaticFile(request, response, filePath);
+            return;
+        }
+
+        if (options.single) {
+            const fallbackPath = getStaticFilePath(
+                normalizedRoot,
+                '/index.html'
+            );
+
+            if (fallbackPath) {
+                sendStaticFile(request, response, fallbackPath);
+                return;
+            }
+        }
+
+        next?.();
+    };
+}
+
+function getStaticFilePath(rootDir: string, url: string): string | undefined {
+    const pathname = decodeURIComponent(
+        new URL(url, 'http://devtools.local').pathname
+    );
+    const relativePath = pathname === '/' ? '/index.html' : pathname;
+    const filePath = normalize(join(rootDir, relativePath));
+
+    if (filePath !== rootDir && !filePath.startsWith(`${rootDir}${sep}`)) {
+        return undefined;
+    }
+
+    try {
+        const stats = statSync(filePath);
+
+        return stats.isFile() ? filePath : undefined;
+    } catch {
+        return undefined;
+    }
+}
+
+function sendStaticFile(
+    request: StaticRequest,
+    response: ServerResponse,
+    filePath: string
+): void {
+    const stats = statSync(filePath);
+
+    response.writeHead(request.method === 'HEAD' ? 204 : 200, {
+        'Cache-Control': 'no-cache',
+        'Content-Length': stats.size,
+        'Content-Type': getContentType(filePath),
+        'Last-Modified': stats.mtime.toUTCString()
+    });
+
+    if (request.method === 'HEAD') {
+        response.end();
+        return;
+    }
+
+    createReadStream(filePath).pipe(response);
+}
+
+function getContentType(filePath: string): string {
+    switch (extname(filePath)) {
+        case '.css':
+            return 'text/css';
+        case '.html':
+            return 'text/html;charset=utf-8';
+        case '.js':
+            return 'text/javascript';
+        case '.json':
+            return 'application/json';
+        case '.svg':
+            return 'image/svg+xml';
+        default:
+            return 'application/octet-stream';
+    }
 }
 
 export function createOverlayScriptTag(
@@ -220,6 +415,10 @@ export function reactDevtools(
                 );
             }
             options.onViteTransport?.(viteTransportChannel);
+
+            return () => {
+                promotePrependedMiddlewares(server);
+            };
         },
         transform(code, id, transformOptions) {
             if (transformOptions?.ssr) {

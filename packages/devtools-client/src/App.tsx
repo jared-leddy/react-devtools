@@ -58,7 +58,8 @@ import {
 import {
     VirtualizedComponentTree,
     findComponentTreeNode,
-    generateSyntheticComponentTree
+    generateSyntheticComponentTree,
+    type ComponentTreeNode
 } from './components/tree';
 import {
     getClientOverviewSnapshot,
@@ -102,6 +103,8 @@ const placeholderToneByKind: Record<ClientRoute['kind'], NotificationTone> = {
     page: 'success'
 };
 const syntheticComponentTree = generateSyntheticComponentTree();
+const SOURCE_ATTRIBUTE = 'data-react-devtools-source';
+const TEST_ID_ATTRIBUTE = 'data-testid';
 
 function ClientShell() {
     const navigate = useNavigate();
@@ -1438,19 +1441,20 @@ function ComponentsPage({
 }) {
     const [searchParams, setSearchParams] = useSearchParams();
     const requestedComponentId = searchParams.get('componentId');
+    const liveComponentTree = useLiveParentComponentTree();
+    const componentTree = liveComponentTree.length
+        ? liveComponentTree
+        : syntheticComponentTree;
+    const firstComponentId = findFirstComponentTreeNodeId(componentTree);
     const selectedComponent =
         runtimeSnapshot.selectionStatus === 'none'
             ? undefined
             : ((requestedComponentId
-                  ? findComponentTreeNode(
-                        syntheticComponentTree,
-                        requestedComponentId
-                    )
+                  ? findComponentTreeNode(componentTree, requestedComponentId)
                   : undefined) ??
-              findComponentTreeNode(
-                  syntheticComponentTree,
-                  'component-group-0-child-0'
-              ));
+              (firstComponentId
+                  ? findComponentTreeNode(componentTree, firstComponentId)
+                  : undefined));
     const selectedComponentId = selectedComponent?.id;
     const hasEmptyRoot = runtimeSnapshot.rootStatus === 'empty';
 
@@ -1487,6 +1491,8 @@ function ComponentsPage({
                         <ComponentEmptyRootPane />
                     ) : (
                         <ComponentTreePlaceholder
+                            initialSelectedId={firstComponentId}
+                            nodes={componentTree}
                             onSelectedIdChange={(componentId) => {
                                 setSearchParams({ componentId });
                             }}
@@ -1507,6 +1513,166 @@ function ComponentsPage({
             />
         </section>
     );
+}
+
+function useLiveParentComponentTree(): ComponentTreeNode[] {
+    const [nodes, setNodes] = useState<ComponentTreeNode[]>(() =>
+        getLiveParentComponentTree()
+    );
+
+    useEffect(() => {
+        const updateNodes = () => {
+            setNodes(getLiveParentComponentTree());
+        };
+        const intervalId = window.setInterval(updateNodes, 1000);
+
+        updateNodes();
+
+        return () => {
+            window.clearInterval(intervalId);
+        };
+    }, []);
+
+    return nodes;
+}
+
+function getLiveParentComponentTree(): ComponentTreeNode[] {
+    if (typeof window === 'undefined' || window.parent === window) {
+        return [];
+    }
+
+    try {
+        const parentDocument = window.parent.document;
+        const annotatedElements = Array.from(
+            parentDocument.querySelectorAll<HTMLElement>(
+                `[${SOURCE_ATTRIBUTE}]`
+            )
+        );
+
+        return createLiveComponentTree(annotatedElements);
+    } catch {
+        return [];
+    }
+}
+
+function createLiveComponentTree(
+    annotatedElements: HTMLElement[]
+): ComponentTreeNode[] {
+    const nodes = new Map<HTMLElement, ComponentTreeNode>();
+    const roots: ComponentTreeNode[] = [];
+
+    annotatedElements.forEach((element, index) => {
+        nodes.set(element, createLiveComponentTreeNode(element, index));
+    });
+
+    annotatedElements.forEach((element) => {
+        const node = nodes.get(element);
+        const parentNode = findNearestAnnotatedParent(element, nodes);
+
+        if (!node) {
+            return;
+        }
+
+        if (parentNode) {
+            parentNode.children = [...(parentNode.children ?? []), node];
+        } else {
+            roots.push(node);
+        }
+    });
+
+    return roots;
+}
+
+function createLiveComponentTreeNode(
+    element: HTMLElement,
+    index: number
+): ComponentTreeNode {
+    const source = element.getAttribute(SOURCE_ATTRIBUTE) ?? '';
+    const testId = element.getAttribute(TEST_ID_ATTRIBUTE);
+    const text = getLiveElementText(element);
+    const tagName = element.tagName.toLowerCase();
+
+    return {
+        elementId: testId ?? `${tagName}-${index}`,
+        id: `live-${index}`,
+        label: createLiveComponentLabel(element, index),
+        rootId: 'iframe-parent-document',
+        stateSections: [
+            {
+                fields: [
+                    { name: 'source', value: source || 'unknown' },
+                    { name: 'testId', value: testId ?? 'none' },
+                    { name: 'text', value: text || 'none' }
+                ],
+                name: 'props'
+            },
+            {
+                fields: [
+                    {
+                        name: 'Hook 0 (source)',
+                        value: {
+                            _custom: {
+                                display: source || 'unknown',
+                                type: 'source'
+                            }
+                        }
+                    }
+                ],
+                name: 'hooks'
+            }
+        ],
+        tags: testId ? ['live', testId] : ['live'],
+        type: tagName
+    };
+}
+
+function createLiveComponentLabel(element: HTMLElement, index: number): string {
+    const testId = element.getAttribute(TEST_ID_ATTRIBUTE);
+    const text = getLiveElementText(element);
+    const tagName = element.tagName.toLowerCase();
+    const suffix = testId ?? text;
+
+    if (suffix) {
+        return `${tagName}: ${suffix}`;
+    }
+
+    return `${tagName}#${index + 1}`;
+}
+
+function getLiveElementText(element: HTMLElement): string {
+    return (element.innerText || element.textContent || '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 80);
+}
+
+function findNearestAnnotatedParent(
+    element: HTMLElement,
+    nodes: Map<HTMLElement, ComponentTreeNode>
+): ComponentTreeNode | undefined {
+    let parent = element.parentElement;
+
+    while (parent) {
+        const node = nodes.get(parent);
+
+        if (node) {
+            return node;
+        }
+
+        parent = parent.parentElement;
+    }
+
+    return undefined;
+}
+
+function findFirstComponentTreeNodeId(
+    nodes: ComponentTreeNode[]
+): string | undefined {
+    for (const node of nodes) {
+        return node.id;
+    }
+
+    return undefined;
 }
 
 function ClientThemeBridge({
@@ -1740,17 +1906,21 @@ function RuntimeStatePage({
 }
 
 function ComponentTreePlaceholder({
+    initialSelectedId,
+    nodes,
     onSelectedIdChange,
     selectedId
 }: {
+    initialSelectedId?: string;
+    nodes: ComponentTreeNode[];
     onSelectedIdChange: (id: string) => void;
     selectedId?: string;
 }) {
     return (
         <Card title="Component tree">
             <VirtualizedComponentTree
-                initialSelectedId="component-group-0-child-0"
-                nodes={syntheticComponentTree}
+                initialSelectedId={initialSelectedId}
+                nodes={nodes}
                 onSelectedIdChange={onSelectedIdChange}
                 selectedId={selectedId}
             />

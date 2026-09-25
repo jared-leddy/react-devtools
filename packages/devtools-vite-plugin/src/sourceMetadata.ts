@@ -134,7 +134,11 @@ function findJsxOpeningTags(
             continue;
         }
 
-        if (char === '<' && isJsxTagStart(next)) {
+        if (
+            char === '<' &&
+            isJsxTagStart(next) &&
+            isLikelyJsxStart(code, index)
+        ) {
             const parsed = parseJsxOpeningTag(code, index, attributeName);
 
             if (parsed) {
@@ -308,4 +312,32 @@ function isJsxTagStart(char: string | undefined): boolean {
 
 function isJsxNameChar(char: string | undefined): boolean {
     return Boolean(char && /[A-Za-z0-9_$:.-]/.test(char));
+}
+
+function isLikelyJsxStart(code: string, offset: number): boolean {
+    let index = offset - 1;
+
+    while (index >= 0 && /\s/.test(code[index]!)) {
+        index -= 1;
+    }
+
+    if (index < 0) {
+        return true;
+    }
+
+    const previous = code[index]!;
+
+    if (!/[A-Za-z0-9_$]/.test(previous)) {
+        return true;
+    }
+
+    let tokenStart = index;
+
+    while (tokenStart >= 0 && /[A-Za-z0-9_$]/.test(code[tokenStart]!)) {
+        tokenStart -= 1;
+    }
+
+    const token = code.slice(tokenStart + 1, index + 1);
+
+    return token === 'return' || token === 'yield' || token === 'case';
 }

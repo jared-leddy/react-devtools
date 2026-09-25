@@ -307,8 +307,7 @@ describe('reactDevtools', () => {
             }
         } as never);
 
-        expect(use).toHaveBeenNthCalledWith(
-            1,
+        expect(use).toHaveBeenCalledWith(
             DEFAULT_CLIENT_BASE_PATH,
             expect.any(Function)
         );
@@ -330,8 +329,7 @@ describe('reactDevtools', () => {
             }
         } as never);
 
-        expect(use).toHaveBeenNthCalledWith(
-            2,
+        expect(use).toHaveBeenCalledWith(
             DEFAULT_OVERLAY_BASE_PATH,
             expect.any(Function)
         );
@@ -359,6 +357,22 @@ describe('reactDevtools', () => {
         expect(response.getHeader('content-type')).toBe(
             'text/html;charset=utf-8'
         );
+        expect(response.body).toContain('React DevTools standalone client');
+    });
+
+    it('returns the standalone client index from the real mounted path', async () => {
+        const use = createMockViteServer(
+            join(process.cwd(), 'tests/fixtures/client')
+        );
+        const middleware = use.mock.calls[0][1];
+
+        const { missed, response } = await requestMiddleware(
+            middleware,
+            `${DEFAULT_CLIENT_BASE_PATH}index.html`
+        );
+
+        expect(missed).toBe(false);
+        expect(response.statusCode).toBe(200);
         expect(response.body).toContain('React DevTools standalone client');
     });
 
@@ -395,11 +409,70 @@ describe('reactDevtools', () => {
             }
         } as never);
 
-        const middleware = use.mock.calls[1][1];
+        const middleware = use.mock.calls[2][1];
 
         const { missed, response } = await requestMiddleware(
             middleware,
             '/devtools-overlay.js'
+        );
+
+        expect(missed).toBe(false);
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toContain('__react-devtools-overlay__');
+    });
+
+    it('returns overlay assets from the real mounted path', async () => {
+        const use = jest.fn();
+        const plugin = reactDevtools({
+            clientDir: join(process.cwd(), 'tests/fixtures/client'),
+            overlayDir: join(process.cwd(), 'tests/fixtures/overlay')
+        });
+        const configureServer = plugin.configureServer as (
+            server: never
+        ) => void;
+
+        configureServer({
+            middlewares: {
+                use
+            }
+        } as never);
+
+        const middleware = use.mock.calls[2][1];
+
+        const { missed, response } = await requestMiddleware(
+            middleware,
+            DEFAULT_OVERLAY_SCRIPT_PATH
+        );
+
+        expect(missed).toBe(false);
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toContain('__react-devtools-overlay__');
+    });
+
+    it('returns overlay assets through the explicit full-path middleware', async () => {
+        const use = jest.fn();
+        const plugin = reactDevtools({
+            clientDir: join(process.cwd(), 'tests/fixtures/client'),
+            overlayDir: join(process.cwd(), 'tests/fixtures/overlay')
+        });
+        const configureServer = plugin.configureServer as (
+            server: never
+        ) => void;
+
+        configureServer({
+            middlewares: {
+                use
+            }
+        } as never);
+
+        const rootMiddlewares = use.mock.calls
+            .map((call) => call[0])
+            .filter((middleware) => typeof middleware === 'function');
+        const middleware = rootMiddlewares.at(-1);
+
+        const { missed, response } = await requestMiddleware(
+            middleware,
+            DEFAULT_OVERLAY_SCRIPT_PATH
         );
 
         expect(missed).toBe(false);
@@ -454,6 +527,27 @@ describe('reactDevtools', () => {
         expect(result.map.version).toBe(3);
         expect(result.map.sources).toEqual(['/project/src/App.tsx']);
         expect(result.map.sourcesContent).toEqual([code]);
+    });
+
+    it('does not annotate TypeScript generic arguments as JSX tags', () => {
+        const result = transformReactSourceMetadata(
+            [
+                "type ThemeTone = 'active' | 'quiet';",
+                "const ThemeContext = createContext<ThemeTone>('active');",
+                'export function App() {',
+                '    return <main><span>Ready</span></main>;',
+                '}'
+            ].join('\n'),
+            '/project/src/App.tsx'
+        );
+
+        expect(result?.code).toContain("createContext<ThemeTone>('active');");
+        expect(result?.code).toContain(
+            '<main data-react-devtools-source="/project/src/App.tsx:4:13">'
+        );
+        expect(result?.code).toContain(
+            '<span data-react-devtools-source="/project/src/App.tsx:4:19">'
+        );
     });
 
     it('composes source metadata with appendTo overlay imports', () => {
@@ -535,13 +629,9 @@ describe('reactDevtools', () => {
         expect(injectOverlayScript('<main></main>')).toContain('<main></main>');
     });
 
-    it('defaults the future client bundle location under node_modules', () => {
-        expect(getDefaultClientDir()).toContain(
-            'node_modules/@devtools/devtools-client/dist'
-        );
-        expect(getDefaultOverlayDir()).toContain(
-            'node_modules/@devtools/devtools-overlay/dist'
-        );
+    it('defaults bundle locations through dependency resolution', () => {
+        expect(getDefaultClientDir()).toContain('dist/standalone');
+        expect(getDefaultOverlayDir()).toContain('dist');
     });
 
     it('lists Vite project assets with classification and image metadata', async () => {
