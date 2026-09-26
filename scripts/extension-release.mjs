@@ -48,14 +48,19 @@ const EXTENSIONS = {
         requiredDistFiles: [
             'manifest.json',
             'background.js',
+            'detector.js',
+            'devtools-panel.html',
             'devtools.html',
             'devtools.js',
+            'devtoolsPanel.js',
             'popup.html',
             'popup.js',
             'prepare.js',
+            'prepareLoader.js',
             'proxy.js',
             'smoke.html',
-            'smoke.js'
+            'smoke.js',
+            'user-app.js'
         ],
         smokePath: 'packages/devtools-firefox-extension/src/smoke.tsx'
     }
@@ -228,10 +233,14 @@ export function packageExtensions({
             stdout(`${dryRun ? 'would run' : 'running'} ${buildMessage}`);
 
             if (!dryRun) {
-                execFileSync('npm', ['run', 'build', '--workspace', plan.packageName], {
-                    cwd,
-                    stdio: 'inherit'
-                });
+                execFileSync(
+                    'npm',
+                    ['run', 'build', '--workspace', plan.packageName],
+                    {
+                        cwd,
+                        stdio: 'inherit'
+                    }
+                );
             }
         }
 
@@ -256,7 +265,9 @@ export function packageExtensions({
 
         if (!dryRun) {
             const zipBuffer = createZipFromDirectory(distDir);
-            const checksum = createHash('sha256').update(zipBuffer).digest('hex');
+            const checksum = createHash('sha256')
+                .update(zipBuffer)
+                .digest('hex');
 
             writeFileSync(artifactPath, zipBuffer);
             writeFileSync(
@@ -341,7 +352,9 @@ export function listZipEntries(zipBuffer) {
         const nameStart = offset + 46;
 
         entries.push(
-            zipBuffer.subarray(nameStart, nameStart + nameLength).toString('utf8')
+            zipBuffer
+                .subarray(nameStart, nameStart + nameLength)
+                .toString('utf8')
         );
         offset = nameStart + nameLength + extraLength + commentLength;
     }
@@ -456,12 +469,7 @@ function crc32(buffer) {
     return (crc ^ 0xffffffff) >>> 0;
 }
 
-function createLocalHeader({
-    compressedSize,
-    crc,
-    name,
-    uncompressedSize
-}) {
+function createLocalHeader({ compressedSize, crc, name, uncompressedSize }) {
     const header = Buffer.alloc(30);
 
     header.writeUInt32LE(0x04034b50, 0);

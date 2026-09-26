@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "React DevTools",
     "description": "Inspect React apps with the rebuilt React DevTools extension.",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "browser_specific_settings": {
         "gecko": {
             "id": "react-devtools@local.dev",
@@ -19,11 +19,16 @@
     },
     "devtools_page": "devtools.html",
     "permissions": ["activeTab"],
-    "web_accessible_resources": ["smoke.html"],
+    "web_accessible_resources": [
+        "detector.js",
+        "prepare.js",
+        "smoke.html",
+        "user-app.js"
+    ],
     "content_scripts": [
         {
             "matches": ["http://*/*", "https://*/*"],
-            "js": ["prepare.js"],
+            "js": ["prepare-loader.js"],
             "run_at": "document_start",
             "all_frames": true
         },
