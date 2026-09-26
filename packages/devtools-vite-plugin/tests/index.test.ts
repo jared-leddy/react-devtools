@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
     DEFAULT_CLIENT_BASE_PATH,
+    DEVTOOLS_TOGGLE_SHORTCUT_HINT,
     DEFAULT_OVERLAY_BASE_PATH,
     DEFAULT_OVERLAY_SCRIPT_PATH,
     OPEN_IN_EDITOR_PATH,
@@ -20,6 +21,9 @@ import {
     createOverlayScriptTag,
     getDefaultClientDir,
     getDefaultOverlayDir,
+    getDevtoolsClientBasePath,
+    getDevtoolsOverlayBasePath,
+    getDevtoolsOverlayScriptPath,
     getViteModuleGraphSnapshot,
     handleViteAssetRpcPayload,
     handleViteGraphRpcPayload,
@@ -30,6 +34,7 @@ import {
     normalizeServePath,
     reactDevtools,
     readViteAssetText,
+    resolveDevtoolsUrls,
     shouldTransformSourceMetadata,
     shouldTransformComponentInspector,
     transformReactSourceMetadata
@@ -292,7 +297,7 @@ describe('reactDevtools', () => {
         );
 
         expect(result).toContain(
-            `<script type="module" src="${DEFAULT_OVERLAY_SCRIPT_PATH}"></script>`
+            `<script type="module" src="${DEFAULT_OVERLAY_SCRIPT_PATH}" data-react-devtools-client-url="${DEFAULT_CLIENT_BASE_PATH}" data-react-devtools-separate-window-url="${DEFAULT_CLIENT_BASE_PATH}"></script>`
         );
     });
 
@@ -341,6 +346,74 @@ describe('reactDevtools', () => {
         expect(normalizeServePath('__devtools__')).toBe('/__devtools__/');
         expect(normalizeServePath('/__devtools__')).toBe('/__devtools__/');
         expect(normalizeServePath('/__devtools__/')).toBe('/__devtools__/');
+    });
+
+    it('derives base-aware devtools serve paths and URLs', () => {
+        const server = {
+            config: {
+                base: '/admin/',
+                server: {}
+            },
+            resolvedUrls: {
+                local: ['http://localhost:5173/admin/'],
+                network: ['http://192.168.1.10:5173/admin/']
+            }
+        } as never;
+
+        expect(getDevtoolsClientBasePath({}, server)).toBe(
+            '/admin/__devtools__/'
+        );
+        expect(getDevtoolsOverlayBasePath({}, server)).toBe(
+            '/admin/__react-devtools-overlay__/'
+        );
+        expect(getDevtoolsOverlayScriptPath({}, server)).toBe(
+            '/admin/__react-devtools-overlay__/devtools-overlay.js'
+        );
+        expect(resolveDevtoolsUrls(server, {})).toEqual([
+            'http://localhost:5173/admin/__devtools__/',
+            'http://192.168.1.10:5173/admin/__devtools__/'
+        ]);
+    });
+
+    it('prints the separate-window devtools URL and shortcut after Vite starts', () => {
+        jest.useFakeTimers();
+
+        const logger = { info: jest.fn() };
+        const httpServer = {
+            once: jest.fn((_event: string, handler: () => void) => {
+                handler();
+            })
+        };
+        const plugin = reactDevtools();
+        const configureServer = plugin.configureServer as (
+            server: never
+        ) => void;
+
+        configureServer({
+            config: {
+                base: '/workspace/',
+                logger,
+                server: {}
+            },
+            httpServer,
+            middlewares: {
+                use: jest.fn()
+            },
+            resolvedUrls: {
+                local: ['http://localhost:5173/workspace/'],
+                network: []
+            }
+        } as never);
+
+        jest.runOnlyPendingTimers();
+        jest.useRealTimers();
+
+        expect(logger.info).toHaveBeenCalledWith(
+            'React DevTools: http://localhost:5173/workspace/__devtools__/'
+        );
+        expect(logger.info).toHaveBeenCalledWith(
+            `React DevTools shortcut: ${DEVTOOLS_TOGGLE_SHORTCUT_HINT}`
+        );
     });
 
     it('opens project-root files through the editor endpoint', async () => {
@@ -520,6 +593,37 @@ describe('reactDevtools', () => {
         expect(response.body).toContain('reactDevtoolsClient');
     });
 
+    it('applies Vite server headers to served devtools assets', async () => {
+        const use = jest.fn();
+        const plugin = reactDevtools({
+            clientDir: join(process.cwd(), 'tests/fixtures/client')
+        });
+        const configureServer = plugin.configureServer as (
+            server: never
+        ) => void;
+
+        configureServer({
+            config: {
+                server: {
+                    headers: {
+                        'Cross-Origin-Embedder-Policy': 'require-corp'
+                    }
+                }
+            },
+            middlewares: { use }
+        } as never);
+
+        const middleware = use.mock.calls[1][1];
+        const { response } = await requestMiddleware(
+            middleware,
+            '/assets/client.js'
+        );
+
+        expect(response.getHeader('cross-origin-embedder-policy')).toBe(
+            'require-corp'
+        );
+    });
+
     it('returns overlay assets through the overlay middleware', async () => {
         const use = jest.fn();
         const plugin = reactDevtools({
@@ -617,7 +721,7 @@ describe('reactDevtools', () => {
         expect(
             transform('console.log("app");', '/project/src/main.tsx')
         ).toEqual({
-            code: `import '${DEFAULT_OVERLAY_SCRIPT_PATH}';\nconsole.log("app");`,
+            code: `window.__REACT_DEVTOOLS_OVERLAY_CONFIG__ = { clientUrl: "${DEFAULT_CLIENT_BASE_PATH}", separateWindowUrl: "${DEFAULT_CLIENT_BASE_PATH}" };\nimport '${DEFAULT_OVERLAY_SCRIPT_PATH}';\nconsole.log("app");`,
             map: null
         });
         expect(transform('console.log("app");', '/project/src/other.tsx')).toBe(
@@ -688,7 +792,7 @@ describe('reactDevtools', () => {
         const result = transform('<App />', '/project/src/main.tsx');
 
         expect(result.code).toBe(
-            `import '${DEFAULT_OVERLAY_SCRIPT_PATH}';\n<App data-react-devtools-source="/project/src/main.tsx:2:2" data-react-devtools-component-id="/project/src/main.tsx:2:2:App" data-react-devtools-display-name="App" />`
+            `window.__REACT_DEVTOOLS_OVERLAY_CONFIG__ = { clientUrl: "${DEFAULT_CLIENT_BASE_PATH}", separateWindowUrl: "${DEFAULT_CLIENT_BASE_PATH}" };\nimport '${DEFAULT_OVERLAY_SCRIPT_PATH}';\n<App data-react-devtools-source="/project/src/main.tsx:3:2" data-react-devtools-component-id="/project/src/main.tsx:3:2:App" data-react-devtools-display-name="App" />`
         );
     });
 
@@ -780,7 +884,7 @@ describe('reactDevtools', () => {
         const injected = injectOverlayScript(html);
 
         expect(createOverlayScriptTag()).toBe(
-            `<script type="module" src="${DEFAULT_OVERLAY_SCRIPT_PATH}"></script>`
+            `<script type="module" src="${DEFAULT_OVERLAY_SCRIPT_PATH}" data-react-devtools-client-url="${DEFAULT_CLIENT_BASE_PATH}" data-react-devtools-separate-window-url="${DEFAULT_CLIENT_BASE_PATH}"></script>`
         );
         expect(injectOverlayScript(injected)).toBe(injected);
         expect(injectOverlayScript('<main></main>')).toContain('<main></main>');
