@@ -40,7 +40,8 @@ const sidebars = {
             items: [
                 'delivery-modes/overview',
                 'delivery-modes/vite-plugin',
-                'delivery-modes/extension'
+                'delivery-modes/extension',
+                'delivery-modes/extension-release'
             ]
         },
         {
