@@ -1,6 +1,6 @@
 {
     "name": "@devtools/chrome-extension",
-    "version": "0.0.12",
+    "version": "0.0.13",
     "private": false,
     "license": "UNLICENSED",
     "description": "Chrome extension shell for React DevTools.",
@@ -21,6 +21,7 @@
     "scripts": {
         "build": "vite build && tsc -p tsconfig.build.json --emitDeclarationOnly --outDir dist",
         "lint": "eslint . --max-warnings=0",
+        "package": "npm run build && node ../../scripts/extension-release.mjs package --target chrome --skip-build",
         "test:e2e": "playwright test --config playwright.config.ts",
         "test:unit": "jest --coverage --config jest.config.ts",
         "test:watch": "jest --coverage --watch --config jest.config.ts",

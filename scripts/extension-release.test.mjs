@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { tmpdir } from 'node:os';
 import {
     createArtifactName,
     getExtensionTargets,
+    listZipEntries,
     packageExtensions,
     parseCli,
     updateExtensionVersions,
@@ -120,4 +121,107 @@ test('prepare dry-run package preview can use the requested release version', ()
 
     assert.equal(artifacts[0].version, '0.0.2');
     assert.match(artifacts[0].path, /v0\.0\.2\.zip$/);
+});
+
+test('packages chrome dist into a versioned zip with exact entries and checksum', () => {
+    const root = join(
+        tmpdir(),
+        `react-devtools-extension-package-write-${Date.now()}`
+    );
+    const base = join(root, 'packages/devtools-chrome-extension');
+    const dist = join(base, 'dist');
+    const files = [
+        'manifest.json',
+        'background.js',
+        'detector.js',
+        'devtools-panel.html',
+        'devtools.html',
+        'devtools.js',
+        'devtoolsPanel.js',
+        'popup.html',
+        'popup.js',
+        'prepare.js',
+        'proxy.js',
+        'smoke.html',
+        'smoke.js',
+        'user-app.js',
+        'assets/client.js',
+        'assets/style.css'
+    ];
+
+    mkdirSync(join(base, 'public'), { recursive: true });
+    mkdirSync(dist, { recursive: true });
+    writeFileSync(
+        join(base, 'package.json'),
+        JSON.stringify({
+            name: '@devtools/chrome-extension',
+            version: '0.0.3'
+        })
+    );
+    writeFileSync(
+        join(base, 'public/manifest.json'),
+        JSON.stringify({ version: '0.0.3' })
+    );
+
+    for (const file of files) {
+        mkdirSync(join(dist, file, '..'), { recursive: true });
+        writeFileSync(join(dist, file), `${file}\n`);
+    }
+
+    const artifacts = packageExtensions({
+        cwd: root,
+        outDir: 'release-artifacts',
+        skipBuild: true,
+        stdout: () => undefined,
+        targets: ['chrome']
+    });
+    const artifact = artifacts[0];
+
+    assert.equal(
+        artifact.path,
+        join(
+            root,
+            'release-artifacts/react-devtools-chrome-extension-v0.0.3.zip'
+        )
+    );
+    assert.equal(artifact.version, '0.0.3');
+    assert.equal(existsSync(artifact.checksumPath), true);
+    assert.deepEqual(
+        listZipEntries(readFileSync(artifact.path)),
+        files.slice().sort()
+    );
+});
+
+test('fails chrome packaging when required build outputs are missing', () => {
+    const root = join(
+        tmpdir(),
+        `react-devtools-extension-package-missing-${Date.now()}`
+    );
+    const base = join(root, 'packages/devtools-chrome-extension');
+
+    mkdirSync(join(base, 'public'), { recursive: true });
+    mkdirSync(join(base, 'dist'), { recursive: true });
+    writeFileSync(
+        join(base, 'package.json'),
+        JSON.stringify({
+            name: '@devtools/chrome-extension',
+            version: '0.0.3'
+        })
+    );
+    writeFileSync(
+        join(base, 'public/manifest.json'),
+        JSON.stringify({ version: '0.0.3' })
+    );
+    writeFileSync(join(base, 'dist/manifest.json'), '{}');
+
+    assert.throws(
+        () =>
+            packageExtensions({
+                cwd: root,
+                skipBuild: true,
+                stdout: () => undefined,
+                targets: ['chrome']
+            }),
+        /missing required files: background\.js/
+    );
 });

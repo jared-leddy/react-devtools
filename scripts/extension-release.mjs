@@ -21,6 +21,22 @@ const EXTENSIONS = {
         packageName: '@devtools/chrome-extension',
         packagePath: 'packages/devtools-chrome-extension/package.json',
         packageRoot: 'packages/devtools-chrome-extension',
+        requiredDistFiles: [
+            'manifest.json',
+            'background.js',
+            'detector.js',
+            'devtools-panel.html',
+            'devtools.html',
+            'devtools.js',
+            'devtoolsPanel.js',
+            'popup.html',
+            'popup.js',
+            'prepare.js',
+            'proxy.js',
+            'smoke.html',
+            'smoke.js',
+            'user-app.js'
+        ],
         smokePath: 'packages/devtools-chrome-extension/src/smoke.tsx'
     },
     firefox: {
@@ -29,22 +45,21 @@ const EXTENSIONS = {
         packageName: '@devtools/firefox-extension',
         packagePath: 'packages/devtools-firefox-extension/package.json',
         packageRoot: 'packages/devtools-firefox-extension',
+        requiredDistFiles: [
+            'manifest.json',
+            'background.js',
+            'devtools.html',
+            'devtools.js',
+            'popup.html',
+            'popup.js',
+            'prepare.js',
+            'proxy.js',
+            'smoke.html',
+            'smoke.js'
+        ],
         smokePath: 'packages/devtools-firefox-extension/src/smoke.tsx'
     }
 };
-
-const REQUIRED_DIST_FILES = [
-    'manifest.json',
-    'background.js',
-    'devtools.html',
-    'devtools.js',
-    'popup.html',
-    'popup.js',
-    'prepare.js',
-    'proxy.js',
-    'smoke.html',
-    'smoke.js'
-];
 
 const CRC_TABLE = Array.from({ length: 256 }, (_, index) => {
     let value = index;
@@ -221,7 +236,7 @@ export function packageExtensions({
         }
 
         const distDir = join(cwd, plan.packageRoot, 'dist');
-        const missing = REQUIRED_DIST_FILES.filter(
+        const missing = plan.requiredDistFiles.filter(
             (file) => !existsSync(join(distDir, file))
         );
 
@@ -264,6 +279,11 @@ export function packageExtensions({
 
 export function createZipFromDirectory(directory) {
     const files = listFiles(directory);
+
+    return createZipFromFiles(directory, files);
+}
+
+export function createZipFromFiles(directory, files) {
     const localParts = [];
     const centralParts = [];
     let offset = 0;
@@ -300,6 +320,33 @@ export function createZipFromDirectory(directory) {
     });
 
     return Buffer.concat([...localParts, centralDirectory, end]);
+}
+
+export function listZipEntries(zipBuffer) {
+    const endOffset = findEndOfCentralDirectory(zipBuffer);
+    const entryCount = zipBuffer.readUInt16LE(endOffset + 10);
+    let offset = zipBuffer.readUInt32LE(endOffset + 16);
+    const entries = [];
+
+    for (let index = 0; index < entryCount; index += 1) {
+        const signature = zipBuffer.readUInt32LE(offset);
+
+        if (signature !== 0x02014b50) {
+            throw new Error('invalid zip central directory header');
+        }
+
+        const nameLength = zipBuffer.readUInt16LE(offset + 28);
+        const extraLength = zipBuffer.readUInt16LE(offset + 30);
+        const commentLength = zipBuffer.readUInt16LE(offset + 32);
+        const nameStart = offset + 46;
+
+        entries.push(
+            zipBuffer.subarray(nameStart, nameStart + nameLength).toString('utf8')
+        );
+        offset = nameStart + nameLength + extraLength + commentLength;
+    }
+
+    return entries;
 }
 
 export function printHelp(stdout = console.log) {
@@ -479,6 +526,16 @@ function createEndOfCentralDirectory({
     record.writeUInt16LE(0, 20);
 
     return record;
+}
+
+function findEndOfCentralDirectory(zipBuffer) {
+    for (let offset = zipBuffer.length - 22; offset >= 0; offset -= 1) {
+        if (zipBuffer.readUInt32LE(offset) === 0x06054b50) {
+            return offset;
+        }
+    }
+
+    throw new Error('invalid zip: missing end of central directory');
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
