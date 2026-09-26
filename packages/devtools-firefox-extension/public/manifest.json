@@ -1,0 +1,38 @@
+{
+    "manifest_version": 2,
+    "name": "React DevTools",
+    "description": "Inspect React apps with the rebuilt React DevTools extension.",
+    "version": "0.0.1",
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "react-devtools@local.dev",
+            "strict_min_version": "109.0"
+        }
+    },
+    "browser_action": {
+        "default_popup": "popup.html",
+        "default_title": "React DevTools"
+    },
+    "background": {
+        "scripts": ["background.js"],
+        "persistent": false
+    },
+    "devtools_page": "devtools.html",
+    "permissions": ["activeTab"],
+    "web_accessible_resources": ["smoke.html"],
+    "content_scripts": [
+        {
+            "matches": ["http://*/*", "https://*/*"],
+            "js": ["prepare.js"],
+            "run_at": "document_start",
+            "all_frames": true
+        },
+        {
+            "matches": ["http://*/*", "https://*/*"],
+            "js": ["proxy.js"],
+            "run_at": "document_start",
+            "all_frames": true
+        }
+    ],
+    "content_security_policy": "default-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'; base-uri 'self'; frame-src 'self'; child-src 'self'; connect-src 'self'"
+}
