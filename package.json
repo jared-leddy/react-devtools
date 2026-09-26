@@ -1,17 +1,21 @@
 {
     "name": "react-devtools",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "private": true,
     "license": "UNLICENSED",
     "scripts": {
         "build": "turbo build",
         "build:docs": "npx turbo run build --filter=@devtools/docs",
+        "extensions:package": "node scripts/extension-release.mjs package",
+        "extensions:prepare": "node scripts/extension-release.mjs prepare",
+        "extensions:version": "node scripts/extension-release.mjs version",
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
         "format:check": "prettier --check \"**/*.{ts,tsx,md}\"",
         "lint": "turbo lint",
         "postinstall": "simple-git-hooks",
         "start:dev": "turbo start:dev",
         "test:e2e": "turbo test:e2e",
+        "test:release-packaging": "node --test scripts/extension-release.test.mjs",
         "test:unit": "turbo test:unit",
         "typecheck": "turbo typecheck"
     },
