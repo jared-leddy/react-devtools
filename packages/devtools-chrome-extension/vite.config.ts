@@ -7,8 +7,12 @@ export default defineConfig({
         emptyOutDir: true,
         rollupOptions: {
             input: {
+                background: resolve(__dirname, 'src/background.ts'),
+                devtools: resolve(__dirname, 'devtools.html'),
                 index: resolve(__dirname, 'src/index.ts'),
-                popup: resolve(__dirname, 'popup.html')
+                prepare: resolve(__dirname, 'src/content/prepare.ts'),
+                popup: resolve(__dirname, 'popup.html'),
+                proxy: resolve(__dirname, 'src/content/proxy.ts')
             },
             output: {
                 entryFileNames: '[name].js'
