@@ -34,16 +34,14 @@
 
 .react-devtools-overlay__frame {
     position: fixed;
-    right: 20px;
-    bottom: 76px;
-    width: min(440px, calc(100vw - 40px));
-    height: min(620px, calc(100vh - 96px));
+    z-index: 2147483645;
     pointer-events: none;
 }
 
 .react-devtools-overlay__frame iframe {
     width: 100%;
-    height: 100%;
+    height: calc(100% - 40px);
+    margin-top: 40px;
     pointer-events: auto;
     background: #101216;
     border: 1px solid rgba(255, 255, 255, 0.16);
@@ -53,6 +51,135 @@
 
 .react-devtools-overlay__frame iframe[hidden] {
     display: none;
+}
+
+.react-devtools-overlay[data-open='false'] .react-devtools-overlay__frame,
+.react-devtools-overlay[data-minimized='true'] .react-devtools-overlay__frame {
+    pointer-events: none;
+}
+
+.react-devtools-overlay[data-minimized='true']
+    .react-devtools-overlay__frame
+    iframe {
+    display: none;
+}
+
+.react-devtools-overlay__panel {
+    position: fixed;
+    z-index: 2147483646;
+    overflow: hidden;
+    pointer-events: none;
+    color: var(--react-devtools-overlay-fg);
+    background: transparent;
+}
+
+.react-devtools-overlay__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 40px;
+    padding: 0 8px 0 12px;
+    pointer-events: auto;
+    user-select: none;
+    background: var(--react-devtools-overlay-bg);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-bottom: 0;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 14px 34px var(--react-devtools-overlay-shadow);
+    touch-action: none;
+}
+
+.react-devtools-overlay[data-dock='bottom'] .react-devtools-overlay__toolbar,
+.react-devtools-overlay[data-dock='right'] .react-devtools-overlay__toolbar {
+    border-radius: 0;
+}
+
+.react-devtools-overlay__title {
+    overflow: hidden;
+    font:
+        700 12px/1 system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        sans-serif;
+    letter-spacing: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.react-devtools-overlay__toolbar-actions {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.react-devtools-overlay__toolbar-actions button,
+.react-devtools-overlay__icon-link,
+.react-devtools-overlay__restore {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 8px;
+    font:
+        700 12px/1 system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        sans-serif;
+    color: var(--react-devtools-overlay-fg);
+    text-decoration: none;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+}
+
+.react-devtools-overlay__toolbar-actions button:hover,
+.react-devtools-overlay__toolbar-actions button:focus-visible,
+.react-devtools-overlay__icon-link:hover,
+.react-devtools-overlay__icon-link:focus-visible,
+.react-devtools-overlay__restore:hover,
+.react-devtools-overlay__restore:focus-visible {
+    border-color: rgba(97, 218, 251, 0.75);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(97, 218, 251, 0.18);
+}
+
+.react-devtools-overlay__toolbar-actions button[aria-pressed='true'] {
+    color: #101216;
+    background: var(--react-devtools-overlay-ring);
+    border-color: var(--react-devtools-overlay-ring);
+}
+
+.react-devtools-overlay__restore {
+    position: absolute;
+    right: 8px;
+    bottom: 6px;
+    pointer-events: auto;
+}
+
+.react-devtools-overlay__resize {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 18px;
+    height: 18px;
+    pointer-events: auto;
+    cursor: nwse-resize;
+    touch-action: none;
+}
+
+.react-devtools-overlay__resize::before {
+    position: absolute;
+    right: 4px;
+    bottom: 4px;
+    width: 8px;
+    height: 8px;
+    content: '';
+    border-right: 2px solid rgba(247, 249, 252, 0.62);
+    border-bottom: 2px solid rgba(247, 249, 252, 0.62);
 }
 
 .react-devtools-overlay__inspect-toggle {
@@ -164,7 +291,24 @@
 
 @media (prefers-reduced-motion: reduce) {
     .react-devtools-overlay__inspect-toggle,
-    .react-devtools-overlay__toggle {
+    .react-devtools-overlay__toggle,
+    .react-devtools-overlay__toolbar-actions button,
+    .react-devtools-overlay__icon-link,
+    .react-devtools-overlay__restore {
         transition: none;
     }
+}
+
+.react-devtools-overlay[data-reduce-motion='true']
+    .react-devtools-overlay__inspect-toggle,
+.react-devtools-overlay[data-reduce-motion='true']
+    .react-devtools-overlay__toggle,
+.react-devtools-overlay[data-reduce-motion='true']
+    .react-devtools-overlay__toolbar-actions
+    button,
+.react-devtools-overlay[data-reduce-motion='true']
+    .react-devtools-overlay__icon-link,
+.react-devtools-overlay[data-reduce-motion='true']
+    .react-devtools-overlay__restore {
+    transition: none;
 }

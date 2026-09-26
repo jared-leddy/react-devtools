@@ -1,10 +1,15 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { DevtoolsOverlay, resolveDefaultInspectTarget } from '../src/App';
 
 describe('DevtoolsOverlay', () => {
+    afterEach(() => {
+        window.localStorage.clear();
+        jest.useRealTimers();
+    });
+
     it('renders a fixed-position toggle button', () => {
         render(<DevtoolsOverlay />);
 
@@ -69,6 +74,216 @@ describe('DevtoolsOverlay', () => {
         expect(document.querySelectorAll('iframe')).toHaveLength(1);
         expect(document.querySelector('iframe')).toBe(iframe);
         expect(iframe).not.toHaveAttribute('hidden');
+    });
+
+    it('keeps the iframe mounted immediately when configured', () => {
+        render(<DevtoolsOverlay clientUrl="/client/" keepMounted />);
+
+        const iframe = document.querySelector('iframe');
+
+        expect(iframe).toHaveAttribute('src', '/client/');
+        expect(iframe).toHaveAttribute('hidden');
+    });
+
+    it('persists open, docking, and reduce-motion preferences', () => {
+        const storageKey = 'overlay-test-preferences';
+        render(
+            <DevtoolsOverlay defaultOpen reduceMotion storageKey={storageKey} />
+        );
+
+        fireEvent.click(
+            screen.getByRole('button', {
+                name: 'Dock React DevTools to right'
+            })
+        );
+
+        expect(screen.getByTestId('react-devtools-overlay')).toHaveAttribute(
+            'data-dock',
+            'right'
+        );
+        expect(screen.getByTestId('react-devtools-overlay')).toHaveAttribute(
+            'data-reduce-motion',
+            'true'
+        );
+        expect(
+            JSON.parse(window.localStorage.getItem(storageKey) ?? '{}')
+        ).toMatchObject({
+            dock: 'right',
+            open: true,
+            reduceMotion: true
+        });
+    });
+
+    it('supports panel minimize, restore, close, and separate-window controls', () => {
+        render(
+            <DevtoolsOverlay
+                clientUrl="/client/?tab=components"
+                defaultOpen
+                separateWindowUrl="/client/?separate=true"
+            />
+        );
+
+        expect(
+            screen.getByRole('link', {
+                name: 'Open React DevTools in separate window'
+            })
+        ).toHaveAttribute('href', '/client/?separate=true');
+
+        fireEvent.click(
+            screen.getByRole('button', {
+                name: 'Minimize React DevTools panel'
+            })
+        );
+
+        expect(screen.getByTestId('react-devtools-overlay')).toHaveAttribute(
+            'data-minimized',
+            'true'
+        );
+
+        fireEvent.click(
+            screen.getByRole('button', {
+                name: 'Restore React DevTools panel'
+            })
+        );
+
+        expect(screen.getByTestId('react-devtools-overlay')).toHaveAttribute(
+            'data-minimized',
+            'false'
+        );
+
+        fireEvent.click(
+            screen.getByRole('button', {
+                name: 'Close React DevTools panel'
+            })
+        );
+
+        expect(screen.getByTestId('react-devtools-overlay')).toHaveAttribute(
+            'data-open',
+            'false'
+        );
+    });
+
+    it('honors minimize delay and keyboard toggle shortcut', () => {
+        jest.useFakeTimers();
+        render(<DevtoolsOverlay minimizeDelay={250} />);
+
+        fireEvent.keyDown(window, {
+            altKey: true,
+            key: 'd',
+            shiftKey: true
+        });
+
+        expect(screen.getByTestId('react-devtools-overlay')).toHaveAttribute(
+            'data-open',
+            'true'
+        );
+
+        fireEvent.click(
+            screen.getByRole('button', {
+                name: 'Minimize React DevTools panel'
+            })
+        );
+
+        expect(screen.getByTestId('react-devtools-overlay')).toHaveAttribute(
+            'data-minimized',
+            'false'
+        );
+
+        act(() => {
+            jest.advanceTimersByTime(250);
+        });
+
+        expect(screen.getByTestId('react-devtools-overlay')).toHaveAttribute(
+            'data-minimized',
+            'true'
+        );
+    });
+
+    it('closes on outside click when configured without blocking closed app clicks', () => {
+        const appClick = jest.fn();
+        const target = document.createElement('button');
+        target.addEventListener('click', appClick);
+        document.body.appendChild(target);
+
+        render(<DevtoolsOverlay closeOnOutsideClick defaultOpen />);
+
+        fireEvent.pointerDown(target);
+
+        expect(screen.getByTestId('react-devtools-overlay')).toHaveAttribute(
+            'data-open',
+            'false'
+        );
+
+        fireEvent.click(target);
+        expect(appClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('drags and resizes the floating panel', () => {
+        const storageKey = 'overlay-drag-resize';
+        render(
+            <DevtoolsOverlay
+                defaultBounds={{
+                    height: 400,
+                    left: 100,
+                    top: 100,
+                    width: 360
+                }}
+                defaultOpen
+                storageKey={storageKey}
+            />
+        );
+
+        fireEvent(
+            screen.getByText('React DevTools').closest('div') as Element,
+            createPointerMouseEvent('pointerdown', {
+                clientX: 100,
+                clientY: 100
+            })
+        );
+        fireEvent(
+            window,
+            createPointerMouseEvent('pointermove', {
+                clientX: 130,
+                clientY: 140
+            })
+        );
+        fireEvent(window, createPointerMouseEvent('pointerup'));
+
+        expect(
+            JSON.parse(window.localStorage.getItem(storageKey) ?? '{}')
+        ).toMatchObject({
+            bounds: {
+                left: 130,
+                top: 140
+            }
+        });
+
+        fireEvent(
+            screen.getByRole('separator', {
+                name: 'Resize React DevTools panel'
+            }),
+            createPointerMouseEvent('pointerdown', {
+                clientX: 0,
+                clientY: 0
+            })
+        );
+        fireEvent(
+            window,
+            createPointerMouseEvent('pointermove', {
+                clientX: 50,
+                clientY: 60
+            })
+        );
+        fireEvent(window, createPointerMouseEvent('pointerup'));
+
+        expect(
+            JSON.parse(window.localStorage.getItem(storageKey) ?? '{}')
+        ).toMatchObject({
+            bounds: {
+                height: 460,
+                width: 410
+            }
+        });
     });
 
     it('keeps the overlay fixed to the viewport corner', () => {
@@ -243,3 +458,14 @@ describe('DevtoolsOverlay', () => {
         });
     });
 });
+
+function createPointerMouseEvent(
+    type: string,
+    options: MouseEventInit = {}
+): MouseEvent {
+    return new MouseEvent(type, {
+        bubbles: true,
+        cancelable: true,
+        ...options
+    });
+}
