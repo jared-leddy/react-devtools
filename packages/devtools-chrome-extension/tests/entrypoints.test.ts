@@ -6,6 +6,7 @@ describe('extension entrypoints', () => {
             }
         ).__REACT_DEVTOOLS_GLOBAL_HOOK__;
         delete (globalThis as typeof globalThis & { chrome?: unknown }).chrome;
+        jest.useRealTimers();
         jest.restoreAllMocks();
         jest.resetModules();
     });
@@ -498,14 +499,61 @@ describe('extension entrypoints', () => {
         ]);
     });
 
-    it('announces the DevTools page bootstrap readiness', async () => {
+    it('creates the DevTools panel once React is detected in the inspected window', async () => {
+        jest.useFakeTimers();
+        const chrome = createMockDevToolsChrome([false, true]);
+        (globalThis as typeof globalThis & { chrome?: unknown }).chrome =
+            chrome.api;
         const onReady = jest.fn();
         globalThis.addEventListener(
             '__react_devtools_devtools_page_ready__',
             onReady
         );
 
-        await import('../src/devtools');
+        await import('../src/devtools-background');
+
+        expect(chrome.inspectedWindow.eval).toHaveBeenCalledTimes(1);
+        expect(chrome.panels.create).not.toHaveBeenCalled();
+
+        jest.advanceTimersByTime(250);
+
+        expect(chrome.inspectedWindow.eval).toHaveBeenCalledTimes(2);
+        expect(chrome.panels.create).toHaveBeenCalledWith(
+            'React',
+            '',
+            'devtools-panel.html'
+        );
+        expect(onReady).toHaveBeenCalledWith(
+            expect.objectContaining({
+                detail: {
+                    source: 'react-devtools-extension'
+                }
+            })
+        );
+    });
+
+    it('stops polling the inspected window when React is not detected', async () => {
+        jest.useFakeTimers();
+        const chrome = createMockDevToolsChrome([false, false, false]);
+        (globalThis as typeof globalThis & { chrome?: unknown }).chrome =
+            chrome.api;
+
+        const { DEFAULT_MAX_DETECTION_ATTEMPTS } =
+            await import('../src/devtools-background');
+
+        jest.advanceTimersByTime(250 * DEFAULT_MAX_DETECTION_ATTEMPTS);
+
+        expect(chrome.inspectedWindow.eval).toHaveBeenCalledTimes(
+            DEFAULT_MAX_DETECTION_ATTEMPTS
+        );
+        expect(chrome.panels.create).not.toHaveBeenCalled();
+    });
+
+    it('announces the DevTools panel bootstrap readiness', async () => {
+        const onReady = jest.fn();
+        globalThis.addEventListener('__react_devtools_panel_ready__', onReady);
+
+        await import('../src/devtools-panel');
 
         expect(onReady).toHaveBeenCalledWith(
             expect.objectContaining({
@@ -516,6 +564,30 @@ describe('extension entrypoints', () => {
         );
     });
 });
+
+function createMockDevToolsChrome(detectionResults: boolean[]) {
+    const inspectedWindow = {
+        eval: jest.fn(
+            (_expression: string, callback: (result: unknown) => void) => {
+                callback(detectionResults.shift() ?? false);
+            }
+        )
+    };
+    const panels = {
+        create: jest.fn()
+    };
+
+    return {
+        api: {
+            devtools: {
+                inspectedWindow,
+                panels
+            }
+        },
+        inspectedWindow,
+        panels
+    };
+}
 
 interface MockBackgroundPort {
     disconnect(): void;
