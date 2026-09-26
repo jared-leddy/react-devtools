@@ -67,11 +67,18 @@ describe('chrome extension manifest', () => {
     });
 
     it('limits content script matches to ordinary web pages', () => {
-        expect(manifest.content_scripts).toHaveLength(2);
+        expect(manifest.content_scripts).toHaveLength(3);
         expect(manifest.content_scripts).toEqual([
             expect.objectContaining({
                 all_frames: true,
                 js: ['prepare.js'],
+                matches: ['http://*/*', 'https://*/*'],
+                run_at: 'document_start',
+                world: 'MAIN'
+            }),
+            expect.objectContaining({
+                all_frames: true,
+                js: ['detector.js'],
                 matches: ['http://*/*', 'https://*/*'],
                 run_at: 'document_start',
                 world: 'MAIN'

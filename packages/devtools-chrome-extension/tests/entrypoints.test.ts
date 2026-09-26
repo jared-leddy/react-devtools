@@ -5,14 +5,29 @@ describe('extension entrypoints', () => {
                 __REACT_DEVTOOLS_GLOBAL_HOOK__?: unknown;
             }
         ).__REACT_DEVTOOLS_GLOBAL_HOOK__;
+        delete (globalThis as typeof globalThis & { chrome?: unknown }).chrome;
         jest.restoreAllMocks();
         jest.resetModules();
     });
 
     it('registers service worker lifecycle listeners', async () => {
         const addEventListener = jest.spyOn(self, 'addEventListener');
+        const runtimeMessageListeners: Array<
+            (message: unknown, sender?: unknown) => void
+        > = [];
+        (globalThis as typeof globalThis & { chrome?: unknown }).chrome = {
+            runtime: {
+                onMessage: {
+                    addListener(
+                        listener: (message: unknown, sender?: unknown) => void
+                    ) {
+                        runtimeMessageListeners.push(listener);
+                    }
+                }
+            }
+        };
 
-        await import('../src/background');
+        const background = await import('../src/background');
 
         expect(addEventListener).toHaveBeenCalledWith(
             'install',
@@ -28,6 +43,25 @@ describe('extension entrypoints', () => {
                 listener(new Event('test'));
             }
         }
+
+        expect(runtimeMessageListeners).toHaveLength(1);
+        runtimeMessageListeners[0]?.(
+            {
+                source: 'react-devtools-extension',
+                type: 'react-devtools:react-detected'
+            },
+            { tab: { id: 42 } }
+        );
+        runtimeMessageListeners[0]?.(
+            {
+                source: 'react-devtools-extension',
+                type: 'ignored'
+            },
+            { tab: { id: 99 } }
+        );
+
+        expect(background.hasDetectedReactInTab(42)).toBe(true);
+        expect(background.hasDetectedReactInTab(99)).toBe(false);
     });
 
     it('announces the MAIN-world prepare script readiness', async () => {
@@ -261,11 +295,62 @@ describe('extension entrypoints', () => {
         );
     });
 
-    it('announces the isolated-world proxy script readiness', async () => {
-        const onReady = jest.fn();
-        window.addEventListener('__react_devtools_proxy_ready__', onReady);
+    it('detects React when the MAIN-world hook has a registered renderer', async () => {
+        const { hasDetectedReact } = await import('../src/content/detector');
 
-        await import('../src/content/proxy');
+        expect(
+            hasDetectedReact({
+                renderers: new Map([[1, { rendererPackageName: 'react-dom' }]]),
+                supportsFiber: true
+            })
+        ).toBe(true);
+        expect(
+            hasDetectedReact({
+                rendererInterfaces: new Map([
+                    [1, { renderer: { rendererPackageName: 'react-dom' } }]
+                ]),
+                supportsFiber: true
+            })
+        ).toBe(true);
+        expect(hasDetectedReact(undefined)).toBe(false);
+        expect(
+            hasDetectedReact({
+                renderers: new Map(),
+                supportsFiber: true
+            })
+        ).toBe(false);
+        expect(
+            hasDetectedReact({
+                renderers: new Map([[1, {}]]),
+                supportsFiber: false
+            })
+        ).toBe(false);
+    });
+
+    it('posts a MAIN-world React detection message after renderer registration', async () => {
+        const postedMessages: unknown[] = [];
+        jest.spyOn(window, 'postMessage').mockImplementation((message) => {
+            postedMessages.push(message);
+        });
+
+        await import('../src/content/prepare');
+        const onReady = jest.fn();
+        window.addEventListener('__react_devtools_detector_ready__', onReady);
+
+        await import('../src/content/detector');
+
+        const hook = (
+            window as unknown as Window & {
+                __REACT_DEVTOOLS_GLOBAL_HOOK__: {
+                    inject: (renderer: Record<string, unknown>) => number;
+                };
+            }
+        ).__REACT_DEVTOOLS_GLOBAL_HOOK__;
+
+        expect(postedMessages).toEqual([]);
+
+        hook.inject({ rendererPackageName: 'react-dom' });
+        hook.inject({ rendererPackageName: 'react-dom' });
 
         expect(onReady).toHaveBeenCalledWith(
             expect.objectContaining({
@@ -274,6 +359,58 @@ describe('extension entrypoints', () => {
                 }
             })
         );
+        expect(postedMessages).toEqual([
+            {
+                source: 'react-devtools-extension',
+                type: 'react-devtools:react-detected'
+            }
+        ]);
+    });
+
+    it('announces the isolated-world proxy script readiness', async () => {
+        const sentMessages: unknown[] = [];
+        (globalThis as typeof globalThis & { chrome?: unknown }).chrome = {
+            runtime: {
+                sendMessage(message: unknown) {
+                    sentMessages.push(message);
+                }
+            }
+        };
+        const onReady = jest.fn();
+        window.addEventListener('__react_devtools_proxy_ready__', onReady);
+
+        await import('../src/content/proxy');
+
+        window.dispatchEvent(
+            new MessageEvent('message', {
+                data: {
+                    source: 'react-devtools-extension',
+                    type: 'react-devtools:react-detected'
+                }
+            })
+        );
+        window.dispatchEvent(
+            new MessageEvent('message', {
+                data: {
+                    source: 'react-devtools-extension',
+                    type: 'ignored'
+                }
+            })
+        );
+
+        expect(onReady).toHaveBeenCalledWith(
+            expect.objectContaining({
+                detail: {
+                    source: 'react-devtools-extension'
+                }
+            })
+        );
+        expect(sentMessages).toEqual([
+            {
+                source: 'react-devtools-extension',
+                type: 'react-devtools:react-detected'
+            }
+        ]);
     });
 
     it('announces the DevTools page bootstrap readiness', async () => {

@@ -8,6 +8,7 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 background: resolve(__dirname, 'src/background.ts'),
+                detector: resolve(__dirname, 'src/content/detector.ts'),
                 devtools: resolve(__dirname, 'devtools.html'),
                 index: resolve(__dirname, 'src/index.ts'),
                 prepare: resolve(__dirname, 'src/content/prepare.ts'),

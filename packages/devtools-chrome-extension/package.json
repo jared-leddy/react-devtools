@@ -1,6 +1,6 @@
 {
     "name": "@devtools/chrome-extension",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "private": false,
     "license": "UNLICENSED",
     "description": "Chrome extension shell for React DevTools.",
