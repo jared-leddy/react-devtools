@@ -18,8 +18,14 @@ const config: Config.InitialOptions = {
     },
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
     moduleNameMapper: {
+        '^@devtools/kit$': '<rootDir>/../devtools-kit/src/index.ts',
+        '^@devtools/shared$': '<rootDir>/../devtools-shared/src/index.ts',
         '^@devtools/ui$': '<rootDir>/tests/uiMock.tsx',
         '^@devtools/ui/style.css$': 'identity-obj-proxy',
+        '^birpc$': '<rootDir>/../devtools-kit/tests/__mocks__/birpc.ts',
+        '^hookable$': '<rootDir>/../devtools-kit/tests/__mocks__/hookable.ts',
+        '^superjson$': '<rootDir>/../devtools-kit/tests/__mocks__/superjson.ts',
+        '^(\\.{1,2}/.*)\\.js$': '$1',
         '\\.(css)$': 'identity-obj-proxy'
     },
     rootDir: '.',

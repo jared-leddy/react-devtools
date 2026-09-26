@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "React DevTools",
     "description": "Inspect React apps with the rebuilt React DevTools extension.",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "minimum_chrome_version": "102",
     "action": {
         "default_popup": "popup.html",
