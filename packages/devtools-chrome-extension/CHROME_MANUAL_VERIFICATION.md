@@ -14,11 +14,16 @@ Tracking issue: P5-01 / #101.
     - Manifest version is 3.
     - The background service worker is `background.js`.
     - The DevTools page is `devtools.html`.
-    - The only extension API permission is `activeTab`.
+    - The only extension API permissions are `activeTab` and `scripting`.
     - Static content scripts are limited to `http://*/*` and `https://*/*`.
 
 ## Permission Policy
 
-The scaffold intentionally does not request `scripting`, `tabs`, or broad host
-permissions. Future issues should add those only with a targeted manifest test
-and a short note explaining the new browser API requirement.
+The extension requests `scripting` only so the DevTools panel can inject the
+isolated-world RPC proxy after the panel opens. It still does not request `tabs`
+or broad host permissions.
+
+## Packaging
+
+Run `npm run package --workspace @devtools/chrome-extension` to rebuild the
+extension and write a versioned zip plus `.sha256` checksum to `dist/extensions`.
