@@ -1,4 +1,4 @@
-export const DEFAULT_CLIENT_URL = '/__react-devtools-client__/';
+export const DEFAULT_CLIENT_URL = '/__devtools__/';
 export const IFRAME_ID = 'react-devtools-iframe';
 
 const REQUEST_TYPE = 'react-devtools:iframe-rpc-request';

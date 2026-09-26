@@ -1,6 +1,10 @@
 import { spawn } from 'node:child_process';
 import { createReadStream, statSync } from 'node:fs';
-import type { IncomingHttpHeaders, ServerResponse } from 'node:http';
+import type {
+    IncomingHttpHeaders,
+    OutgoingHttpHeaders,
+    ServerResponse
+} from 'node:http';
 import { createRequire } from 'node:module';
 import { dirname, extname, join, normalize, resolve, sep } from 'node:path';
 import type { SourceMapInput } from 'rollup';
@@ -39,6 +43,10 @@ export interface ReactDevtoolsVitePluginOptions {
      * URL where the standalone client is served by Vite middleware.
      */
     clientBasePath?: string;
+    /**
+     * Prints the standalone devtools URL after the Vite dev server starts.
+     */
+    printDevtoolsUrl?: boolean;
     /**
      * Path to the built devtools-overlay bundle.
      */
@@ -93,11 +101,12 @@ export interface OpenInEditorOptions {
     launch?: OpenInEditorLauncher;
 }
 
-export const DEFAULT_CLIENT_BASE_PATH = '/__react-devtools-client__/';
+export const DEFAULT_CLIENT_BASE_PATH = '/__devtools__/';
 export const DEFAULT_OVERLAY_BASE_PATH = '/__react-devtools-overlay__/';
 export const DEFAULT_OVERLAY_SCRIPT_PATH =
     '/__react-devtools-overlay__/devtools-overlay.js';
 export const OPEN_IN_EDITOR_PATH = '/__open-in-editor';
+export const DEVTOOLS_TOGGLE_SHORTCUT_HINT = 'Option+Shift+D';
 
 export type OpenInEditorLauncher = (
     command: string,
@@ -140,15 +149,14 @@ function createClientMiddleware(
     server: ViteDevServer
 ) {
     const clientDir = options.clientDir ?? getDefaultClientDir();
-    const servePath = normalizeServePath(
-        options.clientBasePath ?? DEFAULT_CLIENT_BASE_PATH
-    );
+    const servePath = getDevtoolsClientBasePath(options, server);
+    const headers = getServerHeaders(server);
 
     server.middlewares.use(
         servePath,
         createMountedStaticMiddleware(
             servePath,
-            createStaticFileMiddleware(clientDir, { single: true }),
+            createStaticFileMiddleware(clientDir, { headers, single: true }),
             { requirePrefix: false }
         )
     );
@@ -156,7 +164,7 @@ function createClientMiddleware(
         server,
         createMountedStaticMiddleware(
             servePath,
-            createStaticFileMiddleware(clientDir, { single: true }),
+            createStaticFileMiddleware(clientDir, { headers, single: true }),
             { requirePrefix: true }
         )
     );
@@ -167,15 +175,14 @@ function createOverlayMiddleware(
     server: ViteDevServer
 ) {
     const overlayDir = options.overlayDir ?? getDefaultOverlayDir();
-    const servePath = normalizeServePath(
-        options.overlayBasePath ?? DEFAULT_OVERLAY_BASE_PATH
-    );
+    const servePath = getDevtoolsOverlayBasePath(options, server);
+    const headers = getServerHeaders(server);
 
     server.middlewares.use(
         servePath,
         createMountedStaticMiddleware(
             servePath,
-            createStaticFileMiddleware(overlayDir),
+            createStaticFileMiddleware(overlayDir, { headers }),
             { requirePrefix: false }
         )
     );
@@ -183,7 +190,7 @@ function createOverlayMiddleware(
         server,
         createMountedStaticMiddleware(
             servePath,
-            createStaticFileMiddleware(overlayDir),
+            createStaticFileMiddleware(overlayDir, { headers }),
             { requirePrefix: true }
         )
     );
@@ -299,7 +306,7 @@ function isMarkedMiddlewareLayer(layer: unknown): boolean {
 
 function createStaticFileMiddleware(
     rootDir: string,
-    options: { single?: boolean } = {}
+    options: { headers?: OutgoingHttpHeaders; single?: boolean } = {}
 ): StaticMiddleware {
     const normalizedRoot = normalize(rootDir);
 
@@ -307,7 +314,7 @@ function createStaticFileMiddleware(
         const filePath = getStaticFilePath(normalizedRoot, request.url ?? '/');
 
         if (filePath) {
-            sendStaticFile(request, response, filePath);
+            sendStaticFile(request, response, filePath, options.headers);
             return;
         }
 
@@ -318,7 +325,12 @@ function createStaticFileMiddleware(
             );
 
             if (fallbackPath) {
-                sendStaticFile(request, response, fallbackPath);
+                sendStaticFile(
+                    request,
+                    response,
+                    fallbackPath,
+                    options.headers
+                );
                 return;
             }
         }
@@ -350,7 +362,8 @@ function getStaticFilePath(rootDir: string, url: string): string | undefined {
 function sendStaticFile(
     request: StaticRequest,
     response: ServerResponse,
-    filePath: string
+    filePath: string,
+    headers: OutgoingHttpHeaders = {}
 ): void {
     const stats = statSync(filePath);
 
@@ -358,7 +371,8 @@ function sendStaticFile(
         'Cache-Control': 'no-cache',
         'Content-Length': stats.size,
         'Content-Type': getContentType(filePath),
-        'Last-Modified': stats.mtime.toUTCString()
+        'Last-Modified': stats.mtime.toUTCString(),
+        ...headers
     });
 
     if (request.method === 'HEAD') {
@@ -530,16 +544,18 @@ function sendJsonResponse(
 }
 
 export function createOverlayScriptTag(
-    scriptPath = DEFAULT_OVERLAY_SCRIPT_PATH
+    scriptPath = DEFAULT_OVERLAY_SCRIPT_PATH,
+    clientUrl = DEFAULT_CLIENT_BASE_PATH
 ) {
-    return `<script type="module" src="${scriptPath}"></script>`;
+    return `<script type="module" src="${scriptPath}" data-react-devtools-client-url="${clientUrl}" data-react-devtools-separate-window-url="${clientUrl}"></script>`;
 }
 
 export function injectOverlayScript(
     html: string,
-    scriptPath = DEFAULT_OVERLAY_SCRIPT_PATH
+    scriptPath = DEFAULT_OVERLAY_SCRIPT_PATH,
+    clientUrl = DEFAULT_CLIENT_BASE_PATH
 ) {
-    const scriptTag = createOverlayScriptTag(scriptPath);
+    const scriptTag = createOverlayScriptTag(scriptPath, clientUrl);
 
     if (html.includes(scriptTag)) {
         return html;
@@ -563,17 +579,119 @@ function matchesAppendTarget(appendTo: RegExp | string, id: string) {
 function createOverlayImport(
     options: ReactDevtoolsVitePluginOptions,
     code: string,
-    id: string
+    id: string,
+    server: ViteDevServer | undefined
 ) {
     if (!options.appendTo || !matchesAppendTarget(options.appendTo, id)) {
         return undefined;
     }
 
-    const scriptPath = options.overlayScriptPath ?? DEFAULT_OVERLAY_SCRIPT_PATH;
+    const clientUrl = getDevtoolsClientBasePath(options, server);
+    const scriptPath = getDevtoolsOverlayScriptPath(options, server);
     return {
-        code: `import '${scriptPath}';\n${code}`,
+        code: `window.__REACT_DEVTOOLS_OVERLAY_CONFIG__ = { clientUrl: ${JSON.stringify(clientUrl)}, separateWindowUrl: ${JSON.stringify(clientUrl)} };\nimport '${scriptPath}';\n${code}`,
         map: null
     };
+}
+
+export function getDevtoolsClientBasePath(
+    options: ReactDevtoolsVitePluginOptions = {},
+    server?: ViteDevServer
+): string {
+    if (options.clientBasePath) {
+        return normalizeServePath(options.clientBasePath);
+    }
+
+    return joinViteBasePath(server?.config?.base, DEFAULT_CLIENT_BASE_PATH);
+}
+
+export function getDevtoolsOverlayBasePath(
+    options: ReactDevtoolsVitePluginOptions = {},
+    server?: ViteDevServer
+): string {
+    if (options.overlayBasePath) {
+        return normalizeServePath(options.overlayBasePath);
+    }
+
+    return joinViteBasePath(server?.config?.base, DEFAULT_OVERLAY_BASE_PATH);
+}
+
+export function getDevtoolsOverlayScriptPath(
+    options: ReactDevtoolsVitePluginOptions = {},
+    server?: ViteDevServer
+): string {
+    if (options.overlayScriptPath) {
+        return options.overlayScriptPath;
+    }
+
+    return `${getDevtoolsOverlayBasePath(options, server)}devtools-overlay.js`;
+}
+
+export function resolveDevtoolsUrls(
+    server: ViteDevServer,
+    options: ReactDevtoolsVitePluginOptions = {}
+): string[] {
+    const appUrls = [
+        ...(server.resolvedUrls?.local ?? []),
+        ...(server.resolvedUrls?.network ?? [])
+    ];
+    const clientBasePath = getDevtoolsClientBasePath(options, server);
+
+    return appUrls.map((appUrl) => new URL(clientBasePath, appUrl).toString());
+}
+
+function installDevtoolsUrlPrinter(
+    options: ReactDevtoolsVitePluginOptions,
+    server: ViteDevServer
+): void {
+    if (options.printDevtoolsUrl === false || !server.httpServer) {
+        return;
+    }
+
+    server.httpServer.once('listening', () => {
+        setTimeout(() => {
+            printDevtoolsUrls(options, server);
+        }, 0);
+    });
+}
+
+function printDevtoolsUrls(
+    options: ReactDevtoolsVitePluginOptions,
+    server: ViteDevServer
+): void {
+    const urls = resolveDevtoolsUrls(server, options);
+
+    if (!urls.length) {
+        return;
+    }
+
+    server.config.logger.info(`React DevTools: ${urls[0]}`);
+    server.config.logger.info(
+        `React DevTools shortcut: ${DEVTOOLS_TOGGLE_SHORTCUT_HINT}`
+    );
+}
+
+function joinViteBasePath(base: string | undefined, path: string): string {
+    const suffix = path.replace(/^\/+/, '');
+    const basePath = normalizeViteBasePath(base);
+
+    return normalizeServePath(`${basePath}${suffix}`);
+}
+
+function normalizeViteBasePath(base: string | undefined): string {
+    if (!base || base === './') {
+        return '/';
+    }
+
+    try {
+        return normalizeServePath(new URL(base).pathname);
+    } catch {
+        return normalizeServePath(base);
+    }
+}
+
+function getServerHeaders(server: ViteDevServer): OutgoingHttpHeaders {
+    return server.config?.server?.headers ?? {};
 }
 
 function composeTransformResults(
@@ -597,14 +715,18 @@ function composeTransformResults(
 export function reactDevtools(
     options: ReactDevtoolsVitePluginOptions = {}
 ): Plugin {
+    let viteServer: ViteDevServer | undefined;
+
     return {
         name: 'vite-plugin-react-devtools',
         apply: 'serve',
         enforce: 'pre',
         configureServer(server) {
+            viteServer = server;
             createOpenInEditorMiddleware(options, server);
             createClientMiddleware(options, server);
             createOverlayMiddleware(options, server);
+            installDevtoolsUrlPrinter(options, server);
             const viteTransportChannel = createViteTransportChannel(server);
             if (options.assets !== false) {
                 installViteAssetRpc(
@@ -631,7 +753,12 @@ export function reactDevtools(
                 return undefined;
             }
 
-            const overlayTransform = createOverlayImport(options, code, id);
+            const overlayTransform = createOverlayImport(
+                options,
+                code,
+                id,
+                viteServer
+            );
             const sourceCode = overlayTransform?.code ?? code;
             const sourceTransform = shouldTransformReactMetadata(id, {
                 componentInspector: options.componentInspector,
@@ -645,12 +772,21 @@ export function reactDevtools(
 
             return composeTransformResults(overlayTransform, sourceTransform);
         },
-        transformIndexHtml(html) {
+        transformIndexHtml(html, ctx) {
             if (options.appendTo) {
                 return html;
             }
 
-            return injectOverlayScript(html, options.overlayScriptPath);
+            const clientUrl = getDevtoolsClientBasePath(
+                options,
+                ctx?.server ?? viteServer
+            );
+            const overlayScriptPath = getDevtoolsOverlayScriptPath(
+                options,
+                ctx?.server ?? viteServer
+            );
+
+            return injectOverlayScript(html, overlayScriptPath, clientUrl);
         }
     };
 }
