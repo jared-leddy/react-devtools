@@ -1,6 +1,6 @@
 {
     "name": "@devtools/chrome-extension",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "private": false,
     "license": "UNLICENSED",
     "description": "Chrome extension shell for React DevTools.",
@@ -27,6 +27,8 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
+        "@devtools/client": "*",
+        "@devtools/core": "*",
         "@devtools/kit": "*",
         "@devtools/ui": "*",
         "react": "^19.1.1",
