@@ -5,7 +5,13 @@ jest.mock('@devtools/client', () => ({
 jest.mock('@devtools/client/style.css', () => ({}), { virtual: true });
 
 jest.mock('@devtools/core', () => ({
+    ...jest.requireActual('@devtools/core'),
     createDevToolsCoreClient: jest.fn()
+}));
+
+jest.mock('@devtools/kit', () => ({
+    ...jest.requireActual('@devtools/kit'),
+    createRpcServer: jest.fn()
 }));
 
 describe('extension entrypoints', () => {
@@ -615,11 +621,86 @@ describe('extension entrypoints', () => {
 
         expect(onReady).toHaveBeenCalledWith(
             expect.objectContaining({
-                detail: {
+                detail: expect.objectContaining({
+                    didOpenRpcServer: true,
                     source: 'react-devtools-extension'
-                }
+                })
             })
         );
+    });
+
+    it('serves React hook renderers, roots, components, and component state from the user app RPC server', async () => {
+        const target = createMockUserAppWindow();
+        const hook = createMockReactHook();
+        target.__REACT_DEVTOOLS_GLOBAL_HOOK__ = hook;
+        const { createRpcServer } = jest.requireMock('@devtools/kit') as {
+            createRpcServer: jest.Mock;
+        };
+        const { bootstrapUserAppRpcServer } =
+            await import('../src/content/user-app');
+
+        const result = bootstrapUserAppRpcServer(target);
+        const serverFunctions = createRpcServer.mock.calls.at(-1)?.[0];
+
+        expect(result).toEqual({
+            didOpenRpcServer: true,
+            hookMode: 'wrapped',
+            rendererCount: 1,
+            rootCount: 1
+        });
+        expect(createRpcServer).toHaveBeenLastCalledWith(serverFunctions, {
+            preset: 'extension'
+        });
+        expect(serverFunctions.handshake({ clientId: 'panel' })).toMatchObject({
+            serverId: 'react-devtools-extension-user-app',
+            state: {
+                renderers: [
+                    expect.objectContaining({
+                        id: 1,
+                        packageName: 'react-dom',
+                        targetId: 'top',
+                        version: '19.1.1'
+                    })
+                ],
+                roots: [
+                    expect.objectContaining({
+                        id: 'react-root:1',
+                        targetId: 'top'
+                    })
+                ]
+            }
+        });
+        expect(
+            serverFunctions.getComponents({ rootId: 'react-root:1' })
+        ).toEqual({
+            components: [
+                expect.objectContaining({
+                    displayName: 'App',
+                    id: 'react-root~3A1:0:FunctionComponent:App',
+                    rootId: 'react-root:1',
+                    type: 'function'
+                })
+            ]
+        });
+        expect(
+            serverFunctions.getComponentState({
+                componentId: 'react-root~3A1:0:FunctionComponent:App',
+                rootId: 'react-root:1'
+            })
+        ).toMatchObject({
+            componentId: 'react-root~3A1:0:FunctionComponent:App',
+            rootId: 'react-root:1',
+            sections: [
+                {
+                    fields: [{ name: 'title', value: 'Home' }],
+                    name: 'props'
+                },
+                {
+                    fields: [{ name: 'Hook 0 (state)', value: 1 }],
+                    name: 'hooks'
+                }
+            ]
+        });
     });
 });
 
@@ -666,6 +747,121 @@ function createMockDevToolsPanelChrome() {
         },
         inspectedWindow,
         runtime
+    };
+}
+
+function createMockUserAppWindow() {
+    return {
+        addEventListener: jest.fn(),
+        postMessage: jest.fn(),
+        removeEventListener: jest.fn()
+    } as unknown as Window & {
+        __REACT_DEVTOOLS_GLOBAL_HOOK__?: unknown;
+    };
+}
+
+function createMockReactHook() {
+    const { ReactFiberTag } = jest.requireActual(
+        '@devtools/core'
+    ) as typeof import('@devtools/core');
+    function App() {}
+    function basicStateReducer() {}
+
+    const hostRoot = createMockFiber({
+        tag: ReactFiberTag.HostRoot,
+        type: null
+    });
+    const app = createMockFiber({
+        memoizedProps: { title: 'Home' },
+        memoizedState: {
+            memoizedState: 1,
+            next: null,
+            queue: { lastRenderedReducer: basicStateReducer }
+        },
+        returnFiber: hostRoot,
+        tag: ReactFiberTag.FunctionComponent,
+        type: App
+    });
+    hostRoot.child = app;
+
+    const root = {
+        current: hostRoot,
+        identifierPrefix: 'test'
+    };
+    const listeners = new Map<string, Set<(payload: unknown) => void>>();
+
+    return {
+        emit(event: string, payload: unknown) {
+            for (const listener of listeners.get(event) ?? []) {
+                listener(payload);
+            }
+        },
+        getFiberRoots(rendererId: number) {
+            return rendererId === 1 ? new Set([root]) : new Set();
+        },
+        inject: jest.fn(() => 1),
+        off(event: string, listener: (payload: unknown) => void) {
+            listeners.get(event)?.delete(listener);
+        },
+        on(event: string, listener: (payload: unknown) => void) {
+            let eventListeners = listeners.get(event);
+
+            if (!eventListeners) {
+                eventListeners = new Set();
+                listeners.set(event, eventListeners);
+            }
+
+            eventListeners.add(listener);
+        },
+        once: jest.fn(),
+        onCommitFiberRoot: jest.fn(),
+        onCommitFiberUnmount: jest.fn(),
+        onPostCommitFiberRoot: jest.fn(),
+        rendererInterfaces: new Map([[1, { renderer: {} }]]),
+        renderers: new Map([
+            [
+                1,
+                {
+                    bundleType: 1,
+                    rendererPackageName: 'react-dom',
+                    version: '19.1.1'
+                }
+            ]
+        ]),
+        sub: jest.fn(),
+        supportsFiber: true
+    };
+}
+
+function createMockFiber({
+    memoizedProps = null,
+    memoizedState = null,
+    returnFiber = null,
+    tag,
+    type
+}: {
+    memoizedProps?: unknown;
+    memoizedState?: unknown;
+    returnFiber?: null | Record<string, unknown>;
+    tag: number;
+    type: unknown;
+}): Record<string, unknown> {
+    return {
+        alternate: null,
+        child: null,
+        elementType: type,
+        flags: 0,
+        index: 0,
+        key: null,
+        memoizedProps,
+        memoizedState,
+        mode: 0,
+        pendingProps: null,
+        return: returnFiber,
+        sibling: null,
+        stateNode: null,
+        tag,
+        type
     };
 }
 
