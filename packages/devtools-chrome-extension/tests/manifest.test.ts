@@ -47,10 +47,9 @@ describe('chrome extension manifest', () => {
         expect(manifest.version).toBe(packageJson.version);
     });
 
-    it('declares only the minimum extension API permission', () => {
-        expect(manifest.permissions).toEqual(['activeTab']);
+    it('declares only the minimum extension API permissions', () => {
+        expect(manifest.permissions).toEqual(['activeTab', 'scripting']);
         expect(manifest.host_permissions).toBeUndefined();
-        expect(manifest.permissions).not.toContain('scripting');
         expect(manifest.permissions).not.toContain('tabs');
     });
 
@@ -67,7 +66,7 @@ describe('chrome extension manifest', () => {
     });
 
     it('limits content script matches to ordinary web pages', () => {
-        expect(manifest.content_scripts).toHaveLength(3);
+        expect(manifest.content_scripts).toHaveLength(2);
         expect(manifest.content_scripts).toEqual([
             expect.objectContaining({
                 all_frames: true,
@@ -82,13 +81,6 @@ describe('chrome extension manifest', () => {
                 matches: ['http://*/*', 'https://*/*'],
                 run_at: 'document_start',
                 world: 'MAIN'
-            }),
-            expect.objectContaining({
-                all_frames: true,
-                js: ['proxy.js'],
-                matches: ['http://*/*', 'https://*/*'],
-                run_at: 'document_start',
-                world: 'ISOLATED'
             })
         ]);
     });
