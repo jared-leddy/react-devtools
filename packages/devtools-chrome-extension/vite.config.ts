@@ -12,7 +12,8 @@ export default defineConfig({
                 index: resolve(__dirname, 'src/index.ts'),
                 prepare: resolve(__dirname, 'src/content/prepare.ts'),
                 popup: resolve(__dirname, 'popup.html'),
-                proxy: resolve(__dirname, 'src/content/proxy.ts')
+                proxy: resolve(__dirname, 'src/content/proxy.ts'),
+                smoke: resolve(__dirname, 'smoke.html')
             },
             output: {
                 entryFileNames: '[name].js'

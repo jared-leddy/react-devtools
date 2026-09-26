@@ -148,3 +148,40 @@
     flex-wrap: wrap;
     margin-top: 14px;
 }
+
+.dt-extension-smoke {
+    align-items: start;
+    display: grid;
+    gap: 16px;
+    grid-template-columns: minmax(320px, 380px) minmax(220px, 1fr);
+    min-height: 100vh;
+    padding: 24px;
+}
+
+.dt-extension-smoke__tree {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    color: #0f172a;
+    min-width: 0;
+    padding: 16px;
+}
+
+.dt-extension-smoke__tree h2 {
+    font-size: 16px;
+    margin: 0 0 12px;
+}
+
+.dt-extension-smoke__tree ol {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding-left: 18px;
+}
+
+@media (max-width: 720px) {
+    .dt-extension-smoke {
+        grid-template-columns: 1fr;
+        padding: 16px;
+    }
+}

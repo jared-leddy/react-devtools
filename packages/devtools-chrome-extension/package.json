@@ -1,6 +1,6 @@
 {
     "name": "@devtools/chrome-extension",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "private": false,
     "license": "UNLICENSED",
     "description": "Chrome extension shell for React DevTools.",
@@ -20,6 +20,7 @@
     "scripts": {
         "build": "vite build && tsc -p tsconfig.build.json --emitDeclarationOnly --outDir dist",
         "lint": "eslint . --max-warnings=0",
+        "test:e2e": "playwright test --config playwright.config.ts",
         "test:unit": "jest --coverage --config jest.config.ts",
         "test:watch": "jest --coverage --watch --config jest.config.ts",
         "typecheck": "tsc --noEmit"
@@ -33,6 +34,7 @@
     "devDependencies": {
         "@devtools/eslint-config": "*",
         "@devtools/typescript-config": "*",
+        "@playwright/test": "^1.63.0",
         "@testing-library/jest-dom": "^6.9.1",
         "@testing-library/react": "^16.3.2",
         "@types/jest": "^30.0.0",

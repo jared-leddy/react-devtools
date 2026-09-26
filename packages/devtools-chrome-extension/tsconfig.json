@@ -10,5 +10,12 @@
         "target": "ES2022",
         "types": ["node"]
     },
-    "include": ["src", "tests", "jest.setup.ts", "vite.config.ts"]
+    "include": [
+        "e2e",
+        "src",
+        "tests",
+        "jest.setup.ts",
+        "playwright.config.ts",
+        "vite.config.ts"
+    ]
 }
