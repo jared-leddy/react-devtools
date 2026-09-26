@@ -1,5 +1,18 @@
+import { createExtensionProxyChannel, type ChromeLike } from '@devtools/kit';
+
 interface ChromeRuntimeLike {
     runtime?: {
+        connect?: (options?: { name?: string }) => {
+            onDisconnect: {
+                addListener: (handler: () => void) => void;
+                removeListener?: (handler: () => void) => void;
+            };
+            onMessage: {
+                addListener: (handler: (message: unknown) => void) => void;
+                removeListener?: (handler: (message: unknown) => void) => void;
+            };
+            postMessage: (message: unknown) => void;
+        };
         sendMessage?: (message: unknown) => void;
     };
 }
@@ -17,6 +30,8 @@ interface ReactDetectedRuntimeMessage {
 const REACT_DETECTED_MESSAGE_SOURCE = 'react-devtools-extension';
 const REACT_DETECTED_MESSAGE_TYPE = 'react-devtools:react-detected';
 
+const didOpenProxyRelay = openExtensionProxyRelay();
+
 const forwardReactDetectedMessage = (event: MessageEvent) => {
     if (!isReactDetectedMessage(event.data)) {
         return;
@@ -30,10 +45,23 @@ window.addEventListener('message', forwardReactDetectedMessage);
 window.dispatchEvent(
     new CustomEvent('__react_devtools_proxy_ready__', {
         detail: {
+            didOpenProxyRelay,
             source: 'react-devtools-extension'
         }
     })
 );
+
+export function openExtensionProxyRelay(): boolean {
+    const chrome = getChromeApi();
+
+    if (!chrome?.runtime?.connect) {
+        return false;
+    }
+
+    createExtensionProxyChannel({ chrome: chrome as ChromeLike, window });
+
+    return true;
+}
 
 function createReactDetectedRuntimeMessage(): ReactDetectedRuntimeMessage {
     return {
@@ -43,8 +71,12 @@ function createReactDetectedRuntimeMessage(): ReactDetectedRuntimeMessage {
 }
 
 function getChromeRuntime() {
+    return getChromeApi()?.runtime;
+}
+
+function getChromeApi() {
     return (globalThis as typeof globalThis & { chrome?: ChromeRuntimeLike })
-        .chrome?.runtime;
+        .chrome;
 }
 
 function isReactDetectedMessage(value: unknown): value is ReactDetectedMessage {

@@ -14,6 +14,9 @@ jest.mock('@devtools/kit', () => ({
     createRpcServer: jest.fn()
 }));
 
+const { EXTENSION_RPC_EVENT_KEY, EXTENSION_RPC_MESSAGE_SOURCE } =
+    jest.requireActual('@devtools/kit') as typeof import('@devtools/kit');
+
 describe('extension entrypoints', () => {
     afterEach(() => {
         delete (
@@ -470,10 +473,16 @@ describe('extension entrypoints', () => {
         ]);
     });
 
-    it('announces the isolated-world proxy script readiness', async () => {
+    it('opens the isolated-world proxy relay and preserves React detection forwarding', async () => {
         const sentMessages: unknown[] = [];
+        const postedMessages: unknown[] = [];
+        const proxyPort = createMockBackgroundPort('content-script', 42);
+        jest.spyOn(window, 'postMessage').mockImplementation((message) => {
+            postedMessages.push(message);
+        });
         (globalThis as typeof globalThis & { chrome?: unknown }).chrome = {
             runtime: {
+                connect: jest.fn(() => proxyPort),
                 sendMessage(message: unknown) {
                     sentMessages.push(message);
                 }
@@ -495,25 +504,66 @@ describe('extension entrypoints', () => {
         window.dispatchEvent(
             new MessageEvent('message', {
                 data: {
-                    source: 'react-devtools-extension',
-                    type: 'ignored'
+                    event: EXTENSION_RPC_EVENT_KEY,
+                    payload: { from: 'page' },
+                    source: EXTENSION_RPC_MESSAGE_SOURCE.SERVER_TO_PROXY
                 }
             })
         );
+        window.dispatchEvent(
+            new MessageEvent('message', {
+                data: {
+                    event: EXTENSION_RPC_EVENT_KEY,
+                    payload: { ignored: true },
+                    source: EXTENSION_RPC_MESSAGE_SOURCE.PROXY_TO_SERVER
+                }
+            })
+        );
+        proxyPort.emitMessage({ from: 'background' });
+        proxyPort.disconnect();
+        proxyPort.emitMessage({ ignored: 'after-disconnect' });
 
         expect(onReady).toHaveBeenCalledWith(
             expect.objectContaining({
                 detail: {
+                    didOpenProxyRelay: true,
                     source: 'react-devtools-extension'
                 }
             })
         );
+        expect(proxyPort.sentMessages).toEqual([{ from: 'page' }]);
+        expect(postedMessages).toContainEqual({
+            event: EXTENSION_RPC_EVENT_KEY,
+            payload: { from: 'background' },
+            source: EXTENSION_RPC_MESSAGE_SOURCE.PROXY_TO_SERVER
+        });
         expect(sentMessages).toEqual([
             {
                 source: 'react-devtools-extension',
                 type: 'react-devtools:react-detected'
             }
         ]);
+    });
+
+    it('announces when the isolated-world proxy relay cannot open without chrome runtime ports', async () => {
+        (globalThis as typeof globalThis & { chrome?: unknown }).chrome = {
+            runtime: {
+                sendMessage: jest.fn()
+            }
+        };
+        const onReady = jest.fn();
+        window.addEventListener('__react_devtools_proxy_ready__', onReady);
+
+        await import('../src/content/proxy');
+
+        expect(onReady).toHaveBeenCalledWith(
+            expect.objectContaining({
+                detail: {
+                    didOpenProxyRelay: false,
+                    source: 'react-devtools-extension'
+                }
+            })
+        );
     });
 
     it('creates the DevTools panel once React is detected in the inspected window', async () => {
@@ -586,6 +636,10 @@ describe('extension entrypoints', () => {
             createDevToolsCoreClient: jest.Mock;
         };
 
+        expect(chrome.scripting.executeScript).toHaveBeenCalledWith({
+            files: ['proxy.js'],
+            target: { tabId: 42 }
+        });
         expect(chrome.runtime.getURL).toHaveBeenCalledWith('user-app.js');
         expect(chrome.inspectedWindow.eval).toHaveBeenCalledWith(
             expect.stringContaining(
@@ -604,6 +658,7 @@ describe('extension entrypoints', () => {
         expect(onReady).toHaveBeenCalledWith(
             expect.objectContaining({
                 detail: {
+                    didInjectProxy: true,
                     didInjectUserApp: true,
                     didMountClient: true,
                     didOpenRpcClient: true,
@@ -730,12 +785,16 @@ function createMockDevToolsChrome(detectionResults: boolean[]) {
 
 function createMockDevToolsPanelChrome() {
     const inspectedWindow = {
-        eval: jest.fn()
+        eval: jest.fn(),
+        tabId: 42
     };
     const runtime = {
         getURL: jest.fn(
             (path: string) => `chrome-extension://react-devtools/${path}`
         )
+    };
+    const scripting = {
+        executeScript: jest.fn()
     };
 
     return {
@@ -743,10 +802,12 @@ function createMockDevToolsPanelChrome() {
             devtools: {
                 inspectedWindow
             },
-            runtime
+            runtime,
+            scripting
         },
         inspectedWindow,
-        runtime
+        runtime,
+        scripting
     };
 }
 

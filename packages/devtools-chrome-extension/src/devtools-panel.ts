@@ -5,6 +5,7 @@ import { createDevToolsCoreClient } from '@devtools/core';
 interface ChromeDevToolsPanelLike {
     devtools?: {
         inspectedWindow?: {
+            tabId?: number;
             eval?: (
                 expression: string,
                 callback?: (result: unknown, exceptionInfo?: unknown) => void
@@ -14,14 +15,24 @@ interface ChromeDevToolsPanelLike {
     runtime?: {
         getURL?: (path: string) => string;
     };
+    scripting?: {
+        executeScript?: (details: {
+            files: string[];
+            target: {
+                tabId: number;
+            };
+        }) => void;
+    };
 }
 
 interface DevToolsPanelBootstrapResult {
+    didInjectProxy: boolean;
     didInjectUserApp: boolean;
     didMountClient: boolean;
     didOpenRpcClient: boolean;
 }
 
+const PROXY_SCRIPT_PATH = 'proxy.js';
 const USER_APP_SCRIPT_ID = '__react-devtools-user-app__';
 const USER_APP_SCRIPT_PATH = 'user-app.js';
 
@@ -37,16 +48,35 @@ globalThis.dispatchEvent(
 );
 
 export function bootstrapDevToolsPanel(): DevToolsPanelBootstrapResult {
+    const didInjectProxy = injectProxyIntoInspectedWindow();
     const didInjectUserApp = injectUserAppIntoInspectedWindow();
     const didMountClient = mountPanelClient();
 
     createDevToolsCoreClient({ preset: 'extension' });
 
     return {
+        didInjectProxy,
         didInjectUserApp,
         didMountClient,
         didOpenRpcClient: true
     };
+}
+
+function injectProxyIntoInspectedWindow(): boolean {
+    const chromeApi = getChromeApi();
+    const executeScript = chromeApi?.scripting?.executeScript;
+    const tabId = chromeApi?.devtools?.inspectedWindow?.tabId;
+
+    if (!executeScript || tabId === undefined) {
+        return false;
+    }
+
+    executeScript.call(chromeApi.scripting, {
+        files: [PROXY_SCRIPT_PATH],
+        target: { tabId }
+    });
+
+    return true;
 }
 
 function injectUserAppIntoInspectedWindow(): boolean {
@@ -102,6 +132,7 @@ function getChromeApi() {
 }
 
 export {
+    PROXY_SCRIPT_PATH,
     USER_APP_SCRIPT_ID,
     USER_APP_SCRIPT_PATH,
     createUserAppInjectionExpression
