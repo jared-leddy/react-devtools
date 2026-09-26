@@ -22,7 +22,12 @@ interface ChromeExtensionManifest {
     devtools_page: string;
     host_permissions?: string[];
     manifest_version: number;
+    minimum_chrome_version: string;
     permissions?: string[];
+    web_accessible_resources?: Array<{
+        matches: string[];
+        resources: string[];
+    }>;
     version: string;
 }
 
@@ -45,6 +50,20 @@ describe('chrome extension manifest', () => {
     it('declares only the minimum extension API permission', () => {
         expect(manifest.permissions).toEqual(['activeTab']);
         expect(manifest.host_permissions).toBeUndefined();
+        expect(manifest.permissions).not.toContain('scripting');
+        expect(manifest.permissions).not.toContain('tabs');
+    });
+
+    it('uses a Chrome-valid MV3 extension surface', () => {
+        expect(manifest.manifest_version).toBe(3);
+        expect(manifest.minimum_chrome_version).toBe('102');
+        expect(manifest.background.service_worker).toBe('background.js');
+        expect(manifest.background.type).toBe('module');
+        expect(manifest.action).toEqual({
+            default_popup: 'popup.html',
+            default_title: 'React DevTools'
+        });
+        expect(manifest.devtools_page).toBe('devtools.html');
     });
 
     it('limits content script matches to ordinary web pages', () => {
@@ -74,6 +93,12 @@ describe('chrome extension manifest', () => {
             type: 'module'
         });
         expect(manifest.devtools_page).toBe('devtools.html');
+        expect(manifest.web_accessible_resources).toEqual([
+            {
+                matches: ['<all_urls>'],
+                resources: ['smoke.html']
+            }
+        ]);
     });
 
     it('locks extension pages to self-owned code and frames', () => {

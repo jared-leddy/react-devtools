@@ -1,6 +1,6 @@
 {
     "name": "@devtools/chrome-extension",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "private": false,
     "license": "UNLICENSED",
     "description": "Chrome extension shell for React DevTools.",
@@ -15,7 +15,8 @@
         "./style.css": "./dist/style.css"
     },
     "files": [
-        "dist"
+        "dist",
+        "CHROME_MANUAL_VERIFICATION.md"
     ],
     "scripts": {
         "build": "vite build && tsc -p tsconfig.build.json --emitDeclarationOnly --outDir dist",
