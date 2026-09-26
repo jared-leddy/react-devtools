@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "React DevTools",
     "description": "Inspect React apps with the rebuilt React DevTools extension.",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2mvlUXs0jE7jGN+WaqKrz9vqEinvKHhX+fHG0CVkJcVVniGz+lDVofDheX5PPxHl4kZZTd2BKT9co4TK4On9zQXyR10iFsYxiIw0Ah1LC4t3jWmdnL62DTSYYkZ5gtyJCFOMOIbRGkzSSMYZfW5NLhpmj2rzWuXgnsPjCbcGuslyV1T9MRbtW77lDVsGvkpYZ9TsOQZ2kOk49XXVADhH6dsjdCxA+HFS1WiDMPjkUfL1oYCzdurunkYeSiZwbDFKWYeVi2bVNVSkMENcdLkJ2SmGheOMBZkX7vHJDpOgbKlCkzcshNIdBlT0LmF8t2HdDAO+ExwpMV9dKxVIt/qIyQIDAQAB",
     "minimum_chrome_version": "102",
     "action": {
