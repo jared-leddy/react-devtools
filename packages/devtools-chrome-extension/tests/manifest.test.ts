@@ -103,7 +103,7 @@ describe('chrome extension manifest', () => {
         expect(manifest.web_accessible_resources).toEqual([
             {
                 matches: ['<all_urls>'],
-                resources: ['smoke.html']
+                resources: ['smoke.html', 'user-app.js']
             }
         ]);
     });

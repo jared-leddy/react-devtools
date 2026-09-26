@@ -1,3 +1,13 @@
+jest.mock('@devtools/client', () => ({
+    mountDevToolsClient: jest.fn()
+}));
+
+jest.mock('@devtools/client/style.css', () => ({}), { virtual: true });
+
+jest.mock('@devtools/core', () => ({
+    createDevToolsCoreClient: jest.fn()
+}));
+
 describe('extension entrypoints', () => {
     afterEach(() => {
         delete (
@@ -6,6 +16,7 @@ describe('extension entrypoints', () => {
             }
         ).__REACT_DEVTOOLS_GLOBAL_HOOK__;
         delete (globalThis as typeof globalThis & { chrome?: unknown }).chrome;
+        document.body.innerHTML = '';
         jest.useRealTimers();
         jest.restoreAllMocks();
         jest.resetModules();
@@ -549,11 +560,58 @@ describe('extension entrypoints', () => {
         expect(chrome.panels.create).not.toHaveBeenCalled();
     });
 
-    it('announces the DevTools panel bootstrap readiness', async () => {
+    it('bootstraps the DevTools panel client and inspected-page user app', async () => {
+        document.body.innerHTML = '<div id="root"></div>';
+        const chrome = createMockDevToolsPanelChrome();
+        (globalThis as typeof globalThis & { chrome?: unknown }).chrome =
+            chrome.api;
         const onReady = jest.fn();
         globalThis.addEventListener('__react_devtools_panel_ready__', onReady);
 
         await import('../src/devtools-panel');
+        const { mountDevToolsClient } = jest.requireMock(
+            '@devtools/client'
+        ) as {
+            mountDevToolsClient: jest.Mock;
+        };
+        const { createDevToolsCoreClient } = jest.requireMock(
+            '@devtools/core'
+        ) as {
+            createDevToolsCoreClient: jest.Mock;
+        };
+
+        expect(chrome.runtime.getURL).toHaveBeenCalledWith('user-app.js');
+        expect(chrome.inspectedWindow.eval).toHaveBeenCalledWith(
+            expect.stringContaining(
+                'chrome-extension://react-devtools/user-app.js'
+            )
+        );
+        expect(chrome.inspectedWindow.eval).toHaveBeenCalledWith(
+            expect.stringContaining('__react-devtools-user-app__')
+        );
+        expect(mountDevToolsClient).toHaveBeenCalledWith(
+            document.getElementById('root')
+        );
+        expect(createDevToolsCoreClient).toHaveBeenCalledWith({
+            preset: 'extension'
+        });
+        expect(onReady).toHaveBeenCalledWith(
+            expect.objectContaining({
+                detail: {
+                    didInjectUserApp: true,
+                    didMountClient: true,
+                    didOpenRpcClient: true,
+                    source: 'react-devtools-extension'
+                }
+            })
+        );
+    });
+
+    it('announces the inspected-page user app readiness', async () => {
+        const onReady = jest.fn();
+        window.addEventListener('__react_devtools_user_app_ready__', onReady);
+
+        await import('../src/content/user-app');
 
         expect(onReady).toHaveBeenCalledWith(
             expect.objectContaining({
@@ -586,6 +644,28 @@ function createMockDevToolsChrome(detectionResults: boolean[]) {
         },
         inspectedWindow,
         panels
+    };
+}
+
+function createMockDevToolsPanelChrome() {
+    const inspectedWindow = {
+        eval: jest.fn()
+    };
+    const runtime = {
+        getURL: jest.fn(
+            (path: string) => `chrome-extension://react-devtools/${path}`
+        )
+    };
+
+    return {
+        api: {
+            devtools: {
+                inspectedWindow
+            },
+            runtime
+        },
+        inspectedWindow,
+        runtime
     };
 }
 
