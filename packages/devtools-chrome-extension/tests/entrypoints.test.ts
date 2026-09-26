@@ -12,20 +12,9 @@ describe('extension entrypoints', () => {
 
     it('registers service worker lifecycle listeners', async () => {
         const addEventListener = jest.spyOn(self, 'addEventListener');
-        const runtimeMessageListeners: Array<
-            (message: unknown, sender?: unknown) => void
-        > = [];
-        (globalThis as typeof globalThis & { chrome?: unknown }).chrome = {
-            runtime: {
-                onMessage: {
-                    addListener(
-                        listener: (message: unknown, sender?: unknown) => void
-                    ) {
-                        runtimeMessageListeners.push(listener);
-                    }
-                }
-            }
-        };
+        const chrome = createMockBackgroundChrome();
+        (globalThis as typeof globalThis & { chrome?: unknown }).chrome =
+            chrome.api;
 
         const background = await import('../src/background');
 
@@ -44,15 +33,15 @@ describe('extension entrypoints', () => {
             }
         }
 
-        expect(runtimeMessageListeners).toHaveLength(1);
-        runtimeMessageListeners[0]?.(
+        expect(chrome.runtimeMessageListeners).toHaveLength(1);
+        chrome.emitRuntimeMessage(
             {
                 source: 'react-devtools-extension',
                 type: 'react-devtools:react-detected'
             },
             { tab: { id: 42 } }
         );
-        runtimeMessageListeners[0]?.(
+        chrome.emitRuntimeMessage(
             {
                 source: 'react-devtools-extension',
                 type: 'ignored'
@@ -62,6 +51,102 @@ describe('extension entrypoints', () => {
 
         expect(background.hasDetectedReactInTab(42)).toBe(true);
         expect(background.hasDetectedReactInTab(99)).toBe(false);
+        expect(chrome.action.setPopup).toHaveBeenCalledWith({
+            popup: 'popup.html',
+            tabId: 42
+        });
+        expect(chrome.action.setTitle).toHaveBeenCalledWith({
+            tabId: 42,
+            title: 'React DevTools - React detected'
+        });
+        expect(chrome.action.setBadgeText).toHaveBeenCalledWith({
+            tabId: 42,
+            text: 'R'
+        });
+        expect(chrome.action.setBadgeBackgroundColor).toHaveBeenCalledWith({
+            color: '#149eca',
+            tabId: 42
+        });
+    });
+
+    it('relays background ports only within the same tab', async () => {
+        const chrome = createMockBackgroundChrome();
+        (globalThis as typeof globalThis & { chrome?: unknown }).chrome =
+            chrome.api;
+
+        await import('../src/background');
+
+        const tabOnePanelPort = createMockBackgroundPort('101');
+        const tabOnePagePort = createMockBackgroundPort('content-script', 101);
+        const tabTwoPanelPort = createMockBackgroundPort('202');
+        const tabTwoPagePort = createMockBackgroundPort('content-script', 202);
+
+        chrome.connect(tabOnePanelPort);
+        chrome.connect(tabTwoPanelPort);
+        chrome.connect(tabOnePagePort);
+        chrome.connect(tabTwoPagePort);
+
+        tabOnePanelPort.emitMessage({ from: 'panel-101' });
+        tabOnePagePort.emitMessage({ from: 'page-101' });
+        tabTwoPanelPort.emitMessage({ from: 'panel-202' });
+        tabTwoPagePort.emitMessage({ from: 'page-202' });
+
+        expect(tabOnePagePort.sentMessages).toEqual([{ from: 'panel-101' }]);
+        expect(tabOnePanelPort.sentMessages).toEqual([{ from: 'page-101' }]);
+        expect(tabTwoPagePort.sentMessages).toEqual([{ from: 'panel-202' }]);
+        expect(tabTwoPanelPort.sentMessages).toEqual([{ from: 'page-202' }]);
+    });
+
+    it('cleans background tab state on disconnect, close, and navigation', async () => {
+        const chrome = createMockBackgroundChrome();
+        (globalThis as typeof globalThis & { chrome?: unknown }).chrome =
+            chrome.api;
+
+        const background = await import('../src/background');
+        const panelPort = createMockBackgroundPort('101');
+        const pagePort = createMockBackgroundPort('content-script', 101);
+
+        chrome.connect(panelPort);
+        chrome.connect(pagePort);
+        expect(background.hasPortsForTab(101)).toBe(true);
+
+        panelPort.disconnect();
+        expect(background.hasPortsForTab(101)).toBe(true);
+
+        pagePort.disconnect();
+        expect(background.hasPortsForTab(101)).toBe(false);
+
+        chrome.emitRuntimeMessage(
+            {
+                source: 'react-devtools-extension',
+                type: 'react-devtools:react-detected'
+            },
+            { tab: { id: 101 } }
+        );
+        expect(background.hasDetectedReactInTab(101)).toBe(true);
+
+        chrome.removeTab(101);
+        expect(background.hasDetectedReactInTab(101)).toBe(false);
+        expect(chrome.action.setPopup).toHaveBeenLastCalledWith({
+            popup: '',
+            tabId: 101
+        });
+        expect(chrome.action.setBadgeText).toHaveBeenLastCalledWith({
+            tabId: 101,
+            text: ''
+        });
+
+        chrome.emitRuntimeMessage(
+            {
+                source: 'react-devtools-extension',
+                type: 'react-devtools:react-detected'
+            },
+            { tab: { id: 202 } }
+        );
+        expect(background.hasDetectedReactInTab(202)).toBe(true);
+
+        chrome.updateTab(202, { status: 'loading' });
+        expect(background.hasDetectedReactInTab(202)).toBe(false);
     });
 
     it('announces the MAIN-world prepare script readiness', async () => {
@@ -431,3 +516,139 @@ describe('extension entrypoints', () => {
         );
     });
 });
+
+interface MockBackgroundPort {
+    disconnect(): void;
+    emitMessage(message: unknown): void;
+    name: string;
+    onDisconnect: MockExtensionEvent<() => void>;
+    onMessage: MockExtensionEvent<(message: unknown) => void>;
+    postMessage(message: unknown): void;
+    sender?: unknown;
+    sentMessages: unknown[];
+}
+
+interface MockExtensionEvent<Handler extends (...args: never[]) => void> {
+    addListener(handler: Handler): void;
+    removeListener(handler: Handler): void;
+}
+
+function createMockBackgroundChrome() {
+    const runtimeMessageListeners: Array<
+        (message: unknown, sender?: unknown) => void
+    > = [];
+    const connectListeners: Array<(port: MockBackgroundPort) => void> = [];
+    const removedListeners: Array<(tabId: number) => void> = [];
+    const updatedListeners: Array<
+        (tabId: number, changeInfo?: unknown) => void
+    > = [];
+    const action = {
+        setBadgeBackgroundColor: jest.fn(),
+        setBadgeText: jest.fn(),
+        setPopup: jest.fn(),
+        setTitle: jest.fn()
+    };
+
+    return {
+        action,
+        api: {
+            action,
+            runtime: {
+                onConnect: {
+                    addListener(listener: (port: MockBackgroundPort) => void) {
+                        connectListeners.push(listener);
+                    }
+                },
+                onMessage: {
+                    addListener(
+                        listener: (message: unknown, sender?: unknown) => void
+                    ) {
+                        runtimeMessageListeners.push(listener);
+                    }
+                }
+            },
+            tabs: {
+                onRemoved: {
+                    addListener(listener: (tabId: number) => void) {
+                        removedListeners.push(listener);
+                    }
+                },
+                onUpdated: {
+                    addListener(
+                        listener: (tabId: number, changeInfo?: unknown) => void
+                    ) {
+                        updatedListeners.push(listener);
+                    }
+                }
+            }
+        },
+        connect(port: MockBackgroundPort) {
+            for (const listener of connectListeners) {
+                listener(port);
+            }
+        },
+        emitRuntimeMessage(message: unknown, sender?: unknown) {
+            for (const listener of runtimeMessageListeners) {
+                listener(message, sender);
+            }
+        },
+        removeTab(tabId: number) {
+            for (const listener of removedListeners) {
+                listener(tabId);
+            }
+        },
+        runtimeMessageListeners,
+        updateTab(tabId: number, changeInfo?: unknown) {
+            for (const listener of updatedListeners) {
+                listener(tabId, changeInfo);
+            }
+        }
+    };
+}
+
+function createMockBackgroundPort(
+    name: string,
+    tabId?: number
+): MockBackgroundPort {
+    const messageListeners = new Set<(message: unknown) => void>();
+    const disconnectListeners = new Set<() => void>();
+    const port: MockBackgroundPort = {
+        disconnect() {
+            for (const listener of disconnectListeners) {
+                listener();
+            }
+        },
+        emitMessage(message) {
+            for (const listener of messageListeners) {
+                listener(message);
+            }
+        },
+        name,
+        onDisconnect: {
+            addListener(listener) {
+                disconnectListeners.add(listener);
+            },
+            removeListener(listener) {
+                disconnectListeners.delete(listener);
+            }
+        },
+        onMessage: {
+            addListener(listener) {
+                messageListeners.add(listener);
+            },
+            removeListener(listener) {
+                messageListeners.delete(listener);
+            }
+        },
+        postMessage(message) {
+            port.sentMessages.push(message);
+        },
+        sentMessages: []
+    };
+
+    if (tabId !== undefined) {
+        port.sender = { tab: { id: tabId } };
+    }
+
+    return port;
+}
