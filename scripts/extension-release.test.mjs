@@ -192,6 +192,76 @@ test('packages chrome dist into a versioned zip with exact entries and checksum'
     );
 });
 
+test('packages firefox dist into a versioned zip with exact entries and checksum', () => {
+    const root = join(
+        tmpdir(),
+        `react-devtools-extension-firefox-package-write-${Date.now()}`
+    );
+    const base = join(root, 'packages/devtools-firefox-extension');
+    const dist = join(base, 'dist');
+    const files = [
+        'manifest.json',
+        'background.js',
+        'detector.js',
+        'devtools-panel.html',
+        'devtools.html',
+        'devtools.js',
+        'devtoolsPanel.js',
+        'popup.html',
+        'popup.js',
+        'prepare.js',
+        'prepareLoader.js',
+        'proxy.js',
+        'smoke.html',
+        'smoke.js',
+        'user-app.js',
+        'assets/client.js',
+        'assets/style.css'
+    ];
+
+    mkdirSync(join(base, 'public'), { recursive: true });
+    mkdirSync(dist, { recursive: true });
+    writeFileSync(
+        join(base, 'package.json'),
+        JSON.stringify({
+            name: '@devtools/firefox-extension',
+            version: '0.0.2'
+        })
+    );
+    writeFileSync(
+        join(base, 'public/manifest.json'),
+        JSON.stringify({ version: '0.0.2' })
+    );
+
+    for (const file of files) {
+        mkdirSync(join(dist, file, '..'), { recursive: true });
+        writeFileSync(join(dist, file), `${file}\n`);
+    }
+
+    const artifacts = packageExtensions({
+        cwd: root,
+        outDir: 'release-artifacts',
+        skipBuild: true,
+        stdout: () => undefined,
+        targets: ['firefox']
+    });
+    const artifact = artifacts[0];
+
+    assert.equal(
+        artifact.path,
+        join(
+            root,
+            'release-artifacts/react-devtools-firefox-extension-v0.0.2.zip'
+        )
+    );
+    assert.equal(artifact.version, '0.0.2');
+    assert.equal(existsSync(artifact.checksumPath), true);
+    assert.deepEqual(
+        listZipEntries(readFileSync(artifact.path)),
+        files.slice().sort()
+    );
+});
+
 test('fails chrome packaging when required build outputs are missing', () => {
     const root = join(
         tmpdir(),
@@ -221,6 +291,40 @@ test('fails chrome packaging when required build outputs are missing', () => {
                 skipBuild: true,
                 stdout: () => undefined,
                 targets: ['chrome']
+            }),
+        /missing required files: background\.js/
+    );
+});
+
+test('fails firefox packaging when required build outputs are missing', () => {
+    const root = join(
+        tmpdir(),
+        `react-devtools-extension-firefox-package-missing-${Date.now()}`
+    );
+    const base = join(root, 'packages/devtools-firefox-extension');
+
+    mkdirSync(join(base, 'public'), { recursive: true });
+    mkdirSync(join(base, 'dist'), { recursive: true });
+    writeFileSync(
+        join(base, 'package.json'),
+        JSON.stringify({
+            name: '@devtools/firefox-extension',
+            version: '0.0.2'
+        })
+    );
+    writeFileSync(
+        join(base, 'public/manifest.json'),
+        JSON.stringify({ version: '0.0.2' })
+    );
+    writeFileSync(join(base, 'dist/manifest.json'), '{}');
+
+    assert.throws(
+        () =>
+            packageExtensions({
+                cwd: root,
+                skipBuild: true,
+                stdout: () => undefined,
+                targets: ['firefox']
             }),
         /missing required files: background\.js/
     );

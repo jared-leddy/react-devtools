@@ -4,6 +4,8 @@ const config: Config.InitialOptions = {
     collectCoverageFrom: [
         'src/**/*.{ts,tsx}',
         '!src/**/*.d.ts',
+        '!src/content/detector.ts',
+        '!src/content/user-app.ts',
         '!src/main.tsx',
         '!src/smoke.tsx'
     ],
@@ -19,6 +21,9 @@ const config: Config.InitialOptions = {
     },
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
     moduleNameMapper: {
+        '^@devtools/client$': '<rootDir>/../devtools-client/src/index.ts',
+        '^@devtools/client/style.css$': 'identity-obj-proxy',
+        '^@devtools/core$': '<rootDir>/../devtools-core/src/index.ts',
         '^@devtools/kit$': '<rootDir>/../devtools-kit/src/index.ts',
         '^@devtools/shared$': '<rootDir>/../devtools-shared/src/index.ts',
         '^@devtools/ui$': '<rootDir>/tests/uiMock.tsx',

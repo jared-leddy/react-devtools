@@ -1,6 +1,6 @@
 {
     "name": "@devtools/firefox-extension",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "private": false,
     "license": "UNLICENSED",
     "description": "Firefox extension shell for React DevTools.",
@@ -21,11 +21,14 @@
     "scripts": {
         "build": "vite build && tsc -p tsconfig.build.json --emitDeclarationOnly --outDir dist",
         "lint": "eslint . --max-warnings=0",
+        "package": "npm run build && node ../../scripts/extension-release.mjs package --target firefox --skip-build",
         "test:unit": "jest --coverage --config jest.config.ts",
         "test:watch": "jest --coverage --watch --config jest.config.ts",
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
+        "@devtools/client": "*",
+        "@devtools/core": "*",
         "@devtools/kit": "*",
         "@devtools/ui": "*",
         "react": "^19.1.1",

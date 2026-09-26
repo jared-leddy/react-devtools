@@ -8,12 +8,28 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 background: resolve(__dirname, 'src/background.ts'),
+                detector: resolve(
+                    __dirname,
+                    '../devtools-chrome-extension/src/content/detector.ts'
+                ),
+                devtoolsPanel: resolve(__dirname, 'devtools-panel.html'),
                 devtools: resolve(__dirname, 'devtools.html'),
                 index: resolve(__dirname, 'src/index.ts'),
-                prepare: resolve(__dirname, 'src/content/prepare.ts'),
+                prepare: resolve(
+                    __dirname,
+                    '../devtools-chrome-extension/src/content/prepare.ts'
+                ),
+                prepareLoader: resolve(
+                    __dirname,
+                    'src/content/prepare-loader.ts'
+                ),
                 popup: resolve(__dirname, 'popup.html'),
                 proxy: resolve(__dirname, 'src/content/proxy.ts'),
-                smoke: resolve(__dirname, 'smoke.html')
+                smoke: resolve(__dirname, 'smoke.html'),
+                'user-app': resolve(
+                    __dirname,
+                    '../devtools-chrome-extension/src/content/user-app.ts'
+                )
             },
             output: {
                 entryFileNames: '[name].js'

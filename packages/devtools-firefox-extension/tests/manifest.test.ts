@@ -74,7 +74,7 @@ describe('firefox extension manifest', () => {
         expect(manifest.content_scripts).toEqual([
             {
                 all_frames: true,
-                js: ['prepare.js'],
+                js: ['prepare-loader.js'],
                 matches: ['http://*/*', 'https://*/*'],
                 run_at: 'document_start'
             },
@@ -95,7 +95,12 @@ describe('firefox extension manifest', () => {
     it('uses extension-owned popup, background, devtools, and smoke entrypoints', () => {
         expect(manifest.browser_action.default_popup).toBe('popup.html');
         expect(manifest.devtools_page).toBe('devtools.html');
-        expect(manifest.web_accessible_resources).toEqual(['smoke.html']);
+        expect(manifest.web_accessible_resources).toEqual([
+            'detector.js',
+            'prepare.js',
+            'smoke.html',
+            'user-app.js'
+        ]);
     });
 
     it('locks extension pages to self-owned code and frames', () => {
