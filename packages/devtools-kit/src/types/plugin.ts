@@ -4,6 +4,7 @@ import type {
     InspectorState,
     SerializableValue
 } from './inspector.js';
+import type { RouterAdapter } from './router.js';
 
 export type PluginSettingValue = string | number | boolean;
 
@@ -99,6 +100,7 @@ export interface PluginSetupContext<
     editInspectorState(payload: EditInspectorStateRequest): Promise<void>;
     getSettings(): Record<string, PluginSettingValue>;
     notify(message: string): void;
+    registerRouterAdapter(adapter: RouterAdapter): void;
     registerInspector(options: CustomInspectorOptions): void;
     selectInspectorNode(inspectorId: string, nodeId: string): void;
     sendInspectorState(

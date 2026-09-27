@@ -21,6 +21,8 @@ import type {
     PluginSettingsStorage,
     PluginSetupFunction,
     PluginSettingValue,
+    RegisteredRouterAdapter,
+    RouterAdapter,
     TimelineEventOptions,
     TimelineLayerOptions
 } from '../../types/index.js';
@@ -68,6 +70,7 @@ const customCommands = new Map<string, CustomCommand>();
 const customTabs = new Map<string, CustomTab>();
 const installedPlugins = new Map<string, DevToolsPlugin>();
 const inspectorApis = new Map<string, DevToolsPluginAPI>();
+const routerAdapters = new Map<string, RegisteredRouterAdapter>();
 let activeContext: DevToolsContext | null = null;
 let activeStorage: PluginSettingsStorage | null | undefined;
 let rootIsAvailable = false;
@@ -150,6 +153,17 @@ export class DevToolsPluginAPI {
 
     registerInspector(options: CustomInspectorOptions): void {
         this.addInspector(options);
+    }
+
+    registerRouterAdapter(adapter: RouterAdapter): void {
+        routerAdapters.set(
+            getRouterAdapterRegistrationId(this.descriptor.id, adapter.id),
+            {
+                adapter,
+                pluginId: this.descriptor.id,
+                pluginLabel: this.descriptor.label
+            }
+        );
     }
 
     async sendInspectorTree(
@@ -346,6 +360,10 @@ export function getCustomTabs(): CustomTab[] {
     return Array.from(customTabs.values());
 }
 
+export function getRegisteredRouterAdapters(): RegisteredRouterAdapter[] {
+    return Array.from(routerAdapters.values());
+}
+
 export async function sendCustomInspectorTree(
     inspectorId: string,
     filter?: string
@@ -413,6 +431,7 @@ export function resetDevToolsPluginRegistry(): void {
     customTabs.clear();
     installedPlugins.clear();
     inspectorApis.clear();
+    routerAdapters.clear();
     clearPluginSettingsMemory();
 }
 
@@ -443,6 +462,13 @@ function installPlugin(plugin: BufferedPlugin, context: DevToolsContext): void {
 
     installedPlugins.set(plugin.descriptor.id, devtoolsPlugin);
     void plugin.setupFn(api);
+}
+
+function getRouterAdapterRegistrationId(
+    pluginId: string,
+    adapterId: string
+): string {
+    return `${pluginId}:${adapterId}`;
 }
 
 function isInspectorStateResponse(

@@ -4,7 +4,10 @@ import {
     type CustomInspectorOptions,
     type DevToolsPlugin,
     type InspectorState,
-    type PluginDescriptor
+    type PluginDescriptor,
+    type RouterAdapter,
+    type RouterCurrentRoute,
+    type RouterRouteNode
 } from '../src/index.js';
 
 interface FiberMetadata {
@@ -141,5 +144,64 @@ describe('plugin and inspector public types', () => {
 
         expectAssignable<DevToolsPlugin<unknown, 'query'>>(plugin);
         expect(plugin.descriptor.id).toBe('nekuta');
+    });
+
+    it('accepts framework-neutral router adapters and route actions', () => {
+        const route = {
+            actions: [
+                {
+                    source: {
+                        column: 5,
+                        file: 'app/routes/projects.$projectId.tsx',
+                        line: 12
+                    },
+                    type: 'open-file'
+                },
+                {
+                    replace: true,
+                    to: '/projects/react-devtools',
+                    type: 'navigate'
+                }
+            ],
+            fullPath: '/projects/:projectId',
+            id: 'project-detail',
+            isActive: true,
+            isExact: true,
+            label: 'Project Detail',
+            metadata: {
+                framework: 'react-router',
+                hasLoader: true
+            },
+            params: { projectId: 'react-devtools' },
+            path: ':projectId',
+            segmentType: 'dynamic'
+        } satisfies RouterRouteNode;
+        const currentRoute = {
+            fullPath: '/projects/react-devtools?tab=routes#tree',
+            hash: '#tree',
+            matchedNodeIds: ['root', 'projects', 'project-detail'],
+            params: { projectId: 'react-devtools' },
+            pathname: '/projects/react-devtools',
+            query: { tab: 'routes' },
+            search: '?tab=routes'
+        } satisfies RouterCurrentRoute;
+        const adapter = {
+            getCurrentRoute: () => currentRoute,
+            getRouteTree: () => [route],
+            id: 'react-router',
+            kind: 'react-router',
+            label: 'React Router',
+            navigate: async ({ to }) => {
+                expectAssignable<string>(to);
+            },
+            openFile: ({ source }) => {
+                expectAssignable<string>(source.file);
+            }
+        } satisfies RouterAdapter;
+
+        expectAssignable<RouterRouteNode>(route);
+        expectAssignable<RouterCurrentRoute>(currentRoute);
+        expectAssignable<RouterAdapter>(adapter);
+        expect(route.actions[0]?.type).toBe('open-file');
     });
 });

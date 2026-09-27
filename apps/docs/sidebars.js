@@ -28,7 +28,10 @@ const sidebars = {
                 type: 'doc',
                 id: 'plugin-authoring/overview'
             },
-            items: ['plugin-authoring/overview']
+            items: [
+                'plugin-authoring/overview',
+                'plugin-authoring/router-adapters'
+            ]
         },
         {
             type: 'category',
