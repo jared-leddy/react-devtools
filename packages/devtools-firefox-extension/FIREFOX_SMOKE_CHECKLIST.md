@@ -16,7 +16,7 @@ Tracking issue: P5-11 / #111.
 1. Run `npm run build --workspace @devtools/firefox-extension`.
 2. Run `npm run package --workspace @devtools/firefox-extension`.
 3. Confirm `dist/manifest.json`, `dist/background.js`, `dist/devtools.html`, `dist/devtools.js`, `dist/devtools-panel.html`, `dist/devtoolsPanel.js`, `dist/popup.html`, `dist/popup.js`, `dist/prepare-loader.js`, `dist/prepare.js`, `dist/detector.js`, `dist/proxy.js`, `dist/user-app.js`, `dist/smoke.html`, and `dist/smoke.js` exist.
-4. Confirm `dist/extensions/react-devtools-firefox-extension-v0.0.3.zip` and its `.sha256` checksum were written.
+4. Confirm `dist/extensions/react-devtools-firefox-extension-v0.0.4.zip` and its `.sha256` checksum were written.
 5. Open Firefox to `about:debugging#/runtime/this-firefox`.
 6. Choose "Load Temporary Add-on" and select `packages/devtools-firefox-extension/dist/manifest.json`.
 7. Open a React playground page.
@@ -26,6 +26,15 @@ Tracking issue: P5-11 / #111.
 11. Select a component and confirm the detail pane updates with props, hooks, or state sections when available.
 12. Hover or inspect a component and confirm the highlight appears over the matching DOM node in the inspected page.
 13. Reload the inspected page and confirm the panel reconnects and refreshes the tree without stale state.
+
+## UAT Launcher
+
+Run `npm run uat:firefox --workspace @devtools/firefox-extension` to rebuild the
+extension, verify the required `dist` files, print the manual evidence checklist,
+and open Firefox Developer Edition to the temporary add-on and playground pages.
+
+Set `FIREFOX_UAT_BROWSER=/path/to/firefox` or pass `-- --firefox /path/to/firefox`
+when Firefox is installed outside the default macOS locations.
 
 ## Known Follow-Up Tracking
 
