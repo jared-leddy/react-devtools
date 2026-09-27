@@ -1,6 +1,6 @@
 {
     "name": "@devtools/api",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "private": false,
     "license": "UNLICENSED",
     "description": "Public plugin-author API for React DevTools.",

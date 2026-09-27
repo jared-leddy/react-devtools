@@ -8,6 +8,7 @@ import {
     getCustomTabs,
     getPluginSettingsKey,
     getRegisteredDevToolsPlugins,
+    getRegisteredRouterAdapters,
     registerDevToolsPluginContext,
     removeCustomCommand,
     resetDevToolsPluginRegistry,
@@ -417,6 +418,108 @@ describe('DevToolsPluginAPI', () => {
             }
         ]);
         expect(removedCommands).toEqual([{ commandId: 'open-docs' }]);
+    });
+
+    it('registers framework-neutral router adapters for shared route panels', async () => {
+        const context = createDevToolsContext();
+
+        registerDevToolsPluginContext({ context });
+        setupDevToolsPlugin({ id: 'routes', label: 'Routes' }, (api) => {
+            api.registerRouterAdapter({
+                getCurrentRoute() {
+                    return {
+                        fullPath: '/teams/react?tab=routes',
+                        matchedNodeIds: ['root', 'teams', 'team-detail'],
+                        params: { teamId: 'react' },
+                        pathname: '/teams/react',
+                        query: { tab: 'routes' },
+                        search: '?tab=routes'
+                    };
+                },
+                getRouteTree() {
+                    return [
+                        {
+                            children: [
+                                {
+                                    actions: [
+                                        {
+                                            source: {
+                                                column: 1,
+                                                file: 'src/routes/teams.$teamId.tsx',
+                                                line: 12
+                                            },
+                                            type: 'open-file'
+                                        },
+                                        {
+                                            to: '/teams/react',
+                                            type: 'navigate'
+                                        }
+                                    ],
+                                    fullPath: '/teams/:teamId',
+                                    id: 'team-detail',
+                                    isActive: true,
+                                    isExact: true,
+                                    label: 'Team Detail',
+                                    params: { teamId: 'react' },
+                                    parentId: 'teams',
+                                    path: ':teamId',
+                                    segmentType: 'dynamic',
+                                    source: {
+                                        file: 'src/routes/teams.$teamId.tsx'
+                                    }
+                                }
+                            ],
+                            fullPath: '/teams',
+                            id: 'teams',
+                            label: 'Teams',
+                            parentId: 'root',
+                            path: 'teams',
+                            segmentType: 'static'
+                        }
+                    ];
+                },
+                id: 'react-router',
+                kind: 'react-router',
+                label: 'React Router',
+                navigate: jest.fn(),
+                openFile: jest.fn()
+            });
+        });
+
+        const [registration] = getRegisteredRouterAdapters();
+
+        expect(getRegisteredRouterAdapters()).toHaveLength(1);
+        expect(registration?.pluginId).toBe('routes');
+        expect(registration?.pluginLabel).toBe('Routes');
+        await expect(
+            Promise.resolve(registration?.adapter.getRouteTree())
+        ).resolves.toEqual([
+            expect.objectContaining({
+                children: [
+                    expect.objectContaining({
+                        actions: [
+                            expect.objectContaining({ type: 'open-file' }),
+                            expect.objectContaining({ type: 'navigate' })
+                        ],
+                        id: 'team-detail',
+                        isActive: true,
+                        segmentType: 'dynamic'
+                    })
+                ],
+                id: 'teams'
+            })
+        ]);
+        await expect(
+            Promise.resolve(registration?.adapter.getCurrentRoute?.())
+        ).resolves.toEqual(
+            expect.objectContaining({
+                fullPath: '/teams/react?tab=routes',
+                matchedNodeIds: ['root', 'teams', 'team-detail']
+            })
+        );
+
+        resetDevToolsPluginRegistry();
+        expect(getRegisteredRouterAdapters()).toEqual([]);
     });
 });
 

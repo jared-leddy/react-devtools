@@ -1,6 +1,7 @@
 export {
     addCustomCommand,
     addCustomTab,
+    getRegisteredRouterAdapters,
     removeCustomCommand,
     setupDevToolsPlugin,
     setupDevtoolsPlugin
@@ -22,6 +23,19 @@ export type {
     PluginSettingValue,
     PluginSetupContext,
     PluginSetupFunction,
+    RegisteredRouterAdapter,
+    RouteMetadata,
+    RouteNodeAction,
+    RouteParams,
+    RouteSegmentType,
+    RouteSourceLocation,
+    RouterAdapter,
+    RouterAdapterKind,
+    RouterAdapterSnapshot,
+    RouterCurrentRoute,
+    RouterNavigateRequest,
+    RouterOpenFileRequest,
+    RouterRouteNode,
     TimelineEventOptions,
     TimelineLayerOptions
 } from '@devtools/kit';
