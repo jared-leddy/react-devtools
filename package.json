@@ -15,6 +15,7 @@
         "postinstall": "simple-git-hooks",
         "start:dev": "turbo start:dev",
         "test:e2e": "turbo test:e2e",
+        "test:firefox-uat-helper": "node --test scripts/firefox-temporary-addon-uat.test.mjs",
         "test:release-packaging": "node --test scripts/extension-release.test.mjs",
         "test:unit": "turbo test:unit",
         "typecheck": "turbo typecheck"
