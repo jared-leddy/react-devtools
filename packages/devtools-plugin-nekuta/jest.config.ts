@@ -6,7 +6,7 @@ const config: Config.InitialOptions = {
     testEnvironment: 'jsdom',
     testRegex: 'tests/.*\\.test\\.ts$',
     transform: {
-        '^.+\\.(ts|tsx)$': [
+        '^.+\\.[tj]sx?$': [
             'ts-jest',
             {
                 diagnostics: { ignoreCodes: [151002] },
@@ -16,11 +16,14 @@ const config: Config.InitialOptions = {
     },
     moduleNameMapper: {
         '^@devtools/api$': '<rootDir>/tests/apiMock.ts',
+        '^@devtools/core/value-format$':
+            '<rootDir>/../devtools-core/src/valueFormat.ts',
         '^@devtools/kit$': '<rootDir>/../devtools-kit/src/index.ts',
         '^@devtools/shared$': '<rootDir>/../devtools-shared/src/index.ts',
         '^hookable$': '<rootDir>/../devtools-kit/tests/__mocks__/hookable.ts',
         '^(\\.{1,2}/.*)\\.js$': '$1'
     },
+    transformIgnorePatterns: ['/node_modules/(?!@nekuta/core/)'],
     collectCoverageFrom: ['src/**/*.ts', '!src/**/*.d.ts'],
     coverageDirectory: 'coverage',
     coverageReporters: ['text', 'html', 'lcov'],
