@@ -136,7 +136,7 @@ function editStoreInspectorState(
 
     const [group, index, field] = payload.path;
 
-    if (group !== 'state' || field !== 'value' || typeof index !== 'number') {
+    if (group !== 'state' || typeof index !== 'number') {
         throw new Error(
             `Unsupported Nekuta edit path: ${payload.path.join('.')}`
         );
@@ -146,6 +146,12 @@ function editStoreInspectorState(
 
     if (!key) {
         throw new Error(`Unknown Nekuta state entry index: ${index}`);
+    }
+
+    if (field !== 'value' && field !== key) {
+        throw new Error(
+            `Unsupported Nekuta edit field: ${String(field)} for ${key}`
+        );
     }
 
     if (payload.state.remove) {

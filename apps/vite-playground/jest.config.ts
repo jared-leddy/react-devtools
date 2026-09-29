@@ -9,10 +9,12 @@ const config: Config.InitialOptions = {
         '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: 'tsconfig.json' }]
     },
     moduleNameMapper: {
+        '^@devtools/nekuta-plugin$': '<rootDir>/tests/nekutaPluginMock.ts',
         '^@devtools/react-router-plugin$':
             '<rootDir>/tests/reactRouterPluginMock.ts',
+        '^@nekuta/core$': '<rootDir>/tests/nekutaCoreMock.tsx',
         '^@devtools/api$': '<rootDir>/tests/apiMock.ts',
-        '^@devtools/kit$': '<rootDir>/../../packages/devtools-kit/src/index.ts',
+        '^@devtools/kit$': '<rootDir>/tests/kitMock.ts',
         '^(\\.{1,2}/.*)\\.js$': '$1',
         '\\.(css)$': 'identity-obj-proxy'
     },

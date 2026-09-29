@@ -47,6 +47,14 @@ jest.mock('@nekuta/core', () => {
             };
         }
 
+        store.$subscribe = (listener: () => void) => {
+            nekuta.listeners.add(listener);
+
+            return () => {
+                nekuta.listeners.delete(listener);
+            };
+        };
+
         nekuta._s.set(definition.id, store);
 
         return store;

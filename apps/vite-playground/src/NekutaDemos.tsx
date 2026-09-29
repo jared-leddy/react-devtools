@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useMemo, useState } from 'react';
 import { createNekuta, defineStore, NekutaStore, useStore } from '@nekuta/core';
 import { registerNekutaDevTools } from '@devtools/nekuta-plugin';
@@ -9,7 +7,7 @@ type StoreAccessor<TStore extends StoreGeneric> = (
     nekuta?: NekutaInstance
 ) => TStore;
 
-export const usePlaygroundCounterStore = defineStore({
+export const useViteCounterStore = defineStore({
     actions: {
         increment() {
             this.count += 1;
@@ -23,13 +21,13 @@ export const usePlaygroundCounterStore = defineStore({
             return state.count * 2;
         }
     },
-    id: 'playground-counter',
+    id: 'vite-counter',
     state: () => ({
         count: 0
     })
 });
 
-export const usePlaygroundTodoStore = defineStore({
+export const useViteTodoStore = defineStore({
     actions: {
         addTodo(title: string) {
             this.items.push({
@@ -52,18 +50,18 @@ export const usePlaygroundTodoStore = defineStore({
             return state.items.filter((item) => !item.done).length;
         }
     },
-    id: 'playground-todos',
+    id: 'vite-todos',
     state: () => ({
         items: [
             {
                 done: false,
                 id: 'todo-1',
-                title: 'Inspect the counter store'
+                title: 'Open the Nekuta custom inspector'
             },
             {
                 done: true,
                 id: 'todo-2',
-                title: 'Verify editable Nekuta state'
+                title: 'Verify editable Vite-delivered state'
             }
         ],
         nextId: 3
@@ -72,25 +70,25 @@ export const usePlaygroundTodoStore = defineStore({
 
 export function NekutaDemos() {
     const nekuta = useMemo(() => createNekuta(), []);
-    usePlaygroundCounterStore(nekuta);
-    usePlaygroundTodoStore(nekuta);
+    useViteCounterStore(nekuta);
+    useViteTodoStore(nekuta);
 
     useEffect(() => {
         registerNekutaDevTools({
-            label: 'Nekuta Playground',
+            label: 'Nekuta Vite Playground',
             nekuta
         });
     }, [nekuta]);
 
     return (
         <NekutaStore nekuta={nekuta}>
-            <section aria-labelledby="nekuta-demos-title">
-                <h2 id="nekuta-demos-title">Nekuta store fixtures</h2>
+            <section aria-labelledby="nekuta-demos-heading">
+                <h2 id="nekuta-demos-heading">Nekuta store fixtures</h2>
                 <p>
-                    Real Nekuta stores for exercising custom inspector tree,
-                    state, getters, actions, and live edits.
+                    Real Nekuta stores served through the Vite plugin delivery
+                    mode for custom inspector state and live-edit UAT.
                 </p>
-                <div className="demo-grid">
+                <div className="grid">
                     <CounterStoreDemo />
                     <TodoStoreDemo />
                 </div>
@@ -100,11 +98,11 @@ export function NekutaDemos() {
 }
 
 export function CounterStoreDemo() {
-    const counter = useSubscribedStore(usePlaygroundCounterStore);
+    const counter = useSubscribedStore(useViteCounterStore);
 
     return (
         <article className="card">
-            <h3>counter store</h3>
+            <h3>Nekuta counter store</h3>
             <p>
                 Count:{' '}
                 <strong data-testid="nekuta-counter-count">
@@ -126,11 +124,11 @@ export function CounterStoreDemo() {
 }
 
 export function TodoStoreDemo() {
-    const todos = useSubscribedStore(usePlaygroundTodoStore);
+    const todos = useSubscribedStore(useViteTodoStore);
 
     return (
         <article className="card">
-            <h3>todo store</h3>
+            <h3>Nekuta todo store</h3>
             <p>
                 Open todos:{' '}
                 <strong data-testid="nekuta-open-todos">
@@ -138,7 +136,7 @@ export function TodoStoreDemo() {
                 </strong>
             </p>
             <div className="buttons">
-                <button onClick={() => todos.addTodo('Review timeline event')}>
+                <button onClick={() => todos.addTodo('Review panel edit')}>
                     Add todo
                 </button>
                 <button onClick={() => todos.toggleTodo('todo-1')}>

@@ -207,6 +207,10 @@ export function getCustomTabs(): CustomTab[] {
     return Array.from(customTabs.values());
 }
 
+export function getParentDevToolsPluginBridge() {
+    return null;
+}
+
 export function getRegisteredRouterAdapters(): RegisteredRouterAdapter[] {
     return Array.from(routerAdapters.values());
 }

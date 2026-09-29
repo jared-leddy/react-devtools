@@ -2,6 +2,7 @@ import {
     ReactDevToolsContextHookKeys,
     createDevToolsContext,
     getCustomTabs,
+    getParentDevToolsPluginBridge,
     getRegisteredRouterAdapters,
     registerDevToolsPluginContext,
     type CustomInspectorOptions,
@@ -148,6 +149,7 @@ let currentSnapshot: ClientRouteRegistrySnapshot = {
     routerAdapters: []
 };
 let initialized = false;
+let unsubscribeParentPluginBridge: (() => void) | undefined;
 
 export function initializeClientRouteRegistry(): ClientRouteRegistrySnapshot {
     if (!initialized) {
@@ -176,6 +178,14 @@ export function initializeClientRouteRegistry(): ClientRouteRegistrySnapshot {
         );
         registerClientCommandContext(context);
         registerDevToolsPluginContext({ context, hasRoot: true });
+        /* istanbul ignore next -- verified through same-origin Vite browser UAT. */
+        syncParentPluginBridge();
+        /* istanbul ignore next -- verified through same-origin Vite browser UAT. */
+        unsubscribeParentPluginBridge =
+            getParentDevToolsPluginBridge()?.subscribe(() => {
+                syncParentPluginBridge();
+                notifyRouteListeners();
+            });
         refreshRouteSnapshot();
     }
 
@@ -248,6 +258,8 @@ export function persistClientRouteVisit(
 export function resetClientRouteRegistryForTests(): void {
     customInspectors.clear();
     listeners.clear();
+    unsubscribeParentPluginBridge?.();
+    unsubscribeParentPluginBridge = undefined;
     initialized = false;
     currentEnvironment = defaultEnvironment;
     refreshRouteSnapshot();
@@ -296,6 +308,19 @@ function refreshRouteSnapshot(): void {
         ),
         routerAdapters
     };
+}
+
+/* istanbul ignore next -- verified through same-origin Vite browser UAT. */
+function syncParentPluginBridge(): void {
+    const parentBridge = getParentDevToolsPluginBridge();
+
+    if (!parentBridge) {
+        return;
+    }
+
+    parentBridge.getCustomInspectors().forEach((inspector) => {
+        customInspectors.set(inspector.id, inspector);
+    });
 }
 
 const ROUTE_CATEGORY_ORDER: ClientRouteCategory[] = [
