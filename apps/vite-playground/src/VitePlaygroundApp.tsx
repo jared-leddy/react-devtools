@@ -1,4 +1,5 @@
 import { PlainReactDemos } from './PlainReactDemos';
+import { ReactRouterDemo } from './ReactRouterDemo';
 
 export function VitePlaygroundApp() {
     return (
@@ -13,6 +14,7 @@ export function VitePlaygroundApp() {
                 </p>
             </header>
             <PlainReactDemos />
+            <ReactRouterDemo />
         </main>
     );
 }

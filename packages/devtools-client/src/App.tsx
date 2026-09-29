@@ -34,7 +34,11 @@ import {
     type CustomInspectorOptions,
     type CustomTab,
     type InspectorState,
-    type InspectorStateEntry
+    type InspectorStateEntry,
+    type RegisteredRouterAdapter,
+    type RouteNodeAction,
+    type RouterAdapterSnapshot,
+    type RouterRouteNode
 } from '@devtools/kit';
 import '@devtools/ui/style.css';
 import './style.css';
@@ -550,6 +554,17 @@ function RoutePage({
         return <GraphPage />;
     }
 
+    if (route.id === 'react-router' || route.id === 'pages-routes') {
+        return (
+            <RouterAdaptersPage
+                adapterKind={
+                    route.id === 'react-router' ? 'react-router' : undefined
+                }
+                route={route}
+            />
+        );
+    }
+
     if (route.id === 'settings') {
         return <SettingsPage settingsSnapshot={settingsSnapshot} />;
     }
@@ -617,6 +632,349 @@ function RoutePage({
             </section>
         </Card>
     );
+}
+
+function RouterAdaptersPage({
+    adapterKind,
+    route
+}: {
+    adapterKind?: string;
+    route: ClientRoute;
+}) {
+    const routeSnapshot = initializeClientRouteRegistry();
+    const registrations = routeSnapshot.routerAdapters.filter(
+        (registration) =>
+            !adapterKind || registration.adapter.kind === adapterKind
+    );
+    const [adapterSnapshots, setAdapterSnapshots] = useState<
+        Array<{
+            registration: RegisteredRouterAdapter;
+            snapshot: RouterAdapterSnapshot;
+        }>
+    >([]);
+    const [status, setStatus] = useState('Loading router adapters.');
+    const registrationKey = registrations
+        .map(
+            (registration) =>
+                `${registration.pluginId}:${registration.adapter.id}`
+        )
+        .join('|');
+
+    useEffect(() => {
+        let isMounted = true;
+        const loadSnapshots = () => {
+            void Promise.all(
+                registrations.map(async (registration) => ({
+                    registration,
+                    snapshot: await readRouterAdapterSnapshot(registration)
+                }))
+            )
+                .then((snapshots) => {
+                    if (!isMounted) {
+                        return;
+                    }
+
+                    setAdapterSnapshots(snapshots);
+                    setStatus(
+                        snapshots.length
+                            ? `${snapshots.length} router adapter${snapshots.length === 1 ? '' : 's'} connected.`
+                            : 'No router adapters registered.'
+                    );
+                })
+                .catch((error: unknown) => {
+                    if (!isMounted) {
+                        return;
+                    }
+
+                    setStatus(
+                        error instanceof Error
+                            ? error.message
+                            : 'Router adapter snapshot failed to load.'
+                    );
+                });
+        };
+        const unsubscribers = registrations
+            .map((registration) =>
+                registration.adapter.onRouteChange?.(loadSnapshots)
+            )
+            .filter((unsubscribe): unsubscribe is () => void =>
+                Boolean(unsubscribe)
+            );
+
+        loadSnapshots();
+
+        return () => {
+            isMounted = false;
+            unsubscribers.forEach((unsubscribe) => {
+                unsubscribe();
+            });
+        };
+    }, [registrationKey, registrations]);
+
+    return (
+        <section
+            aria-label={`${route.label} page`}
+            className="dt-client-shell__page dt-router-page"
+        >
+            <Card title={route.label}>
+                <div className="dt-router-summary">
+                    <span className="dt-client-shell__badge dt-client-shell__badge--info">
+                        {route.summary}
+                    </span>
+                    <span>{status}</span>
+                </div>
+            </Card>
+            {adapterSnapshots.length === 0 ? (
+                <Card title="Routes">
+                    <EmptyPane
+                        label="No router adapters"
+                        message="Register a router adapter from a plugin to inspect route records."
+                    />
+                </Card>
+            ) : (
+                adapterSnapshots.map(({ registration, snapshot }) => (
+                    <RouterAdapterPanel
+                        key={`${registration.pluginId}:${registration.adapter.id}`}
+                        registration={registration}
+                        snapshot={snapshot}
+                    />
+                ))
+            )}
+        </section>
+    );
+}
+
+function RouterAdapterPanel({
+    registration,
+    snapshot
+}: {
+    registration: RegisteredRouterAdapter;
+    snapshot: RouterAdapterSnapshot;
+}) {
+    const [status, setStatus] = useState('Router adapter ready.');
+    const matchedNodes = findRouterNodesById(
+        snapshot.rootNodes,
+        snapshot.currentRoute?.matchedNodeIds ?? []
+    );
+    const runAction = (node: RouterRouteNode, action: RouteNodeAction) => {
+        if (isNavigateRouteAction(action)) {
+            setStatus(`Navigating to ${action.to}.`);
+            void registration.adapter.navigate?.({
+                replace: 'replace' in action ? action.replace : undefined,
+                to: action.to
+            });
+            return;
+        }
+
+        if (isOpenRouteFileAction(action)) {
+            setStatus(`Opening ${action.source.file}.`);
+            void registration.adapter.openFile?.({
+                routeNodeId: node.id,
+                source: action.source
+            });
+            return;
+        }
+
+        setStatus(`Action queued: ${action.label}.`);
+    };
+
+    return (
+        <div className="dt-router-adapter">
+            <Card title={registration.adapter.label}>
+                <dl className="dt-overview-details">
+                    <OverviewDetail
+                        label="Plugin"
+                        value={registration.pluginLabel}
+                    />
+                    <OverviewDetail
+                        label="Current route"
+                        value={snapshot.currentRoute?.fullPath ?? 'Unknown'}
+                    />
+                    <OverviewDetail
+                        label="Matched routes"
+                        value={String(matchedNodes.length)}
+                    />
+                </dl>
+                <p className="dt-settings-status" role="status">
+                    {status}
+                </p>
+            </Card>
+            <div className="dt-router-grid">
+                <Card title="Matched route chain">
+                    {matchedNodes.length ? (
+                        <ol className="dt-router-chain">
+                            {matchedNodes.map((node) => (
+                                <li key={node.id}>
+                                    <strong>{node.label}</strong>
+                                    <span>{node.fullPath ?? node.path}</span>
+                                </li>
+                            ))}
+                        </ol>
+                    ) : (
+                        <EmptyPane
+                            label="No route match"
+                            message="The adapter did not report a matched route chain for the current location."
+                        />
+                    )}
+                </Card>
+                <Card title="Route table">
+                    <RouterRouteTree
+                        nodes={snapshot.rootNodes}
+                        onRunAction={runAction}
+                    />
+                </Card>
+            </div>
+        </div>
+    );
+}
+
+function RouterRouteTree({
+    nodes,
+    onRunAction
+}: {
+    nodes: RouterRouteNode[];
+    onRunAction: (node: RouterRouteNode, action: RouteNodeAction) => void;
+}) {
+    if (nodes.length === 0) {
+        return (
+            <EmptyPane
+                label="No route records"
+                message="The adapter returned an empty route tree."
+            />
+        );
+    }
+
+    return (
+        <ul aria-label="Route table" className="dt-router-tree">
+            {nodes.map((node) => (
+                <RouterRouteTreeNode
+                    key={node.id}
+                    node={node}
+                    onRunAction={onRunAction}
+                />
+            ))}
+        </ul>
+    );
+}
+
+function RouterRouteTreeNode({
+    node,
+    onRunAction
+}: {
+    node: RouterRouteNode;
+    onRunAction: (node: RouterRouteNode, action: RouteNodeAction) => void;
+}) {
+    return (
+        <li data-active={node.isActive ? 'true' : 'false'}>
+            <div className="dt-router-tree__row">
+                <div className="dt-router-tree__body">
+                    <strong>{node.label}</strong>
+                    <span>{node.fullPath ?? node.path ?? node.id}</span>
+                    <small>
+                        {formatOverviewValue(node.segmentType ?? 'route')}
+                    </small>
+                </div>
+                {node.actions?.length ? (
+                    <div className="dt-router-tree__actions">
+                        {node.actions.map((action) => (
+                            <button
+                                key={`${node.id}:${action.type}:${getRouteActionLabel(action)}`}
+                                onClick={() => {
+                                    onRunAction(node, action);
+                                }}
+                                type="button"
+                            >
+                                {getRouteActionLabel(action)}
+                            </button>
+                        ))}
+                    </div>
+                ) : null}
+            </div>
+            {node.children?.length ? (
+                <RouterRouteTree
+                    nodes={node.children}
+                    onRunAction={onRunAction}
+                />
+            ) : null}
+        </li>
+    );
+}
+
+async function readRouterAdapterSnapshot(
+    registration: RegisteredRouterAdapter
+): Promise<RouterAdapterSnapshot> {
+    if (registration.adapter.getSnapshot) {
+        return registration.adapter.getSnapshot();
+    }
+
+    const [rootNodes, currentRoute] = await Promise.all([
+        registration.adapter.getRouteTree(),
+        registration.adapter.getCurrentRoute?.()
+    ]);
+
+    return {
+        currentRoute,
+        rootNodes
+    };
+}
+
+function findRouterNodesById(
+    nodes: RouterRouteNode[],
+    nodeIds: string[]
+): RouterRouteNode[] {
+    return nodeIds
+        .map((nodeId) => findRouterNode(nodes, nodeId))
+        .filter((node): node is RouterRouteNode => Boolean(node));
+}
+
+function findRouterNode(
+    nodes: RouterRouteNode[],
+    nodeId: string
+): RouterRouteNode | undefined {
+    for (const node of nodes) {
+        if (node.id === nodeId) {
+            return node;
+        }
+
+        const childNode = findRouterNode(node.children ?? [], nodeId);
+
+        if (childNode) {
+            return childNode;
+        }
+    }
+
+    return undefined;
+}
+
+function getRouteActionLabel(action: RouteNodeAction): string {
+    if (action.label) {
+        return action.label;
+    }
+
+    if (isOpenRouteFileAction(action)) {
+        return 'Open file';
+    }
+
+    if (isNavigateRouteAction(action)) {
+        return 'Navigate';
+    }
+
+    return formatOverviewValue(action.type);
+}
+
+function isNavigateRouteAction(
+    action: RouteNodeAction
+): action is RouteNodeAction & { to: string; type: 'navigate' } {
+    return action.type === 'navigate' && 'to' in action;
+}
+
+function isOpenRouteFileAction(
+    action: RouteNodeAction
+): action is RouteNodeAction & {
+    source: NonNullable<RouterRouteNode['source']>;
+    type: 'open-file';
+} {
+    return action.type === 'open-file' && 'source' in action;
 }
 
 function OverviewPage({ snapshot }: { snapshot: ClientOverviewSnapshot }) {

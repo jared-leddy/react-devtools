@@ -70,6 +70,24 @@ export interface CustomCommand {
     url?: string;
 }
 
+export interface RouterAdapter {
+    getCurrentRoute?: () => unknown;
+    getRouteTree: () => unknown;
+    getSnapshot?: () => unknown;
+    id: string;
+    kind: string;
+    label: string;
+    navigate?: (request: { replace?: boolean; to: string }) => void;
+    onRouteChange?: (listener: () => void) => () => void;
+    openFile?: (request: { routeNodeId: string; source: unknown }) => void;
+}
+
+export interface RegisteredRouterAdapter {
+    adapter: RouterAdapter;
+    pluginId: string;
+    pluginLabel: string;
+}
+
 export type ViteMessageHandler = (payload: unknown) => void;
 
 export interface ViteHotContextLike {
@@ -102,6 +120,7 @@ type HookMap = {
 
 const customCommands = new Map<string, CustomCommand>();
 const customTabs = new Map<string, CustomTab>();
+const routerAdapters = new Map<string, RegisteredRouterAdapter>();
 const inspectorStateHandlers = new Map<
     string,
     (payload: { inspectorId: string; nodeId: string }) => InspectorState
@@ -188,6 +207,10 @@ export function getCustomTabs(): CustomTab[] {
     return Array.from(customTabs.values());
 }
 
+export function getRegisteredRouterAdapters(): RegisteredRouterAdapter[] {
+    return Array.from(routerAdapters.values());
+}
+
 export function getViteClientContext(): ViteHotContextLike | null {
     return viteClientContext;
 }
@@ -208,6 +231,7 @@ export function setupDevToolsPlugin(
     descriptor: { id: string; label: string },
     setup: (api: {
         addInspector: (options: CustomInspectorOptions) => void;
+        registerRouterAdapter: (adapter: RouterAdapter) => void;
         on: {
             editInspectorState: (
                 inspectorId: string,
@@ -239,6 +263,13 @@ export function setupDevToolsPlugin(
                     plugin: { descriptor }
                 }
             );
+        },
+        registerRouterAdapter: (adapter) => {
+            routerAdapters.set(`${descriptor.id}:${adapter.id}`, {
+                adapter,
+                pluginId: descriptor.id,
+                pluginLabel: descriptor.label
+            });
         },
         on: {
             editInspectorState: (inspectorId, handler) => {
@@ -291,6 +322,7 @@ export function resetDevToolsPluginRegistry(): void {
     activeContext = null;
     customCommands.clear();
     customTabs.clear();
+    routerAdapters.clear();
     editInspectorStateHandlers.clear();
     inspectorStateHandlers.clear();
     inspectorTreeHandlers.clear();
