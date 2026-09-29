@@ -1,0 +1,52 @@
+{
+    "name": "@devtools/nextjs-plugin",
+    "version": "0.0.1",
+    "private": false,
+    "license": "UNLICENSED",
+    "description": "Next.js router adapter plugin for React DevTools.",
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "lint": "eslint . --max-warnings=0",
+        "test:unit": "jest --coverage --config jest.config.ts",
+        "test:watch": "jest --coverage --watch --config jest.config.ts",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@devtools/api": "*"
+    },
+    "peerDependencies": {
+        "next": ">=13",
+        "react": ">=18"
+    },
+    "devDependencies": {
+        "@devtools/eslint-config": "*",
+        "@devtools/jest-config": "file:../../packages/jest-config",
+        "@devtools/typescript-config": "*",
+        "@testing-library/react": "^16.3.2",
+        "@types/jest": "^30.0.0",
+        "@types/node": "^24.0.0",
+        "@types/react": "19.1.11",
+        "@typescript-eslint/eslint-plugin": "^8.40.0",
+        "@typescript-eslint/parser": "^8.40.0",
+        "eslint": "^9.34.0",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-prettier": "^5.5.4",
+        "jest": "^30.1.3",
+        "next": "^15.5.0",
+        "react": "^19.1.1",
+        "ts-jest": "^29.4.4",
+        "typescript": "^5.9.2"
+    }
+}

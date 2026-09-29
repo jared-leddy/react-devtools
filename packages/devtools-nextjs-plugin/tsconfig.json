@@ -1,0 +1,13 @@
+{
+    "extends": "@devtools/typescript-config/base.json",
+    "compilerOptions": {
+        "declaration": true,
+        "declarationMap": true,
+        "emitDeclarationOnly": false,
+        "moduleResolution": "node",
+        "outDir": "dist",
+        "rootDir": "src"
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["dist", "coverage", "node_modules", "tests"]
+}
