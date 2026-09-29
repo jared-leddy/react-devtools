@@ -4,24 +4,25 @@ const config: Config.InitialOptions = {
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
     rootDir: '.',
     testEnvironment: 'jsdom',
-    testRegex: 'tests/.*\\.test\\.tsx?$',
+    testRegex: 'tests/.*\\.test\\.ts$',
     transform: {
-        '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: 'tsconfig.json' }]
+        '^.+\\.(ts|tsx)$': [
+            'ts-jest',
+            {
+                diagnostics: { ignoreCodes: [151002] },
+                tsconfig: 'tsconfig.test.json'
+            }
+        ]
     },
     moduleNameMapper: {
-        '^@devtools/react-router-plugin$':
-            '<rootDir>/tests/reactRouterPluginMock.ts',
         '^@devtools/api$': '<rootDir>/tests/apiMock.ts',
-        '^@devtools/kit$': '<rootDir>/../../packages/devtools-kit/src/index.ts',
-        '^(\\.{1,2}/.*)\\.js$': '$1',
-        '\\.(css)$': 'identity-obj-proxy'
+        '^@devtools/kit$': '<rootDir>/../devtools-kit/src/index.ts',
+        '^@devtools/shared$': '<rootDir>/../devtools-shared/src/index.ts',
+        '^hookable$': '<rootDir>/../devtools-kit/tests/__mocks__/hookable.ts',
+        '^(\\.{1,2}/.*)\\.js$': '$1'
     },
     setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
-    collectCoverageFrom: [
-        'src/**/*.{ts,tsx}',
-        '!src/**/*.d.ts',
-        '!src/main.tsx'
-    ],
+    collectCoverageFrom: ['src/**/*.ts', '!src/**/*.d.ts'],
     coverageDirectory: 'coverage',
     coverageReporters: ['text', 'html', 'lcov'],
     coverageThreshold: {

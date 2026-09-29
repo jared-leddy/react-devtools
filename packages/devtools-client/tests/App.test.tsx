@@ -869,11 +869,61 @@ describe('@devtools/client App routing', () => {
         expect(screen.getByText('No matching modules')).toBeInTheDocument();
     });
 
-    it('shows adapter routes after integration detection', () => {
-        setClientRouteEnvironment({
-            capabilities: ['react-router'],
-            transport: 'standalone'
-        });
+    it('shows React Router adapter route tree and current match chain', async () => {
+        const navigate = jest.fn();
+
+        setupDevToolsPlugin(
+            { id: 'react-router-test', label: 'React Router Test' },
+            (api) => {
+                api.registerRouterAdapter({
+                    getCurrentRoute() {
+                        return {
+                            fullPath: '/teams/react?tab=activity',
+                            matchedNodeIds: ['teams', 'team-detail'],
+                            params: { teamId: 'react' },
+                            pathname: '/teams/react',
+                            query: { tab: 'activity' },
+                            search: '?tab=activity'
+                        };
+                    },
+                    getRouteTree() {
+                        return [
+                            {
+                                children: [
+                                    {
+                                        actions: [
+                                            {
+                                                to: '/teams/react',
+                                                type: 'navigate'
+                                            }
+                                        ],
+                                        fullPath: '/teams/:teamId',
+                                        id: 'team-detail',
+                                        isActive: true,
+                                        isExact: true,
+                                        label: 'Team Detail',
+                                        params: { teamId: 'react' },
+                                        parentId: 'teams',
+                                        path: ':teamId',
+                                        segmentType: 'dynamic'
+                                    }
+                                ],
+                                fullPath: '/teams',
+                                id: 'teams',
+                                isActive: true,
+                                label: 'Teams',
+                                path: 'teams',
+                                segmentType: 'static'
+                            }
+                        ];
+                    },
+                    id: 'react-router',
+                    kind: 'react-router',
+                    label: 'React Router',
+                    navigate
+                });
+            }
+        );
 
         render(<App initialEntries={['/react-router']} />);
 
@@ -883,9 +933,178 @@ describe('@devtools/client App routing', () => {
         expect(
             screen.getByRole('link', { name: 'React Router' })
         ).toBeInTheDocument();
-        expect(screen.getByLabelText('React Router page')).toHaveTextContent(
-            'React Router route tree and navigation state.'
+        expect(
+            await screen.findByText('/teams/react?tab=activity')
+        ).toBeInTheDocument();
+        expect(screen.getAllByText('/teams/:teamId')).toHaveLength(2);
+        expect(screen.getAllByText('Team Detail')).toHaveLength(2);
+
+        act(() => {
+            screen.getByRole('button', { name: 'Navigate' }).click();
+        });
+
+        expect(navigate).toHaveBeenCalledWith({
+            replace: undefined,
+            to: '/teams/react'
+        });
+    });
+
+    it('runs router file and custom actions from adapter route nodes', async () => {
+        const openFile = jest.fn();
+
+        setupDevToolsPlugin(
+            { id: 'react-router-actions', label: 'React Router Actions' },
+            (api) => {
+                api.registerRouterAdapter({
+                    getCurrentRoute() {
+                        return {
+                            fullPath: '/reports',
+                            matchedNodeIds: [],
+                            pathname: '/reports'
+                        };
+                    },
+                    getRouteTree() {
+                        return [
+                            {
+                                actions: [
+                                    {
+                                        source: {
+                                            file: 'src/routes/reports.tsx',
+                                            line: 3
+                                        },
+                                        type: 'open-file'
+                                    },
+                                    {
+                                        label: 'Warm cache',
+                                        type: 'warm-cache'
+                                    }
+                                ],
+                                fullPath: '/reports',
+                                id: 'reports',
+                                label: 'Reports',
+                                path: 'reports',
+                                segmentType: 'static'
+                            }
+                        ];
+                    },
+                    id: 'react-router-actions',
+                    kind: 'react-router',
+                    label: 'React Router Actions',
+                    openFile
+                });
+            }
         );
+
+        render(<App initialEntries={['/react-router']} />);
+
+        expect(await screen.findAllByText('/reports')).toHaveLength(2);
+        expect(screen.getByText('No route match')).toBeInTheDocument();
+
+        act(() => {
+            screen.getByRole('button', { name: 'Open file' }).click();
+        });
+
+        expect(openFile).toHaveBeenCalledWith({
+            routeNodeId: 'reports',
+            source: {
+                file: 'src/routes/reports.tsx',
+                line: 3
+            }
+        });
+        expect(
+            screen.getByText('Opening src/routes/reports.tsx.')
+        ).toBeInTheDocument();
+
+        act(() => {
+            screen.getByRole('button', { name: 'Warm cache' }).click();
+        });
+
+        expect(
+            screen.getByText('Action queued: Warm cache.')
+        ).toBeInTheDocument();
+    });
+
+    it('shows an empty route adapter state when no adapters are registered', async () => {
+        setClientRouteEnvironment({ capabilities: ['react-router'] });
+
+        render(<App initialEntries={['/pages-routes']} />);
+
+        expect(
+            await screen.findByText('No router adapters')
+        ).toBeInTheDocument();
+        expect(
+            screen.getByText(
+                'Register a router adapter from a plugin to inspect route records.'
+            )
+        ).toBeInTheDocument();
+    });
+
+    it('refreshes React Router current route on adapter navigation events', async () => {
+        let currentPathname = '/teams/react';
+        const listeners = new Set<() => void>();
+
+        setupDevToolsPlugin(
+            { id: 'react-router-live', label: 'React Router Live' },
+            (api) => {
+                api.registerRouterAdapter({
+                    getCurrentRoute() {
+                        return {
+                            fullPath: currentPathname,
+                            matchedNodeIds: [
+                                currentPathname === '/settings'
+                                    ? 'settings'
+                                    : 'teams'
+                            ],
+                            pathname: currentPathname
+                        };
+                    },
+                    getRouteTree() {
+                        return [
+                            {
+                                fullPath: '/teams',
+                                id: 'teams',
+                                isActive: currentPathname === '/teams/react',
+                                label: 'Teams',
+                                path: 'teams',
+                                segmentType: 'static'
+                            },
+                            {
+                                fullPath: '/settings',
+                                id: 'settings',
+                                isActive: currentPathname === '/settings',
+                                isExact: currentPathname === '/settings',
+                                label: 'Settings',
+                                path: 'settings',
+                                segmentType: 'static'
+                            }
+                        ];
+                    },
+                    id: 'react-router',
+                    kind: 'react-router',
+                    label: 'React Router',
+                    onRouteChange(listener) {
+                        listeners.add(listener);
+
+                        return () => {
+                            listeners.delete(listener);
+                        };
+                    }
+                });
+            }
+        );
+
+        render(<App initialEntries={['/react-router']} />);
+
+        expect(await screen.findByText('/teams/react')).toBeInTheDocument();
+
+        act(() => {
+            currentPathname = '/settings';
+            listeners.forEach((listener) => {
+                listener();
+            });
+        });
+
+        expect(await screen.findByText('/settings')).toBeInTheDocument();
     });
 
     it('adds custom tabs from the plugin API as navigable routes', async () => {

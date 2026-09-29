@@ -9,6 +9,7 @@ import {
     StateCounterDemo,
     SuspenseLazyDemo
 } from '../src/PlainReactDemos';
+import { ReactRouterDemo } from '../src/ReactRouterDemo';
 import { VitePlaygroundApp } from '../src/VitePlaygroundApp';
 
 describe('Vite playground app', () => {
@@ -21,7 +22,25 @@ describe('Vite playground app', () => {
             })
         ).toBeInTheDocument();
         expect(screen.getByText('Plain React fixtures')).toBeInTheDocument();
+        expect(screen.getByText('React Router fixtures')).toBeInTheDocument();
         expect(await screen.findByTestId('lazy-panel')).toBeInTheDocument();
+    });
+
+    it('renders the React Router adapter playground fixture', () => {
+        render(<ReactRouterDemo />);
+
+        expect(screen.getByText('React Router fixtures')).toBeInTheDocument();
+        expect(screen.getByTestId('router-team-route')).toHaveTextContent(
+            'React Router route records'
+        );
+
+        act(() => {
+            screen.getByRole('link', { name: 'Settings' }).click();
+        });
+
+        expect(screen.getByTestId('router-settings-route')).toHaveTextContent(
+            'Settings route rendered'
+        );
     });
 });
 

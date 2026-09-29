@@ -369,6 +369,109 @@
     padding: 3px 7px;
 }
 
+.dt-router-page,
+.dt-router-adapter {
+    align-items: stretch;
+}
+
+.dt-router-summary {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.dt-router-summary > span:last-child {
+    color: var(--dt-fg-muted);
+}
+
+.dt-router-grid {
+    align-items: start;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: minmax(260px, 0.45fr) minmax(0, 1fr);
+}
+
+.dt-router-chain,
+.dt-router-tree,
+.dt-router-tree ul {
+    display: grid;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.dt-router-chain li,
+.dt-router-tree__row {
+    background: var(--dt-bg-muted);
+    border: 1px solid var(--dt-border);
+    border-radius: 6px;
+    display: grid;
+    gap: 8px;
+    padding: 10px;
+}
+
+.dt-router-chain li {
+    border-color: var(--dt-accent);
+}
+
+.dt-router-chain strong,
+.dt-router-tree strong {
+    color: var(--dt-fg);
+}
+
+.dt-router-chain span,
+.dt-router-tree span,
+.dt-router-tree small {
+    color: var(--dt-fg-muted);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.dt-router-tree li[data-active='true'] > .dt-router-tree__row {
+    border-color: var(--dt-accent);
+}
+
+.dt-router-tree ul {
+    margin-left: 16px;
+    margin-top: 8px;
+}
+
+.dt-router-tree__row {
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.dt-router-tree__body,
+.dt-router-tree__actions {
+    display: grid;
+    gap: 4px;
+}
+
+.dt-router-tree__actions {
+    align-content: center;
+    grid-auto-flow: column;
+}
+
+.dt-router-tree__actions button {
+    background: var(--dt-bg);
+    border: 1px solid var(--dt-border);
+    border-radius: 6px;
+    color: var(--dt-fg);
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    min-height: 30px;
+    padding: 0 10px;
+}
+
+.dt-router-tree__actions button:focus-visible,
+.dt-router-tree__actions button:hover {
+    border-color: var(--dt-focus);
+    outline: 0;
+}
+
 .dt-assets-page {
     align-items: stretch;
 }
@@ -675,6 +778,10 @@
 
 @media (max-width: 860px) {
     .dt-assets-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .dt-router-grid {
         grid-template-columns: 1fr;
     }
 

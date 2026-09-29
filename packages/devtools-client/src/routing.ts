@@ -2,9 +2,11 @@ import {
     ReactDevToolsContextHookKeys,
     createDevToolsContext,
     getCustomTabs,
+    getRegisteredRouterAdapters,
     registerDevToolsPluginContext,
     type CustomInspectorOptions,
-    type CustomTab
+    type CustomTab,
+    type RegisteredRouterAdapter
 } from '@devtools/kit';
 import { registerClientCommandContext } from './commands';
 
@@ -34,6 +36,7 @@ export interface ClientRouteRegistrySnapshot {
     customInspectors: CustomInspectorOptions[];
     customTabs: CustomTab[];
     environment: ClientRouteEnvironment;
+    routerAdapters: RegisteredRouterAdapter[];
 }
 
 type RouteListener = () => void;
@@ -150,7 +153,8 @@ const listeners = new Set<RouteListener>();
 let currentSnapshot: ClientRouteRegistrySnapshot = {
     customInspectors: [],
     customTabs: [],
-    environment: currentEnvironment
+    environment: currentEnvironment,
+    routerAdapters: []
 };
 let initialized = false;
 
@@ -290,10 +294,16 @@ function notifyRouteListeners(): void {
 }
 
 function refreshRouteSnapshot(): void {
+    const routerAdapters = getRegisteredRouterAdapters();
+
     currentSnapshot = {
         customInspectors: Array.from(customInspectors.values()),
         customTabs: getCustomTabs(),
-        environment: currentEnvironment
+        environment: normalizeRouterCapabilities(
+            currentEnvironment,
+            routerAdapters
+        ),
+        routerAdapters
     };
 }
 
@@ -343,6 +353,34 @@ function normalizeEnvironment(
     return {
         capabilities: Array.from(capabilities),
         transport
+    };
+}
+
+function normalizeRouterCapabilities(
+    environment: ClientRouteEnvironment,
+    routerAdapters: RegisteredRouterAdapter[]
+): ClientRouteEnvironment {
+    const capabilities = new Set(environment.capabilities);
+
+    if (
+        routerAdapters.some(
+            (registration) => registration.adapter.kind === 'react-router'
+        )
+    ) {
+        capabilities.add('react-router');
+    }
+
+    if (
+        routerAdapters.some(
+            (registration) => registration.adapter.kind === 'nextjs'
+        )
+    ) {
+        capabilities.add('next');
+    }
+
+    return {
+        ...environment,
+        capabilities: Array.from(capabilities)
     };
 }
 
