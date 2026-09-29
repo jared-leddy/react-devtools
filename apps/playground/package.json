@@ -1,6 +1,6 @@
 {
     "name": "@devtools/playground",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "private": true,
     "license": "UNLICENSED",
     "description": "Live demo playground for React DevTools development across the Pages Router and the App Router.",
@@ -15,7 +15,9 @@
         "test:watch": "jest --coverage --watch --passWithNoTests --config jest.config.ts"
     },
     "dependencies": {
+        "@devtools/nekuta-plugin": "*",
         "@devtools/nextjs-plugin": "*",
+        "@nekuta/core": "^0.1.0",
         "next": "^15.5.0",
         "react": "^19.1.1",
         "react-dom": "^19.1.1"

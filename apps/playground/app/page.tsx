@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { NekutaDemos } from '../components/NekutaDemos';
 
 export default function HomePage() {
     return (
@@ -16,6 +17,7 @@ export default function HomePage() {
                     Pages Router dynamic route
                 </Link>
             </nav>
+            <NekutaDemos />
         </main>
     );
 }

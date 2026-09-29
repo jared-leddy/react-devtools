@@ -8,8 +8,13 @@ import nextJest from 'next/jest.js';
 const createJestConfig = nextJest({ dir: '.' });
 
 const config: Config.InitialOptions = {
+    moduleNameMapper: {
+        '^@devtools/nekuta-plugin$':
+            '<rootDir>/../../packages/devtools-plugin-nekuta/src/index.ts'
+    },
     setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
     testEnvironment: 'jsdom',
+    transformIgnorePatterns: ['/node_modules/(?!@nekuta/core/)'],
     collectCoverageFrom: ['components/**/*.tsx', 'stores/**/*.ts'],
     coverageReporters: ['html', 'json', 'lcov', 'text-summary'],
     coverageThreshold: {
