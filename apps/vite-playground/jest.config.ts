@@ -15,6 +15,7 @@ const config: Config.InitialOptions = {
         '^@nekuta/core$': '<rootDir>/tests/nekutaCoreMock.tsx',
         '^@devtools/api$': '<rootDir>/tests/apiMock.ts',
         '^@devtools/kit$': '<rootDir>/tests/kitMock.ts',
+        '^.+\\.(svg|txt)(\\?url)?$': '<rootDir>/tests/fileMock.ts',
         '^(\\.{1,2}/.*)\\.js$': '$1',
         '\\.(css)$': 'identity-obj-proxy'
     },

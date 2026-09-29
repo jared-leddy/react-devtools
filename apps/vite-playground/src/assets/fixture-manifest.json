@@ -1,0 +1,5 @@
+{
+    "id": "vite-asset-fixture",
+    "purpose": "Asset explorer smoke fixture",
+    "formats": ["svg", "json", "txt"]
+}

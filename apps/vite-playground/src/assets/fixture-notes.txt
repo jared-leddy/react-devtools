@@ -1,0 +1,5 @@
+React DevTools Vite asset explorer fixture.
+
+This text file is intentionally imported by the Vite playground so the asset
+panel can exercise text previews and importer metadata without relying on the
+Next.js playground.

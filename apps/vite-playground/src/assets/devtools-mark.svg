@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="96" viewBox="0 0 160 96" role="img" aria-labelledby="title desc">
+    <title id="title">React DevTools Vite fixture mark</title>
+    <desc id="desc">A geometric fixture image for the Vite asset explorer.</desc>
+    <rect width="160" height="96" rx="12" fill="#181c24" />
+    <circle cx="48" cy="48" r="24" fill="#67d3f3" />
+    <path d="M84 24h44l-22 48z" fill="#8bd49c" />
+    <rect x="24" y="72" width="112" height="6" rx="3" fill="#f6d365" />
+</svg>

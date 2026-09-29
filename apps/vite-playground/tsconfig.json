@@ -16,6 +16,7 @@
                 "../../packages/devtools-react-router-plugin/src/index.ts"
             ]
         },
+        "resolveJsonModule": true,
         "strict": true,
         "target": "ES2022",
         "types": ["node", "vite/client"]

@@ -1,3 +1,4 @@
+import { AssetExplorerFixtures } from './AssetExplorerFixtures';
 import { DevToolsPluginContext } from './DevToolsPluginContext';
 import { NekutaDemos } from './NekutaDemos';
 import { PlainReactDemos } from './PlainReactDemos';
@@ -17,6 +18,7 @@ export function VitePlaygroundApp() {
                 </p>
             </header>
             <PlainReactDemos />
+            <AssetExplorerFixtures />
             <ReactRouterDemo />
             <NekutaDemos />
         </main>
