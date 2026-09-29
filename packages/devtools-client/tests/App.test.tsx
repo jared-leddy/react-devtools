@@ -1243,10 +1243,10 @@ describe('@devtools/client App routing', () => {
         ).toHaveTextContent('Feature Flags');
     });
 
-    it('adds custom inspectors registered by setupDevToolsPlugin as navigable tabs', async () => {
+    it('adds the Nekuta inspector as a generic custom inspector tab', async () => {
         render(
             <App
-                initialEntries={['/custom-inspector-tab-view/nekuta-inspector']}
+                initialEntries={['/custom-inspector-tab-view/nekuta-stores']}
             />
         );
 
@@ -1258,8 +1258,8 @@ describe('@devtools/client App routing', () => {
                 },
                 (api) => {
                     api.addInspector({
-                        id: 'nekuta-inspector',
-                        label: 'Nekuta Inspector'
+                        id: 'nekuta-stores',
+                        label: 'Nekuta Stores'
                     });
                 }
             );
@@ -1267,15 +1267,21 @@ describe('@devtools/client App routing', () => {
 
         await waitFor(() => {
             expect(
-                screen.getByRole('link', { name: 'Nekuta Inspector' })
+                screen.getByRole('link', { name: 'Nekuta Stores' })
             ).toBeInTheDocument();
         });
         expect(
-            screen.getByRole('heading', { name: 'Nekuta Inspector' })
-        ).toBeInTheDocument();
+            screen.getByRole('link', { name: 'Nekuta Stores' })
+        ).toHaveAttribute('href', '/custom-inspector-tab-view/nekuta-stores');
         expect(
-            screen.getByLabelText('Nekuta Inspector page')
-        ).toHaveTextContent('No inspector nodes');
+            screen.queryByRole('link', { name: 'Nekuta' })
+        ).not.toBeInTheDocument();
+        expect(
+            screen.getByRole('heading', { name: 'Nekuta Stores' })
+        ).toBeInTheDocument();
+        expect(screen.getByLabelText('Nekuta Stores page')).toHaveTextContent(
+            'No inspector nodes'
+        );
     });
 
     it('renders custom inspector tree, state, actions, filters, and editable fields', async () => {

@@ -14,7 +14,7 @@ export type ClientRouteKind = 'customInspector' | 'customTab' | 'page';
 export type ClientRouteCategory =
     'core' | 'runtime' | 'vite' | 'integrations' | 'custom' | 'preferences';
 export type ClientRouteCapability =
-    'vite' | 'source-inspector' | 'react-router' | 'next' | 'nekuta';
+    'vite' | 'source-inspector' | 'react-router' | 'next';
 
 export interface ClientRouteEnvironment {
     capabilities: ClientRouteCapability[];
@@ -73,7 +73,7 @@ export const BUILT_IN_ROUTES: ClientRoute[] = [
         kind: 'page',
         label: 'Pages/Routes',
         path: '/pages-routes',
-        requiresAny: ['react-router', 'next', 'nekuta'],
+        requiresAny: ['react-router', 'next'],
         summary: 'Detected router pages and route records.'
     },
     {
@@ -128,15 +128,6 @@ export const BUILT_IN_ROUTES: ClientRoute[] = [
         path: '/next',
         requires: ['next'],
         summary: 'Next.js routing, app segments, and runtime metadata.'
-    },
-    {
-        category: 'integrations',
-        id: 'nekuta',
-        kind: 'page',
-        label: 'Nekuta',
-        path: '/nekuta',
-        requires: ['nekuta'],
-        summary: 'Nekuta router and store integration details.'
     },
     {
         category: 'preferences',

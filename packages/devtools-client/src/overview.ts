@@ -164,7 +164,6 @@ function formatTransportLabel(
 
 function formatCapabilityLabel(capability: string): string {
     const labels: Record<string, string> = {
-        nekuta: 'Nekuta',
         next: 'Next.js',
         'react-router': 'React Router',
         'source-inspector': 'Source Inspector',
