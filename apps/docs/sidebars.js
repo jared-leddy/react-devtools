@@ -30,6 +30,7 @@ const sidebars = {
             },
             items: [
                 'plugin-authoring/overview',
+                'plugin-authoring/store-adapters',
                 'plugin-authoring/router-adapters'
             ]
         },
