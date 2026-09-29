@@ -1,7 +1,10 @@
 import {
     Component,
+    Fragment,
+    Profiler,
     Suspense,
     createContext,
+    forwardRef,
     lazy,
     memo,
     useContext,
@@ -157,6 +160,38 @@ function MemoStatusBase({ label }: { label: string }) {
 
 export const MemoStatusDemo = memo(MemoStatusBase);
 
+const ForwardedFiberLabel = forwardRef<HTMLSpanElement, { label: string }>(
+    function ForwardedFiberLabel({ label }, ref) {
+        return (
+            <span ref={ref} data-testid="fiber-forward-ref">
+                {label}
+            </span>
+        );
+    }
+);
+
+export function FiberShapeDemo() {
+    const rows = ['root host child', 'memo sibling', 'keyed list leaf'];
+
+    return (
+        <article className="card">
+            <h3>Fiber shape fixtures</h3>
+            <Profiler id="vite-fiber-shapes" onRender={() => undefined}>
+                <Fragment>
+                    <ForwardedFiberLabel label="forwardRef child" />
+                    <ul className="fiber-shape-list">
+                        {rows.map((row) => (
+                            <li data-testid="fiber-shape-row" key={row}>
+                                {row}
+                            </li>
+                        ))}
+                    </ul>
+                </Fragment>
+            </Profiler>
+        </article>
+    );
+}
+
 export function SuspenseLazyDemo() {
     return (
         <article className="card">
@@ -263,6 +298,7 @@ export function PlainReactDemos() {
                 <ReducerCounterDemo />
                 <ContextProviderDemo />
                 <MemoStatusDemo label="Memo status" />
+                <FiberShapeDemo />
                 <SuspenseLazyDemo />
                 <ErrorBoundaryDemo />
                 <ClassStateDemo />

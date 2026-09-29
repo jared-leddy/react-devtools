@@ -120,6 +120,54 @@ section h2 {
     border-radius: 6px;
 }
 
+.fiber-shape-list {
+    display: grid;
+    gap: 6px;
+    padding-left: 18px;
+    margin: 12px 0 0;
+    color: #d7dce6;
+}
+
+.asset-fixture-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.asset-fixture-card {
+    min-height: 220px;
+}
+
+.asset-fixture-image {
+    display: block;
+    width: min(100%, 240px);
+    height: auto;
+    margin-bottom: 14px;
+    border: 1px solid #3a4254;
+    border-radius: 8px;
+}
+
+.asset-fixture-details {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+}
+
+.asset-fixture-details div {
+    display: grid;
+    gap: 4px;
+}
+
+.asset-fixture-details dt {
+    color: #9aa6ba;
+    font-size: 13px;
+}
+
+.asset-fixture-details dd {
+    margin: 0;
+    color: #d7dce6;
+}
+
 .router-fixture {
     display: grid;
     gap: 16px;

@@ -1,10 +1,12 @@
 import { act, render, screen } from '@testing-library/react';
 import { registerNekutaDevTools } from '@devtools/nekuta-plugin';
+import { AssetExplorerFixtures } from '../src/AssetExplorerFixtures';
 import { NekutaDemos } from '../src/NekutaDemos';
 import {
     ClassStateDemo,
     ContextProviderDemo,
     ErrorBoundaryDemo,
+    FiberShapeDemo,
     MemoStatusDemo,
     PlainReactDemos,
     ReducerCounterDemo,
@@ -24,6 +26,7 @@ describe('Vite playground app', () => {
             })
         ).toBeInTheDocument();
         expect(screen.getByText('Plain React fixtures')).toBeInTheDocument();
+        expect(screen.getByText('Asset explorer fixtures')).toBeInTheDocument();
         expect(screen.getByText('React Router fixtures')).toBeInTheDocument();
         expect(screen.getByText('Nekuta store fixtures')).toBeInTheDocument();
         expect(await screen.findByTestId('lazy-panel')).toBeInTheDocument();
@@ -204,6 +207,15 @@ describe('plain React playground demos', () => {
         );
     });
 
+    it('mounts explicit Fiber shape fixtures', () => {
+        render(<FiberShapeDemo />);
+
+        expect(screen.getByTestId('fiber-forward-ref')).toHaveTextContent(
+            'forwardRef child'
+        );
+        expect(screen.getAllByTestId('fiber-shape-row')).toHaveLength(3);
+    });
+
     it('mounts the Suspense boundary and resolves the lazy child', async () => {
         render(<SuspenseLazyDemo />);
 
@@ -257,9 +269,27 @@ describe('plain React playground demos', () => {
             screen.getByText('nested context providers')
         ).toBeInTheDocument();
         expect(screen.getByText('memo component')).toBeInTheDocument();
+        expect(screen.getByText('Fiber shape fixtures')).toBeInTheDocument();
         expect(screen.getByText('Suspense boundary')).toBeInTheDocument();
         expect(screen.getByText('error boundary fixture')).toBeInTheDocument();
         expect(screen.getByText('class component')).toBeInTheDocument();
         expect(await screen.findByTestId('lazy-panel')).toBeInTheDocument();
+    });
+});
+
+describe('asset explorer playground fixtures', () => {
+    it('renders imported image and text assets for the Vite asset explorer', () => {
+        render(<AssetExplorerFixtures />);
+
+        expect(screen.getByTestId('asset-fixture-image')).toHaveAttribute(
+            'src',
+            'test-file-stub'
+        );
+        expect(screen.getByTestId('asset-fixture-manifest')).toHaveTextContent(
+            'vite-asset-fixture: svg, json, txt'
+        );
+        expect(screen.getByTestId('asset-fixture-notes')).toHaveTextContent(
+            'test-file-stub'
+        );
     });
 });
