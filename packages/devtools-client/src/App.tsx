@@ -554,11 +554,19 @@ function RoutePage({
         return <GraphPage />;
     }
 
-    if (route.id === 'react-router' || route.id === 'pages-routes') {
+    if (
+        route.id === 'react-router' ||
+        route.id === 'next' ||
+        route.id === 'pages-routes'
+    ) {
         return (
             <RouterAdaptersPage
                 adapterKind={
-                    route.id === 'react-router' ? 'react-router' : undefined
+                    route.id === 'react-router'
+                        ? 'react-router'
+                        : route.id === 'next'
+                          ? 'nextjs'
+                          : undefined
                 }
                 route={route}
             />

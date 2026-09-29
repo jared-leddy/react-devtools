@@ -5,6 +5,9 @@
         "strict": true,
         "types": ["jest", "node", "@testing-library/jest-dom"],
         "paths": {
+            "@devtools/nextjs-plugin": [
+                "../../packages/devtools-nextjs-plugin/src/index.ts"
+            ],
             "@/*": ["./*"]
         }
     },

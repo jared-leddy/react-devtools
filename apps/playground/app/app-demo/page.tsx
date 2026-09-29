@@ -11,6 +11,11 @@ export default function AppDemoPage() {
             </p>
             <h1>App Router demo</h1>
             <p>Plain React components rendered through the App Router.</p>
+            <p>
+                <Link href="/app-demo/react">
+                    Open dynamic App Router route
+                </Link>
+            </p>
             <PlainReactDemos />
         </main>
     );

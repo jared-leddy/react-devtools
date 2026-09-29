@@ -16,6 +16,11 @@ export default function PagesDemoPage(
             </p>
             <h1>Pages Router demo</h1>
             <p>Plain React components rendered through the Pages Router.</p>
+            <p>
+                <Link href="/pages-demo/devtools">
+                    Open dynamic Pages Router route
+                </Link>
+            </p>
             <PlainReactDemos />
         </main>
     );
