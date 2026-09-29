@@ -250,6 +250,20 @@ describe('@devtools/nekuta-plugin', () => {
 
         expect(store.count).toBe(7);
         expect(screen.getByText('7')).toBeTruthy();
+
+        act(() => {
+            editHandlers.get(NEKUTA_INSPECTOR_ID)?.({
+                inspectorId: NEKUTA_INSPECTOR_ID,
+                nodeId: 'counter',
+                path: ['state', 0, 'count'],
+                state: {
+                    value: 9
+                }
+            });
+        });
+
+        expect(store.count).toBe(9);
+        expect(screen.getByText('9')).toBeTruthy();
         expect(
             stateHandlers.get(NEKUTA_INSPECTOR_ID)?.({
                 inspectorId: NEKUTA_INSPECTOR_ID,
@@ -262,14 +276,14 @@ describe('@devtools/nekuta-plugin', () => {
                         {
                             editable: false,
                             key: 'double',
-                            value: 14
+                            value: 18
                         }
                     ],
                     state: [
                         {
                             editable: true,
                             key: 'count',
-                            value: 7
+                            value: 9
                         },
                         {
                             editable: true,
@@ -280,7 +294,7 @@ describe('@devtools/nekuta-plugin', () => {
                 })
             })
         );
-        expect(api.setInspectorState).toHaveBeenCalledWith(
+        expect(api.setInspectorState).toHaveBeenLastCalledWith(
             NEKUTA_INSPECTOR_ID,
             'counter',
             expect.objectContaining({
@@ -288,7 +302,7 @@ describe('@devtools/nekuta-plugin', () => {
                     {
                         editable: true,
                         key: 'count',
-                        value: 7
+                        value: 9
                     },
                     {
                         editable: true,

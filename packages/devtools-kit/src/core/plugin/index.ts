@@ -65,11 +65,35 @@ interface BufferedPlugin {
     storage?: PluginSettingsStorage | null;
 }
 
+const DEVTOOLS_PLUGIN_BRIDGE_KEY = '__REACT_DEVTOOLS_PLUGIN_BRIDGE__';
+
+interface PluginBridgeWindow {
+    parent?: PluginBridgeWindow;
+    [DEVTOOLS_PLUGIN_BRIDGE_KEY]?: DevToolsPluginBridge;
+}
+
+export interface DevToolsPluginBridge {
+    editCustomInspectorState(payload: EditInspectorStateRequest): Promise<void>;
+    getCustomInspectors(): CustomInspectorOptions[];
+    getCustomTabs(): CustomTab[];
+    sendCustomInspectorState(
+        inspectorId: string,
+        nodeId: string
+    ): Promise<InspectorStateResponse>;
+    sendCustomInspectorTree(
+        inspectorId: string,
+        filter?: string
+    ): Promise<InspectorTreeResponse>;
+    subscribe(listener: () => void): () => void;
+}
+
 const bufferedPlugins: BufferedPlugin[] = [];
 const customCommands = new Map<string, CustomCommand>();
+const customInspectors = new Map<string, CustomInspectorOptions>();
 const customTabs = new Map<string, CustomTab>();
 const installedPlugins = new Map<string, DevToolsPlugin>();
 const inspectorApis = new Map<string, DevToolsPluginAPI>();
+const pluginBridgeListeners = new Set<() => void>();
 const routerAdapters = new Map<string, RegisteredRouterAdapter>();
 let activeContext: DevToolsContext | null = null;
 let activeStorage: PluginSettingsStorage | null | undefined;
@@ -141,6 +165,7 @@ export class DevToolsPluginAPI {
 
     addInspector(options: CustomInspectorOptions): void {
         this.inspectors.set(options.id, options);
+        customInspectors.set(options.id, options);
         inspectorApis.set(options.id, this);
         void this.context.hooks.callHook(
             ReactDevToolsContextHookKeys.ADD_INSPECTOR,
@@ -149,6 +174,7 @@ export class DevToolsPluginAPI {
                 plugin: this.plugin
             }
         );
+        notifyPluginBridgeListeners();
     }
 
     registerInspector(options: CustomInspectorOptions): void {
@@ -327,6 +353,7 @@ export function addCustomTab(tab: CustomTab): void {
         ReactDevToolsContextHookKeys.CUSTOM_TAB_ADDED,
         { tab }
     );
+    notifyPluginBridgeListeners();
 }
 
 export function addCustomCommand(command: CustomCommand): void {
@@ -360,6 +387,10 @@ export function getCustomTabs(): CustomTab[] {
     return Array.from(customTabs.values());
 }
 
+export function getCustomInspectors(): CustomInspectorOptions[] {
+    return Array.from(customInspectors.values());
+}
+
 export function getRegisteredRouterAdapters(): RegisteredRouterAdapter[] {
     return Array.from(routerAdapters.values());
 }
@@ -368,35 +399,58 @@ export async function sendCustomInspectorTree(
     inspectorId: string,
     filter?: string
 ): Promise<InspectorTreeResponse> {
-    return (
-        (await inspectorApis
-            .get(inspectorId)
-            ?.sendInspectorTree(inspectorId, filter)) ?? {
-            inspectorId,
-            rootNodes: []
-        }
-    );
+    const localApi = inspectorApis.get(inspectorId);
+
+    if (localApi) {
+        return localApi.sendInspectorTree(inspectorId, filter);
+    }
+
+    const parentBridge = getParentDevToolsPluginBridge();
+
+    if (parentBridge) {
+        return parentBridge.sendCustomInspectorTree(inspectorId, filter);
+    }
+
+    return {
+        inspectorId,
+        rootNodes: []
+    };
 }
 
 export async function sendCustomInspectorState(
     inspectorId: string,
     nodeId: string
 ): Promise<InspectorStateResponse> {
-    return (
-        (await inspectorApis
-            .get(inspectorId)
-            ?.sendInspectorState(inspectorId, nodeId)) ?? {
-            inspectorId,
-            nodeId,
-            state: {}
-        }
-    );
+    const localApi = inspectorApis.get(inspectorId);
+
+    if (localApi) {
+        return localApi.sendInspectorState(inspectorId, nodeId);
+    }
+
+    const parentBridge = getParentDevToolsPluginBridge();
+
+    if (parentBridge) {
+        return parentBridge.sendCustomInspectorState(inspectorId, nodeId);
+    }
+
+    return {
+        inspectorId,
+        nodeId,
+        state: {}
+    };
 }
 
 export async function editCustomInspectorState(
     payload: EditInspectorStateRequest
 ): Promise<void> {
-    await inspectorApis.get(payload.inspectorId)?.editInspectorState(payload);
+    const localApi = inspectorApis.get(payload.inspectorId);
+
+    if (localApi) {
+        await localApi.editInspectorState(payload);
+        return;
+    }
+
+    await getParentDevToolsPluginBridge()?.editCustomInspectorState(payload);
 }
 
 export function registerDevToolsPluginContext(
@@ -405,6 +459,7 @@ export function registerDevToolsPluginContext(
     activeContext = options.context;
     activeStorage = options.storage;
     rootIsAvailable = options.hasRoot ?? true;
+    installDevToolsPluginBridge();
 
     if (!rootIsAvailable) {
         return;
@@ -428,11 +483,62 @@ export function resetDevToolsPluginRegistry(): void {
     rootIsAvailable = false;
     bufferedPlugins.length = 0;
     customCommands.clear();
+    customInspectors.clear();
     customTabs.clear();
     installedPlugins.clear();
     inspectorApis.clear();
+    pluginBridgeListeners.clear();
     routerAdapters.clear();
     clearPluginSettingsMemory();
+}
+
+export function installDevToolsPluginBridge(
+    targetWindow: PluginBridgeWindow | undefined = getCurrentWindow()
+): DevToolsPluginBridge | undefined {
+    if (!targetWindow) {
+        return undefined;
+    }
+
+    if (targetWindow[DEVTOOLS_PLUGIN_BRIDGE_KEY]) {
+        return targetWindow[DEVTOOLS_PLUGIN_BRIDGE_KEY];
+    }
+
+    const bridge: DevToolsPluginBridge = {
+        editCustomInspectorState,
+        getCustomInspectors,
+        getCustomTabs,
+        sendCustomInspectorState,
+        sendCustomInspectorTree,
+        subscribe(listener) {
+            pluginBridgeListeners.add(listener);
+
+            return () => {
+                pluginBridgeListeners.delete(listener);
+            };
+        }
+    };
+
+    targetWindow[DEVTOOLS_PLUGIN_BRIDGE_KEY] = bridge;
+
+    return bridge;
+}
+
+export function getParentDevToolsPluginBridge(): DevToolsPluginBridge | null {
+    const currentWindow = getCurrentWindow();
+
+    if (
+        !currentWindow ||
+        !currentWindow.parent ||
+        currentWindow.parent === currentWindow
+    ) {
+        return null;
+    }
+
+    try {
+        return currentWindow.parent[DEVTOOLS_PLUGIN_BRIDGE_KEY] ?? null;
+    } catch {
+        return null;
+    }
 }
 
 function flushBufferedPlugins(): void {
@@ -443,6 +549,18 @@ function flushBufferedPlugins(): void {
     while (bufferedPlugins.length > 0) {
         installPlugin(bufferedPlugins.shift()!, activeContext);
     }
+}
+
+function notifyPluginBridgeListeners(): void {
+    pluginBridgeListeners.forEach((listener) => {
+        listener();
+    });
+}
+
+function getCurrentWindow(): PluginBridgeWindow | undefined {
+    return typeof globalThis === 'object' && 'window' in globalThis
+        ? (globalThis as { window?: PluginBridgeWindow }).window
+        : undefined;
 }
 
 function installPlugin(plugin: BufferedPlugin, context: DevToolsContext): void {

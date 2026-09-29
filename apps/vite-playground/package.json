@@ -1,6 +1,6 @@
 {
     "name": "@devtools/vite-playground",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "private": true,
     "license": "UNLICENSED",
     "description": "Vite-based playground for exercising the React DevTools Vite plugin delivery mode.",
@@ -14,8 +14,11 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
+        "@devtools/nekuta-plugin": "*",
+        "@devtools/kit": "*",
         "@devtools/react-router-plugin": "*",
         "@devtools/vite-plugin": "*",
+        "@nekuta/core": "^0.1.0",
         "react": "^19.1.1",
         "react-dom": "^19.1.1",
         "react-router": "^7.9.1"

@@ -1,9 +1,12 @@
+import { DevToolsPluginContext } from './DevToolsPluginContext';
+import { NekutaDemos } from './NekutaDemos';
 import { PlainReactDemos } from './PlainReactDemos';
 import { ReactRouterDemo } from './ReactRouterDemo';
 
 export function VitePlaygroundApp() {
     return (
         <main className="shell">
+            <DevToolsPluginContext />
             <header className="hero">
                 <p className="eyebrow">Vite delivery mode</p>
                 <h1>React DevTools Vite Playground</h1>
@@ -15,6 +18,7 @@ export function VitePlaygroundApp() {
             </header>
             <PlainReactDemos />
             <ReactRouterDemo />
+            <NekutaDemos />
         </main>
     );
 }

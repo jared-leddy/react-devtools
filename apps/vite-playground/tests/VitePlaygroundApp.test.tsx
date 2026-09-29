@@ -1,4 +1,6 @@
 import { act, render, screen } from '@testing-library/react';
+import { registerNekutaDevTools } from '@devtools/nekuta-plugin';
+import { NekutaDemos } from '../src/NekutaDemos';
 import {
     ClassStateDemo,
     ContextProviderDemo,
@@ -23,6 +25,7 @@ describe('Vite playground app', () => {
         ).toBeInTheDocument();
         expect(screen.getByText('Plain React fixtures')).toBeInTheDocument();
         expect(screen.getByText('React Router fixtures')).toBeInTheDocument();
+        expect(screen.getByText('Nekuta store fixtures')).toBeInTheDocument();
         expect(await screen.findByTestId('lazy-panel')).toBeInTheDocument();
     });
 
@@ -40,6 +43,86 @@ describe('Vite playground app', () => {
 
         expect(screen.getByTestId('router-settings-route')).toHaveTextContent(
             'Settings route rendered'
+        );
+    });
+});
+
+describe('Nekuta Vite playground demos', () => {
+    beforeEach(() => {
+        jest.mocked(registerNekutaDevTools).mockReset();
+    });
+
+    it('registers the Nekuta DevTools plugin and renders Vite stores', () => {
+        render(<NekutaDemos />);
+
+        expect(registerNekutaDevTools).toHaveBeenCalledWith({
+            label: 'Nekuta Vite Playground',
+            nekuta: expect.objectContaining({
+                _s: expect.any(Map)
+            })
+        });
+        expect(
+            screen.getByRole('heading', { name: 'Nekuta counter store' })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole('heading', { name: 'Nekuta todo store' })
+        ).toBeInTheDocument();
+        expect(screen.getByTestId('nekuta-counter-count')).toHaveTextContent(
+            '0'
+        );
+        expect(screen.getByTestId('nekuta-open-todos')).toHaveTextContent('1');
+    });
+
+    it('updates the counter store through Nekuta actions', () => {
+        render(<NekutaDemos />);
+
+        act(() => {
+            screen.getByRole('button', { name: 'Increment' }).click();
+        });
+
+        expect(screen.getByTestId('nekuta-counter-count')).toHaveTextContent(
+            '1'
+        );
+        expect(screen.getByTestId('nekuta-counter-doubled')).toHaveTextContent(
+            '2'
+        );
+
+        act(() => {
+            screen.getByRole('button', { name: 'Reset' }).click();
+        });
+
+        expect(screen.getByTestId('nekuta-counter-count')).toHaveTextContent(
+            '0'
+        );
+    });
+
+    it('updates the todo store through Nekuta actions', () => {
+        render(<NekutaDemos />);
+
+        act(() => {
+            screen.getByRole('button', { name: 'Add todo' }).click();
+        });
+
+        expect(screen.getByTestId('nekuta-todo-list')).toHaveTextContent(
+            'Review panel edit'
+        );
+        expect(screen.getByTestId('nekuta-open-todos')).toHaveTextContent('2');
+
+        act(() => {
+            screen.getByRole('button', { name: 'Toggle first todo' }).click();
+        });
+
+        expect(screen.getByTestId('nekuta-open-todos')).toHaveTextContent('1');
+    });
+
+    it('mounts standalone Nekuta store cards for focused UAT checks', () => {
+        render(<NekutaDemos />);
+
+        expect(screen.getByTestId('nekuta-counter-count')).toHaveTextContent(
+            '0'
+        );
+        expect(screen.getByTestId('nekuta-todo-list')).toHaveTextContent(
+            'Open the Nekuta custom inspector'
         );
     });
 });

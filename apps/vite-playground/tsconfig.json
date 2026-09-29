@@ -8,6 +8,10 @@
         "noEmit": true,
         "baseUrl": ".",
         "paths": {
+            "@devtools/kit": ["../../packages/devtools-kit/src/index.ts"],
+            "@devtools/nekuta-plugin": [
+                "../../packages/devtools-plugin-nekuta/src/index.ts"
+            ],
             "@devtools/react-router-plugin": [
                 "../../packages/devtools-react-router-plugin/src/index.ts"
             ]
