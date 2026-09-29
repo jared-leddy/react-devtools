@@ -1,7 +1,14 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
+        "allowJs": true,
+        "baseUrl": ".",
         "noEmit": true,
+        "paths": {
+            "@devtools/core/value-format": [
+                "../devtools-core/src/valueFormat.ts"
+            ]
+        },
         "rootDir": ".",
         "types": ["jest", "node"]
     },
