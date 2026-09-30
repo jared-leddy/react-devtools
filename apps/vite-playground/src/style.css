@@ -168,6 +168,94 @@ section h2 {
     color: #d7dce6;
 }
 
+.stress-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.stress-toolbar p {
+    margin: 0;
+    color: #bdc5d3;
+}
+
+.stress-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.root-grid {
+    display: grid;
+    gap: 10px;
+}
+
+.dynamic-root-host,
+.portal-target {
+    min-height: 80px;
+    padding: 10px;
+    background: #111722;
+    border: 1px dashed #3a4254;
+    border-radius: 8px;
+}
+
+.root-surface,
+.portal-child {
+    display: grid;
+    gap: 4px;
+    padding: 10px 12px;
+    color: #eef9ff;
+    background: #17303b;
+    border: 1px solid #2e6d82;
+    border-radius: 6px;
+}
+
+.root-surface span,
+.portal-child,
+.root-surface small {
+    color: #bdc5d3;
+}
+
+.iframe-root-fixture {
+    width: 100%;
+    min-height: 112px;
+    color-scheme: dark;
+    background: #111722;
+    border: 1px solid #3a4254;
+    border-radius: 8px;
+}
+
+.stress-tree-card {
+    margin-top: 16px;
+}
+
+.stress-tree {
+    display: grid;
+    max-height: 360px;
+    overflow: auto;
+    border: 1px solid #2a2f3c;
+    border-radius: 8px;
+}
+
+.stress-node {
+    display: flex;
+    justify-content: space-between;
+    min-height: 28px;
+    padding: 6px 10px;
+    color: #d7dce6;
+    border-bottom: 1px solid #242936;
+}
+
+.stress-node:last-child {
+    border-bottom: 0;
+}
+
+.stress-node small {
+    color: #9aa6ba;
+}
+
 .router-fixture {
     display: grid;
     gap: 16px;
