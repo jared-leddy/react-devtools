@@ -1,5 +1,6 @@
 import { AssetExplorerFixtures } from './AssetExplorerFixtures';
 import { DevToolsPluginContext } from './DevToolsPluginContext';
+import { MultiRootStressPlayground } from './MultiRootStressPlayground';
 import { NekutaDemos } from './NekutaDemos';
 import { PlainReactDemos } from './PlainReactDemos';
 import { ReactRouterDemo } from './ReactRouterDemo';
@@ -19,6 +20,7 @@ export function VitePlaygroundApp() {
             </header>
             <PlainReactDemos />
             <AssetExplorerFixtures />
+            <MultiRootStressPlayground />
             <ReactRouterDemo />
             <NekutaDemos />
         </main>

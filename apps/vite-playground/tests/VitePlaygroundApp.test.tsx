@@ -1,6 +1,7 @@
 import { act, render, screen } from '@testing-library/react';
 import { registerNekutaDevTools } from '@devtools/nekuta-plugin';
 import { AssetExplorerFixtures } from '../src/AssetExplorerFixtures';
+import { MultiRootStressPlayground } from '../src/MultiRootStressPlayground';
 import { NekutaDemos } from '../src/NekutaDemos';
 import {
     ClassStateDemo,
@@ -27,6 +28,9 @@ describe('Vite playground app', () => {
         ).toBeInTheDocument();
         expect(screen.getByText('Plain React fixtures')).toBeInTheDocument();
         expect(screen.getByText('Asset explorer fixtures')).toBeInTheDocument();
+        expect(
+            screen.getByText('Multi-root, portal, and stress fixtures')
+        ).toBeInTheDocument();
         expect(screen.getByText('React Router fixtures')).toBeInTheDocument();
         expect(screen.getByText('Nekuta store fixtures')).toBeInTheDocument();
         expect(await screen.findByTestId('lazy-panel')).toBeInTheDocument();
@@ -291,5 +295,56 @@ describe('asset explorer playground fixtures', () => {
         expect(screen.getByTestId('asset-fixture-notes')).toHaveTextContent(
             'test-file-stub'
         );
+    });
+});
+
+describe('multi-root stress playground fixtures', () => {
+    it('renders multiple React roots and controls their lifecycle', async () => {
+        render(<MultiRootStressPlayground />);
+
+        expect(screen.getByTestId('dynamic-root-count')).toHaveTextContent(
+            '2 dynamic roots mounted'
+        );
+        expect(
+            await screen.findAllByTestId('dynamic-root-content')
+        ).toHaveLength(2);
+
+        act(() => {
+            screen.getByRole('button', { name: 'Add root' }).click();
+        });
+
+        expect(screen.getByTestId('dynamic-root-count')).toHaveTextContent(
+            '3 dynamic roots mounted'
+        );
+        expect(
+            await screen.findAllByTestId('dynamic-root-content')
+        ).toHaveLength(3);
+
+        act(() => {
+            screen.getByRole('button', { name: 'Remove root' }).click();
+        });
+
+        expect(screen.getByTestId('dynamic-root-count')).toHaveTextContent(
+            '2 dynamic roots mounted'
+        );
+        expect(
+            await screen.findAllByTestId('dynamic-root-content')
+        ).toHaveLength(2);
+    });
+
+    it('renders portal, iframe, and large tree stress fixtures', () => {
+        render(<MultiRootStressPlayground />);
+
+        expect(screen.getByTestId('portal-target')).toContainElement(
+            screen.getByTestId('portal-child')
+        );
+        expect(screen.getByTestId('iframe-root-frame')).toHaveAttribute(
+            'title',
+            'Iframe React root fixture'
+        );
+        expect(screen.getByTestId('stress-node-count')).toHaveTextContent(
+            '180'
+        );
+        expect(screen.getAllByTestId('stress-tree-node')).toHaveLength(180);
     });
 });
