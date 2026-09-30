@@ -391,6 +391,12 @@ describe('@devtools/client App routing', () => {
                 screen.getByRole('heading', { name: heading })
             ).toBeInTheDocument();
             expect(screen.getByLabelText(label)).toHaveTextContent(copy);
+            expect(
+                screen.getByRole('link', { name: 'Troubleshooting' })
+            ).toHaveAttribute(
+                'href',
+                'https://react-devtools.dev/docs/troubleshooting#vite-plugin-injection-ordering'
+            );
         }
     );
 
@@ -404,6 +410,12 @@ describe('@devtools/client App routing', () => {
         ).toBeInTheDocument();
         expect(screen.getByLabelText('no-react-detected')).toHaveTextContent(
             'no React renderer has been detected'
+        );
+        expect(
+            screen.getByRole('link', { name: 'Troubleshooting' })
+        ).toHaveAttribute(
+            'href',
+            'https://react-devtools.dev/docs/troubleshooting#react-not-detected'
         );
     });
 
@@ -424,6 +436,12 @@ describe('@devtools/client App routing', () => {
             screen.getByLabelText('unsupported-react-version')
         ).toHaveTextContent(
             'React 16.7.0 is not supported by this devtools build.'
+        );
+        expect(
+            screen.getByRole('link', { name: 'Troubleshooting' })
+        ).toHaveAttribute(
+            'href',
+            'https://react-devtools.dev/docs/troubleshooting#unsupported-react-version'
         );
     });
 

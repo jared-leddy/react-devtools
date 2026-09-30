@@ -72,6 +72,9 @@ import {
     type ClientOverviewRoot,
     type ClientOverviewSnapshot
 } from './overview';
+
+const TROUBLESHOOTING_DOCS_URL =
+    'https://react-devtools.dev/docs/troubleshooting';
 import {
     getClientRouteCategories,
     getPersistedLastClientRoutePath,
@@ -595,7 +598,8 @@ function RoutePage({
                         'The custom inspector route exists, but the plugin inspector registration is no longer available.',
                     label: 'custom-inspector-missing',
                     title: 'Inspector unavailable',
-                    tone: 'warning'
+                    tone: 'warning',
+                    troubleshootingHref: TROUBLESHOOTING_DOCS_URL
                 }}
             />
         );
@@ -616,7 +620,8 @@ function RoutePage({
                         'The custom tab route exists, but the plugin tab registration is no longer available.',
                     label: 'custom-tab-missing',
                     title: 'Custom tab unavailable',
-                    tone: 'warning'
+                    tone: 'warning',
+                    troubleshootingHref: TROUBLESHOOTING_DOCS_URL
                 }}
             />
         );
@@ -2305,6 +2310,7 @@ function RuntimeStatePage({
         label: string;
         title: string;
         tone: NotificationTone;
+        troubleshootingHref: string;
     };
 }) {
     return (
@@ -2320,6 +2326,14 @@ function RuntimeStatePage({
                 >
                     {state.label}
                 </span>
+                <a
+                    className="dt-client-shell__help-link"
+                    href={state.troubleshootingHref}
+                    rel="noreferrer"
+                    target="_blank"
+                >
+                    Troubleshooting
+                </a>
             </section>
         </Card>
     );
@@ -2920,6 +2934,7 @@ function getRuntimeBlock(snapshot: ClientRuntimeSnapshot): {
     label: string;
     title: string;
     tone: NotificationTone;
+    troubleshootingHref: string;
 } | null {
     if (snapshot.connectionStatus === 'waiting') {
         return {
@@ -2927,7 +2942,8 @@ function getRuntimeBlock(snapshot: ClientRuntimeSnapshot): {
                 'The devtools client is waiting for an inspected React runtime to connect.',
             label: 'waiting-for-connection',
             title: 'Waiting for connection',
-            tone: 'info'
+            tone: 'info',
+            troubleshootingHref: `${TROUBLESHOOTING_DOCS_URL}#vite-plugin-injection-ordering`
         };
     }
 
@@ -2937,7 +2953,8 @@ function getRuntimeBlock(snapshot: ClientRuntimeSnapshot): {
                 'The inspected runtime disconnected. Reopen or refresh the inspected app to reconnect.',
             label: 'transport-disconnected',
             title: 'Runtime disconnected',
-            tone: 'warning'
+            tone: 'warning',
+            troubleshootingHref: `${TROUBLESHOOTING_DOCS_URL}#vite-plugin-injection-ordering`
         };
     }
 
@@ -2947,7 +2964,8 @@ function getRuntimeBlock(snapshot: ClientRuntimeSnapshot): {
                 'The transport connection dropped and the devtools client is attempting to reconnect.',
             label: 'transport-reconnecting',
             title: 'Reconnecting',
-            tone: 'info'
+            tone: 'info',
+            troubleshootingHref: `${TROUBLESHOOTING_DOCS_URL}#vite-plugin-injection-ordering`
         };
     }
 
@@ -2957,7 +2975,8 @@ function getRuntimeBlock(snapshot: ClientRuntimeSnapshot): {
                 'The page is connected, but no React renderer has been detected yet.',
             label: 'no-react-detected',
             title: 'No React detected',
-            tone: 'warning'
+            tone: 'warning',
+            troubleshootingHref: `${TROUBLESHOOTING_DOCS_URL}#react-not-detected`
         };
     }
 
@@ -2968,7 +2987,8 @@ function getRuntimeBlock(snapshot: ClientRuntimeSnapshot): {
                 : 'The connected React version is not supported by this devtools build.',
             label: 'unsupported-react-version',
             title: 'Unsupported React version',
-            tone: 'danger'
+            tone: 'danger',
+            troubleshootingHref: `${TROUBLESHOOTING_DOCS_URL}#unsupported-react-version`
         };
     }
 

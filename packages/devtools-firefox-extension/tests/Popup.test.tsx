@@ -116,6 +116,13 @@ describe('extension popup status UI', () => {
         expect(viewModel.badgeTone).toBe('info');
     });
 
+    it('links the default popup status to troubleshooting guidance', () => {
+        expect(createDefaultPopupStatus().docs).toContainEqual({
+            href: 'https://react-devtools.dev/docs/troubleshooting',
+            label: 'Troubleshooting'
+        });
+    });
+
     it('keeps a warning badge when React is detected with diagnostics', () => {
         const viewModel = getPopupViewModel(
             createStatus({

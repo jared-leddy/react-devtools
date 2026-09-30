@@ -126,6 +126,20 @@
     margin: 0;
 }
 
+.dt-client-shell__help-link {
+    color: var(--dt-accent);
+    font-size: 13px;
+    font-weight: 700;
+    justify-self: start;
+    text-decoration: none;
+}
+
+.dt-client-shell__help-link:hover,
+.dt-client-shell__help-link:focus-visible {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
 .dt-client-shell__badge {
     border: 1px solid var(--dt-border);
     border-radius: 999px;

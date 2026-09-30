@@ -3,6 +3,7 @@
 const sidebars = {
     docs: [
         'intro',
+        'troubleshooting',
         {
             type: 'category',
             label: 'Getting Started',
