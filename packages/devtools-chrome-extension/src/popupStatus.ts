@@ -43,7 +43,7 @@ const DEFAULT_DOCS: PopupDocumentationLink[] = [
         label: 'React DevTools docs'
     },
     {
-        href: 'https://github.com/jared-leddy/react-devtools/issues',
+        href: 'https://react-devtools.dev/docs/troubleshooting',
         label: 'Troubleshooting'
     }
 ];
