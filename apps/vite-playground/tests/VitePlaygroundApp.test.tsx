@@ -1,6 +1,13 @@
 import { act, render, screen } from '@testing-library/react';
+import {
+    editCustomInspectorState,
+    getCustomCommands,
+    sendCustomInspectorState,
+    sendCustomInspectorTree
+} from '@devtools/kit';
 import { registerNekutaDevTools } from '@devtools/nekuta-plugin';
 import { AssetExplorerFixtures } from '../src/AssetExplorerFixtures';
+import { CustomPluginPlayground } from '../src/CustomPluginPlayground';
 import { MultiRootStressPlayground } from '../src/MultiRootStressPlayground';
 import { NekutaDemos } from '../src/NekutaDemos';
 import {
@@ -31,6 +38,9 @@ describe('Vite playground app', () => {
         expect(
             screen.getByText('Multi-root, portal, and stress fixtures')
         ).toBeInTheDocument();
+        expect(
+            screen.getByText('Custom plugin API playground')
+        ).toBeInTheDocument();
         expect(screen.getByText('React Router fixtures')).toBeInTheDocument();
         expect(screen.getByText('Nekuta store fixtures')).toBeInTheDocument();
         expect(await screen.findByTestId('lazy-panel')).toBeInTheDocument();
@@ -51,6 +61,95 @@ describe('Vite playground app', () => {
         expect(screen.getByTestId('router-settings-route')).toHaveTextContent(
             'Settings route rendered'
         );
+    });
+});
+
+describe('custom plugin Vite playground', () => {
+    it('registers fake plugin inspectors, commands, custom tabs, and editable state', async () => {
+        render(<CustomPluginPlayground />);
+
+        expect(
+            await screen.findByText('Custom plugin fixtures registered')
+        ).toBeInTheDocument();
+        expect(
+            screen.getByTestId('custom-plugin-inspector-count')
+        ).toHaveTextContent('1');
+        expect(
+            screen.getByTestId('custom-plugin-node-count')
+        ).toHaveTextContent('4');
+        expect(
+            screen.getByTestId('custom-plugin-command-count')
+        ).toHaveTextContent('1');
+        expect(screen.getByTestId('custom-plugin-tab-count')).toHaveTextContent(
+            '2'
+        );
+        expect(
+            screen.getByTestId('custom-plugin-editable-label')
+        ).toHaveTextContent('Vite dogfood plugin');
+
+        await act(async () => {
+            screen
+                .getByRole('button', {
+                    name: 'Edit inspector label'
+                })
+                .click();
+        });
+
+        expect(screen.getByTestId('custom-plugin-status')).toHaveTextContent(
+            'Editable inspector state updated'
+        );
+        expect(
+            screen.getByTestId('custom-plugin-editable-label')
+        ).toHaveTextContent('Edited from playground');
+    });
+
+    it('handles filtered trees, index edits, ignored edits, and command actions', async () => {
+        render(<CustomPluginPlayground />);
+
+        expect(
+            await screen.findByText('Custom plugin fixtures registered')
+        ).toBeInTheDocument();
+
+        const filteredTree = await sendCustomInspectorTree(
+            'vite-custom-plugin-inspector',
+            'command'
+        );
+        expect(filteredTree.rootNodes).toHaveLength(1);
+        expect(filteredTree.rootNodes[0].children).toHaveLength(1);
+        expect(filteredTree.rootNodes[0].children?.[0].id).toBe('commands');
+
+        await editCustomInspectorState({
+            inspectorId: 'vite-custom-plugin-inspector',
+            nodeId: 'plugin-root',
+            path: ['Plugin', 0],
+            state: { value: 'Edited by index' },
+            type: 'set'
+        });
+
+        await editCustomInspectorState({
+            inspectorId: 'vite-custom-plugin-inspector',
+            nodeId: 'missing-node',
+            path: ['Plugin', 'label'],
+            state: { value: 'Ignored missing node' },
+            type: 'set'
+        });
+
+        await editCustomInspectorState({
+            inspectorId: 'vite-custom-plugin-inspector',
+            nodeId: 'plugin-root',
+            path: ['Dogfood', 'commands'],
+            state: { value: 99 },
+            type: 'set'
+        });
+
+        await getCustomCommands()[0].action?.();
+
+        const state = await sendCustomInspectorState(
+            'vite-custom-plugin-inspector',
+            'plugin-root'
+        );
+        expect(state.state.Plugin[0].value).toBe('Edited by index');
+        expect(state.state.Dogfood[0].value).toBe(1);
     });
 });
 

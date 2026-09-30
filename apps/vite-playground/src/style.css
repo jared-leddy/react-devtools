@@ -261,6 +261,37 @@ section h2 {
     gap: 16px;
 }
 
+.custom-plugin-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.custom-plugin-metrics {
+    display: grid;
+    gap: 10px;
+    margin: 0 0 14px;
+}
+
+.custom-plugin-metrics div {
+    display: grid;
+    grid-template-columns: minmax(100px, 0.45fr) 1fr;
+    gap: 12px;
+    align-items: start;
+}
+
+.custom-plugin-metrics dt {
+    color: #9aa6ba;
+    font-size: 13px;
+}
+
+.custom-plugin-metrics dd {
+    min-width: 0;
+    margin: 0;
+    color: #d7dce6;
+    overflow-wrap: anywhere;
+}
+
 .router-fixture nav {
     display: flex;
     flex-wrap: wrap;

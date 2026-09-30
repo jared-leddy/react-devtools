@@ -1,6 +1,6 @@
 {
     "name": "@devtools/vite-playground",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "private": true,
     "license": "UNLICENSED",
     "description": "Vite-based playground for exercising the React DevTools Vite plugin delivery mode.",
