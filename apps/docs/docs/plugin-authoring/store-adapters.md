@@ -171,7 +171,7 @@ api.on.getInspectorState('stores', ({ nodeId }) => {
 });
 ```
 
-For edits, prefer explicit validation errors. Do not partially apply an edit and then throw. When an edit may trigger user code, catch library errors and surface them with `api.notify` or a timeline event.
+For edits, prefer explicit validation errors. Do not partially apply an edit and then throw. When an edit may trigger user code, catch library errors and rethrow them or expose an error state. `api.notify` currently does not display messages.
 
 ```ts
 api.addTimelineLayer({
@@ -191,9 +191,6 @@ api.on.editInspectorState('stores', async (payload) => {
             data: payload
         });
     } catch (error) {
-        api.notify(
-            error instanceof Error ? error.message : 'Store edit failed'
-        );
         throw error;
     }
 });
@@ -284,15 +281,17 @@ export function registerStoreDevTools({
 }
 ```
 
-## Nekuta Adapter Target
+## Shipped Nekuta Adapter
 
-Nekuta is the first concrete store adapter target for this ecosystem. Its adapter should begin as a custom inspector, not a custom tab:
+Nekuta ships as a custom inspector in `@devtools/nekuta-plugin`:
 
 - Inspector ID: `nekuta-stores`.
-- Root nodes: one node per store/query module.
-- Node metadata: module name, store kind, subscription count, and source file when known.
-- State groups: `state`, `getters`, `actions`, `subscriptions`, and `metadata` when available.
+- Root nodes: one node per registered store, keyed by `$id`.
+- Node metadata: action count and state keys.
+- State groups: `state`, `getters`, `actions`, and `metadata` when available.
 - Editable entries: only writable state fields. Derived getters and action metadata should be read-only.
-- Timeline layer: store actions, async transitions, subscription broadcasts, and rejected edits.
+- Timeline layer: `nekuta-actions`, currently emitting successful inspector edits.
 
-The first Nekuta adapter should avoid private runtime assumptions where possible. If a store cannot expose a complete tree, return the nodes that are known and include a `metadata` state group that explains which runtime data was unavailable. This keeps DevTools useful without tying the adapter to unstable internals.
+The adapter currently reads the private instance `_s` registry and mutates with
+`$patch`. See the [worked integration](./overview.md#nekuta-as-a-worked-integration)
+for the registration, read, edit, and refresh flow and its current limitations.

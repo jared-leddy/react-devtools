@@ -132,6 +132,27 @@ already normalized.
 
 ## Plugin Lifecycle
 
+The renderer observation path and plugin path meet in the client, but plugins
+read their library directly rather than deriving store state from React Fibers:
+
+```text
+React renderer -> global hook -> delivery bridge -> core serialization
+                                       |                  |
+                                 transport/RPC ---------> client
+                                                          ^
+Library -> setupDevToolsPlugin -> kit registry/plugin API  |
+                                  |                       |
+                             inspector handlers -> plugin bridge
+                                  ^                       |
+                                  +--- tree/state/edit ---+
+```
+
+The transport is selected by the delivery package. Custom inspector requests
+currently use local or same-origin parent-window plugin bridges; extension
+transport support must be verified separately. See the
+[plugin-authoring guide](../plugin-authoring/overview.md) for a complete inspector,
+the setup context reference, and the shipped Nekuta integration.
+
 Plugins use `setupDevToolsPlugin` from `@devtools/api`. Internally, the registry
 lives in `@devtools/kit`.
 
