@@ -1,5 +1,14 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import viteConfig from '../vite.config';
+
+jest.mock('vite', () => ({
+    defineConfig: (config: unknown) => config
+}));
+jest.mock('@vitejs/plugin-react', () => ({
+    __esModule: true,
+    default: () => ({ name: 'react' })
+}));
 
 interface FirefoxExtensionManifest {
     background: {
@@ -101,6 +110,34 @@ describe('firefox extension manifest', () => {
             'smoke.html',
             'user-app.js'
         ]);
+    });
+
+    it('emits every manifest script and resource under its declared filename', () => {
+        const config = viteConfig as {
+            build: {
+                rollupOptions: {
+                    input: Record<string, string>;
+                    output: { entryFileNames: string };
+                };
+            };
+        };
+        const { input, output } = config.build.rollupOptions;
+        const emittedFiles = Object.entries(input).map(([name, source]) =>
+            source.endsWith('.html')
+                ? `${name}.html`
+                : output.entryFileNames.replace('[name]', name)
+        );
+        const requiredFiles = [
+            ...manifest.background.scripts,
+            ...manifest.content_scripts.flatMap((script) => script.js),
+            ...(manifest.web_accessible_resources ?? []),
+            manifest.browser_action.default_popup,
+            manifest.devtools_page
+        ];
+
+        for (const file of requiredFiles) {
+            expect(emittedFiles).toContain(file);
+        }
     });
 
     it('locks extension pages to self-owned code and frames', () => {
