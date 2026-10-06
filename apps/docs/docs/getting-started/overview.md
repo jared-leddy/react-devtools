@@ -90,10 +90,10 @@ export default defineConfig({
         react(),
         reactDevtools({
             printDevtoolsUrl: true,
-            sourceMetadata: true,
-            componentInspector: true,
-            assets: true,
-            graph: true,
+            sourceMetadata: {},
+            componentInspector: {},
+            assets: {},
+            graph: {},
             openInEditor: {
                 command: 'code'
             }
@@ -103,6 +103,10 @@ export default defineConfig({
 ```
 
 Useful options:
+
+These features are enabled by default. Use `false` to disable one or an options
+object to configure it; `true` is not part of their TypeScript contract. See the
+[Vite plugin reference](../delivery-modes/vite-plugin.md) for all options and defaults.
 
 - `printDevtoolsUrl`: prints the standalone panel URL after Vite starts.
 - `appendTo`: appends the overlay import to a module instead of injecting HTML.
