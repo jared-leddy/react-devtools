@@ -19,7 +19,7 @@ export default defineConfig({
                     __dirname,
                     '../devtools-chrome-extension/src/content/prepare.ts'
                 ),
-                prepareLoader: resolve(
+                'prepare-loader': resolve(
                     __dirname,
                     'src/content/prepare-loader.ts'
                 ),

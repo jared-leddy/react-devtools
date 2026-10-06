@@ -56,7 +56,7 @@ test('verifies required Firefox extension dist files', () => {
         'popup.html',
         'popup.js',
         'prepare.js',
-        'prepareLoader.js',
+        'prepare-loader.js',
         'proxy.js',
         'smoke.html',
         'smoke.js',

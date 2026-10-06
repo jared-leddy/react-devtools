@@ -210,7 +210,7 @@ test('packages firefox dist into a versioned zip with exact entries and checksum
         'popup.html',
         'popup.js',
         'prepare.js',
-        'prepareLoader.js',
+        'prepare-loader.js',
         'proxy.js',
         'smoke.html',
         'smoke.js',
