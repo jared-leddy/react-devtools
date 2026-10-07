@@ -73,6 +73,18 @@ jobs:
             - name: Build
               run: npm run build
 
+            - name: Bundle guard tests and coverage
+              run: npm run test:bundle-checks
+
+            - name: Bundle sizes and API dependencies
+              run: npm run check:bundles
+
+            - name: Upload bundle size report
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+              with:
+                  name: bundle-size-report
+                  path: artifacts/bundle-report.json
+
             - name: Install Chromium for product smoke tests
               run: npx playwright install --with-deps chromium
 

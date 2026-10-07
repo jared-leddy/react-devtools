@@ -1,6 +1,6 @@
 {
     "name": "@devtools/firefox-extension",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "private": false,
     "license": "UNLICENSED",
     "description": "Firefox extension shell for React DevTools.",

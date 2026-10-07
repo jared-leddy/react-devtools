@@ -1,0 +1,32 @@
+[
+    {
+        "name": "client-library",
+        "directory": "packages/devtools-client/dist/library",
+        "rawBytes": 190000,
+        "gzipBytes": 42000
+    },
+    {
+        "name": "client-standalone",
+        "directory": "packages/devtools-client/dist/standalone",
+        "rawBytes": 430000,
+        "gzipBytes": 130000
+    },
+    {
+        "name": "overlay",
+        "directory": "packages/devtools-overlay/dist",
+        "rawBytes": 230000,
+        "gzipBytes": 75000
+    },
+    {
+        "name": "chrome-extension",
+        "directory": "packages/devtools-chrome-extension/dist",
+        "rawBytes": 500000,
+        "gzipBytes": 160000
+    },
+    {
+        "name": "firefox-extension",
+        "directory": "packages/devtools-firefox-extension/dist",
+        "rawBytes": 500000,
+        "gzipBytes": 160000
+    }
+]

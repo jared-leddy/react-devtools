@@ -1,6 +1,6 @@
 {
     "$schema": "https://turborepo.dev/schema.json",
-    "globalDependencies": ["**/.env.*"],
+    "globalDependencies": ["**/.env.*", "scripts/bundle-checks.mjs"],
     "globalPassThroughEnv": ["SENTRY_AUTH_TOKEN", "SENTRY_DSN"],
     "tasks": {
         "start:dev": {

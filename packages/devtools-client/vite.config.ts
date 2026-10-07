@@ -1,5 +1,6 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
+import { browserBoundaryPlugin } from '../../scripts/bundle-checks.mjs';
 
 export default defineConfig({
     base: './',
@@ -7,5 +8,5 @@ export default defineConfig({
         emptyOutDir: true,
         outDir: 'dist/standalone'
     },
-    plugins: [react()]
+    plugins: [react(), browserBoundaryPlugin()]
 });
