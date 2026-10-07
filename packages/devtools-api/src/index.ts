@@ -9,9 +9,18 @@ export {
 
 export type {
     CustomCommand,
+    CustomInspectorAction,
+    CustomInspectorNode,
+    CustomInspectorOptions,
+    CustomInspectorPayload,
     CustomTab,
     DevToolsPlugin,
     EditInspectorStateRequest,
+    EditInspectorStatePayload,
+    InspectorNodeTag,
+    InspectorState,
+    InspectorStateEntry,
+    InspectorStateValue,
     InspectorStateRequest,
     InspectorStateResponse,
     InspectorTreeRequest,
@@ -20,6 +29,7 @@ export type {
     PluginSettingChoice,
     PluginSettingItem,
     PluginSettings,
+    PluginSettingsStorage,
     PluginSettingValue,
     PluginSetupContext,
     PluginSetupFunction,
@@ -36,6 +46,8 @@ export type {
     RouterNavigateRequest,
     RouterOpenFileRequest,
     RouterRouteNode,
+    SerializablePrimitive,
+    SerializableValue,
     TimelineEventOptions,
     TimelineLayerOptions
 } from '@devtools/kit';

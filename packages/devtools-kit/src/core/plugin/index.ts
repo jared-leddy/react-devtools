@@ -319,25 +319,38 @@ export class DevToolsPluginAPI {
     }
 }
 
-export function setupDevToolsPlugin(
-    descriptor: PluginDescriptor,
-    setupFn: PluginSetupFunction,
+export function setupDevToolsPlugin<
+    AppContext = unknown,
+    StateCategory extends string = string,
+    StateValue = unknown
+>(
+    descriptor: PluginDescriptor<AppContext>,
+    setupFn: PluginSetupFunction<AppContext, StateCategory, StateValue>,
     options: SetupDevToolsPluginOptions = {}
 ): void {
     const context = options.context ?? activeContext;
     const storage = options.storage ?? activeStorage;
+    // The runtime registry stores heterogeneous plugins; retain generics at registration.
+    const registeredSetup = setupFn as PluginSetupFunction;
 
     if (context && (options.hasRoot ?? rootIsAvailable)) {
-        installPlugin({ descriptor, setupFn, storage }, context);
+        installPlugin(
+            { descriptor, setupFn: registeredSetup, storage },
+            context
+        );
         return;
     }
 
-    bufferedPlugins.push({ descriptor, setupFn, storage });
+    bufferedPlugins.push({ descriptor, setupFn: registeredSetup, storage });
 }
 
-export function setupDevtoolsPlugin(
-    descriptor: PluginDescriptor,
-    setupFn: PluginSetupFunction,
+export function setupDevtoolsPlugin<
+    AppContext = unknown,
+    StateCategory extends string = string,
+    StateValue = unknown
+>(
+    descriptor: PluginDescriptor<AppContext>,
+    setupFn: PluginSetupFunction<AppContext, StateCategory, StateValue>,
     options: SetupDevToolsPluginOptions = {}
 ): void {
     setupDevToolsPlugin(descriptor, setupFn, options);
