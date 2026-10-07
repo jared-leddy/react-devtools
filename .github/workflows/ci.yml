@@ -1,0 +1,74 @@
+name: CI
+
+on:
+    pull_request:
+    push:
+        branches: [main]
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+concurrency:
+    group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+    checks:
+        name: CI checks
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        env:
+            CI: 'true'
+            NEXT_TELEMETRY_DISABLED: '1'
+            TURBO_TELEMETRY_DISABLED: '1'
+        steps:
+            - name: Check out source
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
+
+            - name: Set up Node and npm download cache
+              uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+              with:
+                  node-version-file: .nvmrc
+                  cache: npm
+                  cache-dependency-path: |
+                      package.json
+                      apps/*/package.json
+                      packages/*/package.json
+
+            - name: Use the repository npm version
+              run: npm install --global "$(node -p "require('./package.json').packageManager")"
+
+            - name: Install dependencies
+              run: npm install --no-audit --no-fund
+
+            - name: Restore Turbo cache
+              uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+              with:
+                  path: .turbo/cache
+                  key: ${{ runner.os }}-turbo-v1-${{ hashFiles('.nvmrc', 'package.json', 'apps/*/package.json', 'packages/*/package.json', 'turbo.json') }}-${{ github.sha }}
+                  restore-keys: |
+                      ${{ runner.os }}-turbo-v1-${{ hashFiles('.nvmrc', 'package.json', 'apps/*/package.json', 'packages/*/package.json', 'turbo.json') }}-
+
+            - name: Check formatting
+              run: npm run format:check
+
+            - name: Lint
+              run: npm run lint
+
+            - name: Typecheck
+              run: npm run typecheck
+
+            - name: Unit tests and coverage gates
+              run: npm run test:unit
+
+            - name: Release packaging tests
+              run: npm run test:release-packaging
+
+            - name: Firefox UAT helper tests
+              run: npm run test:firefox-uat-helper
+
+            - name: Build
+              run: npm run build
