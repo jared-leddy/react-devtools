@@ -414,6 +414,34 @@ describe('DevtoolsOverlay', () => {
         expect(inspectButton).toHaveAttribute('aria-pressed', 'false');
     });
 
+    it('keeps inspecting when an element loses focus before selecting a page target', () => {
+        const onInspectTarget = jest.fn();
+        const target = document.createElement('button');
+        target.setAttribute(
+            'data-react-devtools-component-id',
+            'component:blur-regression'
+        );
+        document.body.appendChild(target);
+        render(
+            <DevtoolsOverlay
+                defaultInspecting
+                onInspectTarget={onInspectTarget}
+            />
+        );
+        const inspectButton = screen.getByRole('button', {
+            name: 'Toggle inspect mode'
+        });
+        fireEvent.blur(inspectButton);
+        expect(inspectButton).toHaveAttribute('aria-pressed', 'true');
+        fireEvent.click(target);
+        expect(onInspectTarget).toHaveBeenCalledWith(
+            expect.objectContaining({
+                componentId: 'component:blur-regression'
+            })
+        );
+        expect(inspectButton).toHaveAttribute('aria-pressed', 'false');
+    });
+
     it('resolves default inspect targets from component and source metadata', () => {
         const target = document.createElement('div');
         target.setAttribute('data-react-devtools-component-id', 'component:1');

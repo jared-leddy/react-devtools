@@ -1,6 +1,6 @@
 {
     "name": "react-devtools",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "private": true,
     "license": "UNLICENSED",
     "scripts": {
@@ -15,6 +15,7 @@
         "postinstall": "simple-git-hooks",
         "start:dev": "turbo start:dev",
         "test:e2e": "turbo test:e2e",
+        "test:product-smoke": "turbo build --filter=@devtools/vite-playground^... && npm run test:e2e --workspace=@devtools/vite-playground",
         "test:firefox-uat-helper": "node --test scripts/firefox-temporary-addon-uat.test.mjs",
         "test:release-packaging": "node --test scripts/extension-release.test.mjs",
         "test:unit": "turbo test:unit",

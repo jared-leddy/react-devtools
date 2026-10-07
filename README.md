@@ -35,6 +35,25 @@ npm run test:firefox-uat-helper
 npm run build
 ```
 
+## Product Smoke Tests
+
+Install Chromium once with `npx playwright install chromium`, then run
+`npm run test:product-smoke`. The command builds the Vite playground's delivery
+dependencies and starts an isolated server on `127.0.0.1:9032`; that port must be
+free. The runner shuts down the server after the tests.
+
+The suite exercises the real overlay iframe, connection overview, live annotated
+page tree, selection and page updates, click-to-inspect, asset image previews,
+and Vite module relationships. Standalone panel tests at 360px and 420px verify
+critical pane bounds, non-overlap, navigation, and horizontal overflow.
+
+Screenshots are attached to the HTML report for visual review; geometry assertions
+are the automated layout gate, not pixel-baseline comparisons. Inspect results
+with `npx playwright show-report apps/vite-playground/playwright-report`.
+Failures retain a screenshot and trace in `apps/vite-playground/test-results`.
+CI runs this suite inside the required `CI checks` job and uploads its report and
+diagnostics for seven days. The existing Chrome-extension harness is separate.
+
 ## Phase 1 verification
 
 Run the Phase 1 end-to-end smoke script with:

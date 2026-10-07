@@ -72,3 +72,20 @@ jobs:
 
             - name: Build
               run: npm run build
+
+            - name: Install Chromium for product smoke tests
+              run: npx playwright install --with-deps chromium
+
+            - name: Product smoke tests
+              run: npm run test:product-smoke
+
+            - name: Upload product smoke diagnostics
+              if: ${{ !cancelled() }}
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+              with:
+                  name: product-smoke-diagnostics
+                  path: |
+                      apps/vite-playground/playwright-report
+                      apps/vite-playground/test-results
+                  if-no-files-found: ignore
+                  retention-days: 7
