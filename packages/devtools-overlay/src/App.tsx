@@ -267,9 +267,11 @@ export function DevtoolsOverlay({
             }
         }
 
-        function handleBlur() {
-            setInspecting(false);
-            setHoverTarget(null);
+        function handleBlur(event: FocusEvent) {
+            if (event.target === window) {
+                setInspecting(false);
+                setHoverTarget(null);
+            }
         }
 
         window.addEventListener('pointermove', handlePointerMove, true);

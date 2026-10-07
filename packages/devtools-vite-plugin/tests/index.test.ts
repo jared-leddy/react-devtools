@@ -604,6 +604,7 @@ describe('reactDevtools', () => {
 
         configureServer({
             config: {
+                base: '/nested/',
                 server: {
                     headers: {
                         'Cross-Origin-Embedder-Policy': 'require-corp'
@@ -621,6 +622,9 @@ describe('reactDevtools', () => {
 
         expect(response.getHeader('cross-origin-embedder-policy')).toBe(
             'require-corp'
+        );
+        expect(response.getHeader('x-react-devtools-vite-base')).toBe(
+            '/nested/'
         );
     });
 

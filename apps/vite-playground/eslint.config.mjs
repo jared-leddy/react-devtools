@@ -5,7 +5,13 @@ import prettierConfig from 'eslint-config-prettier';
 
 export default [
     {
-        ignores: ['coverage/**', 'dist/**', 'node_modules/**']
+        ignores: [
+            'coverage/**',
+            'dist/**',
+            'node_modules/**',
+            'test-results/**',
+            'playwright-report/**'
+        ]
     },
     {
         files: ['**/*.{ts,tsx}'],

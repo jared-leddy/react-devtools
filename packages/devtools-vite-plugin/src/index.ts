@@ -150,7 +150,10 @@ function createClientMiddleware(
 ) {
     const clientDir = options.clientDir ?? getDefaultClientDir();
     const servePath = getDevtoolsClientBasePath(options, server);
-    const headers = getServerHeaders(server);
+    const headers = {
+        ...getServerHeaders(server),
+        'X-React-Devtools-Vite-Base': normalizeViteBasePath(server.config?.base)
+    };
 
     server.middlewares.use(
         servePath,
