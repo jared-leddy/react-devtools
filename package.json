@@ -1,6 +1,6 @@
 {
     "name": "react-devtools",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "private": true,
     "license": "UNLICENSED",
     "scripts": {
@@ -19,7 +19,8 @@
         "test:firefox-uat-helper": "node --test scripts/firefox-temporary-addon-uat.test.mjs",
         "test:release-packaging": "node --test scripts/extension-release.test.mjs",
         "test:unit": "turbo test:unit",
-        "typecheck": "turbo typecheck"
+        "test:types": "turbo test:types --filter=@devtools/api",
+        "typecheck": "turbo typecheck && npm run test:types"
     },
     "devDependencies": {
         "conventional-changelog": "^8.1.3",

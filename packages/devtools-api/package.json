@@ -1,6 +1,6 @@
 {
     "name": "@devtools/api",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "private": false,
     "license": "UNLICENSED",
     "description": "Public plugin-author API for React DevTools.",
@@ -20,6 +20,7 @@
         "build": "tsc",
         "lint": "eslint . --max-warnings=0",
         "test:unit": "jest --coverage --config jest.config.ts",
+        "test:types": "tsc --project type-tests/tsconfig.json",
         "test:watch": "jest --coverage --watch --config jest.config.ts",
         "typecheck": "tsc --noEmit"
     },

@@ -35,6 +35,10 @@
             "dependsOn": ["^build"],
             "outputs": ["coverage/**"]
         },
+        "test:types": {
+            "dependsOn": ["^build", "build"],
+            "outputs": []
+        },
         "test:e2e": {}
     }
 }

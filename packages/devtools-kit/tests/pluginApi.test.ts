@@ -45,6 +45,34 @@ describe('DevToolsPluginAPI', () => {
         expect(getRegisteredDevToolsPlugins()).toHaveLength(1);
     });
 
+    it('preserves a typed application instance for buffered and immediate setup', () => {
+        const app = {
+            count: 0,
+            increment() {
+                this.count += 1;
+            }
+        };
+        setupDevToolsPlugin(
+            { id: 'typed-buffered', label: 'Typed', app },
+            (api) => {
+                expect(api.app).toBe(app);
+                api.app?.increment();
+            }
+        );
+        registerDevToolsPluginContext({
+            context: createDevToolsContext(),
+            hasRoot: true
+        });
+        setupDevtoolsPlugin(
+            { id: 'typed-immediate', label: 'Typed Alias', app },
+            (api) => {
+                expect(api.app).toBe(app);
+                api.app?.increment();
+            }
+        );
+        expect(app.count).toBe(2);
+    });
+
     it('runs setup once when a plugin is registered before any root appears', () => {
         const context = createDevToolsContext();
         const setup = jest.fn();

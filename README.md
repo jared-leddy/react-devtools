@@ -35,6 +35,10 @@ npm run test:firefox-uat-helper
 npm run build
 ```
 
+The root typecheck command also runs the strict public API consumer fixtures
+against built declarations. Run `npm run test:types` to check that contract alone;
+see [the public API test guide](packages/devtools-api/README.md).
+
 ## Product Smoke Tests
 
 Install Chromium once with `npx playwright install chromium`, then run
