@@ -65,4 +65,5 @@ apps/content/media
 apps/*/src/**/*.js
 apps/*/src/**/*.js.map
 apps/*/src/**/*.d.ts
+!apps/docs/src/global.d.ts
 !apps/content/src/app/(payload)/admin/importMap.js
