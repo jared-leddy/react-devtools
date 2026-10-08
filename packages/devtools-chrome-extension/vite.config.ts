@@ -1,6 +1,7 @@
 import { resolve } from 'node:path';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
+import { browserBoundaryPlugin } from '../../scripts/bundle-checks.mjs';
 
 export default defineConfig({
     build: {
@@ -23,5 +24,5 @@ export default defineConfig({
             }
         }
     },
-    plugins: [react()]
+    plugins: [react(), browserBoundaryPlugin()]
 });

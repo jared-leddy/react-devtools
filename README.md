@@ -33,11 +33,17 @@ npm run test:unit
 npm run test:release-packaging
 npm run test:firefox-uat-helper
 npm run build
+npm run test:bundle-checks
+npm run check:bundles
 ```
 
 The root typecheck command also runs the strict public API consumer fixtures
 against built declarations. Run `npm run test:types` to check that contract alone;
 see [the public API test guide](packages/devtools-api/README.md).
+
+Bundle budgets and browser/API dependency boundaries are enforced in CI.
+See [the bundle check guide](scripts/bundle-checks.md) for measurements,
+reviewed limit changes, and environment rules.
 
 ## Product Smoke Tests
 

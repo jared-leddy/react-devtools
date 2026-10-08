@@ -2,6 +2,10 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import viteConfig from '../vite.config';
 
+jest.mock('../../../scripts/bundle-checks.mjs', () => ({
+    browserBoundaryPlugin: () => ({ name: 'react-devtools-browser-boundaries' })
+}));
+
 jest.mock('vite', () => ({
     defineConfig: (config: unknown) => config
 }));

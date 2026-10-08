@@ -1,17 +1,19 @@
 {
     "name": "react-devtools",
-    "version": "0.1.7",
+    "version": "0.1.8",
     "private": true,
     "license": "UNLICENSED",
     "scripts": {
         "build": "turbo build",
         "build:docs": "npx turbo run build --filter=@devtools/docs",
+        "check:bundles": "turbo build --filter=@devtools/client --filter=@devtools/devtools-overlay --filter=@devtools/chrome-extension --filter=@devtools/firefox-extension && node scripts/check-bundles.mjs",
+        "test:bundle-checks": "node --test --experimental-test-coverage --test-coverage-include=scripts/bundle-checks.mjs --test-coverage-lines=80 --test-coverage-branches=80 --test-coverage-functions=80 scripts/bundle-checks.test.mjs",
         "extensions:package": "node scripts/extension-release.mjs package",
         "extensions:prepare": "node scripts/extension-release.mjs prepare",
         "extensions:version": "node scripts/extension-release.mjs version",
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-        "format:check": "prettier --check \"**/*.{ts,tsx,md}\"",
-        "lint": "turbo lint",
+        "format:check": "prettier --check \"**/*.{ts,tsx,md}\" scripts/bundle-checks.mjs scripts/check-bundles.mjs scripts/bundle-checks.test.mjs scripts/eslint.config.mjs scripts/bundle-budgets.json",
+        "lint": "turbo lint && eslint --config scripts/eslint.config.mjs scripts/bundle-checks.mjs scripts/check-bundles.mjs scripts/bundle-checks.test.mjs",
         "postinstall": "simple-git-hooks",
         "start:dev": "turbo start:dev",
         "test:e2e": "turbo test:e2e",
@@ -23,6 +25,8 @@
         "typecheck": "turbo typecheck && npm run test:types"
     },
     "devDependencies": {
+        "eslint": "^9.34.0",
+        "vite": "^7.0.0",
         "conventional-changelog": "^8.1.3",
         "conventional-changelog-angular": "^9.4.0",
         "gulp": "^5.0.1",
