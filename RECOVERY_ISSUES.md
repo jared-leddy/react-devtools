@@ -2,7 +2,7 @@
 
 All 38 owner-approved recovery items are tracked below. Source: [DEVTOOLS_RECOVERY_PLAN.md](DEVTOOLS_RECOVERY_PLAN.md). Issue bodies contain implementation checklists, acceptance criteria, failure cases, delivery requirements and cross-linked dependencies. Milestones indicate completion gates, not a reason to defer testing.
 
-Start with **[R01: Capture the actual installed extension failure](https://github.com/jared-leddy/react-devtools/issues/246). Begin R28 fixture planning alongside the design/backend decision; show the first real Components slice before polishing every page.
+Start with **[R01: Capture the actual installed extension failure](https://github.com/jared-leddy/react-devtools/issues/246)**. Begin R28 fixture planning alongside the design/backend decision; show the first real Components slice before polishing every page.
 
 ## Recovery M0: Verified Target
 
