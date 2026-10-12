@@ -1,0 +1,53 @@
+{
+    "authority": "Secondary upstream documentation image, not owner screenshots",
+    "image": "devtools/docs/public/features/components.png",
+    "imageSha256": "32258753e2ba210ec88ebb60001f03f68134abf0432fa81e1f7ae29f7f403dc2",
+    "width": 2162,
+    "height": 1324,
+    "coordinateSystem": "Original raster pixels, top-left origin",
+    "manualAnnotations": {
+        "contentApproximateBounds": [70, 78, 2097, 1243],
+        "railApproximateX": [70, 171],
+        "treeInteriorX": [172, 1132],
+        "dividerX": [1133, 1134],
+        "inspectorInteriorX": [1135, 2095],
+        "inputApproximateBounds": [187, 110, 1068, 164]
+    },
+    "samples": [
+        {
+            "x": 300,
+            "y": 400,
+            "rgb": [18, 18, 18]
+        },
+        {
+            "x": 500,
+            "y": 258,
+            "rgb": [41, 159, 105]
+        },
+        {
+            "x": 500,
+            "y": 297,
+            "rgb": [41, 159, 105]
+        }
+    ],
+    "sourceMeasurements": {
+        "collapsedRailCssPx": 50,
+        "expandedRailCssPx": 250,
+        "railControlCssPx": 40,
+        "overflowItemCapacityCssPx": 45,
+        "indentationPerDepthCssPx": 15,
+        "baseIndentCssPx": 4,
+        "stateTextUtility": "text-3.5",
+        "componentsStackingThresholdPaneCssPx": 700
+    },
+    "scaleInference": "100 raster px rail / 50 source CSS px suggests 2x; not measured owner-image scale",
+    "sourceSha256": {
+        "devtools/packages/client/src/App.vue": "a7c9b697011679f0e663e96783fa4c845d6d4294a1d02a8eeb25fd47dbf0a9bc",
+        "devtools/packages/client/src/components/common/SideNav.vue": "9037aaa9b87c0ae9c420e19fcb80ca8198d9c6f738e4fd00391322ea58ea2e0b",
+        "devtools/packages/applet/src/modules/components/index.vue": "e101b06d33411169fe3a791955d8f837269da08819a7e59c69596a767a72617c",
+        "devtools/packages/applet/src/components/tree/TreeViewer.vue": "cd3018c93209e70fb892ba9bea76e0e7662d6f86f5b90cfae57e670bf9976941",
+        "devtools/packages/client/uno.config.ts": "f3f599efa3ba96a7e48d8f36fe850d7f8f54b2a7cf9a039beefb0d25fd3540c3",
+        "devtools/packages/applet/uno.config.ts": "a13e5ee85d3e26f0a5fa998157590be21a2ab5eeeed778039dc611a09e44e8a4",
+        "devtools/packages/ui/theme/theme.ts": "b573cd33c421bd7cf227bb9f3ec8e3401b029397b0dd9b6bb464d1316878f183"
+    }
+}

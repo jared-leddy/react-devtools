@@ -1,0 +1,55 @@
+{
+    "apiPackages": 8,
+    "bundles": [
+        {
+            "name": "client-library",
+            "rawBytes": 160523,
+            "gzipBytes": 34679,
+            "files": 2,
+            "limits": {
+                "rawBytes": 190000,
+                "gzipBytes": 42000
+            }
+        },
+        {
+            "name": "client-standalone",
+            "rawBytes": 363556,
+            "gzipBytes": 109692,
+            "files": 3,
+            "limits": {
+                "rawBytes": 430000,
+                "gzipBytes": 130000
+            }
+        },
+        {
+            "name": "overlay",
+            "rawBytes": 202691,
+            "gzipBytes": 63012,
+            "files": 2,
+            "limits": {
+                "rawBytes": 230000,
+                "gzipBytes": 75000
+            }
+        },
+        {
+            "name": "chrome-extension",
+            "rawBytes": 424239,
+            "gzipBytes": 133677,
+            "files": 21,
+            "limits": {
+                "rawBytes": 500000,
+                "gzipBytes": 160000
+            }
+        },
+        {
+            "name": "firefox-extension",
+            "rawBytes": 424963,
+            "gzipBytes": 134131,
+            "files": 22,
+            "limits": {
+                "rawBytes": 500000,
+                "gzipBytes": 160000
+            }
+        }
+    ]
+}

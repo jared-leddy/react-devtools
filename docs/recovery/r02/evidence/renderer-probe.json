@@ -1,0 +1,893 @@
+{
+    "capturedAt": "2026-10-12T02:20:51.575Z",
+    "sourceCommit": "938de25cbe21f1eee1ffc315677cce475fee8f86",
+    "node": "v24.16.0",
+    "moduleSha256": {
+        "packages/devtools-core/dist/fiberWalker.js": "d508db411af9ff97b0bd1e09175fdf91824ea5a3eb5074732792ab6641fda37f",
+        "packages/devtools-core/dist/fiber.js": "3a04c6e8b262a4b2c3593f48f0535c337a41c45c4333433aa0dd50d7fe3e830e",
+        "packages/devtools-core/dist/fiber/state.js": "b2274ccb0110a2b4654f316725d6b65998d3bc68522466866f08390c01d7402d",
+        "packages/devtools-kit/dist/hook/index.js": "a427893d7340933c1ba84981b7db3b32df07c94bd85095725771432a245e6f9d"
+    },
+    "results": [
+        {
+            "environment": "development",
+            "hookTiming": "before-renderer-import",
+            "react": "19.1.1",
+            "jsdom": "26.1.0",
+            "probeSha256": "d38764b8f720882472f273a4df7de3e1d965dac868f6e1999e60594da6723702",
+            "before": {
+                "records": [
+                    {
+                        "rendererId": 1,
+                        "version": "19.1.1",
+                        "tree": [
+                            {
+                                "children": [
+                                    {
+                                        "children": [
+                                            {
+                                                "children": [
+                                                    {
+                                                        "children": [],
+                                                        "contexts": [],
+                                                        "diagnostics": [],
+                                                        "displayName": "button",
+                                                        "fiberTag": "HostComponent",
+                                                        "hasChildren": false,
+                                                        "id": "root:0.0.0.0:HostComponent:button",
+                                                        "key": null,
+                                                        "name": "button",
+                                                        "rootId": "root",
+                                                        "tags": [
+                                                            "HostComponent",
+                                                            "host"
+                                                        ],
+                                                        "type": "host"
+                                                    }
+                                                ],
+                                                "contexts": [
+                                                    {
+                                                        "displayName": "ProbeContext",
+                                                        "kind": "dependency",
+                                                        "value": "quiet"
+                                                    }
+                                                ],
+                                                "diagnostics": [],
+                                                "displayName": "Counter",
+                                                "fiberTag": "SimpleMemo",
+                                                "hasChildren": true,
+                                                "id": "root:0.0.0:SimpleMemo:Counter",
+                                                "key": null,
+                                                "name": "Counter",
+                                                "rootId": "root",
+                                                "tags": [
+                                                    "SimpleMemo",
+                                                    "component",
+                                                    "memo"
+                                                ],
+                                                "type": "SimpleMemo"
+                                            },
+                                            {
+                                                "children": [
+                                                    {
+                                                        "children": [],
+                                                        "contexts": [],
+                                                        "diagnostics": [],
+                                                        "displayName": "span",
+                                                        "fiberTag": "HostComponent",
+                                                        "hasChildren": false,
+                                                        "id": "root:0.0.1.0:HostComponent:span",
+                                                        "key": null,
+                                                        "name": "span",
+                                                        "rootId": "root",
+                                                        "tags": [
+                                                            "HostComponent",
+                                                            "host"
+                                                        ],
+                                                        "type": "host"
+                                                    }
+                                                ],
+                                                "contexts": [],
+                                                "diagnostics": [],
+                                                "displayName": "ProbeForward",
+                                                "fiberTag": "ForwardRef",
+                                                "hasChildren": true,
+                                                "id": "root:0.0.1:ForwardRef:ProbeForward",
+                                                "key": null,
+                                                "name": "ProbeForward",
+                                                "rootId": "root",
+                                                "tags": [
+                                                    "ForwardRef",
+                                                    "component",
+                                                    "forward-ref"
+                                                ],
+                                                "type": "ForwardRef"
+                                            },
+                                            {
+                                                "children": [
+                                                    {
+                                                        "children": [],
+                                                        "contexts": [],
+                                                        "diagnostics": [],
+                                                        "displayName": "button",
+                                                        "fiberTag": "HostComponent",
+                                                        "hasChildren": false,
+                                                        "id": "root:0.0.2.0:HostComponent:button",
+                                                        "key": null,
+                                                        "name": "button",
+                                                        "rootId": "root",
+                                                        "tags": [
+                                                            "HostComponent",
+                                                            "host"
+                                                        ],
+                                                        "type": "host"
+                                                    }
+                                                ],
+                                                "contexts": [],
+                                                "diagnostics": [],
+                                                "displayName": "ClassCounter",
+                                                "fiberTag": "ClassComponent",
+                                                "hasChildren": true,
+                                                "id": "root:0.0.2:ClassComponent:ClassCounter",
+                                                "key": null,
+                                                "name": "ClassCounter",
+                                                "rootId": "root",
+                                                "tags": [
+                                                    "ClassComponent",
+                                                    "component",
+                                                    "class"
+                                                ],
+                                                "type": "class"
+                                            }
+                                        ],
+                                        "contexts": [
+                                            {
+                                                "displayName": "ProbeContext",
+                                                "kind": "provider",
+                                                "value": "quiet"
+                                            }
+                                        ],
+                                        "diagnostics": [],
+                                        "displayName": "ProbeContext.Provider",
+                                        "fiberTag": "ContextProvider",
+                                        "hasChildren": true,
+                                        "id": "root:0.0:ContextProvider:ProbeContext.Provider",
+                                        "key": null,
+                                        "name": "ProbeContext.Provider",
+                                        "rootId": "root",
+                                        "tags": [
+                                            "ContextProvider",
+                                            "context-provider"
+                                        ],
+                                        "type": "context-provider"
+                                    }
+                                ],
+                                "contexts": [],
+                                "diagnostics": [],
+                                "displayName": "ProbeApp",
+                                "fiberTag": "FunctionComponent",
+                                "hasChildren": true,
+                                "id": "root:0:FunctionComponent:ProbeApp",
+                                "key": null,
+                                "name": "ProbeApp",
+                                "rootId": "root",
+                                "tags": [
+                                    "FunctionComponent",
+                                    "component",
+                                    "function"
+                                ],
+                                "type": "function"
+                            }
+                        ]
+                    }
+                ],
+                "counter": {
+                    "props": {
+                        "label": "R02 counter"
+                    },
+                    "hooks": [
+                        {
+                            "index": 0,
+                            "name": "Hook 0",
+                            "type": "state",
+                            "value": 7
+                        },
+                        {
+                            "index": 1,
+                            "name": "Hook 1",
+                            "type": "context",
+                            "value": "quiet"
+                        }
+                    ],
+                    "contexts": [
+                        {
+                            "displayName": "ProbeContext",
+                            "kind": "dependency",
+                            "value": "quiet"
+                        }
+                    ]
+                },
+                "klass": {
+                    "actualState": {
+                        "count": 11
+                    },
+                    "currentGenericHookInspection": [
+                        {
+                            "index": 0,
+                            "name": "Hook 0",
+                            "type": "unknown"
+                        }
+                    ]
+                },
+                "appText": "R02 counter: 7; quietForwardClass: 11"
+            },
+            "after": {
+                "records": [
+                    {
+                        "rendererId": 1,
+                        "version": "19.1.1",
+                        "tree": [
+                            {
+                                "children": [
+                                    {
+                                        "children": [
+                                            {
+                                                "children": [
+                                                    {
+                                                        "children": [],
+                                                        "contexts": [],
+                                                        "diagnostics": [],
+                                                        "displayName": "button",
+                                                        "fiberTag": "HostComponent",
+                                                        "hasChildren": false,
+                                                        "id": "root:0.0.0.0:HostComponent:button",
+                                                        "key": null,
+                                                        "name": "button",
+                                                        "rootId": "root",
+                                                        "tags": [
+                                                            "HostComponent",
+                                                            "host"
+                                                        ],
+                                                        "type": "host"
+                                                    }
+                                                ],
+                                                "contexts": [
+                                                    {
+                                                        "displayName": "ProbeContext",
+                                                        "kind": "dependency",
+                                                        "value": "quiet"
+                                                    }
+                                                ],
+                                                "diagnostics": [],
+                                                "displayName": "Counter",
+                                                "fiberTag": "SimpleMemo",
+                                                "hasChildren": true,
+                                                "id": "root:0.0.0:SimpleMemo:Counter",
+                                                "key": null,
+                                                "name": "Counter",
+                                                "rootId": "root",
+                                                "tags": [
+                                                    "SimpleMemo",
+                                                    "component",
+                                                    "memo"
+                                                ],
+                                                "type": "SimpleMemo"
+                                            },
+                                            {
+                                                "children": [
+                                                    {
+                                                        "children": [],
+                                                        "contexts": [],
+                                                        "diagnostics": [],
+                                                        "displayName": "span",
+                                                        "fiberTag": "HostComponent",
+                                                        "hasChildren": false,
+                                                        "id": "root:0.0.1.0:HostComponent:span",
+                                                        "key": null,
+                                                        "name": "span",
+                                                        "rootId": "root",
+                                                        "tags": [
+                                                            "HostComponent",
+                                                            "host"
+                                                        ],
+                                                        "type": "host"
+                                                    }
+                                                ],
+                                                "contexts": [],
+                                                "diagnostics": [],
+                                                "displayName": "ProbeForward",
+                                                "fiberTag": "ForwardRef",
+                                                "hasChildren": true,
+                                                "id": "root:0.0.1:ForwardRef:ProbeForward",
+                                                "key": null,
+                                                "name": "ProbeForward",
+                                                "rootId": "root",
+                                                "tags": [
+                                                    "ForwardRef",
+                                                    "component",
+                                                    "forward-ref"
+                                                ],
+                                                "type": "ForwardRef"
+                                            },
+                                            {
+                                                "children": [
+                                                    {
+                                                        "children": [],
+                                                        "contexts": [],
+                                                        "diagnostics": [],
+                                                        "displayName": "button",
+                                                        "fiberTag": "HostComponent",
+                                                        "hasChildren": false,
+                                                        "id": "root:0.0.2.0:HostComponent:button",
+                                                        "key": null,
+                                                        "name": "button",
+                                                        "rootId": "root",
+                                                        "tags": [
+                                                            "HostComponent",
+                                                            "host"
+                                                        ],
+                                                        "type": "host"
+                                                    }
+                                                ],
+                                                "contexts": [],
+                                                "diagnostics": [],
+                                                "displayName": "ClassCounter",
+                                                "fiberTag": "ClassComponent",
+                                                "hasChildren": true,
+                                                "id": "root:0.0.2:ClassComponent:ClassCounter",
+                                                "key": null,
+                                                "name": "ClassCounter",
+                                                "rootId": "root",
+                                                "tags": [
+                                                    "ClassComponent",
+                                                    "component",
+                                                    "class"
+                                                ],
+                                                "type": "class"
+                                            }
+                                        ],
+                                        "contexts": [
+                                            {
+                                                "displayName": "ProbeContext",
+                                                "kind": "provider",
+                                                "value": "quiet"
+                                            }
+                                        ],
+                                        "diagnostics": [],
+                                        "displayName": "ProbeContext.Provider",
+                                        "fiberTag": "ContextProvider",
+                                        "hasChildren": true,
+                                        "id": "root:0.0:ContextProvider:ProbeContext.Provider",
+                                        "key": null,
+                                        "name": "ProbeContext.Provider",
+                                        "rootId": "root",
+                                        "tags": [
+                                            "ContextProvider",
+                                            "context-provider"
+                                        ],
+                                        "type": "context-provider"
+                                    }
+                                ],
+                                "contexts": [],
+                                "diagnostics": [],
+                                "displayName": "ProbeApp",
+                                "fiberTag": "FunctionComponent",
+                                "hasChildren": true,
+                                "id": "root:0:FunctionComponent:ProbeApp",
+                                "key": null,
+                                "name": "ProbeApp",
+                                "rootId": "root",
+                                "tags": [
+                                    "FunctionComponent",
+                                    "component",
+                                    "function"
+                                ],
+                                "type": "function"
+                            }
+                        ]
+                    }
+                ],
+                "counter": {
+                    "props": {
+                        "label": "R02 counter"
+                    },
+                    "hooks": [
+                        {
+                            "index": 0,
+                            "name": "Hook 0",
+                            "type": "state",
+                            "value": 8
+                        },
+                        {
+                            "index": 1,
+                            "name": "Hook 1",
+                            "type": "context",
+                            "value": "quiet"
+                        }
+                    ],
+                    "contexts": [
+                        {
+                            "displayName": "ProbeContext",
+                            "kind": "dependency",
+                            "value": "quiet"
+                        }
+                    ]
+                },
+                "klass": {
+                    "actualState": {
+                        "count": 12
+                    },
+                    "currentGenericHookInspection": [
+                        {
+                            "index": 0,
+                            "name": "Hook 0",
+                            "type": "unknown"
+                        }
+                    ]
+                },
+                "appText": "R02 counter: 8; quietForwardClass: 12"
+            },
+            "boundary": "Actual React renderer in jsdom; not native extension/panel, official backend, or RPC"
+        },
+        {
+            "environment": "development",
+            "hookTiming": "after-first-render",
+            "react": "19.1.1",
+            "jsdom": "26.1.0",
+            "probeSha256": "d38764b8f720882472f273a4df7de3e1d965dac868f6e1999e60594da6723702",
+            "before": {
+                "records": [],
+                "counter": null,
+                "klass": null,
+                "appText": "R02 counter: 7; quietForwardClass: 11"
+            },
+            "after": {
+                "records": [],
+                "counter": null,
+                "klass": null,
+                "appText": "R02 counter: 8; quietForwardClass: 12"
+            },
+            "boundary": "Actual React renderer in jsdom; not native extension/panel, official backend, or RPC"
+        },
+        {
+            "environment": "production",
+            "hookTiming": "before-renderer-import",
+            "react": "19.1.1",
+            "jsdom": "26.1.0",
+            "probeSha256": "d38764b8f720882472f273a4df7de3e1d965dac868f6e1999e60594da6723702",
+            "before": {
+                "records": [
+                    {
+                        "rendererId": 1,
+                        "version": "19.1.1",
+                        "tree": [
+                            {
+                                "children": [
+                                    {
+                                        "children": [
+                                            {
+                                                "children": [
+                                                    {
+                                                        "children": [],
+                                                        "contexts": [],
+                                                        "diagnostics": [],
+                                                        "displayName": "button",
+                                                        "fiberTag": "HostComponent",
+                                                        "hasChildren": false,
+                                                        "id": "root:0.0.0.0:HostComponent:button",
+                                                        "key": null,
+                                                        "name": "button",
+                                                        "rootId": "root",
+                                                        "tags": [
+                                                            "HostComponent",
+                                                            "host"
+                                                        ],
+                                                        "type": "host"
+                                                    }
+                                                ],
+                                                "contexts": [
+                                                    {
+                                                        "displayName": "ProbeContext",
+                                                        "kind": "dependency",
+                                                        "value": "quiet"
+                                                    }
+                                                ],
+                                                "diagnostics": [],
+                                                "displayName": "Counter",
+                                                "fiberTag": "SimpleMemo",
+                                                "hasChildren": true,
+                                                "id": "root:0.0.0:SimpleMemo:Counter",
+                                                "key": null,
+                                                "name": "Counter",
+                                                "rootId": "root",
+                                                "tags": [
+                                                    "SimpleMemo",
+                                                    "component",
+                                                    "memo"
+                                                ],
+                                                "type": "SimpleMemo"
+                                            },
+                                            {
+                                                "children": [
+                                                    {
+                                                        "children": [],
+                                                        "contexts": [],
+                                                        "diagnostics": [],
+                                                        "displayName": "span",
+                                                        "fiberTag": "HostComponent",
+                                                        "hasChildren": false,
+                                                        "id": "root:0.0.1.0:HostComponent:span",
+                                                        "key": null,
+                                                        "name": "span",
+                                                        "rootId": "root",
+                                                        "tags": [
+                                                            "HostComponent",
+                                                            "host"
+                                                        ],
+                                                        "type": "host"
+                                                    }
+                                                ],
+                                                "contexts": [],
+                                                "diagnostics": [],
+                                                "displayName": "ProbeForward",
+                                                "fiberTag": "ForwardRef",
+                                                "hasChildren": true,
+                                                "id": "root:0.0.1:ForwardRef:ProbeForward",
+                                                "key": null,
+                                                "name": "ProbeForward",
+                                                "rootId": "root",
+                                                "tags": [
+                                                    "ForwardRef",
+                                                    "component",
+                                                    "forward-ref"
+                                                ],
+                                                "type": "ForwardRef"
+                                            },
+                                            {
+                                                "children": [
+                                                    {
+                                                        "children": [],
+                                                        "contexts": [],
+                                                        "diagnostics": [],
+                                                        "displayName": "button",
+                                                        "fiberTag": "HostComponent",
+                                                        "hasChildren": false,
+                                                        "id": "root:0.0.2.0:HostComponent:button",
+                                                        "key": null,
+                                                        "name": "button",
+                                                        "rootId": "root",
+                                                        "tags": [
+                                                            "HostComponent",
+                                                            "host"
+                                                        ],
+                                                        "type": "host"
+                                                    }
+                                                ],
+                                                "contexts": [],
+                                                "diagnostics": [],
+                                                "displayName": "ClassCounter",
+                                                "fiberTag": "ClassComponent",
+                                                "hasChildren": true,
+                                                "id": "root:0.0.2:ClassComponent:ClassCounter",
+                                                "key": null,
+                                                "name": "ClassCounter",
+                                                "rootId": "root",
+                                                "tags": [
+                                                    "ClassComponent",
+                                                    "component",
+                                                    "class"
+                                                ],
+                                                "type": "class"
+                                            }
+                                        ],
+                                        "contexts": [
+                                            {
+                                                "displayName": "ProbeContext",
+                                                "kind": "provider",
+                                                "value": "quiet"
+                                            }
+                                        ],
+                                        "diagnostics": [],
+                                        "displayName": "ProbeContext.Provider",
+                                        "fiberTag": "ContextProvider",
+                                        "hasChildren": true,
+                                        "id": "root:0.0:ContextProvider:ProbeContext.Provider",
+                                        "key": null,
+                                        "name": "ProbeContext.Provider",
+                                        "rootId": "root",
+                                        "tags": [
+                                            "ContextProvider",
+                                            "context-provider"
+                                        ],
+                                        "type": "context-provider"
+                                    }
+                                ],
+                                "contexts": [],
+                                "diagnostics": [],
+                                "displayName": "ProbeApp",
+                                "fiberTag": "FunctionComponent",
+                                "hasChildren": true,
+                                "id": "root:0:FunctionComponent:ProbeApp",
+                                "key": null,
+                                "name": "ProbeApp",
+                                "rootId": "root",
+                                "tags": [
+                                    "FunctionComponent",
+                                    "component",
+                                    "function"
+                                ],
+                                "type": "function"
+                            }
+                        ]
+                    }
+                ],
+                "counter": {
+                    "props": {
+                        "label": "R02 counter"
+                    },
+                    "hooks": [
+                        {
+                            "index": 0,
+                            "name": "Hook 0",
+                            "type": "state",
+                            "value": 7
+                        },
+                        {
+                            "index": 1,
+                            "name": "Hook 1",
+                            "type": "context",
+                            "value": "quiet"
+                        }
+                    ],
+                    "contexts": [
+                        {
+                            "displayName": "ProbeContext",
+                            "kind": "dependency",
+                            "value": "quiet"
+                        }
+                    ]
+                },
+                "klass": {
+                    "actualState": {
+                        "count": 11
+                    },
+                    "currentGenericHookInspection": [
+                        {
+                            "index": 0,
+                            "name": "Hook 0",
+                            "type": "unknown"
+                        }
+                    ]
+                },
+                "appText": "R02 counter: 7; quietForwardClass: 11"
+            },
+            "after": {
+                "records": [
+                    {
+                        "rendererId": 1,
+                        "version": "19.1.1",
+                        "tree": [
+                            {
+                                "children": [
+                                    {
+                                        "children": [
+                                            {
+                                                "children": [
+                                                    {
+                                                        "children": [],
+                                                        "contexts": [],
+                                                        "diagnostics": [],
+                                                        "displayName": "button",
+                                                        "fiberTag": "HostComponent",
+                                                        "hasChildren": false,
+                                                        "id": "root:0.0.0.0:HostComponent:button",
+                                                        "key": null,
+                                                        "name": "button",
+                                                        "rootId": "root",
+                                                        "tags": [
+                                                            "HostComponent",
+                                                            "host"
+                                                        ],
+                                                        "type": "host"
+                                                    }
+                                                ],
+                                                "contexts": [
+                                                    {
+                                                        "displayName": "ProbeContext",
+                                                        "kind": "dependency",
+                                                        "value": "quiet"
+                                                    }
+                                                ],
+                                                "diagnostics": [],
+                                                "displayName": "Counter",
+                                                "fiberTag": "SimpleMemo",
+                                                "hasChildren": true,
+                                                "id": "root:0.0.0:SimpleMemo:Counter",
+                                                "key": null,
+                                                "name": "Counter",
+                                                "rootId": "root",
+                                                "tags": [
+                                                    "SimpleMemo",
+                                                    "component",
+                                                    "memo"
+                                                ],
+                                                "type": "SimpleMemo"
+                                            },
+                                            {
+                                                "children": [
+                                                    {
+                                                        "children": [],
+                                                        "contexts": [],
+                                                        "diagnostics": [],
+                                                        "displayName": "span",
+                                                        "fiberTag": "HostComponent",
+                                                        "hasChildren": false,
+                                                        "id": "root:0.0.1.0:HostComponent:span",
+                                                        "key": null,
+                                                        "name": "span",
+                                                        "rootId": "root",
+                                                        "tags": [
+                                                            "HostComponent",
+                                                            "host"
+                                                        ],
+                                                        "type": "host"
+                                                    }
+                                                ],
+                                                "contexts": [],
+                                                "diagnostics": [],
+                                                "displayName": "ProbeForward",
+                                                "fiberTag": "ForwardRef",
+                                                "hasChildren": true,
+                                                "id": "root:0.0.1:ForwardRef:ProbeForward",
+                                                "key": null,
+                                                "name": "ProbeForward",
+                                                "rootId": "root",
+                                                "tags": [
+                                                    "ForwardRef",
+                                                    "component",
+                                                    "forward-ref"
+                                                ],
+                                                "type": "ForwardRef"
+                                            },
+                                            {
+                                                "children": [
+                                                    {
+                                                        "children": [],
+                                                        "contexts": [],
+                                                        "diagnostics": [],
+                                                        "displayName": "button",
+                                                        "fiberTag": "HostComponent",
+                                                        "hasChildren": false,
+                                                        "id": "root:0.0.2.0:HostComponent:button",
+                                                        "key": null,
+                                                        "name": "button",
+                                                        "rootId": "root",
+                                                        "tags": [
+                                                            "HostComponent",
+                                                            "host"
+                                                        ],
+                                                        "type": "host"
+                                                    }
+                                                ],
+                                                "contexts": [],
+                                                "diagnostics": [],
+                                                "displayName": "ClassCounter",
+                                                "fiberTag": "ClassComponent",
+                                                "hasChildren": true,
+                                                "id": "root:0.0.2:ClassComponent:ClassCounter",
+                                                "key": null,
+                                                "name": "ClassCounter",
+                                                "rootId": "root",
+                                                "tags": [
+                                                    "ClassComponent",
+                                                    "component",
+                                                    "class"
+                                                ],
+                                                "type": "class"
+                                            }
+                                        ],
+                                        "contexts": [
+                                            {
+                                                "displayName": "ProbeContext",
+                                                "kind": "provider",
+                                                "value": "quiet"
+                                            }
+                                        ],
+                                        "diagnostics": [],
+                                        "displayName": "ProbeContext.Provider",
+                                        "fiberTag": "ContextProvider",
+                                        "hasChildren": true,
+                                        "id": "root:0.0:ContextProvider:ProbeContext.Provider",
+                                        "key": null,
+                                        "name": "ProbeContext.Provider",
+                                        "rootId": "root",
+                                        "tags": [
+                                            "ContextProvider",
+                                            "context-provider"
+                                        ],
+                                        "type": "context-provider"
+                                    }
+                                ],
+                                "contexts": [],
+                                "diagnostics": [],
+                                "displayName": "ProbeApp",
+                                "fiberTag": "FunctionComponent",
+                                "hasChildren": true,
+                                "id": "root:0:FunctionComponent:ProbeApp",
+                                "key": null,
+                                "name": "ProbeApp",
+                                "rootId": "root",
+                                "tags": [
+                                    "FunctionComponent",
+                                    "component",
+                                    "function"
+                                ],
+                                "type": "function"
+                            }
+                        ]
+                    }
+                ],
+                "counter": {
+                    "props": {
+                        "label": "R02 counter"
+                    },
+                    "hooks": [
+                        {
+                            "index": 0,
+                            "name": "Hook 0",
+                            "type": "state",
+                            "value": 8
+                        },
+                        {
+                            "index": 1,
+                            "name": "Hook 1",
+                            "type": "context",
+                            "value": "quiet"
+                        }
+                    ],
+                    "contexts": [
+                        {
+                            "displayName": "ProbeContext",
+                            "kind": "dependency",
+                            "value": "quiet"
+                        }
+                    ]
+                },
+                "klass": {
+                    "actualState": {
+                        "count": 12
+                    },
+                    "currentGenericHookInspection": [
+                        {
+                            "index": 0,
+                            "name": "Hook 0",
+                            "type": "unknown"
+                        }
+                    ]
+                },
+                "appText": "R02 counter: 8; quietForwardClass: 12"
+            },
+            "boundary": "Actual React renderer in jsdom; not native extension/panel, official backend, or RPC"
+        },
+        {
+            "environment": "production",
+            "hookTiming": "after-first-render",
+            "react": "19.1.1",
+            "jsdom": "26.1.0",
+            "probeSha256": "d38764b8f720882472f273a4df7de3e1d965dac868f6e1999e60594da6723702",
+            "before": {
+                "records": [],
+                "counter": null,
+                "klass": null,
+                "appText": "R02 counter: 7; quietForwardClass: 11"
+            },
+            "after": {
+                "records": [],
+                "counter": null,
+                "klass": null,
+                "appText": "R02 counter: 8; quietForwardClass: 12"
+            },
+            "boundary": "Actual React renderer in jsdom; not native extension/panel, official backend, or RPC"
+        }
+    ]
+}
