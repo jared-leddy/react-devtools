@@ -3,11 +3,11 @@
 Issue: [#247](https://github.com/jared-leddy/react-devtools/issues/247).
 Investigation base: `938de25cbe21f1eee1ffc315677cce475fee8f86`.
 
-**Status: review draft, not an approved shared design.** The owner's original
-`_screenshots/vue` images are unavailable in this checkout. Owner approval and
-measurements against those originals remain required before R02 closes. Approval
-of the recovery backlog is not approval of this specification. R03 can proceed
-independently; this investigation must not hold up basic transport wiring.
+**Status: measured specification awaiting explicit owner approval.** All 18
+restored screenshots have now been inspected and the original Vue references
+measured. Restoring them and requesting continuation is not visual sign-off.
+Approval of the recovery backlog is not approval of this specification. R03 can
+proceed independently; this investigation must not hold up basic transport wiring.
 
 ## Reference Authority
 
@@ -15,15 +15,15 @@ The original screenshots named in the [approved plan](../../../DEVTOOLS_RECOVERY
 remain the visual authority. The local Vue source and documentation images are
 secondary references, not replacements silently promoted to approved baselines.
 
-| Reference                                                         | Availability / Use                                                                        |
-| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Owner Vue Components `01.15.35` through `01.16.18`                | Missing; final layout, density and interaction comparison pending                         |
-| Owner Routes `01.16.32`, `01.16.58`                               | Missing; route summary/detail comparison pending                                          |
-| Owner Timeline `01.16.50`, Overview `01.17.05`, picker `01.17.32` | Missing; comparisons pending                                                              |
-| Owner official React and our extension images                     | Missing; R01 provides fresh native failure and official Firefox control evidence instead  |
-| Local Vue `devtools/docs/public/features/components.png`          | Inspected; coordinate annotations below are from this image only                          |
-| Local Vue client/applet source                                    | Inspected; explicit source dimensions and behaviors below                                 |
-| Stores, Settings, popup, light/narrow/short/error states          | Original plan has no complete reference set; additional reference capture/review required |
+| Reference                                                         | Availability / Use                                                                                            |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Owner Vue Components `01.15.35` through `01.16.18`                | Restored and inspected; measured rail/rows/panes/toolbars, typed selected states                              |
+| Owner Routes `01.16.32`, `01.16.58`                               | Inspected summary/table and router inspector states                                                           |
+| Owner Timeline `01.16.50`, Overview `01.17.05`, picker `01.17.32` | Inspected layers/empty events, brand/three summaries and picker surfaces                                      |
+| Owner official React and our extension images                     | Inspected all seven; framework/server metadata versus our synthetic/nested-card UI                            |
+| Local Vue `devtools/docs/public/features/components.png`          | Inspected; coordinate annotations below are from this image only                                              |
+| Local Vue client/applet source                                    | Inspected; explicit source dimensions and behaviors below                                                     |
+| Stores, Settings, popup, light/narrow/short/error states          | Missing original Vue states identified; source-derived grammar proposals require later view-specific approval |
 
 Vue source is a tracked tree (`0cd44395df7664dde0e496acdf74daa71e042892`),
 with package version `7.3.2`; an upstream commit is not recorded here. Do not
@@ -31,11 +31,27 @@ invent one. React-native semantics override Vue-specific labels (Hooks rather
 than setup; registered Stores rather than assuming Pinia; actual React commit
 events rather than Vue emits).
 
-## Measured Secondary Reference
+## Measured Owner References
+
+[Owner annotation sheet](OWNER_REFERENCES.md) records content bounds, coordinate
+marks, colors, interaction-state mapping and all 18 reference identifiers.
+[owner-reference-measurements.json](evidence/owner-reference-measurements.json)
+contains hashes/dimensions and reproducible pixel samples. Originals remain
+unchanged in the owner's untracked `_screenshots` directory; browser chrome and
+private application context are not redistributed in this PR/release.
+
+Primary `01.16.18`: content 1920 x 828, starting at y=167; rail 50 raster px;
+tree/inspector divided at x=985; toolbar 50px high; selected row exactly 20px;
+selection sample `#419f69`, base `#121212`, separator `#2e3031`. Source suggests
+14px monospace text and 15px indentation; screenshot pixels cannot prove the
+installed font or browser zoom. The first image uses a different crop. These
+measurements replace the secondary reference as the design authority.
+
+## Historical Secondary Reference
 
 Coordinates use the original **2162 x 1324 raster**, origin at top left, excluding
 the decorative outer frame. They are annotations, not CSS pixel measurements of
-the missing owner screenshots. Image/source hashes and pixel samples are in
+the owner screenshots. Image/source hashes and pixel samples are in
 [reference-measurements.json](evidence/reference-measurements.json).
 
 ![Secondary Vue Components reference](../../../devtools/docs/public/features/components.png)
@@ -59,11 +75,12 @@ row consequently suggests about 20 CSS px. Source specifies a responsive split
 at pane width below 700px. Do not convert arbitrary screenshot coordinates using
 OS DPI alone or copy rounded outer presentation framing into the panel.
 
-## Proposed Shell And Components Contract
+## Shell And Components Specification
 
-Values below are **proposals for owner review**, not an approval claim. Start
-with a 50px rail based on the concrete source measurement; reconcile the approved
-plan's approximate 48px against the restored owner reference before locking it.
+Values below are **measured proposals awaiting owner sign-off**, not an approval
+claim. Use a 50px rail: the owner reference and source now agree. The plan's
+earlier approximate 48px is superseded by this measurement. Use a 20px default
+tree row, 50px toolbar band, 8px pane gutters and 27-28px search control.
 
 - Full-viewport grid: fixed rail plus `minmax(0, 1fr)` workspace. No global title,
   Command/Dark buttons, pill navigation, section cards or document scrollbar.
@@ -73,9 +90,9 @@ plan's approximate 48px against the restored owner reference before locking it.
 - Use the existing suitable icon library or individually imported Lucide icons.
   Icon controls need names, hover/focus tooltips and keyboard access. Proposed
   rail hit target 40px, toolbar target 28px; icon glyph 16-20px.
-- Neutral `#121212` dark surface, quiet one-pixel separators, restrained green
-  interaction accent; syntax colors add distinct types, not decoration. Proposed
-  selection `#299f69`, foreground `#ffffff`; validate contrast/focus in both themes.
+- Neutral `#121212` dark surface, quiet `#2e3031` one-pixel separators, restrained
+  green interaction accent; syntax colors add distinct types, not decoration.
+  Selection `#419f69`, foreground `#ffffff`; validate contrast/focus in both themes.
   System/light/dark use semantic tokens, not a single dark-only style.
 - Components uses flat resizable tree/inspector panes. Proposed default 50:50
   split; independent scroll, persisted ratio, accessible keyboard-operable divider.
@@ -84,7 +101,7 @@ plan's approximate 48px against the restored owner reference before locking it.
 - Left toolbar: `Find components...` and capability-backed picker icon. Right:
   selected name, `Filter State...`, supported DOM/source actions. Do not reproduce
   Vue render-code or arbitrary evaluation features without a safe real provider.
-- Proposed 20-24px stable tree rows, 14px monospace data labels, 15px indentation.
+- Default 20px stable tree rows, 14px monospace data labels, 15px indentation.
   Selected background spans the row; hover and keyboard focus remain distinct.
   Arrow/Home/End navigation, disclosure, filtered ancestors, virtualized scrolling
   and selection reveal must work together without changing selected identity.
@@ -99,7 +116,20 @@ plan's approximate 48px against the restored owner reference before locking it.
 - Component IDs remain opaque and scoped to session/frame/renderer/root. Names
   come from actual type/wrapper metadata; never `component_01` as a display label.
 
-Owner review should compare restored references and our first **real installed
+The Overview reference contains three simple metric tiles below an unframed
+brand. Preserve that hierarchy with true runtime facts; do not reinterpret it
+as permission for nested dashboard cards. Stores/Settings/popup/light/narrow
+proposals derive from inspected source/shared grammar, not absent screenshots.
+Approve those actual screens in their implementation issues.
+
+Known color risk: white on sampled `#419f69` has approximately 3.29:1 contrast,
+below the 4.5:1 normal-text target. Measuring the reference is not a compliance
+claim. Dark `#0b1015` text on that green gives approximately 5.81:1; white on
+the darker timeline selection `#286746` gives approximately 6.73:1. R23 must
+resolve the accessible selected-row treatment with owner visual review, preserving
+the green/full-row grammar rather than blindly approving a failing contrast test.
+
+Owner review should compare these measurements and our first **real installed
 Components slice** at equivalent content dimensions, not a polished fake tree.
 R16/R17 implement the shell/tree; R18 implements typed values; R23 verifies
 keyboard, themes, density and responsive constraints.
@@ -180,9 +210,43 @@ record actual module hashes, base commit, Node version and before/after values:
   installed at document start; late hook injection is not a discovery strategy.
 
 This probe is **DOM emulation, not a browser or extension test**. Production
-React package selection is not optimized/minified application testing. Wrapped
-components have not yet been compared against the official native panel. Native
-selection, production support and hook coexistence are still bounded follow-ups.
+React package selection is not optimized/minified application testing. The
+native wrapped-component control below now complements these local observations;
+production support and hook coexistence remain unverified.
+
+### Native Wrapped-Component Comparison
+
+On October 12, 2026, Firefox Developer Edition 158.0 (build 20261007115609)
+loaded [native-fixture.tsx](native-fixture.tsx), React DOM 19.1.1 development,
+at `http://127.0.0.1:9052/react`. It contains no DevTools imports or annotations.
+Separate disposable profiles installed official React Developer Tools 6.1.1
+and our unchanged Firefox 0.0.7 build. Native identities, complete toolbox
+inventory, app values, source/build hashes and provenance are retained in
+[native-comparison.json](evidence/native-comparison.json).
+
+| Observation         | Local Walker Probe                                   | Official Native Panel                                                               |
+| ------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Simple memo wrapper | `Counter` instead of explicit wrapper name           | `ProbeMemoCounter`; selection highlights the actual counter section                 |
+| forwardRef          | `ProbeForward`                                       | `ProbeForward`; selecting it highlights the actual span                             |
+| Context             | `ProbeContext = quiet`                               | Named provider in tree; selected counter context `quiet`                            |
+| Props / hook        | Label `R02 counter`; 7 then 8                        | Correct label and initial 7; reselect after app update reads 8                      |
+| Class state         | Actual Fiber 11 then 12; generic hook record invalid | Distinct State section `count: 12`; selecting it highlights class section           |
+| Early ownership     | Early local hook gets root; late hook misses it      | Official-only profile discovers renderer/root; not a both-extension load-order test |
+
+![Official memo selection with actual prop, hook and context](evidence/official-counter-before.png)
+
+The automatic after-update official hook snapshot remained at 7 while the app
+displayed 8. Explicitly reselecting the counter then displayed 8. This establishes
+selected-read correctness, not reliable automatic pushes or a coexistence pass.
+Our native extension again reports proxy import/prepare redeclaration errors,
+no hook/renderers and no React tab; our panel selection remains unavailable.
+This is a bounded behavior comparison sufficient to direct R06/R07, not a
+claim that local jsdom proves native functionality. Startup fixes remain R03.
+
+The official binary is not redistributed. The [reselected counter](evidence/official-counter-reselected.png),
+[forwardRef selection](evidence/official-forward-selected.png),
+[updated class](evidence/official-class-after.png) and
+[our native errors](evidence/ours-firefox-console.png) are retained.
 
 | Option                                     | Decision / Why                          | Cost And Remaining Evidence                                                                                                                                                                  |
 | ------------------------------------------ | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -281,10 +345,18 @@ Regenerate secondary-reference measurements with:
 
 ```sh
 node docs/recovery/r02/reference-probe.mjs
+node docs/recovery/r02/owner-reference-probe.mjs
 ```
 
 The reference probe records manually annotated bounds separately from sampled
 pixel colors and source-derived dimensions. It does not infer owner approval.
+
+For the bounded native comparison, start `node docs/recovery/r02/serve-fixture.mjs`.
+Use separate fresh Firefox profiles, install official 6.1.1 in one and our dist
+in the other, then open `/react` and the actual native toolbox. Select memo,
+forwardRef and class, increment the counters and reselect them. Record actual
+native tool identity and injection errors; a normal extension URL tab is not
+equivalent. Stop the fixture and close the disposable profiles afterwards.
 
 Chrome R01 uses the actual native extension host/CDP relationship; extension
 loading flags and browser versions can change. Firefox R01 uses real Marionette
@@ -296,11 +368,12 @@ in for extension CSP, content-script execution, transport or native toolboxes.
 
 ## Remaining Acceptance Gates
 
-- [ ] Restore owner's Vue images; record hashes/content bounds and measure the
+- [x] Restore owner's Vue images; record hashes/content bounds and measure the
       rail, row, toolbar, panes, typography, colors and relevant interaction states.
-- [ ] Capture/review missing Stores, Settings, popup, light/narrow/short references.
+- [x] Identify missing Vue reference states and map source-derived proposals to
+      R19/R20/R22/R23; do not claim those screens have visual parity yet.
 - [ ] Owner explicitly approves shell/Components specification or requests changes.
-- [ ] Complete bounded official/native wrapped-component naming and selection
+- [x] Complete bounded official/native wrapped-component naming and selection
       comparison; early hook ownership/coexistence remains R10, not a claimed pass.
 
 Until the required R02 gates pass, keep #247 open. A draft PR or research release
@@ -321,3 +394,10 @@ renderer probe variants passed after the current build. Diagnostics are research
 tools outside production runtime and existing coverage scope; they are not a
 new native CI suite or a basis for reducing coverage gates. Evidence integrity
 is recorded in [checksums.json](evidence/checksums.json).
+
+After reference restoration, the owner-reference probe asserts sampled colors
+and the 20px selected-row height; the new native fixture passes a standalone
+TypeScript check and all diagnostic scripts pass ESLint/Prettier. The native
+comparison uses actual Firefox toolboxes in two disposable profiles, not the
+existing overlay smoke. The restored screenshots are preserved as unrelated
+untracked owner files and excluded from commits and release archives.

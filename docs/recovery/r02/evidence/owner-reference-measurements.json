@@ -1,0 +1,191 @@
+{
+    "authority": "Restored owner references, inspected all 18 images",
+    "coordinateSystem": "Original raster pixels, not assumed CSS or OS DPI conversion",
+    "images": [
+        {
+            "file": "_screenshots/react-official/Screenshot 2026-10-10 at 01.22.38.png",
+            "width": 1920,
+            "height": 1080,
+            "sha256": "77d870eaaf6b0e3b3973a3a704344afd66b20c8669a96b3aab1a3d62fc0d0cc1"
+        },
+        {
+            "file": "_screenshots/react-official/Screenshot 2026-10-10 at 01.22.57.png",
+            "width": 1920,
+            "height": 1080,
+            "sha256": "717399390d671c16be115bbe7f29e8ce2739d97c2f69860b3ff808d4eb32b9d3"
+        },
+        {
+            "file": "_screenshots/react-our version/Screenshot 2026-10-10 at 01.24.01.png",
+            "width": 1920,
+            "height": 1080,
+            "sha256": "efb1d56e2981f3f6a62cdb6f049d9be3232f6d32c0c425b7aab4fed8c256e1bf"
+        },
+        {
+            "file": "_screenshots/react-our version/Screenshot 2026-10-10 at 01.24.21.png",
+            "width": 1920,
+            "height": 1080,
+            "sha256": "47ac9f456609088ba939626226b82bc53e7de1796ddbb16432a0304109cc49c7"
+        },
+        {
+            "file": "_screenshots/react-our version/Screenshot 2026-10-10 at 01.24.31.png",
+            "width": 1920,
+            "height": 1080,
+            "sha256": "8ee642b14fc404ff0f172fffae86919ca38714b3fdb7aadb12ed0d4ffbfdb004"
+        },
+        {
+            "file": "_screenshots/react-our version/Screenshot 2026-10-10 at 01.24.40.png",
+            "width": 1920,
+            "height": 1080,
+            "sha256": "eaa84bf5c515ff18c65466b8f97df0d874c4af9b7040c2795e36923361592b48"
+        },
+        {
+            "file": "_screenshots/react-our version/Screenshot 2026-10-10 at 01.24.48.png",
+            "width": 1920,
+            "height": 1080,
+            "sha256": "cd9fabade0ea844df69e743e6a3992a5495ea4c2f8d349f7599b6f1ab3980087"
+        },
+        {
+            "file": "_screenshots/vue/Screenshot 2026-10-10 at 01.15.35.png",
+            "width": 1911,
+            "height": 911,
+            "sha256": "bfbbe5420078ff5ccb37516aa8785ef64ecd75734e86abb77691f35c9b96f941"
+        },
+        {
+            "file": "_screenshots/vue/Screenshot 2026-10-10 at 01.15.43.png",
+            "width": 1920,
+            "height": 1080,
+            "sha256": "41cfbc3dd0da25a8f8a0b007ef61eff73ae2fc998e3ad6aac623d4ee0ae74831"
+        },
+        {
+            "file": "_screenshots/vue/Screenshot 2026-10-10 at 01.15.50.png",
+            "width": 1920,
+            "height": 1080,
+            "sha256": "15b6481c1e03c768337c8ba12fb3d10bd678d4d29c15bf1952553de092d9cd4b"
+        },
+        {
+            "file": "_screenshots/vue/Screenshot 2026-10-10 at 01.15.59.png",
+            "width": 1920,
+            "height": 1080,
+            "sha256": "df710982dda4b14812415afc5035216ec75897914ae3447b56413fc879e6c079"
+        },
+        {
+            "file": "_screenshots/vue/Screenshot 2026-10-10 at 01.16.09.png",
+            "width": 1920,
+            "height": 1080,
+            "sha256": "35219d2883e6dbac5df0d95937d4eeb13186662950bdc373431d5714eb387b2f"
+        },
+        {
+            "file": "_screenshots/vue/Screenshot 2026-10-10 at 01.16.18.png",
+            "width": 1920,
+            "height": 1080,
+            "sha256": "3afd6a14aea0b7d85be04b4f1630fefeb8e2f3cc5aacdcbc5e088d6c9fb3b151"
+        },
+        {
+            "file": "_screenshots/vue/Screenshot 2026-10-10 at 01.16.32.png",
+            "width": 1920,
+            "height": 1080,
+            "sha256": "47118d590503dab4782c77c8d45725d897d99062e895c05dbfdbe341f96abd6b"
+        },
+        {
+            "file": "_screenshots/vue/Screenshot 2026-10-10 at 01.16.50.png",
+            "width": 1920,
+            "height": 1080,
+            "sha256": "513dac4816f0a0bc0f18eff14cc2d341cf1af8ba7061cd62ecc3ef07aac513b7"
+        },
+        {
+            "file": "_screenshots/vue/Screenshot 2026-10-10 at 01.16.58.png",
+            "width": 1920,
+            "height": 1080,
+            "sha256": "dd83c9298373dcef79ff6843e60d27d62e46d4fe4f55871f88c211c242c40fea"
+        },
+        {
+            "file": "_screenshots/vue/Screenshot 2026-10-10 at 01.17.05.png",
+            "width": 1920,
+            "height": 1080,
+            "sha256": "855139587a7286f63a37cc8e911419b9149cf4cb3f13230d16744239b864f855"
+        },
+        {
+            "file": "_screenshots/vue/Screenshot 2026-10-10 at 01.17.32.png",
+            "width": 1920,
+            "height": 1080,
+            "sha256": "9fe47d110fc65cde9fa2c9d0eee02f68af280854aecba9361595c1c62decaf31"
+        }
+    ],
+    "measuredComponents": {
+        "file": "_screenshots/vue/Screenshot 2026-10-10 at 01.16.18.png",
+        "contentBoundsExclusive": {
+            "left": 0,
+            "top": 167,
+            "right": 1920,
+            "bottom": 995
+        },
+        "railBoundsExclusive": {
+            "left": 0,
+            "right": 50
+        },
+        "treeInteriorXInclusive": [50, 984],
+        "dividerX": 985,
+        "inspectorInteriorXInclusive": [986, 1918],
+        "toolbarBoundsYExclusive": [167, 217],
+        "searchInputBoundsApproximate": [58, 182, 952, 209],
+        "selectedRowYInclusive": [315, 334],
+        "selectedRowHeightRasterPx": 20,
+        "samples": [
+            {
+                "x": 600,
+                "y": 325,
+                "rgb": [65, 159, 105]
+            },
+            {
+                "x": 600,
+                "y": 500,
+                "rgb": [18, 18, 18]
+            },
+            {
+                "x": 49,
+                "y": 500,
+                "rgb": [46, 48, 49]
+            },
+            {
+                "x": 985,
+                "y": 500,
+                "rgb": [46, 48, 49]
+            },
+            {
+                "x": 100,
+                "y": 182,
+                "rgb": [62, 87, 112]
+            }
+        ]
+    },
+    "otherManualAnnotations": {
+        "croppedFirstImage": {
+            "time": "01.15.35",
+            "contentTop": 84,
+            "railVisibleWidth": 42,
+            "warning": "Different crop; do not infer a second rail design or browser zoom"
+        },
+        "timeline": {
+            "time": "01.16.50",
+            "layerDividerX": 704,
+            "selectedLayerBoundsApproximate": [65, 304, 689, 336]
+        },
+        "routerInspector": {
+            "time": "01.16.58",
+            "detailDividerX": 798
+        },
+        "picker": {
+            "time": "01.17.32",
+            "panelContentTop": 595,
+            "dialogBoundsApproximate": [720, 705, 1200, 885],
+            "pageLabelBoundsApproximate": [0, 112, 142, 147]
+        }
+    },
+    "sourceOnly": {
+        "dataFontCssPx": 14,
+        "indentationCssPx": 15,
+        "note": "From Vue utility/source; screenshot font family/zoom are not proven"
+    },
+    "interactionLimits": "Still images prove depicted selections, disclosure and picker states, not keyboard, focus, drag, animation or teardown",
+    "privacy": "Original screenshots remain local user files; no browser chrome/tabs or private application screenshots redistributed"
+}

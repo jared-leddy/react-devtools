@@ -1,11 +1,47 @@
 [
     {
+        "file": "OWNER_REFERENCES.md",
+        "sha256": "66d9e895d76b820e6bb5ce27bef2db390ea788a556e34804261e602849448803"
+    },
+    {
         "file": "README.md",
-        "sha256": "4e4303b4dd21ea973032f3dc9e6214da9674ecaf62c444ebd1f10d456aeffa08"
+        "sha256": "64ff68a4e111f95672f4e79c4fee9c75b8e469b834bdbd3b5e68c17432be0510"
     },
     {
         "file": "evidence/bundle-report.json",
         "sha256": "2d503cce708e6dadd76e8b576d52c1cfe024e9fdf0df05ac833bebb25be6d5d7"
+    },
+    {
+        "file": "evidence/native-comparison.json",
+        "sha256": "59216abe186937c1fad3f94d36762f849412ab6738393964198e7b2b608a05a6"
+    },
+    {
+        "file": "evidence/official-class-after.png",
+        "sha256": "ce867f4bf93795f85c2a3df093cef2aa0cdb3187accbf85067cc4e7dace13adf"
+    },
+    {
+        "file": "evidence/official-counter-after.png",
+        "sha256": "ba9f9331945e8235129b7b37389b30c2e805025d8a413fa70534ce2346f95e2a"
+    },
+    {
+        "file": "evidence/official-counter-before.png",
+        "sha256": "ca34aa8302be58c808d2637babfdc115c02596acfd7cc6b412bea09985549b60"
+    },
+    {
+        "file": "evidence/official-counter-reselected.png",
+        "sha256": "f0698316797e1f6494976186523afd4e41bb08ff0f7feeadc5fe7536a2d67013"
+    },
+    {
+        "file": "evidence/official-forward-selected.png",
+        "sha256": "1fb49ab51797ea0f348b2aa9dbc72dee762803aaae679ade4e202436161fb195"
+    },
+    {
+        "file": "evidence/ours-firefox-console.png",
+        "sha256": "1d3d4b9efb605231c519f90ffecbda029c99974d2847875c40e297a7fc1119f5"
+    },
+    {
+        "file": "evidence/owner-reference-measurements.json",
+        "sha256": "2775b21381104e1f70db1bbbabf8e776e0256219befd8e150a9996d8a535f95c"
     },
     {
         "file": "evidence/reference-measurements.json",
@@ -16,11 +52,23 @@
         "sha256": "333f9fe2e79a590b3613a28375df710a860c69084071ecb9910eb91fc3a22a3c"
     },
     {
+        "file": "native-fixture.tsx",
+        "sha256": "feeae9cb0d91ca1c5c87b9bbac7df65c8ca78f408f03401152f6f308215cbbaa"
+    },
+    {
+        "file": "owner-reference-probe.mjs",
+        "sha256": "4d96d34f0d696b3d174191f89f49f4725c179e199840350adbb96918d0af84e9"
+    },
+    {
         "file": "reference-probe.mjs",
         "sha256": "bbaaae8f6f87721961066af6b93b247ea1a6808e911752f48424178eaefcee8b"
     },
     {
         "file": "renderer-probe.mjs",
         "sha256": "d38764b8f720882472f273a4df7de3e1d965dac868f6e1999e60594da6723702"
+    },
+    {
+        "file": "serve-fixture.mjs",
+        "sha256": "f00085107c516fac22474b90d2ddd79112125c2094526f04bf74a668ff90cccc"
     }
 ]
