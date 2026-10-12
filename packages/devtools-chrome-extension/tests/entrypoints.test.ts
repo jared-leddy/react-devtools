@@ -112,6 +112,7 @@ describe('extension entrypoints', () => {
         chrome.connect(tabTwoPanelPort);
         chrome.connect(tabOnePagePort);
         chrome.connect(tabTwoPagePort);
+        chrome.updateTab(101, { status: 'loading' });
 
         tabOnePanelPort.emitMessage({ from: 'panel-101' });
         tabOnePagePort.emitMessage({ from: 'page-101' });
@@ -717,8 +718,15 @@ describe('extension entrypoints', () => {
             options: { timeout: 5000 }
         });
         expect(serverFunctions.handshake({ clientId: 'panel' })).toMatchObject({
+            capabilities: {
+                roots: true,
+                components: false,
+                componentState: false
+            },
             serverId: 'react-devtools-extension-user-app',
             state: {
+                componentState: {},
+                components: [],
                 renderers: [
                     expect.objectContaining({
                         id: 1,

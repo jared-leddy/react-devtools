@@ -123,6 +123,7 @@ describe('extension entrypoints', () => {
         browser.connect(tabTwoPanelPort);
         browser.connect(tabOnePagePort);
         browser.connect(tabTwoPagePort);
+        browser.updateTab(101, { status: 'loading' });
 
         tabOnePanelPort.emitMessage({ from: 'panel-101' });
         tabOnePagePort.emitMessage({ from: 'page-101' });

@@ -18,6 +18,10 @@ source is added. The core callbacks now deliver state patches and transport
 changes; servers publish store updates. Subscription ordering, batching and full
 navigation behavior remain R04/R08. Inspect/edit/store capabilities are false
 until their actual operations are available; capability presence is not UI support.
+Native sessions currently advertise roots only; their snapshot excludes eager
+component/context values. The existing backend inspection functions remain for
+R05/R06 to connect with transport-safe value serialization. Generic core servers
+retain their own explicit capabilities.
 
 ## Embedding And Ownership
 
@@ -65,6 +69,12 @@ hook coexistence or approved browser-store distribution is claimed here.
   HTML panel/popup entries remain module bundles.
 - The native panel is registered even on non-React pages, so connection/no-renderer
   states can be inspected. Actual renderer detection comes from the handshake.
+- A delayed tab `loading` event resets the detection badge without deleting live
+  relay ports. Native Next.js traces showed backend readiness but no incoming
+  handshake before this correction; afterwards both native panels connect. Port
+  disconnect/tab removal still release the relay. Full navigation recovery is R08.
+- Shared Chrome content sources and the classic build plugin invalidate Turbo
+  caches, including Firefox's independently built shared content scripts.
 
 The new build regression gate parses/runs two independently compiled scripts
 with colliding source names and asserts missing entries fail the build.

@@ -105,7 +105,9 @@ chromeApi?.tabs?.onRemoved?.addListener?.((tabId) => {
 
 chromeApi?.tabs?.onUpdated?.addListener?.((tabId, changeInfo) => {
     if (isRecord(changeInfo) && changeInfo.status === 'loading') {
-        clearTabState(tabId);
+        // Navigation events can arrive after the new document-start port.
+        detectedReactTabs.delete(tabId);
+        setToolbarState(tabId, false);
     }
 });
 

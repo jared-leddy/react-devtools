@@ -31,6 +31,11 @@ try {
         ).pathname
     });
     const page = await context.newPage();
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    page.on('console', (message) => {
+        if (message.type() === 'error') errors.push(message.text());
+    });
     await page.goto(url);
     await page.waitForTimeout(3000);
     const discovery = await fetch('http://127.0.0.1:9351/json/list').then((r) =>
@@ -136,15 +141,27 @@ try {
                     })
                 });
             });
+        const inspectedExpression = `({url:location.href,detected:Boolean(window.__REACT_DEVTOOLS_GLOBAL_HOOK__?.renderers?.size),backendScript:document.getElementById('__react-devtools-user-app__')?.src,frames:document.querySelectorAll('iframe').length,hookKeys:Object.keys(window.__REACT_DEVTOOLS_GLOBAL_HOOK__??{})})`;
         const result = await evaluate(
-            'new Promise(resolve => { const identity={url:location.href,body:document.body.innerText,tabId:chrome.devtools.inspectedWindow.tabId}; chrome.devtools.inspectedWindow.eval("({url:location.href,detected:Boolean(window.__REACT_DEVTOOLS_GLOBAL_HOOK__?.renderers?.size)})",(result,exception)=>resolve({...identity,inspected:result,exception})); })'
+            `new Promise(resolve => { const identity={url:location.href,body:document.body.innerText,tabId:chrome.devtools.inspectedWindow.tabId}; chrome.devtools.inspectedWindow.eval(${JSON.stringify(inspectedExpression)},(result,exception)=>resolve({...identity,inspected:result,exception})); })`
         );
         results.push({ target, result });
         console.log('Native panel/host', JSON.stringify(result));
     }
     fs.writeFileSync(
         `${output}/result.json`,
-        JSON.stringify({ browser, extension, url, targets, results }, null, 4)
+        JSON.stringify(
+            {
+                browser,
+                extension,
+                url,
+                targets,
+                results,
+                errors
+            },
+            null,
+            4
+        )
     );
 } finally {
     sockets.forEach((ws) => ws.close());
