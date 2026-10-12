@@ -11,9 +11,9 @@ Reproduced installed failures and approved measured design/backend decision.
 R01 evidence: [installed-extension failure baseline](docs/recovery/r01/README.md).
 The baseline records native startup blockers, not a fixed or release-ready app.
 
-R02 working specification: [reference and backend decision draft](docs/recovery/r02/README.md).
+R02 accepted specification: [reference and backend decision](docs/recovery/r02/README.md).
 Original-reference measurements and native wrapped-component comparison are
-recorded; owner shell/Components visual approval remains pending.
+recorded; the owner authorized proceeding using delegated engineering judgment.
 
 | Item | GitHub Issue                                                                                                     | Blocked By                                                      |
 | ---- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |

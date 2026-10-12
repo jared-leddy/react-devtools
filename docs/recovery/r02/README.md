@@ -3,11 +3,12 @@
 Issue: [#247](https://github.com/jared-leddy/react-devtools/issues/247).
 Investigation base: `938de25cbe21f1eee1ffc315677cce475fee8f86`.
 
-**Status: measured specification awaiting explicit owner approval.** All 18
-restored screenshots have now been inspected and the original Vue references
-measured. Restoring them and requesting continuation is not visual sign-off.
-Approval of the recovery backlog is not approval of this specification. R03 can
-proceed independently; this investigation must not hold up basic transport wiring.
+**Status: accepted for implementation through delegated engineering judgment.**
+On October 12, 2026, the owner authorized proceeding: "I don't know enough about
+them to approve them. Go ahead." This authorizes the measured specification and
+conditional backend decision; it does not claim the owner performed a technical
+review or that the current extension has visual parity or release readiness.
+All 18 restored screenshots were inspected and the original Vue references measured.
 
 ## Reference Authority
 
@@ -77,8 +78,8 @@ OS DPI alone or copy rounded outer presentation framing into the panel.
 
 ## Shell And Components Specification
 
-Values below are **measured proposals awaiting owner sign-off**, not an approval
-claim. Use a 50px rail: the owner reference and source now agree. The plan's
+Values below are **accepted implementation targets under delegated judgment**,
+not a claim of completed visual parity. Use a 50px rail: the owner reference and source now agree. The plan's
 earlier approximate 48px is superseded by this measurement. Use a 20px default
 tree row, 50px toolbar band, 8px pane gutters and 27-28px search control.
 
@@ -366,19 +367,21 @@ identity, fail on missing prerequisites, and provide manual native release gates
 where reliable automation is unavailable. Plain web pages and jsdom cannot stand
 in for extension CSP, content-script execution, transport or native toolboxes.
 
-## Remaining Acceptance Gates
+## Acceptance Record
 
 - [x] Restore owner's Vue images; record hashes/content bounds and measure the
       rail, row, toolbar, panes, typography, colors and relevant interaction states.
 - [x] Identify missing Vue reference states and map source-derived proposals to
       R19/R20/R22/R23; do not claim those screens have visual parity yet.
-- [ ] Owner explicitly approves shell/Components specification or requests changes.
+- [x] Owner authorizes proceeding with shell/Components specification and backend
+      decision using delegated engineering judgment; no personal technical review claimed.
 - [x] Complete bounded official/native wrapped-component naming and selection
       comparison; early hook ownership/coexistence remains R10, not a claimed pass.
 
-Until the required R02 gates pass, keep #247 open. A draft PR or research release
-does not mean the shared design is locked. No app/package bump is appropriate
-for this documentation and diagnostic-only work.
+R02 acceptance is complete. Implementation and native verification remain in
+the downstream issues; this decision does not resolve extension startup, live
+data wiring, hook coexistence or accessible selection treatment. No app/package
+bump is appropriate for this documentation and diagnostic-only work.
 
 ## Verification Record
 

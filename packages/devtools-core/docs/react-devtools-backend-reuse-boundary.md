@@ -4,7 +4,7 @@ Issue: [P1-A03](https://github.com/jared-leddy/react-devtools/issues/3)
 
 ## Decision
 
-Recovery review: [R02 draft decision](../../../docs/recovery/r02/README.md).
+Recovery review: [R02 accepted recovery decision](../../../docs/recovery/r02/README.md).
 The earlier direct-backend choice below is historical, not proof of current
 native-panel compatibility. The recovery recommendation is conditional on real
 R03-R07/R10 evidence and retains an official-inline backend contingency. No
