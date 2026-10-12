@@ -1,4 +1,9 @@
 import { readFileSync } from 'node:fs';
+jest.mock('../../../scripts/extension-classic-scripts.mjs', () => ({
+    extensionClassicScripts: jest.fn(() => ({
+        name: 'extension-classic-scripts'
+    }))
+}));
 import { join } from 'node:path';
 import viteConfig from '../vite.config';
 
@@ -130,6 +135,14 @@ describe('firefox extension manifest', () => {
             source.endsWith('.html')
                 ? `${name}.html`
                 : output.entryFileNames.replace('[name]', name)
+        );
+        const { extensionClassicScripts } = jest.requireMock(
+            '../../../scripts/extension-classic-scripts.mjs'
+        ) as { extensionClassicScripts: jest.Mock };
+        emittedFiles.push(
+            ...Object.keys(extensionClassicScripts.mock.calls[0][0]).map(
+                (name) => `${name}.js`
+            )
         );
         const requiredFiles = [
             ...manifest.background.scripts,

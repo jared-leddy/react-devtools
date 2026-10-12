@@ -15,6 +15,7 @@ export default defineConfig({
         outDir: 'dist/library',
         rollupOptions: {
             external: [
+                '@devtools/core/browser',
                 '@devtools/api',
                 '@devtools/kit',
                 '@devtools/ui',

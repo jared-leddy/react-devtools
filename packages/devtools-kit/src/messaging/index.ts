@@ -19,7 +19,10 @@ export * from './presets/vite/index.js';
 
 export type Presets = 'iframe' | 'vite' | 'extension' | 'broadcast-channel';
 export type RpcHost = 'client' | 'proxy' | 'server';
-export type RpcChannel = Pick<ChannelOptions, 'off' | 'on' | 'post'>;
+export type RpcChannel = Pick<ChannelOptions, 'off' | 'on' | 'post'> & {
+    dispose?: () => void;
+    subscribeDisconnect?: (listener: () => void) => () => void;
+};
 export type RpcChannelFactory = (preset: Presets, host: RpcHost) => RpcChannel;
 export type RpcFunctions = Record<string, (...args: never[]) => unknown>;
 
@@ -31,6 +34,7 @@ export interface CreateRpcClientOptions<
     getChannel?: RpcChannelFactory;
     options?: Partial<BirpcOptions<RemoteFunctions, LocalFunctions>>;
     preset?: Presets;
+    onDisconnect?: () => void;
 }
 
 export interface CreateRpcServerOptions<
@@ -79,12 +83,30 @@ export function createRpcClient<
     functions: LocalFunctions,
     options: CreateRpcClientOptions<RemoteFunctions, LocalFunctions> = {}
 ): BirpcReturn<RemoteFunctions, LocalFunctions> {
-    const channel = withRpcSerializer(resolveRpcChannel(options, 'client'));
+    const transport = resolveRpcChannel(options, 'client');
+    const channel = withRpcSerializer(transport);
+    const unsubscribe = transport.subscribeDisconnect?.(() =>
+        options.onDisconnect?.()
+    );
 
-    return createBirpc<RemoteFunctions, LocalFunctions>(functions, {
+    const client = createBirpc<RemoteFunctions, LocalFunctions>(functions, {
         ...options.options,
         ...channel,
         timeout: options.options?.timeout ?? -1
+    });
+    let disposed = false;
+    return new Proxy(client, {
+        get(target, key) {
+            if (key === '$close')
+                return (error?: Error) => {
+                    if (disposed) return;
+                    disposed = true;
+                    unsubscribe?.();
+                    target.$close(error);
+                    transport.dispose?.();
+                };
+            return Reflect.get(target, key);
+        }
     });
 }
 

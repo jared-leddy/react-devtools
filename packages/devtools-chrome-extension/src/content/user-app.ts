@@ -75,7 +75,13 @@ export function bootstrapUserAppRpcServer(
     const walker = createFiberWalker();
     const serverFunctions = createUserAppServerFunctions(store, registry);
 
-    createRpcServer(serverFunctions, { preset: 'extension' });
+    const server = createRpcServer<
+        import('@devtools/core').DevToolsCoreClientFunctions,
+        DevToolsCoreServerFunctions
+    >(serverFunctions, { preset: 'extension', options: { timeout: 5000 } });
+    store.subscribe((_state, patch) => {
+        void server.broadcast.notifyStateUpdated(patch).catch(() => {});
+    });
     syncHookSnapshot({
         hook: hookInstallation.hook,
         registry,

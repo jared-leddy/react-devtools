@@ -11,6 +11,11 @@ import {
     type IframeTransport
 } from './iframeTransport';
 import './style.css';
+import {
+    createDevToolsSessionRelay,
+    type DevToolsSession
+} from '@devtools/core/browser';
+import { createIframeServerChannel } from '@devtools/kit';
 
 const SOURCE_METADATA_ATTRIBUTE = 'data-react-devtools-source';
 const COMPONENT_ID_ATTRIBUTE = 'data-react-devtools-component-id';
@@ -64,6 +69,7 @@ export interface InspectOverlayTarget {
 }
 
 export interface DevtoolsOverlayProps {
+    session?: DevToolsSession;
     clientUrl?: string;
     closeOnOutsideClick?: boolean;
     defaultBounds?: Partial<OverlayFrameBounds>;
@@ -99,6 +105,7 @@ export function DevtoolsOverlay({
     reduceMotion = false,
     resolveInspectTarget = resolveDefaultInspectTarget,
     separateWindowUrl,
+    session,
     storageKey = OVERLAY_STORAGE_KEY,
     toggleShortcut = 'alt+shift+d'
 }: DevtoolsOverlayProps) {
@@ -122,9 +129,35 @@ export function DevtoolsOverlay({
     const frameHostRef = useRef<HTMLDivElement>(null);
     const mountedIframeRef = useRef(false);
     const minimizeTimerRef = useRef<number | undefined>(undefined);
+    const sessionRelayRef = useRef<
+        ReturnType<typeof createDevToolsSessionRelay> | undefined
+    >(undefined);
     const iframeController = useMemo(
-        () => createLazyIframeController({ clientUrl, onConnect }),
-        [clientUrl, onConnect]
+        () =>
+            createLazyIframeController({
+                clientUrl: session ? getSessionClientUrl(clientUrl) : clientUrl,
+                async onConnect(transport) {
+                    if (!frameHostRef.current?.contains(transport.iframe))
+                        return;
+                    sessionRelayRef.current?.dispose();
+                    if (session)
+                        sessionRelayRef.current = createDevToolsSessionRelay(
+                            session,
+                            createIframeServerChannel({
+                                iframe: transport.iframe
+                            })
+                        );
+                    await onConnect?.(transport);
+                }
+            }),
+        [clientUrl, onConnect, session]
+    );
+    useEffect(
+        () => () => {
+            sessionRelayRef.current?.dispose();
+            sessionRelayRef.current = undefined;
+        },
+        [iframeController]
     );
     const open = preferences.open;
     const minimized = preferences.minimized;
@@ -546,6 +579,12 @@ export function resolveDefaultInspectTarget(
         rootId: rootId ?? undefined,
         source
     };
+}
+
+export function getSessionClientUrl(clientUrl: string): string {
+    const url = new URL(clientUrl, window.location.href);
+    url.searchParams.set('__devtools_session', 'iframe');
+    return url.href;
 }
 
 function parseSourceLocation(

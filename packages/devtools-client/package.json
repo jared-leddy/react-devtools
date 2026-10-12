@@ -1,6 +1,6 @@
 {
     "name": "@devtools/client",
-    "version": "0.0.29",
+    "version": "0.0.30",
     "private": false,
     "license": "UNLICENSED",
     "description": "React DevTools panel client shell.",
@@ -25,9 +25,10 @@
         "lint": "eslint . --max-warnings=0",
         "test:unit": "jest --coverage --config jest.config.ts",
         "test:watch": "jest --coverage --watch --config jest.config.ts",
-        "typecheck": "tsc --noEmit"
+        "typecheck": "tsc --noEmit && tsc --project type-tests/tsconfig.json"
     },
     "dependencies": {
+        "@devtools/core": "*",
         "@devtools/api": "*",
         "@devtools/kit": "*",
         "@devtools/ui": "*",

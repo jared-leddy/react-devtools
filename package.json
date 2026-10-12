@@ -1,6 +1,6 @@
 {
     "name": "react-devtools",
-    "version": "0.1.8",
+    "version": "0.1.9",
     "private": true,
     "license": "UNLICENSED",
     "scripts": {
@@ -12,19 +12,21 @@
         "extensions:prepare": "node scripts/extension-release.mjs prepare",
         "extensions:version": "node scripts/extension-release.mjs version",
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-        "format:check": "prettier --check \"**/*.{ts,tsx,md}\" scripts/bundle-checks.mjs scripts/check-bundles.mjs scripts/bundle-checks.test.mjs scripts/eslint.config.mjs scripts/bundle-budgets.json",
-        "lint": "turbo lint && eslint --config scripts/eslint.config.mjs scripts/bundle-checks.mjs scripts/check-bundles.mjs scripts/bundle-checks.test.mjs",
+        "format:check": "prettier --check \"**/*.{ts,tsx,md}\" scripts/bundle-checks.mjs scripts/check-bundles.mjs scripts/bundle-checks.test.mjs scripts/eslint.config.mjs scripts/bundle-budgets.json scripts/extension-classic-scripts.mjs scripts/extension-classic-scripts.test.mjs scripts/native-session-chrome.mjs scripts/native-session-firefox.mjs",
+        "lint": "turbo lint && eslint --config scripts/eslint.config.mjs scripts/bundle-checks.mjs scripts/check-bundles.mjs scripts/bundle-checks.test.mjs scripts/extension-classic-scripts.mjs scripts/extension-classic-scripts.test.mjs scripts/native-session-chrome.mjs scripts/native-session-firefox.mjs",
         "postinstall": "simple-git-hooks",
         "start:dev": "turbo start:dev",
         "test:e2e": "turbo test:e2e",
         "test:product-smoke": "turbo build --filter=@devtools/vite-playground^... && npm run test:e2e --workspace=@devtools/vite-playground",
         "test:firefox-uat-helper": "node --test scripts/firefox-temporary-addon-uat.test.mjs",
         "test:release-packaging": "node --test scripts/extension-release.test.mjs",
+        "test:extension-scripts": "node --test --experimental-test-coverage --test-coverage-include=scripts/extension-classic-scripts.mjs --test-coverage-lines=80 --test-coverage-branches=80 --test-coverage-functions=80 scripts/extension-classic-scripts.test.mjs",
         "test:unit": "turbo test:unit",
         "test:types": "turbo test:types --filter=@devtools/api",
         "typecheck": "turbo typecheck && npm run test:types"
     },
     "devDependencies": {
+        "esbuild": "^0.28.2",
         "eslint": "^9.34.0",
         "vite": "^7.0.0",
         "conventional-changelog": "^8.1.3",

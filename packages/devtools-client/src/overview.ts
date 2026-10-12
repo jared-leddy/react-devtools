@@ -35,7 +35,7 @@ export interface ClientOverviewDiagnostics {
     highPerformanceMode: boolean;
     lastCommitTime: string;
     timelineRecording: boolean;
-    visibleRouteCount: number;
+    visibleRouteCount: number | null;
 }
 
 export interface ClientOverviewSnapshot {

@@ -3,8 +3,59 @@ import { join } from 'node:path';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { DevtoolsOverlay, resolveDefaultInspectTarget } from '../src/App';
+import { createInitialDevToolsCoreState } from '../../devtools-core/src/state';
+import type { DevToolsSession } from '@devtools/core/browser';
 
 describe('DevtoolsOverlay', () => {
+    it('bridges a supplied host session to its iframe and releases only the relay', async () => {
+        const snapshot = {
+            sessionId: 'host',
+            serverId: 'actual-backend',
+            status: 'connected' as const,
+            state: createInitialDevToolsCoreState(),
+            capabilities: {
+                roots: true,
+                components: true,
+                componentState: true,
+                highlight: false,
+                inspect: false,
+                edit: false,
+                stores: false
+            }
+        };
+        const listeners = new Set<() => void>();
+        const session: DevToolsSession = {
+            getSnapshot: () => snapshot,
+            connect: jest.fn(async () => {}),
+            subscribe(fn) {
+                listeners.add(fn);
+                return () => {
+                    listeners.delete(fn);
+                };
+            },
+            dispose: jest.fn()
+        };
+        const { unmount } = render(
+            <DevtoolsOverlay
+                defaultOpen
+                session={session}
+                clientUrl="/client/"
+            />
+        );
+        const iframe = document.querySelector('iframe')!;
+        expect(iframe.src).toContain('__devtools_session=iframe');
+        await act(async () => {
+            fireEvent.load(iframe);
+        });
+        expect(listeners.size).toBe(1);
+        await act(async () => {
+            fireEvent.load(iframe);
+        });
+        expect(listeners.size).toBe(1);
+        unmount();
+        expect(listeners.size).toBe(0);
+        expect(session.dispose).not.toHaveBeenCalled();
+    });
     afterEach(() => {
         window.localStorage.clear();
         jest.useRealTimers();

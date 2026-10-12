@@ -1,17 +1,23 @@
 jest.mock('@devtools/client', () => ({
-    mountDevToolsClient: jest.fn()
+    mountDevToolsClient: jest.fn(),
+    setClientRouteEnvironment: jest.fn()
 }));
 
 jest.mock('@devtools/client/style.css', () => ({}), { virtual: true });
 
-jest.mock('@devtools/core', () => ({
-    ...jest.requireActual('@devtools/core'),
-    createDevToolsCoreClient: jest.fn()
+jest.mock('@devtools/core/browser', () => ({
+    ...jest.requireActual('@devtools/core/browser'),
+    createDevToolsSession: jest.fn(() => ({
+        connect: jest.fn(),
+        dispose: jest.fn()
+    }))
 }));
 
 jest.mock('@devtools/kit', () => ({
     ...jest.requireActual('@devtools/kit'),
-    createRpcServer: jest.fn()
+    createRpcServer: jest.fn(() => ({
+        broadcast: { notifyStateUpdated: jest.fn(async () => {}) }
+    }))
 }));
 
 const { EXTENSION_RPC_EVENT_KEY, EXTENSION_RPC_MESSAGE_SOURCE } =
@@ -577,7 +583,10 @@ describe('extension entrypoints', () => {
             onReady
         );
 
-        await import('../src/devtools-background');
+        const devtools = await import('../src/devtools-background');
+        expect(chrome.panels.create).toHaveBeenCalledTimes(1);
+        chrome.panels.create.mockClear();
+        devtools.startDevToolsPanelDetection();
 
         expect(chrome.inspectedWindow.eval).toHaveBeenCalledTimes(1);
         expect(chrome.panels.create).not.toHaveBeenCalled();
@@ -605,8 +614,10 @@ describe('extension entrypoints', () => {
         (globalThis as typeof globalThis & { chrome?: unknown }).chrome =
             chrome.api;
 
-        const { DEFAULT_MAX_DETECTION_ATTEMPTS } =
+        const { DEFAULT_MAX_DETECTION_ATTEMPTS, startDevToolsPanelDetection } =
             await import('../src/devtools-background');
+        chrome.panels.create.mockClear();
+        startDevToolsPanelDetection();
 
         jest.advanceTimersByTime(250 * DEFAULT_MAX_DETECTION_ATTEMPTS);
 
@@ -630,16 +641,13 @@ describe('extension entrypoints', () => {
         ) as {
             mountDevToolsClient: jest.Mock;
         };
-        const { createDevToolsCoreClient } = jest.requireMock(
-            '@devtools/core'
+        const { createDevToolsSession } = jest.requireMock(
+            '@devtools/core/browser'
         ) as {
-            createDevToolsCoreClient: jest.Mock;
+            createDevToolsSession: jest.Mock;
         };
 
-        expect(chrome.scripting.executeScript).toHaveBeenCalledWith({
-            files: ['proxy.js'],
-            target: { tabId: 42 }
-        });
+        expect(chrome.scripting.executeScript).not.toHaveBeenCalled();
         expect(chrome.runtime.getURL).toHaveBeenCalledWith('user-app.js');
         expect(chrome.inspectedWindow.eval).toHaveBeenCalledWith(
             expect.stringContaining(
@@ -650,15 +658,16 @@ describe('extension entrypoints', () => {
             expect.stringContaining('__react-devtools-user-app__')
         );
         expect(mountDevToolsClient).toHaveBeenCalledWith(
-            document.getElementById('root')
+            document.getElementById('root'),
+            { session: expect.any(Object) }
         );
-        expect(createDevToolsCoreClient).toHaveBeenCalledWith({
+        expect(createDevToolsSession).toHaveBeenCalledWith({
             preset: 'extension'
         });
         expect(onReady).toHaveBeenCalledWith(
             expect.objectContaining({
                 detail: {
-                    didInjectProxy: true,
+                    didInjectProxy: false,
                     didInjectUserApp: true,
                     didMountClient: true,
                     didOpenRpcClient: true,
@@ -704,7 +713,8 @@ describe('extension entrypoints', () => {
             rootCount: 1
         });
         expect(createRpcServer).toHaveBeenLastCalledWith(serverFunctions, {
-            preset: 'extension'
+            preset: 'extension',
+            options: { timeout: 5000 }
         });
         expect(serverFunctions.handshake({ clientId: 'panel' })).toMatchObject({
             serverId: 'react-devtools-extension-user-app',

@@ -9,6 +9,13 @@ const config: Config.InitialOptions = {
         '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: 'tsconfig.json' }]
     },
     moduleNameMapper: {
+        '^@devtools/core/browser$': '<rootDir>/../devtools-core/src/browser.ts',
+        '^@devtools/kit$': '<rootDir>/../devtools-kit/src/index.ts',
+        '^@devtools/shared$': '<rootDir>/../devtools-shared/src/index.ts',
+        '^birpc$': '<rootDir>/../devtools-kit/tests/__mocks__/birpc.ts',
+        '^hookable$': '<rootDir>/../devtools-kit/tests/__mocks__/hookable.ts',
+        '^superjson$': '<rootDir>/../devtools-kit/tests/__mocks__/superjson.ts',
+        '^(\\.{1,2}/.*)\\.js$': '$1',
         '\\.(css)$': 'identity-obj-proxy'
     },
     setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],

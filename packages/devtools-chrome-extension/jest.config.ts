@@ -18,6 +18,7 @@ const config: Config.InitialOptions = {
     },
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
     moduleNameMapper: {
+        '^@devtools/core/browser$': '<rootDir>/../devtools-core/src/browser.ts',
         '^@devtools/client$': '<rootDir>/../devtools-client/src/index.ts',
         '^@devtools/client/style.css$': 'identity-obj-proxy',
         '^@devtools/core$': '<rootDir>/../devtools-core/src/index.ts',
