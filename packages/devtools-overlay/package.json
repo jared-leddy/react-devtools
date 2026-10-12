@@ -1,6 +1,6 @@
 {
     "name": "@devtools/devtools-overlay",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "private": false,
     "license": "UNLICENSED",
     "type": "module",
@@ -20,6 +20,8 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
+        "@devtools/core": "*",
+        "@devtools/kit": "*",
         "react": "^19.1.1",
         "react-dom": "^19.1.1"
     },

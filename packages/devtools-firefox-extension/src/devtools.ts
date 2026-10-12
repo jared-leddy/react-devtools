@@ -18,6 +18,7 @@ interface FirefoxDevToolsLike {
 }
 
 interface DevToolsPanelDetectionOptions {
+    registerWithoutRenderer?: boolean;
     maxAttempts?: number;
     panelPage?: string;
     pollIntervalMs?: number;
@@ -36,7 +37,7 @@ const DEFAULT_POLL_INTERVAL_MS = 250;
 const DEVTOOLS_PANEL_PAGE = 'devtools-panel.html';
 const DEVTOOLS_PANEL_TITLE = 'React';
 
-startDevToolsPanelDetection();
+startDevToolsPanelDetection({ registerWithoutRenderer: true });
 
 globalThis.dispatchEvent(
     new CustomEvent('__react_devtools_devtools_page_ready__', {
@@ -54,6 +55,15 @@ export function startDevToolsPanelDetection(
     const createPanel = extensionApi?.devtools?.panels?.create;
 
     if (!evalInInspectedWindow || !createPanel) {
+        return;
+    }
+    if (options.registerWithoutRenderer) {
+        createPanel.call(
+            extensionApi.devtools?.panels,
+            DEVTOOLS_PANEL_TITLE,
+            '',
+            options.panelPage ?? DEVTOOLS_PANEL_PAGE
+        );
         return;
     }
 
@@ -78,7 +88,18 @@ export function startDevToolsPanelDetection(
                     return;
                 }
 
-                if (result === true && !exceptionInfo) {
+                if (
+                    result === true &&
+                    (!exceptionInfo ||
+                        (typeof exceptionInfo === 'object' &&
+                            !(
+                                exceptionInfo as {
+                                    isException?: boolean;
+                                    isError?: boolean;
+                                }
+                            ).isException &&
+                            !(exceptionInfo as { isError?: boolean }).isError))
+                ) {
                     didCreatePanel = true;
                     createPanel.call(
                         extensionApi.devtools?.panels,

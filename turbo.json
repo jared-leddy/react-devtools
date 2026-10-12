@@ -1,6 +1,11 @@
 {
     "$schema": "https://turborepo.dev/schema.json",
-    "globalDependencies": ["**/.env.*", "scripts/bundle-checks.mjs"],
+    "globalDependencies": [
+        "**/.env.*",
+        "scripts/bundle-checks.mjs",
+        "scripts/extension-classic-scripts.mjs",
+        "packages/devtools-chrome-extension/src/content/**"
+    ],
     "globalPassThroughEnv": ["SENTRY_AUTH_TOKEN", "SENTRY_DSN"],
     "tasks": {
         "start:dev": {
@@ -26,6 +31,9 @@
         "@devtools/playground#typecheck": {
             "dependsOn": ["^build", "build"],
             "outputs": [".next/types/**"]
+        },
+        "@devtools/client#typecheck": {
+            "dependsOn": ["^build", "build"]
         },
         "lint": {},
         "typecheck": {

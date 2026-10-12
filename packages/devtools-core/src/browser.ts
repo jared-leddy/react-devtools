@@ -13,3 +13,5 @@ export {
 } from './state.js';
 
 export * from './types.js';
+export * from './session.js';
+export * from './sessionRelay.js';

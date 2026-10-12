@@ -1,8 +1,11 @@
 import { connectViteClientContext } from '@devtools/kit';
 import { setClientRouteEnvironment } from './routing';
 import { setClientRuntimeState } from './runtime';
+import type { DevToolsSession } from '@devtools/core/browser';
 
-export async function initializeStandaloneDelivery(): Promise<void> {
+export async function initializeStandaloneDelivery(
+    session?: DevToolsSession
+): Promise<void> {
     try {
         const response = await fetch(window.location.href, { method: 'HEAD' });
         const base = response.headers.get('X-React-Devtools-Vite-Base');
@@ -15,8 +18,14 @@ export async function initializeStandaloneDelivery(): Promise<void> {
         setClientRouteEnvironment({ transport: 'vite' });
         try {
             const hot = await connectViteClientContext({ base });
+            if (hot && session) await session.connect();
+            // Legacy hosts report the Vite socket only; session-backed hosts require a handshake.
             setClientRuntimeState({
-                connectionStatus: hot ? 'connected' : 'disconnected'
+                connectionStatus:
+                    hot &&
+                    (!session || session.getSnapshot().status === 'connected')
+                        ? 'connected'
+                        : 'disconnected'
             });
         } catch {
             setClientRuntimeState({ connectionStatus: 'disconnected' });

@@ -1,5 +1,9 @@
 import type { ComponentType, ReactElement, ReactNode } from 'react';
 import {
+    getSessionRuntimeSnapshot,
+    useDevToolsSessionSnapshot
+} from './session';
+import {
     Suspense,
     useCallback,
     useEffect,
@@ -138,11 +142,15 @@ function ClientShell() {
         [routes]
     );
     const defaultRoutePath = getPersistedLastClientRoutePath(routes);
-    const runtimeSnapshot = useSyncExternalStore(
+    const legacyRuntimeSnapshot = useSyncExternalStore(
         subscribeToClientRuntime,
         getClientRuntimeSnapshot,
         getClientRuntimeSnapshot
     );
+    const sessionSnapshot = useDevToolsSessionSnapshot();
+    const runtimeSnapshot = sessionSnapshot
+        ? getSessionRuntimeSnapshot(sessionSnapshot)
+        : legacyRuntimeSnapshot;
     const commandSnapshot = useSyncExternalStore(
         subscribeToClientCommands,
         getClientCommandSnapshot,
@@ -522,7 +530,32 @@ function RoutePage({
     runtimeSnapshot?: ClientRuntimeSnapshot;
     settingsSnapshot?: ClientSettingsSnapshot;
 }) {
+    const sessionSnapshot = useDevToolsSessionSnapshot();
+    if (sessionSnapshot)
+        runtimeSnapshot = getSessionRuntimeSnapshot(sessionSnapshot);
     const runtimeBlock = getRuntimeBlock(runtimeSnapshot);
+    if (sessionSnapshot && sessionSnapshot.status !== 'connected')
+        return (
+            <RuntimeStatePage
+                state={{
+                    title:
+                        sessionSnapshot.status === 'error'
+                            ? 'Connection failed'
+                            : 'Backend connection',
+                    label:
+                        sessionSnapshot.status === 'waiting' ||
+                        sessionSnapshot.status === 'connecting'
+                            ? 'Waiting for backend'
+                            : 'Disconnected',
+                    description:
+                        sessionSnapshot.error ??
+                        'No backend-confirmed snapshot is available.',
+                    tone: 'warning',
+                    troubleshootingHref:
+                        'https://github.com/jared-leddy/react-devtools/issues/248'
+                }}
+            />
+        );
 
     if (route.id === 'overview') {
         const routeSnapshot = initializeClientRouteRegistry();
@@ -533,6 +566,31 @@ function RoutePage({
             visibleRouteCount: getVisibleClientRoutes(routeSnapshot).length
         });
 
+        if (sessionSnapshot) {
+            overviewSnapshot.renderers = (
+                sessionSnapshot.state?.renderers ?? []
+            ).map((renderer) => ({
+                id: String(renderer.id),
+                name:
+                    renderer.name ?? renderer.packageName ?? 'Unknown renderer',
+                reactVersion: renderer.version ?? 'Unknown',
+                rendererPackage: renderer.packageName ?? 'Unknown',
+                status: 'detected'
+            }));
+            overviewSnapshot.roots = (sessionSnapshot.state?.roots ?? []).map(
+                (root) => ({
+                    id: root.id,
+                    name: root.label ?? root.id,
+                    mountContainer: 'Unknown',
+                    rendererId: String(root.rendererId ?? 'Unknown'),
+                    isIframe: false,
+                    isPortal: false,
+                    status: 'ready'
+                })
+            );
+            overviewSnapshot.diagnostics.lastCommitTime = 'Not available';
+            overviewSnapshot.diagnostics.visibleRouteCount = null;
+        }
         return <OverviewPage snapshot={overviewSnapshot} />;
     }
 
@@ -541,6 +599,20 @@ function RoutePage({
     }
 
     if (route.id === 'components') {
+        if (sessionSnapshot)
+            return (
+                <RuntimeStatePage
+                    state={{
+                        description:
+                            'Component inspection is unavailable in this build.',
+                        label: 'Inspector unavailable',
+                        title: 'Component inspection unavailable',
+                        tone: 'warning',
+                        troubleshootingHref:
+                            'https://github.com/jared-leddy/react-devtools/issues/250'
+                    }}
+                />
+            );
         return (
             <ComponentsPage
                 runtimeSnapshot={runtimeSnapshot}
@@ -1016,7 +1088,11 @@ function OverviewPage({ snapshot }: { snapshot: ClientOverviewSnapshot }) {
                     />
                     <OverviewMetric
                         label="Routes"
-                        value={String(snapshot.diagnostics.visibleRouteCount)}
+                        value={
+                            snapshot.diagnostics.visibleRouteCount === null
+                                ? 'Not available'
+                                : String(snapshot.diagnostics.visibleRouteCount)
+                        }
                     />
                 </div>
             </Card>

@@ -1,6 +1,7 @@
 import {
     createDevToolsCoreServerFunctions,
     createDevToolsCoreStateStore,
+    createInitialDevToolsCoreState,
     createFiberRootRegistry,
     createFiberWalker,
     getHooksStateSection,
@@ -75,7 +76,15 @@ export function bootstrapUserAppRpcServer(
     const walker = createFiberWalker();
     const serverFunctions = createUserAppServerFunctions(store, registry);
 
-    createRpcServer(serverFunctions, { preset: 'extension' });
+    const server = createRpcServer<
+        import('@devtools/core').DevToolsCoreClientFunctions,
+        DevToolsCoreServerFunctions
+    >(serverFunctions, { preset: 'extension', options: { timeout: 5000 } });
+    store.subscribe(() => {
+        void server.broadcast
+            .notifyStateUpdated(createSessionState(store))
+            .catch(() => {});
+    });
     syncHookSnapshot({
         hook: hookInstallation.hook,
         registry,
@@ -136,6 +145,18 @@ function createUserAppServerFunctions(
 
     return {
         ...coreFunctions,
+        handshake(request) {
+            const response = coreFunctions.handshake(request);
+            return {
+                ...response,
+                capabilities: {
+                    ...response.capabilities,
+                    components: false,
+                    componentState: false
+                },
+                state: createSessionState(store)
+            };
+        },
         highlightComponent(request) {
             const fiber = findFiberByComponentId(registry, request.componentId);
 
@@ -149,6 +170,17 @@ function createUserAppServerFunctions(
 
             return coreFunctions.highlightComponent(request);
         }
+    };
+}
+
+function createSessionState(store: DevToolsCoreStateStore) {
+    const state = store.getState();
+    // Raw Fiber values need the inspection serializer before crossing a port.
+    return {
+        ...createInitialDevToolsCoreState(),
+        renderers: state.renderers,
+        roots: state.roots,
+        transportStatus: state.transportStatus
     };
 }
 

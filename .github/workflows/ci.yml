@@ -66,6 +66,8 @@ jobs:
 
             - name: Release packaging tests
               run: npm run test:release-packaging
+            - name: Classic extension script regression tests
+              run: npm run test:extension-scripts
 
             - name: Firefox UAT helper tests
               run: npm run test:firefox-uat-helper

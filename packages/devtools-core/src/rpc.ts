@@ -128,6 +128,8 @@ export interface CreateDevToolsCoreClientOptions extends Omit<
     'preset'
 > {
     preset?: Presets;
+    onStateUpdated?: (patch: DevToolsCoreStatePatch) => void;
+    onTransportStatus?: (status: TransportStatus) => void;
 }
 
 export interface CreateDevToolsCoreServerOptions extends Omit<
@@ -146,8 +148,12 @@ export function createDevToolsCoreClient(
     options: CreateDevToolsCoreClientOptions = {}
 ) {
     const clientFunctions: DevToolsCoreClientFunctions = {
-        notifyStateUpdated(_patch) {},
-        setTransportStatus(_status) {}
+        notifyStateUpdated(patch) {
+            options.onStateUpdated?.(patch);
+        },
+        setTransportStatus(status) {
+            options.onTransportStatus?.(status);
+        }
     };
 
     return createRpcClient<
@@ -165,10 +171,19 @@ export function createDevToolsCoreServer(
         options.serverId
     );
 
-    return createRpcServer<
+    const server = createRpcServer<
         DevToolsCoreClientFunctions,
         DevToolsCoreServerFunctions
     >(serverFunctions, options);
+    const unsubscribe = store.subscribe((_state, patch) => {
+        void server.broadcast.notifyStateUpdated(patch).catch(() => {});
+    });
+    return Object.assign(server, {
+        dispose() {
+            unsubscribe();
+            server.clients.forEach((client) => client.$close());
+        }
+    });
 }
 
 export function createDevToolsCoreServerFunctions(
@@ -245,10 +260,26 @@ export function createDevToolsCoreServerFunctions(
         getState() {
             return store.getState();
         },
-        handshake(_request) {
+        handshake(request) {
+            if (
+                request.protocolVersion !== undefined &&
+                request.protocolVersion !== 1
+            ) {
+                throw new Error('Unsupported DevTools protocol version');
+            }
             store.setTransportStatus('connected');
 
             return {
+                protocolVersion: 1,
+                capabilities: {
+                    roots: true,
+                    components: true,
+                    componentState: true,
+                    highlight: false,
+                    inspect: false,
+                    edit: false,
+                    stores: false
+                },
                 serverId,
                 state: store.getState()
             };

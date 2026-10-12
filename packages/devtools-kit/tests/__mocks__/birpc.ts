@@ -79,6 +79,10 @@ export function createBirpc<
     const proxyTarget = {
         $close() {
             options.off?.(listener);
+            pending.forEach((request) =>
+                request.reject(new Error('RPC closed'))
+            );
+            pending.clear();
         }
     } as unknown as RemoteFunctions;
 

@@ -1,17 +1,23 @@
 jest.mock('@devtools/client', () => ({
-    mountDevToolsClient: jest.fn()
+    mountDevToolsClient: jest.fn(),
+    setClientRouteEnvironment: jest.fn()
 }));
 
 jest.mock('@devtools/client/style.css', () => ({}), { virtual: true });
 
-jest.mock('@devtools/core', () => ({
-    ...jest.requireActual('@devtools/core'),
-    createDevToolsCoreClient: jest.fn()
+jest.mock('@devtools/core/browser', () => ({
+    ...jest.requireActual('@devtools/core/browser'),
+    createDevToolsSession: jest.fn(() => ({
+        connect: jest.fn(),
+        dispose: jest.fn()
+    }))
 }));
 
 jest.mock('@devtools/kit', () => ({
     ...jest.requireActual('@devtools/kit'),
-    createRpcServer: jest.fn()
+    createRpcServer: jest.fn(() => ({
+        broadcast: { notifyStateUpdated: jest.fn(async () => {}) }
+    }))
 }));
 
 describe('extension entrypoints', () => {
@@ -117,6 +123,7 @@ describe('extension entrypoints', () => {
         browser.connect(tabTwoPanelPort);
         browser.connect(tabOnePagePort);
         browser.connect(tabTwoPagePort);
+        browser.updateTab(101, { status: 'loading' });
 
         tabOnePanelPort.emitMessage({ from: 'panel-101' });
         tabOnePagePort.emitMessage({ from: 'page-101' });
@@ -294,7 +301,10 @@ describe('extension entrypoints', () => {
             onReady
         );
 
-        await import('../src/devtools');
+        const devtools = await import('../src/devtools');
+        expect(browser.devtools.panels.create).toHaveBeenCalledTimes(1);
+        browser.devtools.panels.create.mockClear();
+        devtools.startDevToolsPanelDetection();
 
         expect(onReady).toHaveBeenCalledWith(
             expect.objectContaining({
@@ -341,10 +351,10 @@ describe('extension entrypoints', () => {
         ) as {
             mountDevToolsClient: jest.Mock;
         };
-        const { createDevToolsCoreClient } = jest.requireMock(
-            '@devtools/core'
+        const { createDevToolsSession } = jest.requireMock(
+            '@devtools/core/browser'
         ) as {
-            createDevToolsCoreClient: jest.Mock;
+            createDevToolsSession: jest.Mock;
         };
         const onReady = jest.fn();
         const browser = createMockPanelBrowser();
@@ -355,16 +365,15 @@ describe('extension entrypoints', () => {
 
         const panel = await import('../src/devtools-panel');
 
-        expect(browser.tabs.executeScript).toHaveBeenCalledWith(7, {
-            file: panel.PROXY_SCRIPT_PATH
-        });
+        expect(browser.tabs.executeScript).not.toHaveBeenCalled();
         expect(browser.devtools.inspectedWindow.eval).toHaveBeenCalledWith(
             expect.stringContaining('moz-extension://local/user-app.js')
         );
         expect(mountDevToolsClient).toHaveBeenCalledWith(
-            document.getElementById('root')
+            document.getElementById('root'),
+            { session: expect.any(Object) }
         );
-        expect(createDevToolsCoreClient).toHaveBeenCalledWith({
+        expect(createDevToolsSession).toHaveBeenCalledWith({
             preset: 'extension'
         });
         expect(
@@ -375,7 +384,7 @@ describe('extension entrypoints', () => {
         expect(onReady).toHaveBeenCalledWith(
             expect.objectContaining({
                 detail: {
-                    didInjectProxy: true,
+                    didInjectProxy: false,
                     didInjectUserApp: true,
                     didMountClient: true,
                     didOpenRpcClient: true,

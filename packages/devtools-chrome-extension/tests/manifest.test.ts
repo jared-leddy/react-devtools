@@ -66,7 +66,7 @@ describe('chrome extension manifest', () => {
     });
 
     it('limits content script matches to ordinary web pages', () => {
-        expect(manifest.content_scripts).toHaveLength(2);
+        expect(manifest.content_scripts).toHaveLength(3);
         expect(manifest.content_scripts).toEqual([
             expect.objectContaining({
                 all_frames: true,
@@ -81,6 +81,12 @@ describe('chrome extension manifest', () => {
                 matches: ['http://*/*', 'https://*/*'],
                 run_at: 'document_start',
                 world: 'MAIN'
+            }),
+            expect.objectContaining({
+                all_frames: true,
+                js: ['proxy.js'],
+                matches: ['http://*/*', 'https://*/*'],
+                run_at: 'document_start'
             })
         ]);
     });
@@ -109,7 +115,7 @@ describe('chrome extension manifest', () => {
         expect(csp).toContain("object-src 'none'");
         expect(csp).toContain("frame-src 'self'");
         expect(csp).toContain("connect-src 'self'");
-        expect(csp).toContain("frame-ancestors 'none'");
+        expect(csp).not.toContain('frame-ancestors');
         expect(csp).not.toContain("'unsafe-eval'");
         expect(csp).not.toContain("'unsafe-inline'");
         expect(csp).not.toContain('https:');

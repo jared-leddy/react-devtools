@@ -10,3 +10,5 @@ export * from './rpc.js';
 export * from './state.js';
 export * from './types.js';
 export * from './valueFormat.js';
+export * from './session.js';
+export * from './sessionRelay.js';

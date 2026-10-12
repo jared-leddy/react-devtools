@@ -1,6 +1,9 @@
-import { mountDevToolsClient } from '@devtools/client';
+import {
+    mountDevToolsClient,
+    setClientRouteEnvironment
+} from '@devtools/client';
 import '@devtools/client/style.css';
-import { createDevToolsCoreClient } from '@devtools/core';
+import { createDevToolsSession } from '@devtools/core/browser';
 
 interface FirefoxDevToolsPanelLike {
     devtools?: {
@@ -48,11 +51,9 @@ globalThis.dispatchEvent(
 );
 
 export function bootstrapDevToolsPanel(): DevToolsPanelBootstrapResult {
-    const didInjectProxy = injectProxyIntoInspectedWindow();
+    const didInjectProxy = false;
     const didInjectUserApp = injectUserAppIntoInspectedWindow();
     const didMountClient = mountPanelClient();
-
-    createDevToolsCoreClient({ preset: 'extension' });
 
     return {
         didInjectProxy,
@@ -60,22 +61,6 @@ export function bootstrapDevToolsPanel(): DevToolsPanelBootstrapResult {
         didMountClient,
         didOpenRpcClient: true
     };
-}
-
-function injectProxyIntoInspectedWindow(): boolean {
-    const extensionApi = getFirefoxPanelApi();
-    const executeScript = extensionApi?.tabs?.executeScript;
-    const tabId = extensionApi?.devtools?.inspectedWindow?.tabId;
-
-    if (!executeScript || tabId === undefined) {
-        return false;
-    }
-
-    executeScript.call(extensionApi.tabs, tabId, {
-        file: PROXY_SCRIPT_PATH
-    });
-
-    return true;
 }
 
 function injectUserAppIntoInspectedWindow(): boolean {
@@ -104,7 +89,10 @@ function mountPanelClient(): boolean {
         return false;
     }
 
-    mountDevToolsClient(root);
+    setClientRouteEnvironment({ transport: 'extension' });
+    mountDevToolsClient(root, {
+        session: createDevToolsSession({ preset: 'extension' })
+    });
 
     return true;
 }

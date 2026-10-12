@@ -81,4 +81,29 @@ describe('standalone delivery bootstrap', () => {
             connectionStatus: 'disconnected'
         });
     });
+    it.each(['connected', 'error'] as const)(
+        'uses backend-confirmed %s for a supplied standalone session',
+        async (status) => {
+            fetchMock.mockResolvedValue({
+                ok: true,
+                headers: { get: () => '/' }
+            });
+            jest.mocked(connectViteClientContext).mockResolvedValue({
+                on: jest.fn(),
+                send: jest.fn()
+            });
+            const session = {
+                connect: jest.fn(async () => {}),
+                getSnapshot: () => ({ sessionId: 'standalone', status }),
+                subscribe: () => () => {},
+                dispose: () => {}
+            };
+            await initializeStandaloneDelivery(session);
+            expect(session.connect).toHaveBeenCalledTimes(1);
+            expect(setClientRuntimeState).toHaveBeenLastCalledWith({
+                connectionStatus:
+                    status === 'connected' ? 'connected' : 'disconnected'
+            });
+        }
+    );
 });

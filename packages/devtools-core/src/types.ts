@@ -309,12 +309,25 @@ export type PerformanceModeSettingsPatch = Partial<PerformanceModeSettings>;
 
 export interface DevToolsCoreHandshakeRequest {
     clientId: string;
+    protocolVersion?: number;
     supportedEvents?: DevToolsCoreRpcEvent[];
 }
 
 export interface DevToolsCoreHandshakeResponse {
+    protocolVersion: number;
+    capabilities: DevToolsSessionCapabilities;
     serverId: string;
     state: DevToolsCoreState;
+}
+
+export interface DevToolsSessionCapabilities {
+    roots: boolean;
+    components: boolean;
+    componentState: boolean;
+    highlight: boolean;
+    inspect: boolean;
+    edit: boolean;
+    stores: boolean;
 }
 
 export interface RootsRequest {

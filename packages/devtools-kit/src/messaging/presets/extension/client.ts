@@ -33,6 +33,8 @@ export function createExtensionClientChannel(
     let disconnectHandler: ExtensionDisconnectHandler | null = null;
     let port: ExtensionPortLike | null = null;
     let isConnected = false;
+    let disposed = false;
+    const disconnectListeners = new Set<() => void>();
 
     const detachPort = () => {
         if (!port) {
@@ -55,6 +57,7 @@ export function createExtensionClientChannel(
     };
 
     const connect = () => {
+        if (disposed) return;
         detachPort();
         port = connectExtensionPort(chrome as ChromeLike, portName);
 
@@ -77,6 +80,7 @@ export function createExtensionClientChannel(
             isConnected = false;
             detachPort();
             port = null;
+            disconnectListeners.forEach((listener) => listener());
 
             if (reconnectDelayMs !== false) {
                 setReconnectTimer(connect, reconnectDelayMs);
@@ -89,6 +93,21 @@ export function createExtensionClientChannel(
     connect();
 
     return {
+        subscribeDisconnect(listener) {
+            disconnectListeners.add(listener);
+            return () => {
+                disconnectListeners.delete(listener);
+            };
+        },
+        dispose() {
+            disposed = true;
+            detachPort();
+            port?.disconnect?.();
+            port = null;
+            handlers.clear();
+            disconnectListeners.clear();
+            pendingMessages.length = 0;
+        },
         off(handler) {
             const listener = handlers.get(handler);
 
