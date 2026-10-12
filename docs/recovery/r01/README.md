@@ -117,6 +117,32 @@ Chrome target relationships and Firefox toolbox's inspected URI.
 The source-level `didOpenRpcClient: true` result is not a handshake observation.
 Do not mark Connected based on construction or injection scheduling.
 
+## Official Firefox Control
+
+In a separate disposable Firefox profile, Mozilla's official React Developer
+Tools 6.1.1 registers native Components and Profiler tabs on the same `/react`
+fixture. The Components panel shows `BaselineApp`, `BaselineContext.Provider`,
+`BaselineCounter` and `BaselineClassCounter`, rather than generated names.
+Selecting the counter displays prop `label = "R01 counter"`, hook state `7`
+and context `quiet`. Selecting the class after app interaction displays actual
+class state `count: 12`.
+
+![Official native panel showing real component names, props and hooks](evidence/official-counter-before.png)
+
+The after-interaction counter screenshot still displays hook state `7` while
+the app displays `8`. This is a limitation of this capture, not evidence that
+hook updates passed. The class screenshot does show the updated value `12`.
+No editing, production support or coexistence claim follows from this control.
+
+A fresh profile containing only our extension on the same committed fixture
+again reports the two Firefox syntax errors and no React tab. Its complete
+native tool inventory includes additional extension tools; the original capture
+inventory listed built-in definitions only, with absence also visible in the
+native screenshots. [official-comparison.json](evidence/official-comparison.json)
+retains both inventories, native identities and the official download hash.
+The repeat has its own build hashes; it does not overwrite the original baseline.
+The official binary is not redistributed in this report.
+
 ## Reproduce Manually
 
 From the repository root, with its dependencies installed:
@@ -203,9 +229,9 @@ changes alone.
 - No target-app URL or access was provided during this run. The React-only and
   existing Next apps are the reproducible substitutes; a private app was not
   accessed or exported.
-- The official React extension was not installed in these disposable profiles.
-  There is no fresh same-app official-extension comparison or coexistence pass.
-  Those remain explicit evidence requirements for R02/R10, not inferred results.
+- The official comparison covers Firefox alone in separate profiles. Chrome's
+  official extension and both extensions installed together in both load orders
+  were not tested. R10 retains the coexistence requirements.
 - `_screenshots` is not present in this checkout. No fresh Vue comparison or
   visual approval is claimed. The approved recovery plan records the earlier
   screenshot review separately.
@@ -234,6 +260,9 @@ personal browsing history are included.
   [Firefox control](evidence/non-react-firefox-native.png).
 - [Next Chrome native capture](evidence/next-chrome-native.png) and
   [Next Firefox native capture](evidence/next-firefox-native.png).
+- [Official counter before interaction](evidence/official-counter-before.png),
+  [counter after interaction](evidence/official-counter-after.png), and
+  [updated class state](evidence/official-class-after.png).
 
 Reproduction establishes that these builds fail. Passing existing unit,
 coverage, packaging, bundle or overlay tests must not be cited as proof that

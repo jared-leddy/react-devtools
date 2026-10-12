@@ -28,6 +28,22 @@
         "sha256": "196189cb297416a116e2194b69323f3377ac63c9558ead82bc7b5aa6152ec732"
     },
     {
+        "file": "official-class-after.png",
+        "sha256": "1df533ab5e6614fb2c48c538e865c3a80c3bf2f2f7025d33f1132931dadede17"
+    },
+    {
+        "file": "official-comparison.json",
+        "sha256": "7e13479a282034c5e21eceb75409aeae88b440f7877fc586391e44502ae12b29"
+    },
+    {
+        "file": "official-counter-after.png",
+        "sha256": "fe0c463d917ce451cb6a9f20353bd9e106db5276fdfe3b64b95a0efcddfb34e3"
+    },
+    {
+        "file": "official-counter-before.png",
+        "sha256": "1ea92b1d15a4b06c6ef8712f9e56bd2f04018090334dbed2148f83d757387623"
+    },
+    {
         "file": "plain-react-chrome-app.png",
         "sha256": "56597c2b9e1ab9c1dd36e5537efb05da14de2338512685145995f1c080da931d"
     },
