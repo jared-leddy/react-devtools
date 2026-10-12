@@ -32,6 +32,9 @@
             "dependsOn": ["^build", "build"],
             "outputs": [".next/types/**"]
         },
+        "@devtools/client#typecheck": {
+            "dependsOn": ["^build", "build"]
+        },
         "lint": {},
         "typecheck": {
             "dependsOn": ["^build"]
