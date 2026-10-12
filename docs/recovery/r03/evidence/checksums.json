@@ -1,0 +1,16 @@
+{
+    "chrome-next.json": "38e6c90203f3f6173ea06fedf88ae5b9b448c042909e2e2d92d136f9ad12271c",
+    "chrome-next.png": "09121d583facc9062705b67d7eb356fb79f008b2ff2f067f25dfc1c5d51ea425",
+    "chrome-non-react.json": "25b020454d2d9c045fb76ac8b9001977236d4bb444d083b1112b8366d604796e",
+    "chrome-non-react.png": "43499b62a4e29bc9e885a4a0b2700c8421b927227ffe30961ef1323c3c43b6e9",
+    "chrome-react.json": "c8690a08b31e0d2d32b40a681cec2c3e2d38477173311117c48aee88ff6bedb1",
+    "chrome-react.png": "19d24024fa1a0bbd6b16115000a32cbc17ab9ea8e4054c9c413bf05a8e3b73a0",
+    "firefox-next.json": "1c4715ddbdbaaa908e2784bb3cd7ca361d762704f6e976ad9cb2f22bb3336cdd",
+    "firefox-next.png": "16a37395fa43cfe2de39b1cda07cec9da03b7f7f05b3d1c1d3f75380456aafd5",
+    "firefox-non-react.json": "566af7f78d69b68ffb1ce20f080e544bf1ba6b7489f2bc144ca7f48dab7161f0",
+    "firefox-non-react.png": "84ec9d0036b674e065fd89ed1c794fbffca344018c836c5b944d4ca16e8fc0eb",
+    "firefox-react.json": "51585049808e08e175cc8ff8ab391a4d1582c8f80b98b3dcbcf63d1a37f1efac",
+    "firefox-react.png": "41f49ab208eee72be34034b6a5b5161f822d8358f200f0e1c16b5214d7a372a3",
+    "non-react.html": "f021d4ac985878d230fbd4d2f7549e8cadc136d7b6c942299783b9a59903836e",
+    "verification.json": "d3b7cef863ec6b244b9b77fa71ffea460d26de2f1827180ad126e0c131324f00"
+}
