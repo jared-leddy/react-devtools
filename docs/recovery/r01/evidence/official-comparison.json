@@ -1,0 +1,293 @@
+{
+    "capturedAt": "2026-10-12T01:26:54.029Z",
+    "browser": "Firefox Developer Edition 158.0",
+    "fixture": "http://127.0.0.1:9051/react",
+    "separateDisposableProfiles": true,
+    "officialProvenance": {
+        "downloadUrl": "https://addons.mozilla.org/firefox/downloads/file/4432990/react_devtools-6.1.1.xpi",
+        "sha256": "b2d69e220402bd6b8bc7d833948915b1d6dcabb453a1d50872a3db860fd92c46",
+        "manifest": {
+            "manifest_version": 3,
+            "name": "React Developer Tools",
+            "description": "Adds React debugging tools to the Firefox Developer Tools.\n\nCreated from revision 44c3d3d665 on 2/7/2025.",
+            "version": "6.1.1",
+            "browser_specific_settings": {
+                "gecko": {
+                    "id": "@react-devtools",
+                    "strict_min_version": "128.0"
+                }
+            },
+            "icons": {
+                "16": "icons/16-production.png",
+                "32": "icons/32-production.png",
+                "48": "icons/48-production.png",
+                "128": "icons/128-production.png"
+            },
+            "action": {
+                "default_icon": {
+                    "16": "icons/16-disabled.png",
+                    "32": "icons/32-disabled.png",
+                    "48": "icons/48-disabled.png",
+                    "128": "icons/128-disabled.png"
+                },
+                "default_popup": "popups/disabled.html"
+            },
+            "devtools_page": "main.html",
+            "content_security_policy": {
+                "extension_pages": "script-src 'self'; object-src 'self'"
+            },
+            "web_accessible_resources": [
+                {
+                    "resources": [
+                        "main.html",
+                        "panel.html",
+                        "build/*.js",
+                        "build/*.js.map"
+                    ],
+                    "matches": ["<all_urls>"],
+                    "extension_ids": []
+                }
+            ],
+            "background": {
+                "scripts": ["build/background.js"]
+            },
+            "permissions": ["scripting", "storage", "tabs", "clipboardWrite"],
+            "host_permissions": ["<all_urls>"],
+            "content_scripts": [
+                {
+                    "matches": ["<all_urls>"],
+                    "js": ["build/prepareInjection.js"],
+                    "run_at": "document_start"
+                }
+            ]
+        }
+    },
+    "official": {
+        "app": {
+            "value": {
+                "url": "http://127.0.0.1:9051/react",
+                "body": "R01 unannotated React baseline\nR01 counter\n\nHook count: 7; context: quiet\n\nIncrement hook counter\nClass counter\n\nClass count: 11\n\nIncrement class counter",
+                "hook": true,
+                "renderers": [
+                    {
+                        "id": 1,
+                        "version": "19.1.1",
+                        "roots": 1
+                    }
+                ]
+            }
+        },
+        "updated": {
+            "value": {
+                "url": "http://127.0.0.1:9051/react",
+                "body": "R01 unannotated React baseline\nR01 counter\n\nHook count: 8; context: quiet\n\nIncrement hook counter\nClass counter\n\nClass count: 12\n\nIncrement class counter"
+            }
+        },
+        "toolbox": {
+            "value": {
+                "tools": [
+                    {
+                        "id": "inspector",
+                        "label": "Inspector"
+                    },
+                    {
+                        "id": "webconsole",
+                        "label": "Console"
+                    },
+                    {
+                        "id": "jsdebugger",
+                        "label": "Debugger"
+                    },
+                    {
+                        "id": "netmonitor",
+                        "label": "Network"
+                    },
+                    {
+                        "id": "styleeditor",
+                        "label": "Style Editor"
+                    },
+                    {
+                        "id": "performance",
+                        "label": "Performance"
+                    },
+                    {
+                        "id": "memory",
+                        "label": "Memory"
+                    },
+                    {
+                        "id": "storage",
+                        "label": "Storage"
+                    },
+                    {
+                        "id": "accessibility",
+                        "label": "Accessibility"
+                    },
+                    {
+                        "id": "application",
+                        "label": "Application"
+                    },
+                    {
+                        "id": "webext-devtools-panel-_react-devtools-163-0",
+                        "label": "Components"
+                    },
+                    {
+                        "id": "webext-devtools-panel-_react-devtools-163-1",
+                        "label": "Profiler"
+                    }
+                ],
+                "url": "http://127.0.0.1:9051/react",
+                "body": "InspectorConsoleDebuggerNetworkStyle EditorPerformanceMemoryStorageAccessibilityApplicationComponentsProfiler",
+                "frames": [
+                    {
+                        "id": "toolbox-panel-iframe-inspector",
+                        "src": "chrome://devtools/content/inspector/index.xhtml",
+                        "type": null,
+                        "html": "<iframe xmlns=\"http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul\" class=\"toolbox-panel-iframe\" id=\"toolbox-panel-iframe-inspector\" flex=\"1\" forceOwnRefreshDriver=\"\" tooltip=\"aHTMLTooltip\" src=\"chrome://devtools/content/inspector/index.xhtml\" aria-label=\"Inspector Panel\"/>",
+                        "readable": true
+                    },
+                    {
+                        "id": "toolbox-panel-iframe-webext-devtools-panel-_react-devtools-163-0",
+                        "src": "chrome://browser/content/webext-panels.xhtml",
+                        "type": null,
+                        "html": "<iframe xmlns=\"http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul\" class=\"toolbox-panel-iframe\" id=\"toolbox-panel-iframe-webext-devtools-panel-_react-devtools-163-0\" flex=\"1\" forceOwnRefreshDriver=\"\" tooltip=\"aHTMLTooltip\" src=\"chrome://browser/content/webext-panels.xhtml\" aria-label=\"Components\"/>",
+                        "readable": true
+                    }
+                ]
+            }
+        },
+        "identity": {
+            "value": {
+                "url": "http://127.0.0.1:9051/react",
+                "browsingContextId": 11,
+                "windowId": 17
+            }
+        }
+    },
+    "oursRepeated": {
+        "app": {
+            "value": {
+                "url": "http://127.0.0.1:9051/react",
+                "body": "R01 unannotated React baseline\nR01 counter\n\nHook count: 7; context: quiet\n\nIncrement hook counter\nClass counter\n\nClass count: 11\n\nIncrement class counter",
+                "hook": false,
+                "renderers": []
+            }
+        },
+        "updated": {
+            "value": {
+                "url": "http://127.0.0.1:9051/react",
+                "body": "R01 unannotated React baseline\nR01 counter\n\nHook count: 8; context: quiet\n\nIncrement hook counter\nClass counter\n\nClass count: 12\n\nIncrement class counter"
+            }
+        },
+        "toolbox": {
+            "value": {
+                "tools": [
+                    {
+                        "id": "inspector",
+                        "label": "Inspector"
+                    },
+                    {
+                        "id": "webconsole",
+                        "label": "Console"
+                    },
+                    {
+                        "id": "jsdebugger",
+                        "label": "Debugger"
+                    },
+                    {
+                        "id": "netmonitor",
+                        "label": "Network"
+                    },
+                    {
+                        "id": "styleeditor",
+                        "label": "Style Editor"
+                    },
+                    {
+                        "id": "performance",
+                        "label": "Performance"
+                    },
+                    {
+                        "id": "memory",
+                        "label": "Memory"
+                    },
+                    {
+                        "id": "storage",
+                        "label": "Storage"
+                    },
+                    {
+                        "id": "accessibility",
+                        "label": "Accessibility"
+                    },
+                    {
+                        "id": "application",
+                        "label": "Application"
+                    }
+                ],
+                "url": "http://127.0.0.1:9051/react",
+                "body": "InspectorConsoleDebuggerNetworkStyle EditorPerformanceMemoryStorageAccessibilityApplication2",
+                "frames": [
+                    {
+                        "id": "toolbox-panel-iframe-inspector",
+                        "src": "chrome://devtools/content/inspector/index.xhtml",
+                        "type": null,
+                        "html": "<iframe xmlns=\"http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul\" class=\"toolbox-panel-iframe\" id=\"toolbox-panel-iframe-inspector\" flex=\"1\" forceOwnRefreshDriver=\"\" tooltip=\"aHTMLTooltip\" src=\"chrome://devtools/content/inspector/index.xhtml\" aria-label=\"Inspector Panel\"/>",
+                        "readable": true
+                    }
+                ]
+            }
+        },
+        "identity": {
+            "value": {
+                "url": "http://127.0.0.1:9051/react",
+                "browsingContextId": 11,
+                "windowId": 17
+            }
+        }
+    },
+    "oursRepeatedBuildSha256": {
+        "Popup.d.ts": "a0954e54a8df5ae01c2dea81c20f5751ba582e8eee002f8d74b03765e4f4e1a3",
+        "assets/Popup-C2BhFdLD.js": "15584c5710df8caca9108f894968688799fffe8b8b141bc9f5e2ec1247956106",
+        "assets/Popup-DZCiTAZB.css": "62b699845b866e87274dd0165aef0927936eacd442106976f9f269e46330b7d4",
+        "assets/client-Sjbq-6QL.js": "3e3b77b38d07f2ba79d29fcbf5928a9a4551d0ae2829716a373ec3bc1d70a2bc",
+        "assets/devtoolsPanel-CVLdVRQ-.css": "c55ad38654ecfdf376d1278c7d1e5af4dfc3c0d225b805a99cdae9b25b2aa8de",
+        "assets/fiber-B692HV5c.js": "08fb3a0d86c542e34792d27259d535d95732861a9ce6bb8deb888d809f98e1a7",
+        "assets/index-BLIbyS7D.js": "fcaf0174da1549c9ab073aaa40c766eae249587535b4a7730af6e55d28304994",
+        "assets/modulepreload-polyfill-B5Qt9EMX.js": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0",
+        "assets/proxy-CnsNe0hE.js": "d51f108b0a24db463e2a0f6cb78dd968792d51d71e4c72b08d5c1e7abffdab16",
+        "assets/server-Th_q1dPg.js": "048994634eb1666d2937da9a09435a7924a1600748a53caa21522c1bf35abe68",
+        "assets/style-BMgp5R0b.css": "4aa6491333cf8d96c6129775e7ddb997db150c475a648a03fbc7f9ca611299a9",
+        "assets/style-DyOlwHPe.js": "7f8f6b80ca6b72166e9dc23a41278ff05b9c61a662639702f3dfb4b6c1b0007a",
+        "background.d.ts": "7cf24783ecc4ea38118597f79fa378ac85d395f3fbf8a7e97416f650724ea257",
+        "background.js": "1cd1ce3b4cae05ef98b745cff647357620faad9e9c557c48a87dc63aa264e5ac",
+        "bridgeContract.d.ts": "dd56e2831e962b5f767c33acd088a55f025530d5dbd9489b1bc6f0836855d38e",
+        "content/prepare-loader.d.ts": "ee3aea7930b1769ecfc94be6ec9eaaf09331eecab1f7f6beee6c7276a2b0133f",
+        "content/proxy.d.ts": "9cb3f3d0452cbebc1e5e30e47db60b6aea4a01afa75d54889f61de3d910b0aae",
+        "detector.js": "cb1c542684af0ee6d0aedd05ac73bedc2dae1fe9a2767fed2ae52e733a919f36",
+        "devtools-panel.d.ts": "b4e58616722a131958eedec1c24118a2d57ea2175909ad6fa8d9c0394b8b1a6a",
+        "devtools-panel.html": "a759c44743b8bd7819a271184dff3ad10b7038e57aebf30ac82c3f09a7878410",
+        "devtools.d.ts": "03fcf116ba5dad76b8c474f2b930916c3760846e1a5b184ccf8655857e012395",
+        "devtools.html": "fa438f36e9b6aa02defced9b8c7235189ec6136c4510bc62151a58ab39877425",
+        "devtools.js": "72ae83a3d8bb2c453876195f9519f1793a016e3d2e71bc7cb46175a4af9de3aa",
+        "devtoolsPanel.js": "80dbdaf45186cddcb0e3bac87417ed4ba07904aba642a8bc414ce392d968a38d",
+        "index.d.ts": "3f6c3fb0953896a0d62c75c61f9b035c0473232aa0c6a45d6ee195dad2071b15",
+        "index.js": "37613bb9d7e624ac738008e50afe04aa9e86639d2891af301f72c22c8762a465",
+        "main.d.ts": "d88d7be941a6dedf88a8e9ec31db10d037f13a46f12792084a9d65da9870dbb3",
+        "manifest.json": "65eeb65e3ab6859491731087a541127c1b921652159f77a4cb47f7f0a64cdfc3",
+        "popup.html": "91c0e20f0dd20af261948f9e5cd366d070ad099c28ac91d5a21b6a9525227ab2",
+        "popup.js": "d40dd9b4d662d9a38f2fa9698b59052e579d568a083d2527556e02aff113499b",
+        "popupStatus.d.ts": "0cb178320d6a07d259b89eb8e71c6bf80c18e42ab6847c8038e7c5c7a7e4a9a1",
+        "prepare-loader.js": "969873067c1b875b86ffc327ce845039e405a3996b6a6e261cd27fe2fcf1b73e",
+        "prepare.js": "a7061805bbb1399a9f002b27ac4998829ddad803efe859a7e346c22f574f8c28",
+        "proxy.js": "d65e7137f680f927a27cdc16e8e6cafe3b555c932986dcc9325a288e0b58268a",
+        "smoke.d.ts": "d88d7be941a6dedf88a8e9ec31db10d037f13a46f12792084a9d65da9870dbb3",
+        "smoke.html": "7e85764f40faefe393da886f214a65b71d87eb14f4eb21a92cff0ecc01168811",
+        "smoke.js": "d1722a318ad75ce34e7f2695f5635bcc747b4cf3d89610974531811bc449735e",
+        "user-app.js": "5127081eb12c08f054959cdf3d228f0dabab3e2203a5c330d74bb626a221c11d"
+    },
+    "observations": {
+        "officialTree": true,
+        "officialInitialPropHookContext": true,
+        "officialUpdatedClassState": 12,
+        "officialHookAfterAppUpdate": "Screenshot remains 7 while app is 8; update not established",
+        "ours": "No React tab; proxy import and prepare redeclaration failures"
+    }
+}

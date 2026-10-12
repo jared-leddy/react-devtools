@@ -1,0 +1,62 @@
+[
+    {
+        "file": "baseline.json",
+        "sha256": "22fd4fbdeae51cfcd31d9e8afee8dcb27f9ba9d925aa26b34dba73589c2fd69b"
+    },
+    {
+        "file": "next-chrome-app.png",
+        "sha256": "1f843b73e647bea4b823ac6a68718ba515270323d7c1a4025a071155e3b19d9c"
+    },
+    {
+        "file": "next-chrome-native.png",
+        "sha256": "d7db05a432b12d5083499cb2da2910de278413d42b9b47b22a8c10b6e409aa0c"
+    },
+    {
+        "file": "next-firefox-native.png",
+        "sha256": "b4717fd7d9926034ddd7a493ab620bde7c6d0616429b0399f2e371f529a3dace"
+    },
+    {
+        "file": "non-react-chrome-app.png",
+        "sha256": "85118625fe1fcff6426b5c2ced23e8bc56ecca830449e8121a385569731bd73c"
+    },
+    {
+        "file": "non-react-chrome-native.png",
+        "sha256": "6915a4b1f68d888fb57111ea81ecf1af20d75a4500193c1e3dbb28611acca468"
+    },
+    {
+        "file": "non-react-firefox-native.png",
+        "sha256": "196189cb297416a116e2194b69323f3377ac63c9558ead82bc7b5aa6152ec732"
+    },
+    {
+        "file": "official-class-after.png",
+        "sha256": "1df533ab5e6614fb2c48c538e865c3a80c3bf2f2f7025d33f1132931dadede17"
+    },
+    {
+        "file": "official-comparison.json",
+        "sha256": "7e13479a282034c5e21eceb75409aeae88b440f7877fc586391e44502ae12b29"
+    },
+    {
+        "file": "official-counter-after.png",
+        "sha256": "fe0c463d917ce451cb6a9f20353bd9e106db5276fdfe3b64b95a0efcddfb34e3"
+    },
+    {
+        "file": "official-counter-before.png",
+        "sha256": "1ea92b1d15a4b06c6ef8712f9e56bd2f04018090334dbed2148f83d757387623"
+    },
+    {
+        "file": "plain-react-chrome-app.png",
+        "sha256": "56597c2b9e1ab9c1dd36e5537efb05da14de2338512685145995f1c080da931d"
+    },
+    {
+        "file": "plain-react-chrome-native.png",
+        "sha256": "24b9171604f80136858b2ce42d047cb7f8837092b4ee679f18ecd332f128c6ff"
+    },
+    {
+        "file": "plain-react-firefox-console.png",
+        "sha256": "62a2aa56081d7d64547ac2d964eb4e1d6a0053a5f8402c3559c7e41ff9d4bc44"
+    },
+    {
+        "file": "plain-react-firefox-native.png",
+        "sha256": "3215c218dbd097b649ee879a5645dac81daed31934f4d539760a91161e626fa7"
+    }
+]

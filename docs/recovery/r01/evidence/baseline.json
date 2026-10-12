@@ -1,0 +1,800 @@
+{
+    "sourceCommit": "3c2a1e43baf42fb029f4c2262f95c198bf41db7d",
+    "os": {
+        "name": "macOS",
+        "version": "15.5",
+        "build": "24F74"
+    },
+    "toolchain": {
+        "node": "v24.16.0",
+        "react": "19.1.1",
+        "react-dom": "19.1.1",
+        "next": "15.5.25",
+        "esbuild": "0.28.2",
+        "playwright": "1.63.0"
+    },
+    "builds": {
+        "chrome": {
+            "manifest": {
+                "manifest_version": 3,
+                "name": "React DevTools",
+                "description": "Inspect React apps with the rebuilt React DevTools extension.",
+                "version": "0.0.16",
+                "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2mvlUXs0jE7jGN+WaqKrz9vqEinvKHhX+fHG0CVkJcVVniGz+lDVofDheX5PPxHl4kZZTd2BKT9co4TK4On9zQXyR10iFsYxiIw0Ah1LC4t3jWmdnL62DTSYYkZ5gtyJCFOMOIbRGkzSSMYZfW5NLhpmj2rzWuXgnsPjCbcGuslyV1T9MRbtW77lDVsGvkpYZ9TsOQZ2kOk49XXVADhH6dsjdCxA+HFS1WiDMPjkUfL1oYCzdurunkYeSiZwbDFKWYeVi2bVNVSkMENcdLkJ2SmGheOMBZkX7vHJDpOgbKlCkzcshNIdBlT0LmF8t2HdDAO+ExwpMV9dKxVIt/qIyQIDAQAB",
+                "minimum_chrome_version": "102",
+                "action": {
+                    "default_popup": "popup.html",
+                    "default_title": "React DevTools"
+                },
+                "background": {
+                    "service_worker": "background.js",
+                    "type": "module"
+                },
+                "devtools_page": "devtools.html",
+                "permissions": ["activeTab", "scripting"],
+                "web_accessible_resources": [
+                    {
+                        "resources": ["smoke.html", "user-app.js"],
+                        "matches": ["<all_urls>"]
+                    }
+                ],
+                "content_scripts": [
+                    {
+                        "matches": ["http://*/*", "https://*/*"],
+                        "js": ["prepare.js"],
+                        "run_at": "document_start",
+                        "all_frames": true,
+                        "world": "MAIN"
+                    },
+                    {
+                        "matches": ["http://*/*", "https://*/*"],
+                        "js": ["detector.js"],
+                        "run_at": "document_start",
+                        "all_frames": true,
+                        "world": "MAIN"
+                    }
+                ],
+                "content_security_policy": {
+                    "extension_pages": "default-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'; base-uri 'self'; frame-src 'self'; child-src 'self'; connect-src 'self'; frame-ancestors 'none'"
+                }
+            },
+            "files": [
+                {
+                    "path": "assets/client-Sjbq-6QL.js",
+                    "bytes": 176839,
+                    "sha256": "3e3b77b38d07f2ba79d29fcbf5928a9a4551d0ae2829716a373ec3bc1d70a2bc"
+                },
+                {
+                    "path": "assets/devtoolsPanel-CVLdVRQ-.css",
+                    "bytes": 26062,
+                    "sha256": "c55ad38654ecfdf376d1278c7d1e5af4dfc3c0d225b805a99cdae9b25b2aa8de"
+                },
+                {
+                    "path": "assets/fiber-CaKx1mvh.js",
+                    "bytes": 21161,
+                    "sha256": "34d7bb873559a9f6dbf2ab51b8a2d9ef04ae9f7d169cb8c6d53c8f1f11edbbde"
+                },
+                {
+                    "path": "assets/index-BLIbyS7D.js",
+                    "bytes": 431,
+                    "sha256": "fcaf0174da1549c9ab073aaa40c766eae249587535b4a7730af6e55d28304994"
+                },
+                {
+                    "path": "assets/modulepreload-polyfill-B5Qt9EMX.js",
+                    "bytes": 711,
+                    "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+                },
+                {
+                    "path": "assets/Popup-C2BhFdLD.js",
+                    "bytes": 3339,
+                    "sha256": "15584c5710df8caca9108f894968688799fffe8b8b141bc9f5e2ec1247956106"
+                },
+                {
+                    "path": "assets/Popup-DZCiTAZB.css",
+                    "bytes": 2845,
+                    "sha256": "62b699845b866e87274dd0165aef0927936eacd442106976f9f269e46330b7d4"
+                },
+                {
+                    "path": "assets/proxy-CnsNe0hE.js",
+                    "bytes": 17493,
+                    "sha256": "d51f108b0a24db463e2a0f6cb78dd968792d51d71e4c72b08d5c1e7abffdab16"
+                },
+                {
+                    "path": "assets/server-Ds2hbQ4i.js",
+                    "bytes": 1288,
+                    "sha256": "c4ea2aa79b1860110e114eeac5d9339c0429a4ad3d5c4f1947cf3048e6ca9e51"
+                },
+                {
+                    "path": "assets/style-BMgp5R0b.css",
+                    "bytes": 6635,
+                    "sha256": "4aa6491333cf8d96c6129775e7ddb997db150c475a648a03fbc7f9ca611299a9"
+                },
+                {
+                    "path": "assets/style-DyOlwHPe.js",
+                    "bytes": 9384,
+                    "sha256": "7f8f6b80ca6b72166e9dc23a41278ff05b9c61a662639702f3dfb4b6c1b0007a"
+                },
+                {
+                    "path": "background.js",
+                    "bytes": 1728,
+                    "sha256": "1314224d4915f636bba87cba4234feb8f019e677b081796ead8e241e52005fd8"
+                },
+                {
+                    "path": "detector.js",
+                    "bytes": 789,
+                    "sha256": "cb1c542684af0ee6d0aedd05ac73bedc2dae1fe9a2767fed2ae52e733a919f36"
+                },
+                {
+                    "path": "devtools-panel.html",
+                    "bytes": 996,
+                    "sha256": "07ad4bf6f82853e0142c54a4ff418b47bdf74005997284371f5085ad53e9a068"
+                },
+                {
+                    "path": "devtools.html",
+                    "bytes": 403,
+                    "sha256": "fa438f36e9b6aa02defced9b8c7235189ec6136c4510bc62151a58ab39877425"
+                },
+                {
+                    "path": "devtools.js",
+                    "bytes": 897,
+                    "sha256": "ca61aa1603da8cdc21f0ba083861dbf6c732178493944407d66bbc6de343cbb7"
+                },
+                {
+                    "path": "devtoolsPanel.js",
+                    "bytes": 126358,
+                    "sha256": "a9d28b544fdf91539394347b633d1a80e5c58a2e71b53ecaa5fe921bc87e1c18"
+                },
+                {
+                    "path": "index.js",
+                    "bytes": 142,
+                    "sha256": "10415597ed030a4a9831cfa4cc9b60f4a14cf0b842a9da0adc70fe5e69d64938"
+                },
+                {
+                    "path": "manifest.json",
+                    "bytes": 1743,
+                    "sha256": "e8a3d27bb926ff55f8bef07310ceea6719420451bdd66283745c68dd3d14b920"
+                },
+                {
+                    "path": "popup.html",
+                    "bytes": 817,
+                    "sha256": "91c0e20f0dd20af261948f9e5cd366d070ad099c28ac91d5a21b6a9525227ab2"
+                },
+                {
+                    "path": "popup.js",
+                    "bytes": 291,
+                    "sha256": "d40dd9b4d662d9a38f2fa9698b59052e579d568a083d2527556e02aff113499b"
+                },
+                {
+                    "path": "prepare.js",
+                    "bytes": 2262,
+                    "sha256": "a7061805bbb1399a9f002b27ac4998829ddad803efe859a7e346c22f574f8c28"
+                },
+                {
+                    "path": "proxy.js",
+                    "bytes": 630,
+                    "sha256": "1da64ce6a25b786c44346a6e26af8a750d899662e202bef205edc64c756fd74a"
+                },
+                {
+                    "path": "smoke.html",
+                    "bytes": 831,
+                    "sha256": "f3c5aa89e3859d43eac5aeb5751c62a846658a60a22c25a9b9839503789f233b"
+                },
+                {
+                    "path": "smoke.js",
+                    "bytes": 881,
+                    "sha256": "0706ecff7754e74509fa241ec31e66b6e047353772ba6463ce7852ae23663000"
+                },
+                {
+                    "path": "user-app.js",
+                    "bytes": 24073,
+                    "sha256": "1efcd405656bd37fb6019e58d469aa157b09d23eb2dcef0e51c66aecde7a1b45"
+                }
+            ]
+        },
+        "firefox": {
+            "manifest": {
+                "manifest_version": 2,
+                "name": "React DevTools",
+                "description": "Inspect React apps with the rebuilt React DevTools extension.",
+                "version": "0.0.7",
+                "browser_specific_settings": {
+                    "gecko": {
+                        "id": "react-devtools@local.dev",
+                        "strict_min_version": "109.0"
+                    }
+                },
+                "browser_action": {
+                    "default_popup": "popup.html",
+                    "default_title": "React DevTools"
+                },
+                "background": {
+                    "scripts": ["background.js"],
+                    "persistent": false
+                },
+                "devtools_page": "devtools.html",
+                "permissions": ["activeTab"],
+                "web_accessible_resources": [
+                    "detector.js",
+                    "prepare.js",
+                    "smoke.html",
+                    "user-app.js"
+                ],
+                "content_scripts": [
+                    {
+                        "matches": ["http://*/*", "https://*/*"],
+                        "js": ["prepare-loader.js"],
+                        "run_at": "document_start",
+                        "all_frames": true
+                    },
+                    {
+                        "matches": ["http://*/*", "https://*/*"],
+                        "js": ["proxy.js"],
+                        "run_at": "document_start",
+                        "all_frames": true
+                    }
+                ],
+                "content_security_policy": "default-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'; base-uri 'self'; frame-src 'self'; child-src 'self'; connect-src 'self'"
+            },
+            "files": [
+                {
+                    "path": "assets/client-Sjbq-6QL.js",
+                    "bytes": 176839,
+                    "sha256": "3e3b77b38d07f2ba79d29fcbf5928a9a4551d0ae2829716a373ec3bc1d70a2bc"
+                },
+                {
+                    "path": "assets/devtoolsPanel-CVLdVRQ-.css",
+                    "bytes": 26062,
+                    "sha256": "c55ad38654ecfdf376d1278c7d1e5af4dfc3c0d225b805a99cdae9b25b2aa8de"
+                },
+                {
+                    "path": "assets/fiber-B692HV5c.js",
+                    "bytes": 21155,
+                    "sha256": "08fb3a0d86c542e34792d27259d535d95732861a9ce6bb8deb888d809f98e1a7"
+                },
+                {
+                    "path": "assets/index-BLIbyS7D.js",
+                    "bytes": 431,
+                    "sha256": "fcaf0174da1549c9ab073aaa40c766eae249587535b4a7730af6e55d28304994"
+                },
+                {
+                    "path": "assets/modulepreload-polyfill-B5Qt9EMX.js",
+                    "bytes": 711,
+                    "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+                },
+                {
+                    "path": "assets/Popup-C2BhFdLD.js",
+                    "bytes": 3339,
+                    "sha256": "15584c5710df8caca9108f894968688799fffe8b8b141bc9f5e2ec1247956106"
+                },
+                {
+                    "path": "assets/Popup-DZCiTAZB.css",
+                    "bytes": 2845,
+                    "sha256": "62b699845b866e87274dd0165aef0927936eacd442106976f9f269e46330b7d4"
+                },
+                {
+                    "path": "assets/proxy-CnsNe0hE.js",
+                    "bytes": 17493,
+                    "sha256": "d51f108b0a24db463e2a0f6cb78dd968792d51d71e4c72b08d5c1e7abffdab16"
+                },
+                {
+                    "path": "assets/server-Th_q1dPg.js",
+                    "bytes": 1288,
+                    "sha256": "048994634eb1666d2937da9a09435a7924a1600748a53caa21522c1bf35abe68"
+                },
+                {
+                    "path": "assets/style-BMgp5R0b.css",
+                    "bytes": 6635,
+                    "sha256": "4aa6491333cf8d96c6129775e7ddb997db150c475a648a03fbc7f9ca611299a9"
+                },
+                {
+                    "path": "assets/style-DyOlwHPe.js",
+                    "bytes": 9384,
+                    "sha256": "7f8f6b80ca6b72166e9dc23a41278ff05b9c61a662639702f3dfb4b6c1b0007a"
+                },
+                {
+                    "path": "background.js",
+                    "bytes": 1756,
+                    "sha256": "1cd1ce3b4cae05ef98b745cff647357620faad9e9c557c48a87dc63aa264e5ac"
+                },
+                {
+                    "path": "detector.js",
+                    "bytes": 789,
+                    "sha256": "cb1c542684af0ee6d0aedd05ac73bedc2dae1fe9a2767fed2ae52e733a919f36"
+                },
+                {
+                    "path": "devtools-panel.html",
+                    "bytes": 996,
+                    "sha256": "a759c44743b8bd7819a271184dff3ad10b7038e57aebf30ac82c3f09a7878410"
+                },
+                {
+                    "path": "devtools.html",
+                    "bytes": 403,
+                    "sha256": "fa438f36e9b6aa02defced9b8c7235189ec6136c4510bc62151a58ab39877425"
+                },
+                {
+                    "path": "devtools.js",
+                    "bytes": 918,
+                    "sha256": "72ae83a3d8bb2c453876195f9519f1793a016e3d2e71bc7cb46175a4af9de3aa"
+                },
+                {
+                    "path": "devtoolsPanel.js",
+                    "bytes": 126351,
+                    "sha256": "80dbdaf45186cddcb0e3bac87417ed4ba07904aba642a8bc414ce392d968a38d"
+                },
+                {
+                    "path": "index.js",
+                    "bytes": 142,
+                    "sha256": "37613bb9d7e624ac738008e50afe04aa9e86639d2891af301f72c22c8762a465"
+                },
+                {
+                    "path": "manifest.json",
+                    "bytes": 1312,
+                    "sha256": "65eeb65e3ab6859491731087a541127c1b921652159f77a4cb47f7f0a64cdfc3"
+                },
+                {
+                    "path": "popup.html",
+                    "bytes": 817,
+                    "sha256": "91c0e20f0dd20af261948f9e5cd366d070ad099c28ac91d5a21b6a9525227ab2"
+                },
+                {
+                    "path": "popup.js",
+                    "bytes": 291,
+                    "sha256": "d40dd9b4d662d9a38f2fa9698b59052e579d568a083d2527556e02aff113499b"
+                },
+                {
+                    "path": "prepare-loader.js",
+                    "bytes": 668,
+                    "sha256": "969873067c1b875b86ffc327ce845039e405a3996b6a6e261cd27fe2fcf1b73e"
+                },
+                {
+                    "path": "prepare.js",
+                    "bytes": 2262,
+                    "sha256": "a7061805bbb1399a9f002b27ac4998829ddad803efe859a7e346c22f574f8c28"
+                },
+                {
+                    "path": "proxy.js",
+                    "bytes": 651,
+                    "sha256": "d65e7137f680f927a27cdc16e8e6cafe3b555c932986dcc9325a288e0b58268a"
+                },
+                {
+                    "path": "smoke.html",
+                    "bytes": 831,
+                    "sha256": "7e85764f40faefe393da886f214a65b71d87eb14f4eb21a92cff0ecc01168811"
+                },
+                {
+                    "path": "smoke.js",
+                    "bytes": 880,
+                    "sha256": "d1722a318ad75ce34e7f2695f5635bcc747b4cf3d89610974531811bc449735e"
+                },
+                {
+                    "path": "user-app.js",
+                    "bytes": 24073,
+                    "sha256": "5127081eb12c08f054959cdf3d228f0dabab3e2203a5c330d74bb626a221c11d"
+                }
+            ]
+        }
+    },
+    "scenarios": {
+        "plain-react": {
+            "capturedAt": "2026-10-12T00:12:31.210Z",
+            "chrome": {
+                "app": {
+                    "hook": {
+                        "url": "http://127.0.0.1:9051/react",
+                        "annotations": 0,
+                        "renderers": [
+                            {
+                                "id": 1,
+                                "version": "19.1.1",
+                                "name": "react-dom",
+                                "roots": 1
+                            }
+                        ],
+                        "observed": [
+                            {
+                                "name": "BaselineApp"
+                            },
+                            {
+                                "name": "BaselineCounter",
+                                "label": "R01 counter",
+                                "hookValue": 7
+                            },
+                            {
+                                "name": "BaselineClassCounter",
+                                "classValue": {
+                                    "count": 11
+                                }
+                            }
+                        ],
+                        "body": "R01 unannotated React baseline\nR01 counter\n\nHook count: 7; context: quiet\n\nIncrement hook counter\nClass counter\n\nClass count: 11\n\nIncrement class counter"
+                    },
+                    "logs": [
+                        {
+                            "type": "error",
+                            "text": "Identifier '_' has already been declared"
+                        },
+                        {
+                            "type": "info",
+                            "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+                        }
+                    ]
+                },
+                "frontend": {
+                    "targetId": "67658307A7CEC2933C4C9DF0135F1F06",
+                    "type": "page",
+                    "title": "DevTools - 127.0.0.1:9051/react",
+                    "url": "devtools://devtools/bundled/devtools_app.html?remoteBase=https://chrome-devtools-frontend.appspot.com/serve_file/@b859317bf11f6be47f9b7799ec690a0a42a1fb33/&targetType=tab&can_dock=true&disableSelfXssWarnings=true",
+                    "attached": false,
+                    "canAccessOpener": false,
+                    "browserContextId": "7A2A229166921FE295158E4640669D35"
+                },
+                "extensionHost": {
+                    "targetId": "65C45BBCDE7BDF27BCA2A4787816F48D",
+                    "type": "iframe",
+                    "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                    "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                    "attached": true,
+                    "parentId": "67658307A7CEC2933C4C9DF0135F1F06",
+                    "canAccessOpener": false,
+                    "parentFrameId": "67658307A7CEC2933C4C9DF0135F1F06",
+                    "browserContextId": "7A2A229166921FE295158E4640669D35"
+                },
+                "error": {
+                    "url": "chrome-error://chromewebdata/",
+                    "errorCode": "ERR_BLOCKED_BY_RESPONSE",
+                    "inspectedTabId": 1943215854
+                },
+                "frames": {
+                    "frameTree": {
+                        "frame": {
+                            "id": "C23C85889183F23A1A2E8640C8D0AB4D",
+                            "loaderId": "4CE5C960658E6450328C7714F2CD9AF8",
+                            "url": "http://127.0.0.1:9051/react",
+                            "domainAndRegistry": "",
+                            "securityOrigin": "http://127.0.0.1:9051",
+                            "securityOriginDetails": {
+                                "isLocalhost": true
+                            },
+                            "mimeType": "text/html",
+                            "adFrameStatus": {
+                                "adFrameType": "none"
+                            },
+                            "secureContextType": "SecureLocalhost",
+                            "crossOriginIsolatedContextType": "NotIsolated",
+                            "gatedAPIFeatures": []
+                        }
+                    }
+                },
+                "updated": {
+                    "url": "http://127.0.0.1:9051/react",
+                    "body": "R01 unannotated React baseline\nR01 counter\n\nHook count: 8; context: quiet\n\nIncrement hook counter\nClass counter\n\nClass count: 12\n\nIncrement class counter"
+                }
+            },
+            "firefox": {
+                "browserVersion": "158.0",
+                "buildID": "20261007115609",
+                "app": {
+                    "url": "http://127.0.0.1:9051/react",
+                    "body": "R01 unannotated React baseline\nR01 counter\n\nHook count: 7; context: quiet\n\nIncrement hook counter\nClass counter\n\nClass count: 11\n\nIncrement class counter",
+                    "hook": false,
+                    "renderers": []
+                },
+                "toolbox": {
+                    "tools": [
+                        {
+                            "id": "inspector",
+                            "label": "Inspector"
+                        },
+                        {
+                            "id": "webconsole",
+                            "label": "Console"
+                        },
+                        {
+                            "id": "jsdebugger",
+                            "label": "Debugger"
+                        },
+                        {
+                            "id": "netmonitor",
+                            "label": "Network"
+                        },
+                        {
+                            "id": "styleeditor",
+                            "label": "Style Editor"
+                        },
+                        {
+                            "id": "performance",
+                            "label": "Performance"
+                        },
+                        {
+                            "id": "memory",
+                            "label": "Memory"
+                        },
+                        {
+                            "id": "storage",
+                            "label": "Storage"
+                        },
+                        {
+                            "id": "accessibility",
+                            "label": "Accessibility"
+                        },
+                        {
+                            "id": "application",
+                            "label": "Application"
+                        }
+                    ],
+                    "url": "http://127.0.0.1:9051/react",
+                    "body": "InspectorConsoleDebuggerNetworkStyle EditorPerformanceMemoryStorageAccessibilityApplication2"
+                },
+                "identity": {
+                    "url": "http://127.0.0.1:9051/react",
+                    "browsingContextId": 11,
+                    "windowId": 17
+                },
+                "errors": [
+                    "JavaScript error: moz-extension://5a1dfcae-3fb3-4b10-9c1b-78af7980b8b6/proxy.js, line 1: SyntaxError: import declarations may only appear at top level of a module",
+                    "JavaScript error: moz-extension://5a1dfcae-3fb3-4b10-9c1b-78af7980b8b6/proxy.js, line 1: SyntaxError: import declarations may only appear at top level of a module",
+                    "JavaScript error: moz-extension://5a1dfcae-3fb3-4b10-9c1b-78af7980b8b6/proxy.js, line 1: SyntaxError: import declarations may only appear at top level of a module",
+                    "JavaScript error: moz-extension://5a1dfcae-3fb3-4b10-9c1b-78af7980b8b6/proxy.js, line 1: SyntaxError: import declarations may only appear at top level of a module",
+                    "JavaScript error: moz-extension://5a1dfcae-3fb3-4b10-9c1b-78af7980b8b6/prepare.js, line 1: SyntaxError: redeclaration of const _"
+                ],
+                "updated": {
+                    "url": "http://127.0.0.1:9051/react",
+                    "body": "R01 unannotated React baseline\nR01 counter\n\nHook count: 8; context: quiet\n\nIncrement hook counter\nClass counter\n\nClass count: 12\n\nIncrement class counter"
+                }
+            }
+        },
+        "non-react": {
+            "capturedAt": "2026-10-12T00:03:06.991Z",
+            "chrome": {
+                "app": {
+                    "hook": {
+                        "url": "http://127.0.0.1:9051/non-react",
+                        "annotations": 0,
+                        "renderers": [],
+                        "body": "R01 non-React control\n\nNo React renderer."
+                    },
+                    "logs": [
+                        {
+                            "type": "error",
+                            "text": "Identifier '_' has already been declared"
+                        }
+                    ]
+                },
+                "frontend": {
+                    "targetId": "0C3D2E1FF7CCD765EFE44BDB7EFF34BB",
+                    "type": "page",
+                    "title": "DevTools - 127.0.0.1:9051/non-react",
+                    "url": "devtools://devtools/bundled/devtools_app.html?remoteBase=https://chrome-devtools-frontend.appspot.com/serve_file/@b859317bf11f6be47f9b7799ec690a0a42a1fb33/&targetType=tab&can_dock=true&disableSelfXssWarnings=true",
+                    "attached": false,
+                    "canAccessOpener": false,
+                    "browserContextId": "A73086CB3122E93EC87579135889BF60"
+                },
+                "extensionHost": {
+                    "targetId": "C98E0DEA321D81B486A45CE7B84CBEF7",
+                    "type": "iframe",
+                    "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                    "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                    "attached": true,
+                    "parentId": "0C3D2E1FF7CCD765EFE44BDB7EFF34BB",
+                    "canAccessOpener": false,
+                    "parentFrameId": "0C3D2E1FF7CCD765EFE44BDB7EFF34BB",
+                    "browserContextId": "A73086CB3122E93EC87579135889BF60"
+                },
+                "error": {
+                    "url": "chrome-error://chromewebdata/",
+                    "errorCode": "ERR_BLOCKED_BY_RESPONSE",
+                    "inspectedTabId": 2041047015
+                },
+                "frames": null,
+                "updated": null
+            },
+            "firefox": {
+                "browserVersion": "158.0",
+                "buildID": "20261007115609",
+                "app": {
+                    "url": "http://127.0.0.1:9051/non-react",
+                    "body": "R01 non-React control\n\nNo React renderer.",
+                    "hook": false,
+                    "renderers": []
+                },
+                "toolbox": {
+                    "tools": [
+                        {
+                            "id": "inspector",
+                            "label": "Inspector"
+                        },
+                        {
+                            "id": "webconsole",
+                            "label": "Console"
+                        },
+                        {
+                            "id": "jsdebugger",
+                            "label": "Debugger"
+                        },
+                        {
+                            "id": "netmonitor",
+                            "label": "Network"
+                        },
+                        {
+                            "id": "styleeditor",
+                            "label": "Style Editor"
+                        },
+                        {
+                            "id": "performance",
+                            "label": "Performance"
+                        },
+                        {
+                            "id": "memory",
+                            "label": "Memory"
+                        },
+                        {
+                            "id": "storage",
+                            "label": "Storage"
+                        },
+                        {
+                            "id": "accessibility",
+                            "label": "Accessibility"
+                        },
+                        {
+                            "id": "application",
+                            "label": "Application"
+                        }
+                    ],
+                    "url": "http://127.0.0.1:9051/non-react",
+                    "body": "InspectorConsoleDebuggerNetworkStyle EditorPerformanceMemoryStorageAccessibilityApplication2"
+                },
+                "identity": null,
+                "errors": [
+                    "JavaScript error: moz-extension://673d999f-ef16-45c5-92d5-75ec1840c2dc/proxy.js, line 1: SyntaxError: import declarations may only appear at top level of a module",
+                    "JavaScript error: moz-extension://673d999f-ef16-45c5-92d5-75ec1840c2dc/proxy.js, line 1: SyntaxError: import declarations may only appear at top level of a module",
+                    "JavaScript error: moz-extension://673d999f-ef16-45c5-92d5-75ec1840c2dc/proxy.js, line 1: SyntaxError: import declarations may only appear at top level of a module",
+                    "JavaScript error: moz-extension://673d999f-ef16-45c5-92d5-75ec1840c2dc/proxy.js, line 1: SyntaxError: import declarations may only appear at top level of a module",
+                    "JavaScript error: moz-extension://673d999f-ef16-45c5-92d5-75ec1840c2dc/prepare.js, line 1: SyntaxError: redeclaration of const _"
+                ],
+                "updated": {
+                    "url": "http://127.0.0.1:9051/non-react",
+                    "body": "R01 non-React control\n\nNo React renderer."
+                }
+            }
+        },
+        "next": {
+            "capturedAt": "2026-10-12T00:03:36.663Z",
+            "chrome": {
+                "app": {
+                    "hook": {
+                        "url": "http://127.0.0.1:9050/pages-demo",
+                        "annotations": 0,
+                        "renderers": [
+                            {
+                                "id": 1,
+                                "version": "19.1.1",
+                                "name": "react-dom",
+                                "roots": 1
+                            },
+                            {
+                                "id": 2,
+                                "version": "19.2.0-canary-0bdb9206-20250818",
+                                "name": "react-dom",
+                                "roots": 1
+                            }
+                        ],
+                        "body": "← home\n\nPages Router demo\n\nPlain React components rendered through the Pages Router.\n\nOpen dynamic Pages Router route\n\nPlain React fixtures\nuseState component\n\nCount: 0\n\nIncrement\nReset\nuseReducer component\n\nCount: 0\n\nIncrement\nDecrement\nReset\nnested context providers\nCurrent context tone: quiet; locale: en-US; anonymous: anonymous-nested\nSet active\nSet quiet\nSet French Canada\nSet US English\nmemo component\n\nMemo status: idle\n\nToggle memo state\nSuspense boundary\nLazy child resolved\nerror boundary fixture\nError boundary child is healthy\nTrigger error\nclass component\n\nCount: 0\n\nIncrement"
+                    },
+                    "logs": [
+                        {
+                            "type": "error",
+                            "text": "Identifier '_' has already been declared"
+                        },
+                        {
+                            "type": "info",
+                            "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+                        },
+                        {
+                            "type": "log",
+                            "text": "[HMR] connected"
+                        },
+                        {
+                            "type": "error",
+                            "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+                        }
+                    ]
+                },
+                "frontend": {
+                    "targetId": "0EC818BDEFCE15A48FF11F6703266A01",
+                    "type": "page",
+                    "title": "DevTools - 127.0.0.1:9050/pages-demo",
+                    "url": "devtools://devtools/bundled/devtools_app.html?remoteBase=https://chrome-devtools-frontend.appspot.com/serve_file/@b859317bf11f6be47f9b7799ec690a0a42a1fb33/&targetType=tab&can_dock=true&disableSelfXssWarnings=true",
+                    "attached": false,
+                    "canAccessOpener": false,
+                    "browserContextId": "F056B555F3F4CA8E1A6295DE1CC3215E"
+                },
+                "extensionHost": {
+                    "targetId": "F964E9864781B7C1F6FD4F47537AD7DF",
+                    "type": "iframe",
+                    "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                    "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                    "attached": true,
+                    "parentId": "0EC818BDEFCE15A48FF11F6703266A01",
+                    "canAccessOpener": false,
+                    "parentFrameId": "0EC818BDEFCE15A48FF11F6703266A01",
+                    "browserContextId": "F056B555F3F4CA8E1A6295DE1CC3215E"
+                },
+                "error": {
+                    "url": "chrome-error://chromewebdata/",
+                    "errorCode": "ERR_BLOCKED_BY_RESPONSE",
+                    "inspectedTabId": 75782307
+                },
+                "frames": null,
+                "updated": null
+            },
+            "firefox": {
+                "browserVersion": "158.0",
+                "buildID": "20261007115609",
+                "app": {
+                    "url": "http://127.0.0.1:9050/pages-demo",
+                    "body": "← home\n\nPages Router demo\n\nPlain React components rendered through the Pages Router.\n\nOpen dynamic Pages Router route\n\nPlain React fixtures\nuseState component\n\nCount: 0\n\nIncrement\nReset\nuseReducer component\n\nCount: 0\n\nIncrement\nDecrement\nReset\nnested context providers\nCurrent context tone: quiet; locale: en-US; anonymous: anonymous-nested\nSet active\nSet quiet\nSet French Canada\nSet US English\nmemo component\n\nMemo status: idle\n\nToggle memo state\nSuspense boundary\nLazy child resolved\nerror boundary fixture\nError boundary child is healthy\nTrigger error\nclass component\n\nCount: 0\n\nIncrement",
+                    "hook": true,
+                    "renderers": []
+                },
+                "toolbox": {
+                    "tools": [
+                        {
+                            "id": "inspector",
+                            "label": "Inspector"
+                        },
+                        {
+                            "id": "webconsole",
+                            "label": "Console"
+                        },
+                        {
+                            "id": "jsdebugger",
+                            "label": "Debugger"
+                        },
+                        {
+                            "id": "netmonitor",
+                            "label": "Network"
+                        },
+                        {
+                            "id": "styleeditor",
+                            "label": "Style Editor"
+                        },
+                        {
+                            "id": "performance",
+                            "label": "Performance"
+                        },
+                        {
+                            "id": "memory",
+                            "label": "Memory"
+                        },
+                        {
+                            "id": "storage",
+                            "label": "Storage"
+                        },
+                        {
+                            "id": "accessibility",
+                            "label": "Accessibility"
+                        },
+                        {
+                            "id": "application",
+                            "label": "Application"
+                        }
+                    ],
+                    "url": "http://127.0.0.1:9050/pages-demo",
+                    "body": "InspectorConsoleDebuggerNetworkStyle EditorPerformanceMemoryStorageAccessibilityApplication2\n    \n      \n        \n          \n            \n          \n        \n      \n    \n    \n      \n      \n        \n        \n      \n    \n    \n      \n        \n        \n          \n        \n      Learn more\n      \n        \n          \n        \n        \n        \n          \n        \n      Learn more\n    \n  \n    \n      \n        \n          \n            \n          \n        \n      \n    \n    \n      \n      \n        \n        \n      \n    \n    \n      \n        \n        \n          \n        \n      Learn more\n      \n        \n          \n        \n        \n        \n          \n        \n      Learn more\n    \n  "
+                },
+                "identity": null,
+                "errors": [
+                    "JavaScript error: moz-extension://37492f89-cd72-4b46-87f7-7aadc47ab5d0/proxy.js, line 1: SyntaxError: import declarations may only appear at top level of a module",
+                    "JavaScript error: moz-extension://37492f89-cd72-4b46-87f7-7aadc47ab5d0/proxy.js, line 1: SyntaxError: import declarations may only appear at top level of a module",
+                    "JavaScript error: moz-extension://37492f89-cd72-4b46-87f7-7aadc47ab5d0/proxy.js, line 1: SyntaxError: import declarations may only appear at top level of a module",
+                    "JavaScript error: moz-extension://37492f89-cd72-4b46-87f7-7aadc47ab5d0/proxy.js, line 1: SyntaxError: import declarations may only appear at top level of a module",
+                    "JavaScript error: moz-extension://37492f89-cd72-4b46-87f7-7aadc47ab5d0/prepare.js, line 1: SyntaxError: redeclaration of const _"
+                ],
+                "updated": {
+                    "url": "http://127.0.0.1:9050/pages-demo",
+                    "body": "← home\n\nPages Router demo\n\nPlain React components rendered through the Pages Router.\n\nOpen dynamic Pages Router route\n\nPlain React fixtures\nuseState component\n\nCount: 0\n\nIncrement\nReset\nuseReducer component\n\nCount: 0\n\nIncrement\nDecrement\nReset\nnested context providers\nCurrent context tone: quiet; locale: en-US; anonymous: anonymous-nested\nSet active\nSet quiet\nSet French Canada\nSet US English\nmemo component\n\nMemo status: idle\n\nToggle memo state\nSuspense boundary\nLazy child resolved\nerror boundary fixture\nError boundary child is healthy\nTrigger error\nclass component\n\nCount: 0\n\nIncrement"
+                }
+            }
+        }
+    }
+}
