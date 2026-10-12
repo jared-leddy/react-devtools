@@ -1,0 +1,26 @@
+[
+    {
+        "file": "README.md",
+        "sha256": "4e4303b4dd21ea973032f3dc9e6214da9674ecaf62c444ebd1f10d456aeffa08"
+    },
+    {
+        "file": "evidence/bundle-report.json",
+        "sha256": "2d503cce708e6dadd76e8b576d52c1cfe024e9fdf0df05ac833bebb25be6d5d7"
+    },
+    {
+        "file": "evidence/reference-measurements.json",
+        "sha256": "e6ba28b08a6407d5b78b9d1a380cb73aa81038b8c8bdc299982da01124078887"
+    },
+    {
+        "file": "evidence/renderer-probe.json",
+        "sha256": "333f9fe2e79a590b3613a28375df710a860c69084071ecb9910eb91fc3a22a3c"
+    },
+    {
+        "file": "reference-probe.mjs",
+        "sha256": "bbaaae8f6f87721961066af6b93b247ea1a6808e911752f48424178eaefcee8b"
+    },
+    {
+        "file": "renderer-probe.mjs",
+        "sha256": "d38764b8f720882472f273a4df7de3e1d965dac868f6e1999e60594da6723702"
+    }
+]

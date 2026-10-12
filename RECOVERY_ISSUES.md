@@ -11,6 +11,9 @@ Reproduced installed failures and approved measured design/backend decision.
 R01 evidence: [installed-extension failure baseline](docs/recovery/r01/README.md).
 The baseline records native startup blockers, not a fixed or release-ready app.
 
+R02 working specification: [reference and backend decision draft](docs/recovery/r02/README.md).
+Original-reference measurements and owner visual approval remain pending.
+
 | Item | GitHub Issue                                                                                                     | Blocked By                                                      |
 | ---- | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
 | R01  | [#246: Capture the actual installed extension failure](https://github.com/jared-leddy/react-devtools/issues/246) | None                                                            |

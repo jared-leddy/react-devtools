@@ -4,6 +4,14 @@ Issue: [P1-A03](https://github.com/jared-leddy/react-devtools/issues/3)
 
 ## Decision
 
+Recovery review: [R02 draft decision](../../../docs/recovery/r02/README.md).
+The earlier direct-backend choice below is historical, not proof of current
+native-panel compatibility. The recovery recommendation is conditional on real
+R03-R07/R10 evidence and retains an official-inline backend contingency. No
+runtime dependency or vendoring change is authorized by this note. Follow the
+recovery provenance/notices requirements for any copied code; the unspecified
+small-snippet threshold below must not be treated as a license exemption.
+
 Use a direct React runtime implementation for the app-facing backend, with
 selective study of the official React DevTools source. Do not add
 `react-devtools-core`, `react-devtools-inline`, or `react-devtools-shared` as
