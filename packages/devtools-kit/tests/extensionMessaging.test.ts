@@ -1,5 +1,6 @@
 import {
     EXTENSION_RPC_EVENT_KEY,
+    EXTENSION_DISCONNECT_EVENT_KEY,
     EXTENSION_RPC_MESSAGE_SOURCE,
     clearExtensionClientContext,
     clearExtensionProxyContext,
@@ -33,6 +34,37 @@ interface ClientFunctions {
 }
 
 describe('extension messaging preset', () => {
+    it('forwards native panel disconnects and disposes the server lifecycle listener', () => {
+        const runtime = createMockExtensionRuntime();
+        const window = createMockWindow();
+        const channel = createExtensionServerChannel({ window });
+        const disconnected = jest.fn();
+        const server = createRpcServer(
+            {},
+            { channel, onDisconnect: disconnected }
+        );
+        createExtensionProxyChannel({
+            chrome: createMockChrome(runtime, 42),
+            window
+        });
+        window.dispatchMessage({ source: window, data: null });
+        window.dispatchMessage({ source: window, data: 'unrelated' });
+        window.dispatchMessage({ source: window, data: { event: 'foreign' } });
+        window.dispatchMessage({
+            data: { event: EXTENSION_DISCONNECT_EVENT_KEY }
+        });
+        expect(disconnected).not.toHaveBeenCalled();
+        runtime
+            .getPort('content-script')
+            ?.emitMessage({ event: EXTENSION_DISCONNECT_EVENT_KEY });
+        expect(disconnected).toHaveBeenCalledTimes(1);
+        server.dispose();
+        server.dispose();
+        runtime
+            .getPort('content-script')
+            ?.emitMessage({ event: EXTENSION_DISCONNECT_EVENT_KEY });
+        expect(disconnected).toHaveBeenCalledTimes(1);
+    });
     afterEach(() => {
         clearExtensionClientContext();
         clearExtensionProxyContext();
@@ -425,7 +457,7 @@ function createMockWindow(): MockWindow {
             }
         },
         postMessage(payload) {
-            this.dispatchMessage({ data: payload });
+            this.dispatchMessage({ source: this, data: payload });
         },
         removeEventListener(_type, listener) {
             listeners.delete(listener);

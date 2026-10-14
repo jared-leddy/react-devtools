@@ -1,71 +1,106 @@
 import { createRpcServer, type RpcChannel } from '@devtools/kit';
 import type { DevToolsSession } from './session.js';
-import { DEVTOOLS_PROTOCOL_VERSION } from './session.js';
+import { DEVTOOLS_PROTOCOL_VERSION } from './protocol.js';
+import {
+    createInitialDevToolsCoreState,
+    type DevToolsCoreStateListener
+} from './state.js';
 import type { DevToolsCoreClientFunctions } from './rpc.js';
 import type { DevToolsCoreHandshakeRequest } from './types.js';
+import { createDevToolsUpdatePublisher } from './updates.js';
 
-// A borrowed host session stays authoritative; the iframe receives snapshots only.
+// A borrowed session remains authoritative; the relay exposes metadata, not inspectors.
 export function createDevToolsSessionRelay(
     session: DevToolsSession,
     channel: RpcChannel
 ) {
-    const server = createRpcServer<
-        DevToolsCoreClientFunctions,
-        {
-            handshake: (
-                request: DevToolsCoreHandshakeRequest
-            ) => Promise<import('./types.js').DevToolsCoreHandshakeResponse>;
-        }
-    >(
-        {
-            async handshake(request) {
-                if (request.protocolVersion !== DEVTOOLS_PROTOCOL_VERSION)
-                    throw new Error('Unsupported DevTools protocol version');
-                await session.connect();
-                const snapshot = session.getSnapshot();
-                if (
-                    snapshot.status !== 'connected' ||
-                    !snapshot.state ||
-                    !snapshot.capabilities ||
-                    !snapshot.serverId
-                )
-                    throw new Error('Host session is not connected');
-                return {
-                    protocolVersion: DEVTOOLS_PROTOCOL_VERSION,
-                    serverId: snapshot.serverId,
-                    state: snapshot.state,
-                    capabilities: {
-                        ...snapshot.capabilities,
-                        components: false,
-                        componentState: false,
-                        highlight: false,
-                        inspect: false,
-                        edit: false,
-                        stores: false
-                    }
+    let state = createInitialDevToolsCoreState();
+    const listeners = new Set<DevToolsCoreStateListener>();
+    const updates = createDevToolsUpdatePublisher({
+        store: {
+            getState: () => state,
+            subscribe(listener) {
+                listeners.add(listener);
+                return () => {
+                    listeners.delete(listener);
                 };
             }
         },
-        { channel, options: { timeout: 5000 } }
-    );
+        publish: (update) => server.broadcast.notifySessionUpdated(update)
+    });
+    const synchronize = () => {
+        const source = session.getSnapshot();
+        const patch =
+            source.status === 'connected' && source.state
+                ? {
+                      renderers: source.state.renderers,
+                      roots: source.state.roots,
+                      rootEvents: source.state.rootEvents,
+                      performance: source.state.performance,
+                      transportStatus: source.state.transportStatus
+                  }
+                : { transportStatus: 'disconnected' as const };
+        state = { ...state, ...patch };
+        listeners.forEach((listener) => listener(state, patch));
+    };
+    const functions = {
+        async handshake(request: DevToolsCoreHandshakeRequest) {
+            if (request.protocolVersion !== DEVTOOLS_PROTOCOL_VERSION)
+                throw new Error('Unsupported DevTools protocol version');
+            await session.connect();
+            const source = session.getSnapshot();
+            if (
+                source.status !== 'connected' ||
+                !source.state ||
+                !source.capabilities ||
+                !source.serverId
+            )
+                throw new Error('Host session is not connected');
+            synchronize();
+            return {
+                ...updates.connect(request.sessionId ?? request.clientId),
+                protocolVersion: DEVTOOLS_PROTOCOL_VERSION,
+                serverId: source.serverId,
+                capabilities: {
+                    ...source.capabilities,
+                    components: false,
+                    componentState: false,
+                    highlight: false,
+                    inspect: false,
+                    edit: false,
+                    stores: false
+                }
+            };
+        },
+        getSessionSnapshot: updates.getSnapshot,
+        getSessionRevision: updates.getRevision,
+        disconnectSession: updates.disconnect
+    };
+    const server = createRpcServer<
+        DevToolsCoreClientFunctions,
+        typeof functions
+    >(functions, {
+        channel,
+        options: { timeout: 5000 },
+        onDisconnect: () => updates.suspend()
+    });
     const unsubscribe = session.subscribe(() => {
-        const snapshot = session.getSnapshot();
-        if (snapshot.status === 'connected' && snapshot.state)
-            void server.broadcast
-                .notifyStateUpdated(snapshot.state)
-                .catch(() => {});
+        const source = session.getSnapshot();
+        if (source.status === 'connected') synchronize();
         else if (
-            snapshot.status === 'disconnected' ||
-            snapshot.status === 'error'
-        )
-            void server.broadcast
-                .setTransportStatus('disconnected')
-                .catch(() => {});
+            source.status === 'disconnected' ||
+            source.status === 'error'
+        ) {
+            synchronize();
+            updates.flush();
+            updates.suspend();
+        }
     });
     return {
         dispose() {
             unsubscribe();
-            server.clients.forEach((client) => client.$close());
+            updates.dispose();
+            server.dispose();
         }
     };
 }

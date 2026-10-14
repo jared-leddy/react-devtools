@@ -21,6 +21,33 @@ interface ClientFunctions {
 }
 
 describe('messaging RPC core', () => {
+    it('disposes server-owned channels and disconnect listeners exactly once', () => {
+        const dispose = jest.fn();
+        const unsubscribe = jest.fn();
+        const disconnected = jest.fn();
+        let notify: (() => void) | undefined;
+        const channel: RpcChannel = {
+            on: jest.fn(),
+            off: jest.fn(),
+            post: jest.fn(),
+            dispose,
+            subscribeDisconnect(listener) {
+                notify = listener;
+                return unsubscribe;
+            }
+        };
+        const server = createRpcServer(
+            {},
+            { channel, onDisconnect: disconnected }
+        );
+        notify?.();
+        expect(disconnected).toHaveBeenCalledTimes(1);
+        server.dispose();
+        server.dispose();
+        expect(unsubscribe).toHaveBeenCalledTimes(1);
+        expect(dispose).toHaveBeenCalledTimes(1);
+        expect(channel.off).toHaveBeenCalledTimes(1);
+    });
     it('round-trips Map and Set payloads through a mock channel', async () => {
         const [clientChannel, serverChannel] = createLinkedChannels();
         createRpcServer<ClientFunctions, ServerFunctions>(

@@ -6,6 +6,22 @@ import {
 import type { ReactFiber, ReactFiberRoot } from '../src/index.js';
 
 describe('FiberRootRecord registry', () => {
+    it('does not reuse removed root identities within an active registry', () => {
+        const registry = createFiberRootRegistry();
+        const root = createFiberRootFixture({
+            appName: 'First',
+            childName: 'Child'
+        });
+        expect(registry.recordCommit(root).id).toBe('fiber-root:1');
+        registry.recordUnmount(root);
+        const next = createFiberRootFixture({
+            appName: 'Second',
+            childName: 'Child'
+        });
+        expect(registry.recordCommit(next).id).toBe('fiber-root:2');
+        registry.clear();
+        expect(registry.recordCommit(next).id).toBe('fiber-root:1');
+    });
     it('creates separate records and non-overlapping instance maps for multiple roots', () => {
         const firstRoot = createFiberRootFixture({
             appName: 'FirstApp',

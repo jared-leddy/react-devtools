@@ -177,6 +177,13 @@ function attachPortRelay(tabId: number, port: ExtensionPortLike) {
         }
 
         if (tabPorts.devtoolsPort === port) {
+            try {
+                tabPorts.pagePort?.postMessage({
+                    event: '__react-devtools-extension-disconnect__'
+                });
+            } catch {
+                /* The page may already be gone during navigation. */
+            }
             delete tabPorts.devtoolsPort;
         }
 

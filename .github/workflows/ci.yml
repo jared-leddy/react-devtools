@@ -63,6 +63,8 @@ jobs:
 
             - name: Unit tests and coverage gates
               run: npm run test:unit
+            - name: Compiled session transport integration
+              run: npm run test:session-integration
 
             - name: Release packaging tests
               run: npm run test:release-packaging

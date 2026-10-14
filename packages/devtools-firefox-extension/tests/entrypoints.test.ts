@@ -16,12 +16,17 @@ jest.mock('@devtools/core/browser', () => ({
 jest.mock('@devtools/kit', () => ({
     ...jest.requireActual('@devtools/kit'),
     createRpcServer: jest.fn(() => ({
-        broadcast: { notifyStateUpdated: jest.fn(async () => {}) }
+        broadcast: {
+            notifyStateUpdated: jest.fn(async () => {}),
+            notifySessionUpdated: jest.fn(async () => {})
+        },
+        dispose: jest.fn()
     }))
 }));
 
 describe('extension entrypoints', () => {
     afterEach(() => {
+        window.dispatchEvent(new Event('pagehide'));
         delete (
             window as Window & {
                 __REACT_DEVTOOLS_GLOBAL_HOOK__?: unknown;

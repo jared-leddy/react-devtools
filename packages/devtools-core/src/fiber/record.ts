@@ -45,6 +45,7 @@ export class FiberRootRegistry {
         FiberRootRecord
     >();
     private readonly roots: ReactFiberRoot[] = [];
+    private nextRootIndex = 0;
 
     public constructor(options: FiberRootRegistryOptions = {}) {
         this.createRootId =
@@ -70,6 +71,7 @@ export class FiberRootRegistry {
         }
 
         this.roots.length = 0;
+        this.nextRootIndex = 0;
     }
 
     public getRecord(root: ReactFiberRoot): null | FiberRootRecord {
@@ -84,7 +86,7 @@ export class FiberRootRegistry {
         }
 
         const record = new FiberRootRecord(root, {
-            id: this.createRootId(root, this.roots.length + 1)
+            id: this.createRootId(root, ++this.nextRootIndex)
         });
 
         this.roots.push(root);

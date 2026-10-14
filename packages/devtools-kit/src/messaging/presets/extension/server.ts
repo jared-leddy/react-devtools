@@ -2,6 +2,7 @@ import type { RpcChannel } from '../../index.js';
 import { createNoopChannel } from '../iframe/context.js';
 import {
     EXTENSION_RPC_EVENT_KEY,
+    EXTENSION_DISCONNECT_EVENT_KEY,
     EXTENSION_RPC_MESSAGE_SOURCE,
     getExtensionServerContext,
     getExtensionWindow,
@@ -31,6 +32,20 @@ export function createExtensionServerChannel(
     >();
 
     return {
+        subscribeDisconnect(handler) {
+            const listener: ExtensionWindowMessageListener = (event) => {
+                if (
+                    event.source === window &&
+                    event.data &&
+                    typeof event.data === 'object' &&
+                    (event.data as { event?: unknown }).event ===
+                        EXTENSION_DISCONNECT_EVENT_KEY
+                )
+                    handler();
+            };
+            window.addEventListener('message', listener);
+            return () => window.removeEventListener?.('message', listener);
+        },
         off(handler) {
             const listener = listeners.get(handler);
 
