@@ -13,6 +13,8 @@
   collecting every component value on each commit. Inspector UI remains R05/R06.
 - Add native live-update/disconnect/reopen evidence and real compiled transport
   regression tests. Coverage gates and bundle budgets remain unchanged.
+- Fix Firefox's fast-page hook startup race with native MAIN-world injection;
+  Firefox 128 or newer is now required.
 - Development artifacts: Chrome 0.0.18 and Firefox 0.0.9. Not store-approved builds.
 
 ## 0.1.9
