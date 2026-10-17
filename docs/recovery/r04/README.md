@@ -80,11 +80,34 @@ overlay 0.0.10, Chrome 0.0.18, Firefox 0.0.9. This is a development release only
 
 ## Native Evidence
 
-Fresh release-build observations, exact source/build hashes and unedited images
-are recorded after the final checks. The prototype checks already established
-actual native updates and producer shutdown in both browsers; final evidence is
-captured from the committed versioned build, not substituted from those prototypes.
-Original owner screenshots remain untouched and excluded from commits/artifacts.
+[Build identity, archive hashes and coverage](evidence/build.json),
+[Chrome observations](evidence/chrome.json), [Firefox observations](evidence/firefox.json)
+and [evidence checksums](evidence/SHA256SUMS) record the actual installed builds.
+Chrome 155.0.8059.80 inspected tab 2131204384; Firefox 159.0 inspected browsing
+context 11 and opened the registered native extension panel in context 19.
+The app is unannotated React 19.1.1 at `http://127.0.0.1:9053/react`.
+
+Both browsers observed the primary root's commit count change from 0 to 1 to 26,
+with the 25-commit burst coalesced into one notification. Child removal retained
+the root; secondary root mount/unmount/remount produced counts 2/1/2 with a new
+root identity and retained renderer association. Closing actual native DevTools
+stopped notifications while the real app advanced to counter 51. Firefox reopened
+a different native panel context and a fresh stream, then advanced to counter 52.
+
+Visually checked, unedited native screenshots:
+[Chrome live panel](evidence/chrome-live.png),
+[Firefox burst](evidence/firefox-updated-1-burst.png),
+[Firefox remounted root](evidence/firefox-updated-5-mount-secondary.png) and
+[Firefox reopened panel](evidence/firefox-reopened.png).
+These show the existing Overview, not the future Vue-style Components workspace.
+
+The final Firefox capture follows the startup-race fix at source
+`b2cd4b1108cac35483a9a014a8bc3b6e85f1dedf`; Chrome was captured at
+`207e7ff82454552f8e02dbb4bf1eb7ceddb28939`, before that Firefox-only change.
+Earlier failing Firefox runs are not represented as passing evidence: both
+connected without a renderer before native MAIN-world startup was enabled.
+Profile paths/process IDs are redacted from the Firefox JSON. Original owner
+screenshots remain untouched and excluded from commits/artifacts.
 
 ## Reproduce
 

@@ -1,0 +1,304 @@
+{
+    "recordedAt": "2026-10-17T19:30:02.750Z",
+    "sourceCommit": "b2cd4b1108cac35483a9a014a8bc3b6e85f1dedf",
+    "chromeCaptureSourceCommit": "207e7ff82454552f8e02dbb4bf1eb7ceddb28939",
+    "chromeCaptureNote": "The subsequent source commit changes only Firefox manifest/tests and documentation. Chrome artifact hashes are unchanged.",
+    "node": "v24.16.0",
+    "platform": "darwin/x64",
+    "fixture": {
+        "source": "docs/recovery/r04/fixture.tsx",
+        "sha256": "78674915e5c9dfc46bee2a51231dc48424e95483d44027dc107bc87d46673c45",
+        "react": "19.1.1",
+        "url": "http://127.0.0.1:9053/react",
+        "annotations": false
+    },
+    "files": [
+        {
+            "path": "packages/devtools-chrome-extension/dist/assets/Popup-DGLajPT4.js",
+            "bytes": 3339,
+            "sha256": "c0a1e8a674ab7cb5d51180efab9d532f0f7397966941069c242db97baab35007"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/assets/Popup-DZCiTAZB.css",
+            "bytes": 2845,
+            "sha256": "62b699845b866e87274dd0165aef0927936eacd442106976f9f269e46330b7d4"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/assets/client-CqDhr2UF.js",
+            "bytes": 176839,
+            "sha256": "cd39405d93035af27651acd90fe5344432c13ee7dd6c67660951a273ed21fa4f"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/assets/client-GjRy-1SZ.js",
+            "bytes": 17343,
+            "sha256": "5190811d8639a191bc8abaca17f00c21973d1917d13bfc793dfe6c3c33a73cec"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/assets/devtoolsPanel-CVLdVRQ-.css",
+            "bytes": 26062,
+            "sha256": "c55ad38654ecfdf376d1278c7d1e5af4dfc3c0d225b805a99cdae9b25b2aa8de"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/assets/index-BLIbyS7D.js",
+            "bytes": 431,
+            "sha256": "fcaf0174da1549c9ab073aaa40c766eae249587535b4a7730af6e55d28304994"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/assets/modulepreload-polyfill-B5Qt9EMX.js",
+            "bytes": 711,
+            "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/assets/style-BMgp5R0b.css",
+            "bytes": 6635,
+            "sha256": "4aa6491333cf8d96c6129775e7ddb997db150c475a648a03fbc7f9ca611299a9"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/assets/style-CJCAbWBT.js",
+            "bytes": 9384,
+            "sha256": "54a70a887edb6e68a6053625ab1fa4b2c9c33cfc5190f75cb8a296b3329cfeaf"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/background.js",
+            "bytes": 1836,
+            "sha256": "6ee99c45d571a6957cfc10c860fb6a1e973b029b79471ba9deca82a9e7819cc4"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/detector.js",
+            "bytes": 805,
+            "sha256": "84a53e1400bed43723d2c63da074ae665113bbc2f0617375c4274fc4ec1e6bd8"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/devtools-panel.html",
+            "bytes": 840,
+            "sha256": "ff378376695c81bd2dcebb83125686d642c313140bd47d23044c29aefa4f57bf"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/devtools.html",
+            "bytes": 403,
+            "sha256": "fa438f36e9b6aa02defced9b8c7235189ec6136c4510bc62151a58ab39877425"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/devtools.js",
+            "bytes": 1059,
+            "sha256": "d9f281405e5a61d268c30db2439b5284f1fa0dd68a4a9396ce0b6ade55bcfa7f"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/devtoolsPanel.js",
+            "bytes": 142028,
+            "sha256": "c8ad7944efbf659471efffa1165cf6093157d74d75d708cece7a43b691ba8444"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/index.js",
+            "bytes": 107,
+            "sha256": "4e1568290a8c99c9aff0ba6f82949ed80948d064439f086d249cc9c2ef26499e"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/manifest.json",
+            "bytes": 1897,
+            "sha256": "40cce9f48a3ca1bc4218b7f6358408b8fdbbf55f4549b23afee4e02d90c2758b"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/popup.html",
+            "bytes": 817,
+            "sha256": "88688332db6096bda933bc8a3111bb4d6528d1251e0603b8893863d18c5690de"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/popup.js",
+            "bytes": 291,
+            "sha256": "bb19bba07188017a7eeed61ba06e1f44ab143cca8e30e3a031d37e33d02e2500"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/prepare.js",
+            "bytes": 2260,
+            "sha256": "191f1ab4f4a671c557df7c733c56d5346fa71f7ef8dbc1b6245bed2725a7615c"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/proxy.js",
+            "bytes": 13939,
+            "sha256": "ee9dacb5b94990fa33cae2f96851757be42cfc5ead32543d88d4d8b15fb02e22"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/smoke.html",
+            "bytes": 831,
+            "sha256": "43d4d5fa714ca100744c064a733de6d91131f6ee42d54147e6ba29d20f03c7b1"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/smoke.js",
+            "bytes": 881,
+            "sha256": "b6ff8eff8f6468a6ced41b99d2d17b042b5768a6e5dc985b7c4a5750056013c3"
+        },
+        {
+            "path": "packages/devtools-chrome-extension/dist/user-app.js",
+            "bytes": 63127,
+            "sha256": "880af5e39e5238b9a04db1958853412e92381399085286e8fd92b94d993b8388"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/assets/Popup-DGLajPT4.js",
+            "bytes": 3339,
+            "sha256": "c0a1e8a674ab7cb5d51180efab9d532f0f7397966941069c242db97baab35007"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/assets/Popup-DZCiTAZB.css",
+            "bytes": 2845,
+            "sha256": "62b699845b866e87274dd0165aef0927936eacd442106976f9f269e46330b7d4"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/assets/client-CqDhr2UF.js",
+            "bytes": 176839,
+            "sha256": "cd39405d93035af27651acd90fe5344432c13ee7dd6c67660951a273ed21fa4f"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/assets/client-GjRy-1SZ.js",
+            "bytes": 17343,
+            "sha256": "5190811d8639a191bc8abaca17f00c21973d1917d13bfc793dfe6c3c33a73cec"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/assets/devtoolsPanel-CVLdVRQ-.css",
+            "bytes": 26062,
+            "sha256": "c55ad38654ecfdf376d1278c7d1e5af4dfc3c0d225b805a99cdae9b25b2aa8de"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/assets/index-BLIbyS7D.js",
+            "bytes": 431,
+            "sha256": "fcaf0174da1549c9ab073aaa40c766eae249587535b4a7730af6e55d28304994"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/assets/modulepreload-polyfill-B5Qt9EMX.js",
+            "bytes": 711,
+            "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/assets/style-BMgp5R0b.css",
+            "bytes": 6635,
+            "sha256": "4aa6491333cf8d96c6129775e7ddb997db150c475a648a03fbc7f9ca611299a9"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/assets/style-CJCAbWBT.js",
+            "bytes": 9384,
+            "sha256": "54a70a887edb6e68a6053625ab1fa4b2c9c33cfc5190f75cb8a296b3329cfeaf"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/background.js",
+            "bytes": 1920,
+            "sha256": "97b6dc045d68f69fa068bb20c260183e715cce1f575e26e3eeb541989c785811"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/detector.js",
+            "bytes": 805,
+            "sha256": "84a53e1400bed43723d2c63da074ae665113bbc2f0617375c4274fc4ec1e6bd8"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/devtools-panel.html",
+            "bytes": 840,
+            "sha256": "ff378376695c81bd2dcebb83125686d642c313140bd47d23044c29aefa4f57bf"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/devtools.html",
+            "bytes": 403,
+            "sha256": "fa438f36e9b6aa02defced9b8c7235189ec6136c4510bc62151a58ab39877425"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/devtools.js",
+            "bytes": 1080,
+            "sha256": "df25e942f7d7fb9f1dfaf4774a51594d66f04f6072a344727a715ad1ca12af6b"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/devtoolsPanel.js",
+            "bytes": 142049,
+            "sha256": "fc42c0c441154aad1d056bd451851aa929094a45310c6587828970cde309ce4c"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/index.js",
+            "bytes": 107,
+            "sha256": "4e1568290a8c99c9aff0ba6f82949ed80948d064439f086d249cc9c2ef26499e"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/manifest.json",
+            "bytes": 1349,
+            "sha256": "3e7efa737ccbae59f3f196da2141d8899b6dfa47ca0a5edc9d9f0c04390f666c"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/popup.html",
+            "bytes": 817,
+            "sha256": "88688332db6096bda933bc8a3111bb4d6528d1251e0603b8893863d18c5690de"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/popup.js",
+            "bytes": 291,
+            "sha256": "bb19bba07188017a7eeed61ba06e1f44ab143cca8e30e3a031d37e33d02e2500"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/prepare-loader.js",
+            "bytes": 684,
+            "sha256": "e67c7f88366bb81f67e55e040275e8db1755e03422651304f4854c6847c0a7f4"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/prepare.js",
+            "bytes": 2260,
+            "sha256": "191f1ab4f4a671c557df7c733c56d5346fa71f7ef8dbc1b6245bed2725a7615c"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/proxy.js",
+            "bytes": 13958,
+            "sha256": "d1f359f68463af05b86044532f13c66b4ac17bc7f041f2139b2bfa9b722ff864"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/smoke.html",
+            "bytes": 831,
+            "sha256": "1d2fe78cad9d517909671ff88e10ed451986b2c1c157ce1647b17cd5022da0b1"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/smoke.js",
+            "bytes": 880,
+            "sha256": "bab9fa664a7eaf1e7b162fcac9bb5ca5f7f43151ee33ff4fd2f3c286986d61a9"
+        },
+        {
+            "path": "packages/devtools-firefox-extension/dist/user-app.js",
+            "bytes": 63127,
+            "sha256": "880af5e39e5238b9a04db1958853412e92381399085286e8fd92b94d993b8388"
+        }
+    ],
+    "archives": [
+        {
+            "path": "dist/extensions/react-devtools-chrome-extension-v0.0.18.zip",
+            "bytes": 156514,
+            "sha256": "833abdc338b55261f0c19322a05d9680c667ed9282bf28d3ed77d20914526e19"
+        },
+        {
+            "path": "dist/extensions/react-devtools-firefox-extension-v0.0.9.zip",
+            "bytes": 156319,
+            "sha256": "c05386cb9063877b335ff5957b969dc59e8adf8fce8d3d506db69326c1640aa4"
+        }
+    ],
+    "coverage": {
+        "core": "All files         |   94.81 |    83.11 |   97.18 |   95.08 |",
+        "kit": "All files                                |   90.92 |     81.7 |   89.67 |   91.18 |",
+        "client": "All files                |   91.57 |    80.93 |   94.03 |   91.63 |",
+        "overlay": "All files           |   94.48 |    81.59 |   97.53 |   94.34 |",
+        "chrome-extension": "All files                |   91.78 |    81.81 |   93.79 |   91.79 |",
+        "firefox-extension": "All files           |   96.45 |    83.94 |   98.14 |   96.42 |"
+    },
+    "checks": [
+        "format:check",
+        "lint",
+        "typecheck",
+        "test:unit",
+        "test:session-integration",
+        "test:bundle-checks",
+        "test:release-packaging",
+        "test:firefox-uat-helper",
+        "test:extension-scripts",
+        "build",
+        "check:bundles",
+        "test:product-smoke"
+    ],
+    "limitations": [
+        "Development release; not store approved or Vue UI parity.",
+        "Native inspector capabilities remain disabled until R05/R06.",
+        "Firefox requires 128+ after fixing the observed script-tag hook startup race.",
+        "Firefox remote panel text is inaccessible; native context, actual traffic and visually inspected screenshots establish its result.",
+        "Chrome verifies native close; Firefox additionally verifies native reopen. Automatic navigation/reconnect UX is R08.",
+        "Native manual diagnostics are not the durable R29/R30 CI gates."
+    ]
+}
