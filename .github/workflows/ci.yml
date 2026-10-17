@@ -62,7 +62,7 @@ jobs:
               run: npm run typecheck
 
             - name: Unit tests and coverage gates
-              run: npm run test:unit
+              run: npm run test:unit -- --concurrency=2
             - name: Compiled session transport integration
               run: npm run test:session-integration
 
