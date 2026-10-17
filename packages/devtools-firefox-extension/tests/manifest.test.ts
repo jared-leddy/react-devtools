@@ -78,7 +78,7 @@ describe('firefox extension manifest', () => {
         });
         expect(manifest.browser_specific_settings.gecko).toEqual({
             id: 'react-devtools@local.dev',
-            strict_min_version: '109.0'
+            strict_min_version: '128.0'
         });
     });
 
@@ -87,12 +87,13 @@ describe('firefox extension manifest', () => {
         expect(manifest.host_permissions).toBeUndefined();
     });
 
-    it('limits content script matches to ordinary web pages without Chrome world flags', () => {
+    it('installs the hook before page scripts in Firefox MAIN world and isolates the proxy', () => {
         expect(manifest.content_scripts).toHaveLength(2);
         expect(manifest.content_scripts).toEqual([
             {
                 all_frames: true,
-                js: ['prepare-loader.js'],
+                js: ['prepare.js', 'detector.js'],
+                world: 'MAIN',
                 matches: ['http://*/*', 'https://*/*'],
                 run_at: 'document_start'
             },
@@ -103,11 +104,7 @@ describe('firefox extension manifest', () => {
                 run_at: 'document_start'
             }
         ]);
-        expect(
-            manifest.content_scripts.every(
-                (script) => script.world === undefined
-            )
-        ).toBe(true);
+        expect(manifest.content_scripts[1].world).toBeUndefined();
     });
 
     it('uses extension-owned popup, background, devtools, and smoke entrypoints', () => {

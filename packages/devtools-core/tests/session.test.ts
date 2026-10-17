@@ -5,6 +5,7 @@ import {
     createDevToolsCoreServerFunctions,
     type RpcChannel
 } from '../src/index.js';
+import { DEVTOOLS_PROTOCOL_VERSION } from '../src/session.js';
 import { createRpcServer } from '@devtools/kit';
 import { createDevToolsSessionRelay } from '../src/sessionRelay.js';
 
@@ -39,6 +40,37 @@ function channels(): [RpcChannel, RpcChannel, Set<(data: unknown) => void>] {
 }
 
 describe('backend-confirmed sessions', () => {
+    it('uses distinct session identities when clients reuse the same display alias', async () => {
+        const [channel, backend] = channels();
+        const store = createDevToolsCoreStateStore();
+        const server = createDevToolsCoreServer({ channel: backend, store });
+        const first = createDevToolsSession({
+            channel,
+            clientId: 'same-alias'
+        });
+        const second = createDevToolsSession({
+            channel,
+            clientId: 'same-alias'
+        });
+        try {
+            expect(first.getSnapshot().sessionId).not.toBe(
+                second.getSnapshot().sessionId
+            );
+            await first.connect();
+            await second.connect();
+            first.dispose();
+            store.setRoots([{ id: 'still-active' }]);
+            await new Promise((resolve) => setTimeout(resolve, 25));
+            expect(second.getSnapshot()).toMatchObject({
+                status: 'connected',
+                state: { roots: [{ id: 'still-active' }] }
+            });
+        } finally {
+            first.dispose();
+            second.dispose();
+            server.dispose();
+        }
+    });
     it.each([0, -1, Infinity, NaN])(
         'rejects invalid timeout %s before allocating a transport',
         (timeoutMs) => {
@@ -104,7 +136,7 @@ describe('backend-confirmed sessions', () => {
             capabilities: { components: false }
         });
         store.setRoots([{ id: 'host-root' }]);
-        await new Promise((resolve) => setImmediate(resolve));
+        await new Promise((resolve) => setTimeout(resolve, 40));
         expect(frame.getSnapshot().state?.roots[0].id).toBe('host-root');
         relay.dispose();
         expect(host.getSnapshot().status).toBe('connected');
@@ -129,12 +161,12 @@ describe('backend-confirmed sessions', () => {
         await connecting;
         expect(session.getSnapshot()).toMatchObject({
             status: 'connected',
-            sessionId: 'panel',
+            sessionId: expect.any(String),
             capabilities: { edit: false, stores: false },
             state: { roots: [{ id: 'actual-root' }] }
         });
         store.setRoots([{ id: 'updated-root' }]);
-        await new Promise((resolve) => setImmediate(resolve));
+        await new Promise((resolve) => setTimeout(resolve, 25));
         expect(session.getSnapshot().state?.roots[0].id).toBe('updated-root');
         off();
         const calls = listener.mock.calls.length;
@@ -158,15 +190,18 @@ describe('backend-confirmed sessions', () => {
             createRpcServer(
                 {
                     ...functions,
-                    handshake: () => {
+                    handshake: (request: { clientId: string }) => {
                         if (mode === 'rejection')
                             throw new Error('Backend rejected');
                         const response = functions.handshake({
-                            clientId: 'test'
+                            clientId: request.clientId
                         });
                         return {
                             ...response,
-                            protocolVersion: mode === 'mismatch' ? 2 : 1,
+                            protocolVersion:
+                                mode === 'mismatch'
+                                    ? DEVTOOLS_PROTOCOL_VERSION + 1
+                                    : DEVTOOLS_PROTOCOL_VERSION,
                             capabilities:
                                 mode === 'missing-capability'
                                     ? undefined

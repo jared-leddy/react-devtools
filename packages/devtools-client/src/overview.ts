@@ -14,6 +14,7 @@ export interface ClientOverviewRenderer {
 }
 
 export interface ClientOverviewRoot {
+    commitCount?: number;
     id: string;
     name: string;
     mountContainer: string;

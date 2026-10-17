@@ -580,6 +580,7 @@ function RoutePage({
             overviewSnapshot.roots = (sessionSnapshot.state?.roots ?? []).map(
                 (root) => ({
                     id: root.id,
+                    commitCount: root.commitCount,
                     name: root.label ?? root.id,
                     mountContainer: 'Unknown',
                     rendererId: String(root.rendererId ?? 'Unknown'),
@@ -1198,11 +1199,19 @@ function RootList({ roots }: { roots: ClientOverviewRoot[] }) {
     return (
         <ul className="dt-overview-list">
             {roots.map((root) => (
-                <li key={root.id}>
+                <li
+                    key={root.id}
+                    data-dt-root-id={root.id}
+                    data-dt-commit-count={root.commitCount}
+                    data-dt-renderer-id={root.rendererId}
+                >
                     <strong>{root.name}</strong>
                     <span>{root.id}</span>
                     <span>{root.mountContainer}</span>
                     <span>Renderer {root.rendererId}</span>
+                    {root.commitCount !== undefined ? (
+                        <span>Commits {root.commitCount}</span>
+                    ) : null}
                     <div className="dt-overview-tags">
                         <span>{formatOverviewValue(root.status)}</span>
                         {root.isIframe ? <span>iframe</span> : null}

@@ -9,6 +9,23 @@ import {
 } from '../src/index.js';
 
 describe('devtools-core RPC facade', () => {
+    it('does not claim a revisioned stream from a bare legacy function factory', () => {
+        const store = createDevToolsCoreStateStore();
+        const functions = createDevToolsCoreServerFunctions(store);
+        expect(() =>
+            functions.handshake({ clientId: 'panel', protocolVersion: 2 })
+        ).toThrow('update publisher');
+        expect(store.getState().transportStatus).toBe('disconnected');
+        const legacy = functions.handshake({ clientId: 'legacy' });
+        expect(legacy.protocolVersion).toBe(1);
+        expect(() => functions.getSessionSnapshot(legacy)).toThrow(
+            'update publisher'
+        );
+        expect(() => functions.getSessionRevision(legacy)).toThrow(
+            'update publisher'
+        );
+        expect(() => functions.disconnectSession(legacy)).not.toThrow();
+    });
     it('round-trips handshake and state updates over a mocked RPC session', async () => {
         const [clientChannel, serverChannel] = createLinkedChannels();
         const store = createDevToolsCoreStateStore();

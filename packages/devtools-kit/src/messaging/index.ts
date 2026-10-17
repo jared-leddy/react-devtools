@@ -45,6 +45,7 @@ export interface CreateRpcServerOptions<
     getChannel?: RpcChannelFactory;
     options?: Partial<BirpcOptions<RemoteFunctions, LocalFunctions>>;
     preset?: Presets;
+    onDisconnect?: () => void;
 }
 
 export interface CreateRpcProxyOptions<
@@ -116,10 +117,14 @@ export function createRpcServer<
 >(
     functions: LocalFunctions,
     options: CreateRpcServerOptions<RemoteFunctions, LocalFunctions> = {}
-): BirpcGroup<RemoteFunctions, LocalFunctions> {
-    const channel = withRpcSerializer(resolveRpcChannel(options, 'server'));
+): BirpcGroup<RemoteFunctions, LocalFunctions> & { dispose(): void } {
+    const transport = resolveRpcChannel(options, 'server');
+    const channel = withRpcSerializer(transport);
+    const unsubscribe = transport.subscribeDisconnect?.(() =>
+        options.onDisconnect?.()
+    );
 
-    return createBirpcGroup<RemoteFunctions, LocalFunctions>(
+    const group = createBirpcGroup<RemoteFunctions, LocalFunctions>(
         functions,
         [channel],
         {
@@ -127,6 +132,16 @@ export function createRpcServer<
             timeout: options.options?.timeout ?? -1
         }
     );
+    let disposed = false;
+    return Object.assign(group, {
+        dispose() {
+            if (disposed) return;
+            disposed = true;
+            unsubscribe?.();
+            group.clients.forEach((client) => client.$close());
+            transport.dispose?.();
+        }
+    });
 }
 
 export function createRpcProxy<

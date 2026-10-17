@@ -38,12 +38,12 @@ import {
     shouldTransformSourceMetadata,
     shouldTransformComponentInspector,
     transformReactSourceMetadata
-} from '../src';
-import type { ViteTransportPayload } from '../src/viteTransport';
+} from '../src/index.js';
+import type { ViteTransportPayload } from '../src/viteTransport.js';
 import {
     VITE_TRANSPORT_EVENT,
     createViteTransportChannel
-} from '../src/viteTransport';
+} from '../src/viteTransport.js';
 
 class MockServerResponse extends Writable {
     readonly headers = new Map<string, number | string | string[]>();

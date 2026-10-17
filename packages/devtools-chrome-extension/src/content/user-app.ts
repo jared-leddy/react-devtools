@@ -2,6 +2,7 @@ import {
     createDevToolsCoreServerFunctions,
     createDevToolsCoreStateStore,
     createInitialDevToolsCoreState,
+    createDevToolsUpdatePublisher,
     createFiberRootRegistry,
     createFiberWalker,
     getHooksStateSection,
@@ -23,6 +24,7 @@ import {
 import {
     createDevToolsHook,
     createRpcServer,
+    createExtensionServerChannel,
     isCompatibleReactHook,
     REACT_DEVTOOLS_GLOBAL_HOOK_KEY,
     type ReactDevToolsGlobalHook,
@@ -38,6 +40,7 @@ interface UserAppRpcServerBootstrapResult {
     hookMode: 'disabled' | 'installed' | 'missing' | 'wrapped';
     rendererCount: number;
     rootCount: number;
+    dispose?: () => void;
 }
 
 interface UserAppWindow extends Window {
@@ -74,35 +77,86 @@ export function bootstrapUserAppRpcServer(
         createRootId: (_root, index) => `react-root:${index.toString(36)}`
     });
     const walker = createFiberWalker();
-    const serverFunctions = createUserAppServerFunctions(store, registry);
+    let stopHooks: (() => void) | undefined;
+    let refreshTimer: ReturnType<typeof setTimeout> | undefined;
+    const flushRefresh = () => {
+        clearTimeout(refreshTimer);
+        refreshTimer = undefined;
+        refreshRootsAndComponents({ registry, store, walker });
+    };
+    const scheduleRefresh = () => {
+        refreshTimer ??= setTimeout(flushRefresh, 0);
+    };
+    const updates = createDevToolsUpdatePublisher({
+        store,
+        projectState: () => createSessionState(store),
+        publish: (update) => server.broadcast.notifySessionUpdated(update),
+        onActiveChange(active) {
+            clearTimeout(refreshTimer);
+            refreshTimer = undefined;
+            stopHooks?.();
+            stopHooks = undefined;
+            if (!active) {
+                registry.clear();
+                store.setComponents([]);
+                store.update({ componentState: {} });
+                return;
+            }
+            registry.clear();
+            store.update({
+                roots: [],
+                selectedRootId: null,
+                selectedComponentId: null
+            });
+            stopHooks = subscribeToHookEvents({
+                hook: hookInstallation.hook!,
+                registry,
+                store,
+                walker,
+                scheduleRefresh
+            });
+            syncHookSnapshot({
+                hook: hookInstallation.hook!,
+                registry,
+                store,
+                walker,
+                scheduleRefresh
+            });
+            flushRefresh();
+        }
+    });
+    const serverFunctions = createUserAppServerFunctions(
+        store,
+        registry,
+        updates,
+        flushRefresh
+    );
 
     const server = createRpcServer<
         import('@devtools/core').DevToolsCoreClientFunctions,
         DevToolsCoreServerFunctions
-    >(serverFunctions, { preset: 'extension', options: { timeout: 5000 } });
-    store.subscribe(() => {
-        void server.broadcast
-            .notifyStateUpdated(createSessionState(store))
-            .catch(() => {});
+    >(serverFunctions, {
+        channel: createExtensionServerChannel({ window: target }),
+        options: { timeout: 5000 },
+        onDisconnect: () => updates.suspend()
     });
-    syncHookSnapshot({
-        hook: hookInstallation.hook,
-        registry,
-        store,
-        walker
-    });
-    subscribeToHookEvents({
-        hook: hookInstallation.hook,
-        registry,
-        store,
-        walker
-    });
+    const dispose = () => {
+        updates.dispose();
+        server.dispose();
+        target.removeEventListener('pagehide', dispose);
+    };
+    target.addEventListener('pagehide', dispose);
 
     return {
         didOpenRpcServer: true,
         hookMode: hookInstallation.mode,
-        rendererCount: store.getState().renderers.length,
-        rootCount: store.getState().roots.length
+        rendererCount: hookInstallation.hook.renderers.size,
+        rootCount: [...hookInstallation.hook.renderers.keys()].reduce(
+            (count, id) =>
+                count + hookInstallation.hook!.getFiberRoots(id).size,
+            0
+        ),
+        dispose
     };
 }
 
@@ -136,11 +190,14 @@ function resolveReactDevToolsHook(target: UserAppWindow): {
 
 function createUserAppServerFunctions(
     store: DevToolsCoreStateStore,
-    registry: ReturnType<typeof createFiberRootRegistry>
+    registry: ReturnType<typeof createFiberRootRegistry>,
+    updates: ReturnType<typeof createDevToolsUpdatePublisher>,
+    flushRefresh: () => void
 ): DevToolsCoreServerFunctions {
     const coreFunctions = createDevToolsCoreServerFunctions(
         store,
-        USER_APP_SERVER_ID
+        USER_APP_SERVER_ID,
+        updates
     );
 
     return {
@@ -156,6 +213,23 @@ function createUserAppServerFunctions(
                 },
                 state: createSessionState(store)
             };
+        },
+        getComponents(request) {
+            flushRefresh();
+            return coreFunctions.getComponents(request);
+        },
+        getComponentState(request) {
+            flushRefresh();
+            const fiber = registry.records
+                .find((record) => record.id === request.rootId)
+                ?.instanceMap.get(request.componentId);
+            return fiber
+                ? createComponentStateResponse(
+                      request.componentId,
+                      request.rootId,
+                      fiber
+                  )
+                : undefined;
         },
         highlightComponent(request) {
             const fiber = findFiberByComponentId(registry, request.componentId);
@@ -180,7 +254,25 @@ function createSessionState(store: DevToolsCoreStateStore) {
         ...createInitialDevToolsCoreState(),
         renderers: state.renderers,
         roots: state.roots,
+        components: state.components.map(projectComponent),
+        selectedComponentId: state.selectedComponentId,
+        selectedRootId: state.selectedRootId,
+        performance: state.performance,
+        rootEvents: state.rootEvents.slice(-100),
         transportStatus: state.transportStatus
+    };
+}
+
+function projectComponent(node: ComponentNode): ComponentNode {
+    return {
+        ...node,
+        children: node.children?.map(projectComponent),
+        contexts: node.contexts?.map(
+            ({ value: _value, ...context }) => context
+        ),
+        diagnostics: node.diagnostics?.map(
+            ({ capturedError: _error, ...diagnostic }) => diagnostic
+        )
     };
 }
 
@@ -188,12 +280,14 @@ function syncHookSnapshot({
     hook,
     registry,
     store,
-    walker
+    walker,
+    scheduleRefresh
 }: {
     hook: ReactDevToolsGlobalHook;
     registry: ReturnType<typeof createFiberRootRegistry>;
     store: DevToolsCoreStateStore;
     walker: ReturnType<typeof createFiberWalker>;
+    scheduleRefresh: () => void;
 }): void {
     store.setRenderers(createRendererRecords(hook));
 
@@ -206,7 +300,8 @@ function syncHookSnapshot({
                 root,
                 source: 'getFiberRoots',
                 store,
-                walker
+                walker,
+                scheduleRefresh
             });
         }
     }
@@ -216,17 +311,27 @@ function subscribeToHookEvents({
     hook,
     registry,
     store,
-    walker
+    walker,
+    scheduleRefresh
 }: {
     hook: ReactDevToolsGlobalHook;
     registry: ReturnType<typeof createFiberRootRegistry>;
     store: DevToolsCoreStateStore;
     walker: ReturnType<typeof createFiberWalker>;
-}): void {
-    hook.on('renderer', () => {
+    scheduleRefresh: () => void;
+}): () => void {
+    const off: Array<() => void> = [];
+    const on = <K extends keyof ReactDevToolsHookEventMap>(
+        event: K,
+        listener: (payload: ReactDevToolsHookEventMap[K]) => void
+    ) => {
+        hook.on(event, listener);
+        off.push(() => hook.off(event, listener));
+    };
+    on('renderer', () => {
         store.setRenderers(createRendererRecords(hook));
     });
-    hook.on('commit-fiber-root', (event) => {
+    on('commit-fiber-root', (event) => {
         recordCommittedRoot({
             didError: event.didError,
             lifecycle: 'committed',
@@ -236,10 +341,11 @@ function subscribeToHookEvents({
             root: event.root,
             source: 'onCommitFiberRoot',
             store,
-            walker
+            walker,
+            scheduleRefresh
         });
     });
-    hook.on('post-commit-fiber-root', (event) => {
+    on('post-commit-fiber-root', (event) => {
         recordCommittedRoot({
             lifecycle: 'updated',
             rendererId: event.rendererID,
@@ -247,24 +353,12 @@ function subscribeToHookEvents({
             root: event.root,
             source: 'onPostCommitFiberRoot',
             store,
-            walker
+            walker,
+            scheduleRefresh
         });
     });
-    hook.on('commit-fiber-unmount', (event) => {
-        if (!registry.recordUnmount(event.fiber as unknown as ReactFiber)) {
-            return;
-        }
-
-        refreshRootsAndComponents({ registry, store, walker });
-        store.recordFiberRootEvent(
-            createRootEvent({
-                lifecycle: 'unmounted',
-                rendererId: event.rendererID,
-                rootId: 'unknown',
-                source: 'onCommitFiberUnmount'
-            })
-        );
-    });
+    on('commit-fiber-unmount', () => scheduleRefresh());
+    return () => off.forEach((unsubscribe) => unsubscribe());
 }
 
 function createRendererRecords(
@@ -311,7 +405,7 @@ function recordCommittedRoot({
     root,
     source,
     store,
-    walker
+    scheduleRefresh
 }: {
     didError?: boolean;
     lifecycle: FiberRootEventRecord['lifecycle'];
@@ -322,6 +416,7 @@ function recordCommittedRoot({
     source: FiberRootEventRecord['source'];
     store: DevToolsCoreStateStore;
     walker: ReturnType<typeof createFiberWalker>;
+    scheduleRefresh: () => void;
 }): void {
     const validation = validateReactFiberRoot(root, {
         rendererId,
@@ -337,9 +432,44 @@ function recordCommittedRoot({
         return;
     }
 
+    const rootState = validation.value.current.memoizedState;
+    if (
+        rootState &&
+        typeof rootState === 'object' &&
+        'element' in rootState &&
+        rootState.element === null
+    ) {
+        const existing = registry.getRecord(validation.value);
+        if (existing) {
+            registry.recordUnmount(validation.value);
+            store.recordFiberRootEvent(
+                createRootEvent({
+                    lifecycle: 'unmounted',
+                    rendererId,
+                    rootId: existing.id,
+                    source
+                })
+            );
+            const state = store.getState();
+            const removedSelection =
+                state.selectedRootId === existing.id ||
+                state.components.some(
+                    (component) =>
+                        component.id === state.selectedComponentId &&
+                        component.rootId === existing.id
+                );
+            store.update({
+                roots: state.roots.filter((root) => root.id !== existing.id),
+                ...(removedSelection
+                    ? { selectedRootId: null, selectedComponentId: null }
+                    : {})
+            });
+            scheduleRefresh();
+        }
+        return;
+    }
     const record = registry.recordCommit(validation.value);
-
-    refreshRootsAndComponents({ registry, store, walker });
+    scheduleRefresh();
     store.recordFiberRootEvent(
         createRootEvent({
             didError,
@@ -362,6 +492,7 @@ function refreshRootsAndComponents({
     walker: ReturnType<typeof createFiberWalker>;
 }): void {
     const roots = registry.records.map((record) => ({
+        ...store.getState().roots.find((root) => root.id === record.id),
         id: record.id,
         label: record.id,
         targetId: USER_APP_TARGET_ID,
@@ -374,15 +505,7 @@ function refreshRootsAndComponents({
     store.setRoots(roots);
     store.setComponents(flattenComponents(components));
 
-    for (const record of registry.records) {
-        record.refresh();
-
-        for (const [componentId, fiber] of record.instanceMap) {
-            store.setComponentState(
-                createComponentStateResponse(componentId, record.id, fiber)
-            );
-        }
-    }
+    for (const record of registry.records) record.refresh();
 }
 
 function createComponentStateResponse(

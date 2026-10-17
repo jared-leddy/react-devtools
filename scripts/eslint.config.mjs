@@ -1,5 +1,9 @@
 export default [
     {
+        files: ['scripts/session-integration.test.mjs'],
+        languageOptions: { globals: { structuredClone: 'readonly' } }
+    },
+    {
         files: ['scripts/native-session-*.mjs'],
         languageOptions: {
             globals: {
@@ -7,7 +11,10 @@ export default [
                 Buffer: 'readonly',
                 WebSocket: 'readonly',
                 fetch: 'readonly',
-                setTimeout: 'readonly'
+                setTimeout: 'readonly',
+                clearTimeout: 'readonly',
+                window: 'readonly',
+                document: 'readonly'
             }
         }
     },

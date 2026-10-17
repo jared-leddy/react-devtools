@@ -2,6 +2,8 @@ import type { RpcChannel } from '../../index.js';
 import { createNoopChannel } from '../iframe/context.js';
 
 export const EXTENSION_RPC_EVENT_KEY = '__react-devtools-extension-rpc__';
+export const EXTENSION_DISCONNECT_EVENT_KEY =
+    '__react-devtools-extension-disconnect__';
 export const EXTENSION_CLIENT_CONTEXT_KEY =
     '__react-devtools-extension-client-context__';
 export const EXTENSION_PROXY_CONTEXT_KEY =

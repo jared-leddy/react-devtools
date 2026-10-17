@@ -2,6 +2,7 @@ import type { RpcChannel } from '../../index.js';
 import { createNoopChannel } from '../iframe/context.js';
 import {
     EXTENSION_RPC_EVENT_KEY,
+    EXTENSION_DISCONNECT_EVENT_KEY,
     EXTENSION_RPC_MESSAGE_SOURCE,
     connectExtensionPort,
     getChromeRuntime,
@@ -39,6 +40,18 @@ export function createExtensionProxyChannel(
     }
 
     const sendMessageToServer: ExtensionMessageHandler = (payload) => {
+        if (
+            payload &&
+            typeof payload === 'object' &&
+            (payload as { event?: unknown }).event ===
+                EXTENSION_DISCONNECT_EVENT_KEY
+        ) {
+            window.postMessage(
+                { event: EXTENSION_DISCONNECT_EVENT_KEY },
+                targetOrigin
+            );
+            return;
+        }
         window.postMessage(
             {
                 event: eventKey,

@@ -9,6 +9,11 @@ import {
 
 import type { DevToolsCoreStateStore } from './state.js';
 import { createDevToolsCoreStateStore } from './state.js';
+import { DEVTOOLS_PROTOCOL_VERSION } from './protocol.js';
+import {
+    createDevToolsUpdatePublisher,
+    type DevToolsUpdatePublisher
+} from './updates.js';
 import type {
     AssetsRequest,
     AssetsResponse,
@@ -28,6 +33,10 @@ import type {
     DevToolsCoreHandshakeResponse,
     DevToolsCoreState,
     DevToolsCoreStatePatch,
+    DevToolsSessionRequest,
+    DevToolsSessionRevision,
+    DevToolsSessionStateSnapshot,
+    DevToolsSessionUpdate,
     FiberRootEventRecord,
     GraphRequest,
     GraphResponse,
@@ -58,11 +67,19 @@ import type {
 } from '@devtools/kit';
 
 export interface DevToolsCoreClientFunctions {
+    notifySessionUpdated: (update: DevToolsSessionUpdate) => void;
     notifyStateUpdated: (patch: DevToolsCoreStatePatch) => void;
     setTransportStatus: (status: TransportStatus) => void;
 }
 
 export interface DevToolsCoreServerFunctions {
+    getSessionRevision: (
+        request: DevToolsSessionRequest
+    ) => DevToolsSessionRevision;
+    getSessionSnapshot: (
+        request: DevToolsSessionRequest
+    ) => DevToolsSessionStateSnapshot;
+    disconnectSession: (request: DevToolsSessionRequest) => void;
     addTimelineEvent: (event: TimelineEventOptions) => DevToolsCoreState;
     addTimelineLayer: (layer: TimelineLayerOptions) => DevToolsCoreState;
     getAssets: (request?: AssetsRequest) => AssetsResponse;
@@ -130,6 +147,7 @@ export interface CreateDevToolsCoreClientOptions extends Omit<
     preset?: Presets;
     onStateUpdated?: (patch: DevToolsCoreStatePatch) => void;
     onTransportStatus?: (status: TransportStatus) => void;
+    onSessionUpdated?: (update: DevToolsSessionUpdate) => void;
 }
 
 export interface CreateDevToolsCoreServerOptions extends Omit<
@@ -148,6 +166,9 @@ export function createDevToolsCoreClient(
     options: CreateDevToolsCoreClientOptions = {}
 ) {
     const clientFunctions: DevToolsCoreClientFunctions = {
+        notifySessionUpdated(update) {
+            options.onSessionUpdated?.(update);
+        },
         notifyStateUpdated(patch) {
             options.onStateUpdated?.(patch);
         },
@@ -166,31 +187,53 @@ export function createDevToolsCoreServer(
     options: CreateDevToolsCoreServerOptions = {}
 ) {
     const store = options.store ?? createDevToolsCoreStateStore();
+    const updates = createDevToolsUpdatePublisher({
+        store,
+        publish: (update) => server.broadcast.notifySessionUpdated(update)
+    });
     const serverFunctions = createDevToolsCoreServerFunctions(
         store,
-        options.serverId
+        options.serverId,
+        updates
     );
 
     const server = createRpcServer<
         DevToolsCoreClientFunctions,
         DevToolsCoreServerFunctions
-    >(serverFunctions, options);
-    const unsubscribe = store.subscribe((_state, patch) => {
-        void server.broadcast.notifyStateUpdated(patch).catch(() => {});
+    >(serverFunctions, {
+        ...options,
+        onDisconnect() {
+            updates.suspend();
+            options.onDisconnect?.();
+        }
     });
+    const disposeRpc = server.dispose;
     return Object.assign(server, {
         dispose() {
-            unsubscribe();
-            server.clients.forEach((client) => client.$close());
+            updates.dispose();
+            disposeRpc();
         }
     });
 }
 
 export function createDevToolsCoreServerFunctions(
     store: DevToolsCoreStateStore,
-    serverId = 'react-devtools-core'
+    serverId = 'react-devtools-core',
+    updates?: DevToolsUpdatePublisher
 ): DevToolsCoreServerFunctions {
+    const streamId = globalThis.crypto.randomUUID();
     return {
+        getSessionRevision(request) {
+            if (updates) return updates.getRevision(request);
+            throw new Error('Versioned sessions require an update publisher');
+        },
+        getSessionSnapshot(request) {
+            if (updates) return updates.getSnapshot(request);
+            throw new Error('Versioned sessions require an update publisher');
+        },
+        disconnectSession(request) {
+            updates?.disconnect(request);
+        },
         addTimelineEvent(event) {
             return store.addTimelineEvent(event);
         },
@@ -262,15 +305,26 @@ export function createDevToolsCoreServerFunctions(
         },
         handshake(request) {
             if (
+                request.protocolVersion === DEVTOOLS_PROTOCOL_VERSION &&
+                !updates
+            )
+                throw new Error(
+                    'Versioned sessions require an update publisher'
+                );
+            if (
                 request.protocolVersion !== undefined &&
-                request.protocolVersion !== 1
+                request.protocolVersion !==
+                    (updates ? DEVTOOLS_PROTOCOL_VERSION : 1)
             ) {
                 throw new Error('Unsupported DevTools protocol version');
             }
+            const active = updates?.connect(
+                request.sessionId ?? request.clientId
+            );
             store.setTransportStatus('connected');
 
             return {
-                protocolVersion: 1,
+                protocolVersion: updates ? DEVTOOLS_PROTOCOL_VERSION : 1,
                 capabilities: {
                     roots: true,
                     components: true,
@@ -281,7 +335,14 @@ export function createDevToolsCoreServerFunctions(
                     stores: false
                 },
                 serverId,
-                state: store.getState()
+                ...(active
+                    ? updates!.getSnapshot(active)
+                    : {
+                          sessionId: request.clientId,
+                          streamId,
+                          revision: 0,
+                          state: store.getState()
+                      })
             };
         },
         highlightComponent(request) {

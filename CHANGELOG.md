@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.1.10
+
+- Add protocol-v2 session/stream identities, atomic revisions, coalesced updates,
+  snapshot reconciliation and revision-only heartbeats for missed final updates.
+- Stop page producers and queued work when native DevTools closes; rehydrate a
+  fresh stream when a new session opens. Retain legacy direct RPC compatibility
+  without advertising an invented versioned stream.
+- Preserve renderer/root metadata and observed commit counts; distinguish child
+  removal from real root unmount and do not reuse root IDs within an active stream.
+- Invalidate component caches on commits and inspect values on demand instead of
+  collecting every component value on each commit. Inspector UI remains R05/R06.
+- Add native live-update/disconnect/reopen evidence and real compiled transport
+  regression tests. Coverage gates and bundle budgets remain unchanged.
+- Fix Firefox's fast-page hook startup race with native MAIN-world injection;
+  Firefox 128 or newer is now required.
+- Development artifacts: Chrome 0.0.18 and Firefox 0.0.9. Not store-approved builds.
+
 ## 0.1.9
 
 - Add versioned, backend-confirmed sessions, explicit capabilities, subscriptions

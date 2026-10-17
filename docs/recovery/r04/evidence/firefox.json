@@ -1,0 +1,1161 @@
+{
+    "session": {
+        "sessionId": "e04923e1-0a19-4c00-bce3-b318840317a9",
+        "capabilities": {
+            "acceptInsecureCerts": false,
+            "browserName": "firefox",
+            "browserVersion": "159.0",
+            "platformName": "mac",
+            "setWindowRect": true,
+            "unhandledPromptBehavior": "dismiss and notify",
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:159.0) Gecko/20100101 Firefox/159.0",
+            "moz:buildID": "20261016090327",
+            "moz:headless": false,
+            "moz:platformVersion": "24.5.0",
+            "moz:shutdownTimeout": 73000,
+            "pageLoadStrategy": "normal",
+            "timeouts": { "implicit": 0, "pageLoad": 300000, "script": 30000 },
+            "strictFileInteractability": false,
+            "moz:accessibilityChecks": false,
+            "moz:webdriverClick": true,
+            "moz:windowless": false,
+            "proxy": {}
+        }
+    },
+    "app": {
+        "value": {
+            "url": "http://127.0.0.1:9053/react",
+            "hook": true,
+            "renderers": [{ "id": 1, "version": "19.1.1", "roots": 1 }]
+        }
+    },
+    "toolbox": {
+        "value": {
+            "url": "http://127.0.0.1:9053/react",
+            "browsingContextId": 11,
+            "tools": [
+                {
+                    "id": "webext-devtools-panel-react-devtools_local_dev-159-0",
+                    "label": "React"
+                }
+            ],
+            "panelUrl": null,
+            "panelBody": null,
+            "panelBrowsingContextId": 19
+        }
+    },
+    "updateChecks": {
+        "stages": [
+            {
+                "index": 0,
+                "id": "increment",
+                "observed": {
+                    "value": {
+                        "url": "http://127.0.0.1:9053/react",
+                        "counter": "Counter 1",
+                        "traffic": {
+                            "updates": [
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 6,
+                                    "revision": 9,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 1,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "committed",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265366929,
+                                            "label": "react-root:1"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "disconnects": 0
+                        }
+                    }
+                }
+            },
+            {
+                "index": 1,
+                "id": "burst",
+                "observed": {
+                    "value": {
+                        "url": "http://127.0.0.1:9053/react",
+                        "counter": "Counter 26",
+                        "traffic": {
+                            "updates": [
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 6,
+                                    "revision": 9,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 1,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "committed",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265366929,
+                                            "label": "react-root:1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 9,
+                                    "revision": 36,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 26,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "committed",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265367532,
+                                            "label": "react-root:1"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "disconnects": 0
+                        }
+                    }
+                }
+            },
+            {
+                "index": 2,
+                "id": "toggle-child",
+                "observed": {
+                    "value": {
+                        "url": "http://127.0.0.1:9053/react",
+                        "counter": "Counter 26",
+                        "traffic": {
+                            "updates": [
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 6,
+                                    "revision": 9,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 1,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "committed",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265366929,
+                                            "label": "react-root:1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 9,
+                                    "revision": 36,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 26,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "committed",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265367532,
+                                            "label": "react-root:1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 36,
+                                    "revision": 40,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 27,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "updated",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265368123,
+                                            "label": "react-root:1"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "disconnects": 0
+                        }
+                    }
+                }
+            },
+            {
+                "index": 3,
+                "id": "mount-secondary",
+                "observed": {
+                    "value": {
+                        "url": "http://127.0.0.1:9053/react",
+                        "counter": "Counter 26",
+                        "traffic": {
+                            "updates": [
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 6,
+                                    "revision": 9,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 1,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "committed",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265366929,
+                                            "label": "react-root:1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 9,
+                                    "revision": 36,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 26,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "committed",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265367532,
+                                            "label": "react-root:1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 36,
+                                    "revision": 40,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 27,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "updated",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265368123,
+                                            "label": "react-root:1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 40,
+                                    "revision": 44,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 28,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "committed",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265368715,
+                                            "label": "react-root:1"
+                                        },
+                                        {
+                                            "commitCount": 1,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:2",
+                                            "lifecycle": "committed",
+                                            "mountedAt": null,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265368715,
+                                            "label": "react-root:2"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "disconnects": 0
+                        }
+                    }
+                }
+            },
+            {
+                "index": 4,
+                "id": "unmount-secondary",
+                "observed": {
+                    "value": {
+                        "url": "http://127.0.0.1:9053/react",
+                        "counter": "Counter 26",
+                        "traffic": {
+                            "updates": [
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 6,
+                                    "revision": 9,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 1,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "committed",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265366929,
+                                            "label": "react-root:1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 9,
+                                    "revision": 36,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 26,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "committed",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265367532,
+                                            "label": "react-root:1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 36,
+                                    "revision": 40,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 27,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "updated",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265368123,
+                                            "label": "react-root:1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 40,
+                                    "revision": 44,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 28,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "committed",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265368715,
+                                            "label": "react-root:1"
+                                        },
+                                        {
+                                            "commitCount": 1,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:2",
+                                            "lifecycle": "committed",
+                                            "mountedAt": null,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265368715,
+                                            "label": "react-root:2"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 44,
+                                    "revision": 49,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 29,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "committed",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265369315,
+                                            "label": "react-root:1"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "disconnects": 0
+                        }
+                    }
+                }
+            },
+            {
+                "index": 5,
+                "id": "mount-secondary",
+                "observed": {
+                    "value": {
+                        "url": "http://127.0.0.1:9053/react",
+                        "counter": "Counter 26",
+                        "traffic": {
+                            "updates": [
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 6,
+                                    "revision": 9,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 1,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "committed",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265366929,
+                                            "label": "react-root:1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 9,
+                                    "revision": 36,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 26,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "committed",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265367532,
+                                            "label": "react-root:1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 36,
+                                    "revision": 40,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 27,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "updated",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265368123,
+                                            "label": "react-root:1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 40,
+                                    "revision": 44,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 28,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "committed",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265368715,
+                                            "label": "react-root:1"
+                                        },
+                                        {
+                                            "commitCount": 1,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:2",
+                                            "lifecycle": "committed",
+                                            "mountedAt": null,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265368715,
+                                            "label": "react-root:2"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 44,
+                                    "revision": 49,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 29,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "committed",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265369315,
+                                            "label": "react-root:1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                                    "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                                    "baseRevision": 49,
+                                    "revision": 53,
+                                    "fields": [
+                                        "diagnostics",
+                                        "performance",
+                                        "rootEvents",
+                                        "roots",
+                                        "components"
+                                    ],
+                                    "roots": [
+                                        {
+                                            "commitCount": 30,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:1",
+                                            "lifecycle": "committed",
+                                            "mountedAt": 1792265360417,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265369907,
+                                            "label": "react-root:1"
+                                        },
+                                        {
+                                            "commitCount": 1,
+                                            "disconnectedAt": null,
+                                            "id": "react-root:3",
+                                            "lifecycle": "committed",
+                                            "mountedAt": null,
+                                            "rendererId": 1,
+                                            "targetId": "top",
+                                            "updatedAt": 1792265369907,
+                                            "label": "react-root:3"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "disconnects": 0
+                        }
+                    }
+                }
+            }
+        ],
+        "closed": { "value": { "url": "http://127.0.0.1:9053/react" } },
+        "beforeClosedCommit": { "value": 6 },
+        "paused": {
+            "value": {
+                "counter": "Counter 51",
+                "traffic": {
+                    "updates": [
+                        {
+                            "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                            "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                            "baseRevision": 6,
+                            "revision": 9,
+                            "fields": [
+                                "diagnostics",
+                                "performance",
+                                "rootEvents",
+                                "roots",
+                                "components"
+                            ],
+                            "roots": [
+                                {
+                                    "commitCount": 1,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:1",
+                                    "lifecycle": "committed",
+                                    "mountedAt": 1792265360417,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792265366929,
+                                    "label": "react-root:1"
+                                }
+                            ]
+                        },
+                        {
+                            "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                            "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                            "baseRevision": 9,
+                            "revision": 36,
+                            "fields": [
+                                "diagnostics",
+                                "performance",
+                                "rootEvents",
+                                "roots",
+                                "components"
+                            ],
+                            "roots": [
+                                {
+                                    "commitCount": 26,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:1",
+                                    "lifecycle": "committed",
+                                    "mountedAt": 1792265360417,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792265367532,
+                                    "label": "react-root:1"
+                                }
+                            ]
+                        },
+                        {
+                            "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                            "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                            "baseRevision": 36,
+                            "revision": 40,
+                            "fields": [
+                                "diagnostics",
+                                "performance",
+                                "rootEvents",
+                                "roots",
+                                "components"
+                            ],
+                            "roots": [
+                                {
+                                    "commitCount": 27,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:1",
+                                    "lifecycle": "updated",
+                                    "mountedAt": 1792265360417,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792265368123,
+                                    "label": "react-root:1"
+                                }
+                            ]
+                        },
+                        {
+                            "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                            "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                            "baseRevision": 40,
+                            "revision": 44,
+                            "fields": [
+                                "diagnostics",
+                                "performance",
+                                "rootEvents",
+                                "roots",
+                                "components"
+                            ],
+                            "roots": [
+                                {
+                                    "commitCount": 28,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:1",
+                                    "lifecycle": "committed",
+                                    "mountedAt": 1792265360417,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792265368715,
+                                    "label": "react-root:1"
+                                },
+                                {
+                                    "commitCount": 1,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:2",
+                                    "lifecycle": "committed",
+                                    "mountedAt": null,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792265368715,
+                                    "label": "react-root:2"
+                                }
+                            ]
+                        },
+                        {
+                            "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                            "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                            "baseRevision": 44,
+                            "revision": 49,
+                            "fields": [
+                                "diagnostics",
+                                "performance",
+                                "rootEvents",
+                                "roots",
+                                "components"
+                            ],
+                            "roots": [
+                                {
+                                    "commitCount": 29,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:1",
+                                    "lifecycle": "committed",
+                                    "mountedAt": 1792265360417,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792265369315,
+                                    "label": "react-root:1"
+                                }
+                            ]
+                        },
+                        {
+                            "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                            "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                            "baseRevision": 49,
+                            "revision": 53,
+                            "fields": [
+                                "diagnostics",
+                                "performance",
+                                "rootEvents",
+                                "roots",
+                                "components"
+                            ],
+                            "roots": [
+                                {
+                                    "commitCount": 30,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:1",
+                                    "lifecycle": "committed",
+                                    "mountedAt": 1792265360417,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792265369907,
+                                    "label": "react-root:1"
+                                },
+                                {
+                                    "commitCount": 1,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:3",
+                                    "lifecycle": "committed",
+                                    "mountedAt": null,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792265369907,
+                                    "label": "react-root:3"
+                                }
+                            ]
+                        }
+                    ],
+                    "disconnects": 1
+                }
+            }
+        },
+        "reopened": {
+            "value": {
+                "url": "http://127.0.0.1:9053/react",
+                "browsingContextId": 11,
+                "tools": [
+                    {
+                        "id": "webext-devtools-panel-react-devtools_local_dev-161-0",
+                        "label": "React"
+                    }
+                ],
+                "panelUrl": null,
+                "panelBody": null,
+                "panelBrowsingContextId": 24
+            }
+        },
+        "resumed": {
+            "value": {
+                "counter": "Counter 52",
+                "traffic": {
+                    "updates": [
+                        {
+                            "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                            "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                            "baseRevision": 6,
+                            "revision": 9,
+                            "fields": [
+                                "diagnostics",
+                                "performance",
+                                "rootEvents",
+                                "roots",
+                                "components"
+                            ],
+                            "roots": [
+                                {
+                                    "commitCount": 1,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:1",
+                                    "lifecycle": "committed",
+                                    "mountedAt": 1792265360417,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792265366929,
+                                    "label": "react-root:1"
+                                }
+                            ]
+                        },
+                        {
+                            "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                            "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                            "baseRevision": 9,
+                            "revision": 36,
+                            "fields": [
+                                "diagnostics",
+                                "performance",
+                                "rootEvents",
+                                "roots",
+                                "components"
+                            ],
+                            "roots": [
+                                {
+                                    "commitCount": 26,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:1",
+                                    "lifecycle": "committed",
+                                    "mountedAt": 1792265360417,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792265367532,
+                                    "label": "react-root:1"
+                                }
+                            ]
+                        },
+                        {
+                            "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                            "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                            "baseRevision": 36,
+                            "revision": 40,
+                            "fields": [
+                                "diagnostics",
+                                "performance",
+                                "rootEvents",
+                                "roots",
+                                "components"
+                            ],
+                            "roots": [
+                                {
+                                    "commitCount": 27,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:1",
+                                    "lifecycle": "updated",
+                                    "mountedAt": 1792265360417,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792265368123,
+                                    "label": "react-root:1"
+                                }
+                            ]
+                        },
+                        {
+                            "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                            "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                            "baseRevision": 40,
+                            "revision": 44,
+                            "fields": [
+                                "diagnostics",
+                                "performance",
+                                "rootEvents",
+                                "roots",
+                                "components"
+                            ],
+                            "roots": [
+                                {
+                                    "commitCount": 28,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:1",
+                                    "lifecycle": "committed",
+                                    "mountedAt": 1792265360417,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792265368715,
+                                    "label": "react-root:1"
+                                },
+                                {
+                                    "commitCount": 1,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:2",
+                                    "lifecycle": "committed",
+                                    "mountedAt": null,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792265368715,
+                                    "label": "react-root:2"
+                                }
+                            ]
+                        },
+                        {
+                            "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                            "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                            "baseRevision": 44,
+                            "revision": 49,
+                            "fields": [
+                                "diagnostics",
+                                "performance",
+                                "rootEvents",
+                                "roots",
+                                "components"
+                            ],
+                            "roots": [
+                                {
+                                    "commitCount": 29,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:1",
+                                    "lifecycle": "committed",
+                                    "mountedAt": 1792265360417,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792265369315,
+                                    "label": "react-root:1"
+                                }
+                            ]
+                        },
+                        {
+                            "sessionId": "33010a91-2586-480e-8d04-60c35de0d74f",
+                            "streamId": "465abdef-2a3b-4a4e-858c-a1bca826a946",
+                            "baseRevision": 49,
+                            "revision": 53,
+                            "fields": [
+                                "diagnostics",
+                                "performance",
+                                "rootEvents",
+                                "roots",
+                                "components"
+                            ],
+                            "roots": [
+                                {
+                                    "commitCount": 30,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:1",
+                                    "lifecycle": "committed",
+                                    "mountedAt": 1792265360417,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792265369907,
+                                    "label": "react-root:1"
+                                },
+                                {
+                                    "commitCount": 1,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:3",
+                                    "lifecycle": "committed",
+                                    "mountedAt": null,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792265369907,
+                                    "label": "react-root:3"
+                                }
+                            ]
+                        },
+                        {
+                            "sessionId": "801423b2-ae56-48a0-aeda-931eecad3fdf",
+                            "streamId": "5e9d465b-a033-4010-82c6-a48a26639aa6",
+                            "baseRevision": 7,
+                            "revision": 10,
+                            "fields": [
+                                "diagnostics",
+                                "performance",
+                                "rootEvents",
+                                "roots",
+                                "components"
+                            ],
+                            "roots": [
+                                {
+                                    "commitCount": 1,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:1",
+                                    "lifecycle": "committed",
+                                    "mountedAt": 1792265375838,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792265382785,
+                                    "label": "react-root:1"
+                                },
+                                {
+                                    "commitCount": 0,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:2",
+                                    "lifecycle": "added",
+                                    "mountedAt": 1792265375839,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792265382785,
+                                    "label": "react-root:2"
+                                }
+                            ]
+                        }
+                    ],
+                    "disconnects": 1
+                }
+            }
+        }
+    }
+}
