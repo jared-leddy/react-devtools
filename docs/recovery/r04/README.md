@@ -29,6 +29,14 @@ five-second request budget. Requests, queues and timers are closed on disposal.
 
 ## Native Producer
 
+Final native verification exposed a pre-existing Firefox startup race: dynamically
+inserting an external hook script could miss a fast parser-blocking React bundle.
+Firefox now installs `prepare.js` before `detector.js` directly in MAIN world at
+`document_start`; the proxy remains isolated. The declared minimum is Firefox 128,
+matching [Mozilla's MAIN-world support](https://blog.mozilla.org/addons/2024/07/10/manifest-v3-updates-landed-in-firefox-128/).
+The older script-tag loader remains a tested build utility, not the shipped hook
+entrypoint. No fixture delays or synthetic hook data mask the race.
+
 Both native extensions share the inspected-page implementation. It subscribes to
 hook events only while a versioned session is active, coalesces tree refreshes,
 retains renderer links/commit counters through post-commit refreshes and removes

@@ -6,7 +6,7 @@
     "browser_specific_settings": {
         "gecko": {
             "id": "react-devtools@local.dev",
-            "strict_min_version": "109.0"
+            "strict_min_version": "128.0"
         }
     },
     "browser_action": {
@@ -28,7 +28,8 @@
     "content_scripts": [
         {
             "matches": ["http://*/*", "https://*/*"],
-            "js": ["prepare-loader.js"],
+            "js": ["prepare.js", "detector.js"],
+            "world": "MAIN",
             "run_at": "document_start",
             "all_frames": true
         },
