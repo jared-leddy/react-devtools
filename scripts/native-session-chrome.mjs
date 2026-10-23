@@ -217,12 +217,8 @@ try {
             inspected && !inspected.inspected.detected,
             'Non-React page reported a React renderer'
         );
-        assert(
-            !evaluatePanel,
-            'Non-React page unexpectedly opened a connected inspector'
-        );
-        modelChecks = { inspected, nativePanelAbsent: true };
-    } else if (modelMode) {
+    }
+    if (modelMode) {
         assert(evaluatePanel, 'Actual native extension panel not found');
         const inspect = async () => {
             const reply = await evaluatePanel(
@@ -231,10 +227,19 @@ try {
             return reply.result?.result?.value;
         };
         const before = await inspect();
-        if (emptyMode) {
+        if (emptyMode || nonReactMode) {
             assert.equal(before.nodes.length, 0);
-            assert(before.body.includes('Empty React root'));
-            modelChecks = { before, emptyRoot: true };
+            assert(
+                before.body.includes(
+                    nonReactMode ? 'No React detected' : 'Empty React root'
+                )
+            );
+            assert.equal(before.values.length, 0);
+            modelChecks = {
+                before,
+                emptyRoot: emptyMode,
+                nonReact: nonReactMode
+            };
         } else {
             assert(before.nodes.length > 0, 'No real component tree');
             assert(

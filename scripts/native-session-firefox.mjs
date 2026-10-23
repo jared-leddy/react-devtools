@@ -119,9 +119,8 @@ try {
     let modelChecks;
     if (modelMode && nonReactMode) {
         assert.equal(app.value.renderers.length, 0);
-        assert(!toolbox.value.panelBrowsingContextId);
-        modelChecks = { nativePanelAbsent: true };
-    } else if (modelMode) {
+    }
+    if (modelMode) {
         await command('Marionette:SetContext', { value: 'content' });
         await execute(
             `window.__r05Traffic={inspections:[]};const pending=new Set();window.addEventListener('message',event=>{const rpc=event.data?.payload?.json;if(rpc?.m==='getComponentState')pending.add(rpc.i);if(rpc?.t==='s'&&pending.has(rpc.i)){window.__r05Traffic.inspections.push(rpc.r);pending.delete(rpc.i);}});return true;`
@@ -153,7 +152,7 @@ try {
         );
         await command('Marionette:SetContext', { value: 'content' });
         const before = await execute('return window.__r05Traffic;');
-        if (!emptyMode)
+        if (!emptyMode && !nonReactMode)
             await execute(
                 "document.getElementById('increment').click();return true;"
             );
@@ -168,7 +167,7 @@ try {
         );
         const initial = before.value.inspections.at(-1);
         const latest = after.value.traffic.inspections.at(-1);
-        if (emptyMode) {
+        if (emptyMode || nonReactMode) {
             assert.equal(before.value.inspections.length, 0);
             assert.equal(after.value.traffic.inspections.length, 0);
         } else {
