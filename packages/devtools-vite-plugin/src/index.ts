@@ -550,7 +550,8 @@ export function createOverlayScriptTag(
     scriptPath = DEFAULT_OVERLAY_SCRIPT_PATH,
     clientUrl = DEFAULT_CLIENT_BASE_PATH
 ) {
-    return `<script type="module" src="${scriptPath}" data-react-devtools-client-url="${clientUrl}" data-react-devtools-separate-window-url="${clientUrl}"></script>`;
+    const preparePath = scriptPath.replace(/[^/]+$/, 'prepare.js');
+    return `<script src="${preparePath}"></script><script type="module" src="${scriptPath}" data-react-devtools-client-url="${clientUrl}" data-react-devtools-separate-window-url="${clientUrl}"></script>`;
 }
 
 export function injectOverlayScript(
@@ -592,7 +593,7 @@ function createOverlayImport(
     const clientUrl = getDevtoolsClientBasePath(options, server);
     const scriptPath = getDevtoolsOverlayScriptPath(options, server);
     return {
-        code: `window.__REACT_DEVTOOLS_OVERLAY_CONFIG__ = { clientUrl: ${JSON.stringify(clientUrl)}, separateWindowUrl: ${JSON.stringify(clientUrl)} };\nimport '${scriptPath}';\n${code}`,
+        code: `window.__REACT_DEVTOOLS_OVERLAY_CONFIG__ = { clientUrl: ${JSON.stringify(clientUrl)}, separateWindowUrl: ${JSON.stringify(clientUrl)} };\nimport '${scriptPath.replace(/[^/]+$/, 'prepare.js')}';\nimport '${scriptPath}';\n${code}`,
         map: null
     };
 }

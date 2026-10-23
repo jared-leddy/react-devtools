@@ -9,6 +9,8 @@ const config: Config.InitialOptions = {
         '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: 'tsconfig.json' }]
     },
     moduleNameMapper: {
+        '^@devtools/core/page-backend$':
+            '<rootDir>/../devtools-core/src/pageBackend.ts',
         '^@devtools/core/browser$': '<rootDir>/../devtools-core/src/browser.ts',
         '^@devtools/kit$': '<rootDir>/../devtools-kit/src/index.ts',
         '^@devtools/shared$': '<rootDir>/../devtools-shared/src/index.ts',

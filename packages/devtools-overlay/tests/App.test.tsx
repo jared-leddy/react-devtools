@@ -47,11 +47,11 @@ describe('DevtoolsOverlay', () => {
         await act(async () => {
             fireEvent.load(iframe);
         });
-        expect(listeners.size).toBe(1);
+        expect(listeners.size).toBe(2);
         await act(async () => {
             fireEvent.load(iframe);
         });
-        expect(listeners.size).toBe(1);
+        expect(listeners.size).toBe(2);
         unmount();
         expect(listeners.size).toBe(0);
         expect(session.dispose).not.toHaveBeenCalled();
@@ -111,7 +111,10 @@ describe('DevtoolsOverlay', () => {
         const iframe = document.querySelector('iframe');
 
         expect(document.querySelectorAll('iframe')).toHaveLength(1);
-        expect(iframe).toHaveAttribute('src', '/client/');
+        expect(iframe).toHaveAttribute(
+            'src',
+            expect.stringContaining('/client/?__devtools_session=iframe')
+        );
         expect(iframe).not.toHaveAttribute('hidden');
 
         fireEvent.click(button);
@@ -132,7 +135,10 @@ describe('DevtoolsOverlay', () => {
 
         const iframe = document.querySelector('iframe');
 
-        expect(iframe).toHaveAttribute('src', '/client/');
+        expect(iframe).toHaveAttribute(
+            'src',
+            expect.stringContaining('/client/?__devtools_session=iframe')
+        );
         expect(iframe).toHaveAttribute('hidden');
     });
 
@@ -178,7 +184,12 @@ describe('DevtoolsOverlay', () => {
             screen.getByRole('link', {
                 name: 'Open React DevTools in separate window'
             })
-        ).toHaveAttribute('href', '/client/?separate=true');
+        ).toHaveAttribute(
+            'href',
+            expect.stringContaining(
+                '/client/?separate=true&__devtools_session=broadcast-channel&__devtools_channel='
+            )
+        );
 
         fireEvent.click(
             screen.getByRole('button', {

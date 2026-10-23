@@ -7,6 +7,7 @@ import {
 } from './state.js';
 import type { DevToolsCoreClientFunctions } from './rpc.js';
 import type { DevToolsCoreHandshakeRequest } from './types.js';
+import type { ComponentStateRequest } from './types.js';
 import { createDevToolsUpdatePublisher } from './updates.js';
 
 // A borrowed session remains authoritative; the relay exposes metadata, not inspectors.
@@ -35,6 +36,7 @@ export function createDevToolsSessionRelay(
                 ? {
                       renderers: source.state.renderers,
                       roots: source.state.roots,
+                      components: source.state.components,
                       rootEvents: source.state.rootEvents,
                       performance: source.state.performance,
                       transportStatus: source.state.transportStatus
@@ -63,8 +65,10 @@ export function createDevToolsSessionRelay(
                 serverId: source.serverId,
                 capabilities: {
                     ...source.capabilities,
-                    components: false,
-                    componentState: false,
+                    components: source.capabilities.components,
+                    componentState:
+                        source.capabilities.componentState &&
+                        !!session.inspectComponent,
                     highlight: false,
                     inspect: false,
                     edit: false,
@@ -72,6 +76,8 @@ export function createDevToolsSessionRelay(
                 }
             };
         },
+        getComponentState: (request: ComponentStateRequest) =>
+            session.inspectComponent?.(request),
         getSessionSnapshot: updates.getSnapshot,
         getSessionRevision: updates.getRevision,
         disconnectSession: updates.disconnect

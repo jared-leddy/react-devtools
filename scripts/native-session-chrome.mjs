@@ -6,23 +6,24 @@ const url = process.argv[2];
 if (!url) throw new Error('Provide an inspected fixture URL');
 const output = process.argv[3] ?? '/private/tmp/r03-chrome';
 fs.mkdirSync(output, { recursive: true });
-const context = await chromium.launchPersistentContext(
-    fs.mkdtempSync('/private/tmp/r03-chrome-profile-'),
-    {
-        executablePath:
-            '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-        headless: false,
-        ignoreDefaultArgs: ['--disable-extensions'],
-        args: [
-            '--enable-unsafe-extension-debugging',
-            '--auto-open-devtools-for-tabs',
-            '--remote-debugging-port=9351'
-        ],
-        viewport: { width: 1600, height: 1100 }
-    }
-);
+const profile = fs.mkdtempSync('/private/tmp/r03-chrome-profile-');
+const context = await chromium.launchPersistentContext(profile, {
+    executablePath:
+        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    headless: false,
+    ignoreDefaultArgs: ['--disable-extensions'],
+    args: [
+        '--enable-unsafe-extension-debugging',
+        '--auto-open-devtools-for-tabs',
+        '--remote-debugging-port=0'
+    ],
+    viewport: { width: 1600, height: 1100 }
+});
 const sockets = [];
 const updateMode = process.argv.includes('--updates');
+const modelMode = process.argv.includes('--models');
+const emptyMode = process.argv.includes('--empty');
+const nonReactMode = process.argv.includes('--non-react');
 const nativeInspectors = [];
 try {
     const cdp = await context.browser().newBrowserCDPSession();
@@ -66,9 +67,16 @@ try {
     });
     await page.goto(url);
     await page.waitForTimeout(3000);
-    const discovery = await fetch('http://127.0.0.1:9351/json/list').then((r) =>
-        r.json()
+    const debugPort = Number(
+        fs.readFileSync(`${profile}/DevToolsActivePort`, 'utf8').split('\n')[0]
     );
+    assert(
+        Number.isSafeInteger(debugPort) && debugPort > 0,
+        'Own browser debugging port unavailable'
+    );
+    const discovery = await fetch(
+        `http://127.0.0.1:${debugPort}/json/list`
+    ).then((r) => r.json());
     for (const target of discovery.filter((t) =>
         t.url.startsWith('devtools://')
     )) {
@@ -141,6 +149,7 @@ try {
     const targets = await cdp.send('Target.getTargets');
     const results = [];
     let readPanel;
+    let evaluatePanel;
     for (const target of targets.targetInfos.filter(
         (t) =>
             t.url.endsWith('/devtools.html') ||
@@ -183,10 +192,11 @@ try {
             `new Promise(resolve => { const identity={url:location.href,body:document.body.innerText,tabId:chrome.devtools.inspectedWindow.tabId}; chrome.devtools.inspectedWindow.eval(${JSON.stringify(inspectedExpression)},(result,exception)=>resolve({...identity,inspected:result,exception})); })`
         );
         if (
-            updateMode &&
+            (updateMode || modelMode) &&
             target.url.endsWith('/devtools-panel.html') &&
             result.result?.result?.value?.inspected?.url === url
         ) {
+            evaluatePanel = evaluate;
             readPanel = async () => {
                 const reply = await evaluate(
                     `({url:location.href,body:document.body.innerText,tabId:chrome.devtools.inspectedWindow.tabId,roots:Array.from(document.querySelectorAll('[data-dt-root-id]'),node=>({id:node.dataset.dtRootId,rendererId:node.dataset.dtRendererId,commitCount:Number(node.dataset.dtCommitCount)}))})`
@@ -198,6 +208,87 @@ try {
         console.log('Native panel/host', JSON.stringify(result));
     }
     let updateChecks;
+    let modelChecks;
+    if (modelMode && nonReactMode) {
+        const inspected = results
+            .map((item) => item.result.result?.result?.value)
+            .find((value) => value?.inspected?.url === url);
+        assert(
+            inspected && !inspected.inspected.detected,
+            'Non-React page reported a React renderer'
+        );
+    }
+    if (modelMode) {
+        assert(evaluatePanel, 'Actual native extension panel not found');
+        const inspect = async () => {
+            const reply = await evaluatePanel(
+                `(async()=>{const link=[...document.querySelectorAll('a')].find(node=>node.textContent==='Components');if(link)link.click();await new Promise(resolve=>setTimeout(resolve,300));const button=document.querySelector('.dt-components-tree__node');if(button)button.click();await new Promise(resolve=>setTimeout(resolve,500));return {url:location.href,tabId:chrome.devtools.inspectedWindow.tabId,body:document.body.innerText,nodes:[...document.querySelectorAll('[data-node-id]')].map(node=>({id:node.dataset.nodeId,label:node.querySelector('.dt-components-tree__label')?.textContent})),values:[...document.querySelectorAll('.dt-state-viewer__value')].map(node=>node.textContent)};})()`
+            );
+            return reply.result?.result?.value;
+        };
+        const before = await inspect();
+        if (emptyMode || nonReactMode) {
+            assert.equal(before.nodes.length, 0);
+            assert(
+                before.body.includes(
+                    nonReactMode ? 'No React detected' : 'Empty React root'
+                )
+            );
+            assert.equal(before.values.length, 0);
+            modelChecks = {
+                before,
+                emptyRoot: emptyMode,
+                nonReact: nonReactMode
+            };
+        } else {
+            assert(before.nodes.length > 0, 'No real component tree');
+            assert(
+                before.body.includes('R05 observed prop'),
+                'Observed app prop missing'
+            );
+            assert(
+                !/ComponentGroup|ComponentLeaf/.test(before.body),
+                'Demo tree shown'
+            );
+            await page.locator('#increment').click();
+            await page.waitForTimeout(500);
+            const after = await inspect();
+            assert(after.values.includes('1'), 'Live hook state missing');
+            modelChecks = {
+                before,
+                after,
+                annotations: await page
+                    .locator(
+                        '[data-react-devtools-source], [data-react-devtools-component-id]'
+                    )
+                    .count()
+            };
+            assert.equal(modelChecks.annotations, 0);
+        }
+        for (const inspector of nativeInspectors) {
+            const shot = await inspector.send('Page.captureScreenshot', {
+                format: 'png'
+            });
+            if (shot.result?.data)
+                fs.writeFileSync(
+                    `${output}/models-${inspector.targetId}.png`,
+                    Buffer.from(shot.result.data, 'base64')
+                );
+        }
+        await evaluatePanel(
+            `document.querySelector('.dt-components-detail')?.scrollIntoView({block:'end'});true`
+        );
+        for (const inspector of nativeInspectors) {
+            const shot = await inspector.send('Page.captureScreenshot', {
+                format: 'png'
+            });
+            if (shot.result?.data)
+                fs.writeFileSync(
+                    `${output}/values-${inspector.targetId}.png`,
+                    Buffer.from(shot.result.data, 'base64')
+                );
+        }
+    }
     if (updateMode) {
         assert(readPanel, 'Actual inspected native panel not found');
         const snapshots = [];
@@ -315,7 +406,8 @@ try {
                 targets,
                 results,
                 errors,
-                updateChecks
+                updateChecks,
+                modelChecks
             },
             null,
             4

@@ -14,8 +14,8 @@
     {
         "name": "overlay",
         "directory": "packages/devtools-overlay/dist",
-        "rawBytes": 230000,
-        "gzipBytes": 75000
+        "rawBytes": 280000,
+        "gzipBytes": 90000
     },
     {
         "name": "chrome-extension",

@@ -1,7 +1,8 @@
 import type { ComponentType, ReactElement, ReactNode } from 'react';
 import {
     getSessionRuntimeSnapshot,
-    useDevToolsSessionSnapshot
+    useDevToolsSessionSnapshot,
+    useDevToolsSession
 } from './session';
 import {
     Suspense,
@@ -54,6 +55,10 @@ import {
 } from './commands';
 import { AssetsPage } from './assets';
 import { ResizableSplitPane } from './components/layout';
+import {
+    createSessionComponentTree,
+    filterComponentTree
+} from './components/model';
 import { GraphPage } from './graph';
 import {
     StateViewer,
@@ -66,7 +71,6 @@ import {
 import {
     VirtualizedComponentTree,
     findComponentTreeNode,
-    generateSyntheticComponentTree,
     type ComponentTreeNode
 } from './components/tree';
 import {
@@ -113,12 +117,6 @@ const placeholderToneByKind: Record<ClientRoute['kind'], NotificationTone> = {
     customTab: 'info',
     page: 'success'
 };
-const syntheticComponentTree = generateSyntheticComponentTree();
-const SOURCE_ATTRIBUTE = 'data-react-devtools-source';
-const COMPONENT_ID_ATTRIBUTE = 'data-react-devtools-component-id';
-const COMPONENT_DISPLAY_NAME_ATTRIBUTE = 'data-react-devtools-display-name';
-const TEST_ID_ATTRIBUTE = 'data-testid';
-
 function ClientShell() {
     const navigate = useNavigate();
     const [commandFilter, setCommandFilter] = useState('');
@@ -600,14 +598,14 @@ function RoutePage({
     }
 
     if (route.id === 'components') {
-        if (sessionSnapshot)
+        if (sessionSnapshot && !sessionSnapshot.capabilities?.components)
             return (
                 <RuntimeStatePage
                     state={{
-                        description:
-                            'Component inspection is unavailable in this build.',
+                        title: 'Component tree unavailable',
                         label: 'Inspector unavailable',
-                        title: 'Component inspection unavailable',
+                        description:
+                            'The connected backend does not support component tree inspection.',
                         tone: 'warning',
                         troubleshootingHref:
                             'https://github.com/jared-leddy/react-devtools/issues/250'
@@ -1945,22 +1943,90 @@ function ComponentsPage({
 }) {
     const [searchParams, setSearchParams] = useSearchParams();
     const requestedComponentId = searchParams.get('componentId');
-    const liveComponentTree = useLiveParentComponentTree();
-    const componentTree = liveComponentTree.length
-        ? liveComponentTree
-        : syntheticComponentTree;
+    const session = useDevToolsSession();
+    const snapshot = useDevToolsSessionSnapshot();
+    const componentTree = useMemo(
+        () => createSessionComponentTree(snapshot?.state?.components ?? []),
+        [snapshot?.state?.components]
+    );
     const firstComponentId = findFirstComponentTreeNodeId(componentTree);
-    const selectedComponent =
-        runtimeSnapshot.selectionStatus === 'none'
-            ? undefined
-            : ((requestedComponentId
-                  ? findComponentTreeNode(componentTree, requestedComponentId)
-                  : undefined) ??
-              (firstComponentId
-                  ? findComponentTreeNode(componentTree, firstComponentId)
-                  : undefined));
+    const selectedComponent = requestedComponentId
+        ? findComponentTreeNode(componentTree, requestedComponentId)
+        : firstComponentId
+          ? findComponentTreeNode(componentTree, firstComponentId)
+          : undefined;
     const selectedComponentId = selectedComponent?.id;
-    const hasEmptyRoot = runtimeSnapshot.rootStatus === 'empty';
+    const hasEmptyRoot =
+        componentTree.length === 0 || runtimeSnapshot.rootStatus === 'empty';
+    const [inspection, setInspection] = useState<{
+        id: string;
+        revision?: number;
+        sections: StateViewerSection[];
+        error?: string;
+    }>();
+    useEffect(() => {
+        let current = true;
+        if (
+            !selectedComponent ||
+            !session?.inspectComponent ||
+            !snapshot?.capabilities?.componentState
+        )
+            return;
+        void session
+            .inspectComponent({
+                componentId: selectedComponent.id,
+                rootId: selectedComponent.rootId!
+            })
+            .then((response) => {
+                if (current)
+                    setInspection({
+                        id: selectedComponent.id,
+                        revision: snapshot.revision,
+                        sections: (response?.sections ??
+                            []) as StateViewerSection[]
+                    });
+            })
+            .catch((error: unknown) => {
+                if (current)
+                    setInspection({
+                        id: selectedComponent.id,
+                        revision: snapshot.revision,
+                        sections: [],
+                        error:
+                            error instanceof Error
+                                ? error.message
+                                : 'Inspection failed'
+                    });
+            });
+        return () => {
+            current = false;
+        };
+    }, [
+        session,
+        selectedComponentId,
+        selectedComponent?.rootId,
+        snapshot?.revision,
+        snapshot?.capabilities?.componentState
+    ]);
+    const detailNode = selectedComponent
+        ? {
+              ...selectedComponent,
+              stateSections:
+                  inspection?.id === selectedComponent.id &&
+                  inspection.revision === snapshot?.revision
+                      ? inspection.sections.map((section) => ({
+                            ...section,
+                            fields: section.fields.filter((field) =>
+                                field.name
+                                    .toLowerCase()
+                                    .includes(
+                                        settingsSnapshot.stateFilter.toLowerCase()
+                                    )
+                            )
+                        }))
+                      : []
+          }
+        : undefined;
 
     return (
         <section
@@ -1996,7 +2062,10 @@ function ComponentsPage({
                     ) : (
                         <ComponentTreePlaceholder
                             initialSelectedId={firstComponentId}
-                            nodes={componentTree}
+                            nodes={filterComponentTree(
+                                componentTree,
+                                settingsSnapshot.treeFilter
+                            )}
                             onSelectedIdChange={(componentId) => {
                                 setSearchParams({ componentId });
                             }}
@@ -2009,7 +2078,21 @@ function ComponentsPage({
                     hasEmptyRoot ? (
                         <ComponentEmptyRootDetailsPane />
                     ) : (
-                        <ComponentDetailPlaceholder node={selectedComponent} />
+                        <>
+                            <p role="status">
+                                {!session
+                                    ? 'Backend connection unavailable'
+                                    : !snapshot?.capabilities?.componentState
+                                      ? 'Inspection unsupported'
+                                      : ((inspection &&
+                                        inspection.id === selectedComponentId &&
+                                        inspection.revision ===
+                                            snapshot?.revision
+                                            ? inspection.error
+                                            : undefined) ?? '')}
+                            </p>
+                            <ComponentDetailPlaceholder node={detailNode} />
+                        </>
                     )
                 }
                 rightLabel="Component details"
@@ -2017,162 +2100,6 @@ function ComponentsPage({
             />
         </section>
     );
-}
-
-function useLiveParentComponentTree(): ComponentTreeNode[] {
-    const [nodes, setNodes] = useState<ComponentTreeNode[]>(() =>
-        getLiveParentComponentTree()
-    );
-
-    useEffect(() => {
-        const updateNodes = () => {
-            setNodes(getLiveParentComponentTree());
-        };
-        const intervalId = window.setInterval(updateNodes, 1000);
-
-        updateNodes();
-
-        return () => {
-            window.clearInterval(intervalId);
-        };
-    }, []);
-
-    return nodes;
-}
-
-function getLiveParentComponentTree(): ComponentTreeNode[] {
-    if (typeof window === 'undefined' || window.parent === window) {
-        return [];
-    }
-
-    try {
-        const parentDocument = window.parent.document;
-        const annotatedElements = Array.from(
-            parentDocument.querySelectorAll<HTMLElement>(
-                `[${SOURCE_ATTRIBUTE}], [${COMPONENT_ID_ATTRIBUTE}]`
-            )
-        );
-
-        return createLiveComponentTree(annotatedElements);
-    } catch {
-        return [];
-    }
-}
-
-function createLiveComponentTree(
-    annotatedElements: HTMLElement[]
-): ComponentTreeNode[] {
-    const nodes = new Map<HTMLElement, ComponentTreeNode>();
-    const roots: ComponentTreeNode[] = [];
-
-    annotatedElements.forEach((element, index) => {
-        nodes.set(element, createLiveComponentTreeNode(element, index));
-    });
-
-    annotatedElements.forEach((element) => {
-        const node = nodes.get(element);
-        const parentNode = findNearestAnnotatedParent(element, nodes);
-
-        if (!node) {
-            return;
-        }
-
-        if (parentNode) {
-            parentNode.children = [...(parentNode.children ?? []), node];
-        } else {
-            roots.push(node);
-        }
-    });
-
-    return roots;
-}
-
-function createLiveComponentTreeNode(
-    element: HTMLElement,
-    index: number
-): ComponentTreeNode {
-    const source = element.getAttribute(SOURCE_ATTRIBUTE) ?? '';
-    const componentId = element.getAttribute(COMPONENT_ID_ATTRIBUTE);
-    const displayName = element.getAttribute(COMPONENT_DISPLAY_NAME_ATTRIBUTE);
-    const testId = element.getAttribute(TEST_ID_ATTRIBUTE);
-    const text = getLiveElementText(element);
-    const tagName = element.tagName.toLowerCase();
-
-    return {
-        elementId: testId ?? `${tagName}-${index}`,
-        id: componentId ?? `live-${index}`,
-        label: displayName ?? createLiveComponentLabel(element, index),
-        rootId: 'iframe-parent-document',
-        stateSections: [
-            {
-                fields: [
-                    { name: 'componentId', value: componentId ?? 'unknown' },
-                    { name: 'displayName', value: displayName ?? tagName },
-                    { name: 'source', value: source || 'unknown' },
-                    { name: 'testId', value: testId ?? 'none' },
-                    { name: 'text', value: text || 'none' }
-                ],
-                name: 'props'
-            },
-            {
-                fields: [
-                    {
-                        name: 'Hook 0 (source)',
-                        value: {
-                            _custom: {
-                                display: source || 'unknown',
-                                type: 'source'
-                            }
-                        }
-                    }
-                ],
-                name: 'hooks'
-            }
-        ],
-        tags: [componentId ? 'inspectable' : 'live', testId].filter(
-            (tag): tag is string => Boolean(tag)
-        ),
-        type: tagName
-    };
-}
-
-function createLiveComponentLabel(element: HTMLElement, index: number): string {
-    const testId = element.getAttribute(TEST_ID_ATTRIBUTE);
-    const text = getLiveElementText(element);
-    const tagName = element.tagName.toLowerCase();
-    const suffix = testId ?? text;
-
-    if (suffix) {
-        return `${tagName}: ${suffix}`;
-    }
-
-    return `${tagName}#${index + 1}`;
-}
-
-function getLiveElementText(element: HTMLElement): string {
-    return (element.innerText || element.textContent || '')
-        .replace(/\s+/g, ' ')
-        .trim()
-        .slice(0, 80);
-}
-
-function findNearestAnnotatedParent(
-    element: HTMLElement,
-    nodes: Map<HTMLElement, ComponentTreeNode>
-): ComponentTreeNode | undefined {
-    let parent = element.parentElement;
-
-    while (parent) {
-        const node = nodes.get(parent);
-
-        if (node) {
-            return node;
-        }
-
-        parent = parent.parentElement;
-    }
-
-    return undefined;
 }
 
 function findFirstComponentTreeNodeId(
@@ -2474,37 +2401,7 @@ function ComponentDetailPlaceholder({
 }: {
     node?: ReturnType<typeof findComponentTreeNode>;
 }) {
-    const [openStatus, setOpenStatus] = useState<string>();
-    const sourceLocation = getComponentSourceLocation(node);
-
-    async function openComponentSource() {
-        if (!sourceLocation) {
-            return;
-        }
-
-        setOpenStatus('Opening editor');
-
-        try {
-            const params = new URLSearchParams({
-                file: sourceLocation.fileName
-            });
-
-            if (sourceLocation.lineNumber) {
-                params.set('line', sourceLocation.lineNumber.toString());
-            }
-
-            if (sourceLocation.columnNumber) {
-                params.set('column', sourceLocation.columnNumber.toString());
-            }
-
-            const response = await fetch(`/__open-in-editor?${params}`);
-            setOpenStatus(
-                response.ok ? 'Editor request sent' : 'Editor unavailable'
-            );
-        } catch {
-            setOpenStatus('Editor unavailable');
-        }
-    }
+    const sourceLocation = node?.source;
 
     if (!node) {
         return (
@@ -2525,13 +2422,6 @@ function ComponentDetailPlaceholder({
                         <h2>{node.label}</h2>
                         <p>{sourceLocation?.fileName ?? 'No source file'}</p>
                     </div>
-                    <button
-                        disabled={!sourceLocation}
-                        onClick={openComponentSource}
-                        type="button"
-                    >
-                        Open in editor
-                    </button>
                 </div>
                 <dl className="dt-components-detail__summary">
                     <div>
@@ -2548,48 +2438,9 @@ function ComponentDetailPlaceholder({
                     </div>
                 </dl>
                 <StateViewer sections={node?.stateSections ?? []} />
-                {openStatus ? (
-                    <p className="dt-components-detail__status" role="status">
-                        {openStatus}
-                    </p>
-                ) : null}
             </div>
         </Card>
     );
-}
-
-function getComponentSourceLocation(
-    node?: ReturnType<typeof findComponentTreeNode>
-): SourceLocation | undefined {
-    const source = node?.stateSections
-        ?.flatMap((section) => section.fields)
-        .find((field) => field.name === 'source')?.value;
-
-    return typeof source === 'string' ? parseSourceLocation(source) : undefined;
-}
-
-interface SourceLocation {
-    columnNumber?: number;
-    fileName: string;
-    lineNumber?: number;
-}
-
-function parseSourceLocation(source: string): SourceLocation | undefined {
-    const parts = source.split(':');
-    const column = Number(parts.at(-1));
-    const line = Number(parts.at(-2));
-    const fileName = parts.slice(0, -2).join(':');
-
-    if (!fileName) {
-        return undefined;
-    }
-
-    return {
-        columnNumber:
-            Number.isInteger(column) && column > 0 ? column : undefined,
-        fileName,
-        lineNumber: Number.isInteger(line) && line > 0 ? line : undefined
-    };
 }
 
 function EmptyPane({ label, message }: { label: string; message: string }) {

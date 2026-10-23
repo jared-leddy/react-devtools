@@ -297,7 +297,7 @@ describe('reactDevtools', () => {
         );
 
         expect(result).toContain(
-            `<script type="module" src="${DEFAULT_OVERLAY_SCRIPT_PATH}" data-react-devtools-client-url="${DEFAULT_CLIENT_BASE_PATH}" data-react-devtools-separate-window-url="${DEFAULT_CLIENT_BASE_PATH}"></script>`
+            `<script src="/__react-devtools-overlay__/prepare.js"></script><script type="module" src="${DEFAULT_OVERLAY_SCRIPT_PATH}" data-react-devtools-client-url="${DEFAULT_CLIENT_BASE_PATH}" data-react-devtools-separate-window-url="${DEFAULT_CLIENT_BASE_PATH}"></script>`
         );
     });
 
@@ -725,7 +725,7 @@ describe('reactDevtools', () => {
         expect(
             transform('console.log("app");', '/project/src/main.tsx')
         ).toEqual({
-            code: `window.__REACT_DEVTOOLS_OVERLAY_CONFIG__ = { clientUrl: "${DEFAULT_CLIENT_BASE_PATH}", separateWindowUrl: "${DEFAULT_CLIENT_BASE_PATH}" };\nimport '${DEFAULT_OVERLAY_SCRIPT_PATH}';\nconsole.log("app");`,
+            code: `window.__REACT_DEVTOOLS_OVERLAY_CONFIG__ = { clientUrl: "${DEFAULT_CLIENT_BASE_PATH}", separateWindowUrl: "${DEFAULT_CLIENT_BASE_PATH}" };\nimport '/__react-devtools-overlay__/prepare.js';\nimport '${DEFAULT_OVERLAY_SCRIPT_PATH}';\nconsole.log("app");`,
             map: null
         });
         expect(transform('console.log("app");', '/project/src/other.tsx')).toBe(
@@ -796,7 +796,7 @@ describe('reactDevtools', () => {
         const result = transform('<App />', '/project/src/main.tsx');
 
         expect(result.code).toBe(
-            `window.__REACT_DEVTOOLS_OVERLAY_CONFIG__ = { clientUrl: "${DEFAULT_CLIENT_BASE_PATH}", separateWindowUrl: "${DEFAULT_CLIENT_BASE_PATH}" };\nimport '${DEFAULT_OVERLAY_SCRIPT_PATH}';\n<App data-react-devtools-source="/project/src/main.tsx:3:2" data-react-devtools-component-id="/project/src/main.tsx:3:2:App" data-react-devtools-display-name="App" />`
+            `window.__REACT_DEVTOOLS_OVERLAY_CONFIG__ = { clientUrl: "${DEFAULT_CLIENT_BASE_PATH}", separateWindowUrl: "${DEFAULT_CLIENT_BASE_PATH}" };\nimport '/__react-devtools-overlay__/prepare.js';\nimport '${DEFAULT_OVERLAY_SCRIPT_PATH}';\n<App data-react-devtools-source="/project/src/main.tsx:4:2" data-react-devtools-component-id="/project/src/main.tsx:4:2:App" data-react-devtools-display-name="App" />`
         );
     });
 
@@ -888,7 +888,7 @@ describe('reactDevtools', () => {
         const injected = injectOverlayScript(html);
 
         expect(createOverlayScriptTag()).toBe(
-            `<script type="module" src="${DEFAULT_OVERLAY_SCRIPT_PATH}" data-react-devtools-client-url="${DEFAULT_CLIENT_BASE_PATH}" data-react-devtools-separate-window-url="${DEFAULT_CLIENT_BASE_PATH}"></script>`
+            `<script src="/__react-devtools-overlay__/prepare.js"></script><script type="module" src="${DEFAULT_OVERLAY_SCRIPT_PATH}" data-react-devtools-client-url="${DEFAULT_CLIENT_BASE_PATH}" data-react-devtools-separate-window-url="${DEFAULT_CLIENT_BASE_PATH}"></script>`
         );
         expect(injectOverlayScript(injected)).toBe(injected);
         expect(injectOverlayScript('<main></main>')).toContain('<main></main>');

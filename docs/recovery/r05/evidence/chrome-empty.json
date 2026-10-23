@@ -1,0 +1,294 @@
+{
+    "browser": {
+        "protocolVersion": "1.3",
+        "product": "Chrome/155.0.8059.85",
+        "revision": "@0e66b94549a8bd85f03fbdf189b752d6e7b63c32",
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+        "jsVersion": "15.5.35.25"
+    },
+    "extension": { "id": "kmncihlalbfcggkeiigdaakkbabaload" },
+    "url": "http://127.0.0.1:9054/empty",
+    "targets": {
+        "targetInfos": [
+            {
+                "targetId": "93BF79B20F4A7949107FF4FE85811486",
+                "type": "service_worker",
+                "title": "Service Worker chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/background.js",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/background.js",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "C1C69F060E981B6E94C8D8B65EFAACD7"
+            },
+            {
+                "targetId": "5EA9F89C12DB2387D3D3C2ED25ACF74C",
+                "type": "page",
+                "title": "about:blank",
+                "url": "about:blank",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "C1C69F060E981B6E94C8D8B65EFAACD7"
+            },
+            {
+                "targetId": "8E50A580559139FD287DFB0F86993036",
+                "type": "browser_ui",
+                "title": "Omnibox Popup",
+                "url": "chrome://omnibox-popup.top-chrome/omnibox_popup_aim.html",
+                "attached": false,
+                "canAccessOpener": false,
+                "browserContextId": "C1C69F060E981B6E94C8D8B65EFAACD7"
+            },
+            {
+                "targetId": "CE86F2B4B37E6E2CE0B3D1EAF6438259",
+                "type": "browser_ui",
+                "title": "Omnibox Popup",
+                "url": "chrome://omnibox-popup.top-chrome/",
+                "attached": false,
+                "canAccessOpener": false,
+                "browserContextId": "C1C69F060E981B6E94C8D8B65EFAACD7"
+            },
+            {
+                "targetId": "E1C46C7C1176CE21123414EDC95B0F98",
+                "type": "page",
+                "title": "DevTools - 127.0.0.1:9054/empty",
+                "url": "devtools://devtools/bundled/devtools_app.html?remoteBase=https://chrome-devtools-frontend.appspot.com/serve_file/@0e66b94549a8bd85f03fbdf189b752d6e7b63c32/&targetType=tab&can_dock=true&disableSelfXssWarnings=true",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "C1C69F060E981B6E94C8D8B65EFAACD7"
+            },
+            {
+                "targetId": "5B096CBF7FCFE5BF0DEDB125B22444E8",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "attached": false,
+                "parentId": "E1C46C7C1176CE21123414EDC95B0F98",
+                "canAccessOpener": false,
+                "parentFrameId": "E1C46C7C1176CE21123414EDC95B0F98",
+                "browserContextId": "C1C69F060E981B6E94C8D8B65EFAACD7"
+            },
+            {
+                "targetId": "C2266EA57B90CB7DEA7785E16A6433C8",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "attached": false,
+                "parentId": "E1C46C7C1176CE21123414EDC95B0F98",
+                "canAccessOpener": false,
+                "parentFrameId": "E1C46C7C1176CE21123414EDC95B0F98",
+                "browserContextId": "C1C69F060E981B6E94C8D8B65EFAACD7"
+            },
+            {
+                "targetId": "F99642D2094C49651836E4FCAA40D6DF",
+                "type": "page",
+                "title": "R05 development",
+                "url": "http://127.0.0.1:9054/empty",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "C1C69F060E981B6E94C8D8B65EFAACD7"
+            },
+            {
+                "targetId": "676C0045F50CFD294F0C5CEFCDAA41BB",
+                "type": "page",
+                "title": "DevTools - about:blank",
+                "url": "devtools://devtools/bundled/devtools_app.html?remoteBase=https://chrome-devtools-frontend.appspot.com/serve_file/@0e66b94549a8bd85f03fbdf189b752d6e7b63c32/&targetType=tab&can_dock=true&disableSelfXssWarnings=true",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "C1C69F060E981B6E94C8D8B65EFAACD7"
+            },
+            {
+                "targetId": "73CC81FFC0B807297B9EAB4E151EC121",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "attached": false,
+                "parentId": "676C0045F50CFD294F0C5CEFCDAA41BB",
+                "canAccessOpener": false,
+                "parentFrameId": "676C0045F50CFD294F0C5CEFCDAA41BB",
+                "browserContextId": "C1C69F060E981B6E94C8D8B65EFAACD7"
+            },
+            {
+                "targetId": "3F186AADE384FCD4F1384793A5DDEE9B",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "attached": false,
+                "parentId": "676C0045F50CFD294F0C5CEFCDAA41BB",
+                "canAccessOpener": false,
+                "parentFrameId": "676C0045F50CFD294F0C5CEFCDAA41BB",
+                "browserContextId": "C1C69F060E981B6E94C8D8B65EFAACD7"
+            }
+        ]
+    },
+    "results": [
+        {
+            "target": {
+                "targetId": "5B096CBF7FCFE5BF0DEDB125B22444E8",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "attached": false,
+                "parentId": "E1C46C7C1176CE21123414EDC95B0F98",
+                "canAccessOpener": false,
+                "parentFrameId": "E1C46C7C1176CE21123414EDC95B0F98",
+                "browserContextId": "C1C69F060E981B6E94C8D8B65EFAACD7"
+            },
+            "result": {
+                "id": 1,
+                "result": {
+                    "result": {
+                        "type": "object",
+                        "value": {
+                            "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                            "body": "\n    \n\n",
+                            "tabId": 109392962,
+                            "inspected": {
+                                "url": "http://127.0.0.1:9054/empty",
+                                "detected": true,
+                                "backendScript": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/user-app.js",
+                                "frames": 0,
+                                "hookKeys": [
+                                    "emit",
+                                    "getFiberRoots",
+                                    "inject",
+                                    "off",
+                                    "on",
+                                    "once",
+                                    "onCommitFiberRoot",
+                                    "onCommitFiberUnmount",
+                                    "onPostCommitFiberRoot",
+                                    "rendererInterfaces",
+                                    "renderers",
+                                    "sub",
+                                    "supportsFiber"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "target": {
+                "targetId": "C2266EA57B90CB7DEA7785E16A6433C8",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "attached": false,
+                "parentId": "E1C46C7C1176CE21123414EDC95B0F98",
+                "canAccessOpener": false,
+                "parentFrameId": "E1C46C7C1176CE21123414EDC95B0F98",
+                "browserContextId": "C1C69F060E981B6E94C8D8B65EFAACD7"
+            },
+            "result": {
+                "id": 1,
+                "result": {
+                    "result": {
+                        "type": "object",
+                        "value": {
+                            "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                            "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nOverview\nTransport\nExtension\nConnection\nConnected\nLast commit\nNot available\nRoutes\nNot available\nReact renderers\nreact-dom\nreact-dom\nReact 19.1.1\nDetected\nRoots\nNo roots found\n\nReact was not detected yet, so there are no mounted roots to inspect.\n\nIntegrations\nBrowser extension\nTransport\nPerformance diagnostics\nHigh performance mode\nDisabled\nTimeline recording\nDisabled\nLast commit time\nNot available",
+                            "tabId": 109392962,
+                            "inspected": {
+                                "url": "http://127.0.0.1:9054/empty",
+                                "detected": true,
+                                "backendScript": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/user-app.js",
+                                "frames": 0,
+                                "hookKeys": [
+                                    "emit",
+                                    "getFiberRoots",
+                                    "inject",
+                                    "off",
+                                    "on",
+                                    "once",
+                                    "onCommitFiberRoot",
+                                    "onCommitFiberUnmount",
+                                    "onPostCommitFiberRoot",
+                                    "rendererInterfaces",
+                                    "renderers",
+                                    "sub",
+                                    "supportsFiber"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "target": {
+                "targetId": "73CC81FFC0B807297B9EAB4E151EC121",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "attached": false,
+                "parentId": "676C0045F50CFD294F0C5CEFCDAA41BB",
+                "canAccessOpener": false,
+                "parentFrameId": "676C0045F50CFD294F0C5CEFCDAA41BB",
+                "browserContextId": "C1C69F060E981B6E94C8D8B65EFAACD7"
+            },
+            "result": {
+                "id": 1,
+                "result": {
+                    "result": {
+                        "type": "object",
+                        "value": {
+                            "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                            "body": "\n    \n\n",
+                            "tabId": 109392961,
+                            "exception": {
+                                "code": "E_FAILED",
+                                "description": "Operation failed: %s",
+                                "details": ["Permission denied"],
+                                "isError": true
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "target": {
+                "targetId": "3F186AADE384FCD4F1384793A5DDEE9B",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "attached": false,
+                "parentId": "676C0045F50CFD294F0C5CEFCDAA41BB",
+                "canAccessOpener": false,
+                "parentFrameId": "676C0045F50CFD294F0C5CEFCDAA41BB",
+                "browserContextId": "C1C69F060E981B6E94C8D8B65EFAACD7"
+            },
+            "result": {
+                "id": 1,
+                "result": {
+                    "result": {
+                        "type": "object",
+                        "value": {
+                            "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                            "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nConnection failed\n\nDevTools handshake timed out\n\nDisconnected\nTroubleshooting",
+                            "tabId": 109392961,
+                            "exception": {
+                                "code": "E_FAILED",
+                                "description": "Operation failed: %s",
+                                "details": ["Permission denied"],
+                                "isError": true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "errors": [],
+    "modelChecks": {
+        "before": {
+            "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+            "tabId": 109392962,
+            "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\nEmpty React root\n\nReact is connected, but no mounted components were found in the current root.\n\nSelected component\nNo component selected\n\nSelect a component after the inspected app mounts React content.",
+            "nodes": [],
+            "values": []
+        },
+        "emptyRoot": true,
+        "nonReact": false
+    }
+}

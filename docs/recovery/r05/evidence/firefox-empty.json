@@ -1,0 +1,53 @@
+{
+    "session": {
+        "sessionId": "76c01c00-e4bc-4ce7-a082-9dd7f02181cc",
+        "capabilities": {
+            "acceptInsecureCerts": false,
+            "browserName": "firefox",
+            "browserVersion": "159.0",
+            "platformName": "mac",
+            "setWindowRect": true,
+            "unhandledPromptBehavior": "dismiss and notify",
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:159.0) Gecko/20100101 Firefox/159.0",
+            "moz:buildID": "20261021090508",
+            "moz:headless": false,
+            "moz:platformVersion": "24.5.0",
+            "moz:shutdownTimeout": 73000,
+            "pageLoadStrategy": "normal",
+            "timeouts": { "implicit": 0, "pageLoad": 300000, "script": 30000 },
+            "strictFileInteractability": false,
+            "moz:accessibilityChecks": false,
+            "moz:webdriverClick": true,
+            "moz:windowless": false,
+            "proxy": {}
+        }
+    },
+    "app": {
+        "value": {
+            "url": "http://127.0.0.1:9054/empty",
+            "hook": true,
+            "renderers": [{ "id": 1, "version": "19.1.1", "roots": 1 }]
+        }
+    },
+    "toolbox": {
+        "value": {
+            "url": "http://127.0.0.1:9054/empty",
+            "browsingContextId": 11,
+            "tools": [
+                {
+                    "id": "webext-devtools-panel-react-devtools_local_dev-159-0",
+                    "label": "React"
+                }
+            ],
+            "panelUrl": null,
+            "panelBody": null,
+            "panelBrowsingContextId": 19
+        }
+    },
+    "modelChecks": {
+        "before": { "value": { "inspections": [] } },
+        "after": {
+            "value": { "traffic": { "inspections": [] }, "annotations": 0 }
+        }
+    }
+}

@@ -1,9 +1,20 @@
 import { expect, test } from '@playwright/test';
 
 test('extension-sized panel keeps navigation, filters, tree, and details usable', async ({
-    page
+    page: host
 }, testInfo) => {
-    await page.goto('/__devtools__/');
+    await host.goto('/');
+    await host
+        .getByRole('button', { name: 'Toggle React DevTools panel' })
+        .click();
+    const [page] = await Promise.all([
+        host.context().waitForEvent('page'),
+        host
+            .getByRole('link', {
+                name: 'Open React DevTools in separate window'
+            })
+            .click()
+    ]);
     await page.getByRole('link', { name: 'Components', exact: true }).click();
     const tree = page.getByRole('region', { name: 'Component tree' });
     const details = page.getByRole('region', { name: 'Component details' });
@@ -49,12 +60,12 @@ test('extension-sized panel keeps navigation, filters, tree, and details usable'
     expect(layout.tree.bottom).toBeLessThanOrEqual(layout.details.y + 1);
     await page
         .getByRole('searchbox', { name: 'Tree filter' })
-        .fill('ComponentLeaf0_0');
+        .fill('StateCounterDemo');
     await page
         .getByRole('tree', { name: 'Component tree' })
-        .getByRole('button', { name: /^ComponentLeaf0_0/ })
+        .getByRole('button', { name: /^StateCounterDemo/ })
         .click();
-    await expect(details).toContainText('ComponentLeaf0_0');
+    await expect(details).toContainText('StateCounterDemo');
     await testInfo.attach('narrow-components', {
         body: await page.screenshot({
             fullPage: true,

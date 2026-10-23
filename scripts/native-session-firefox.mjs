@@ -7,11 +7,22 @@ const url = process.argv[2];
 if (!url) throw new Error('Provide a fixture URL');
 const output = process.argv[3] ?? '/private/tmp/r03-firefox';
 const updateMode = process.argv.includes('--updates');
+const modelMode = process.argv.includes('--models');
+const emptyMode = process.argv.includes('--empty');
+const nonReactMode = process.argv.includes('--non-react');
+const port = await new Promise((resolve, reject) => {
+    const probe = net.createServer();
+    probe.once('error', reject);
+    probe.listen(0, '127.0.0.1', () => {
+        const address = probe.address();
+        probe.close(() => resolve(address.port));
+    });
+});
 fs.mkdirSync(output, { recursive: true });
 const profile = fs.mkdtempSync('/private/tmp/r03-firefox-profile-');
 fs.writeFileSync(
     `${profile}/user.js`,
-    'user_pref("marionette.port",2829);\nuser_pref("devtools.chrome.enabled",true);\nuser_pref("devtools.debugger.remote-enabled",true);\nuser_pref("devtools.toolbox.footer.height",800);\n'
+    `user_pref("marionette.port",${port});\nuser_pref("devtools.chrome.enabled",true);\nuser_pref("devtools.debugger.remote-enabled",true);\nuser_pref("devtools.toolbox.footer.height",800);\n`
 );
 const child = spawn(
     '/Applications/Firefox Developer Edition.app/Contents/MacOS/firefox',
@@ -24,7 +35,7 @@ try {
     for (let i = 0; i < 60; i++) {
         try {
             socket = await new Promise((resolve, reject) => {
-                const s = net.connect(2829, '127.0.0.1');
+                const s = net.connect(port, '127.0.0.1');
                 s.once('connect', () => resolve(s));
                 s.once('error', reject);
             });
@@ -68,6 +79,11 @@ try {
             }, 30000).unref();
         });
     const session = await command('WebDriver:NewSession', {});
+    assert.equal(
+        session.capabilities['moz:profile'],
+        profile,
+        'Marionette attached to a different browser profile'
+    );
     await command('Addon:Install', {
         path: new URL(
             '../packages/devtools-firefox-extension/dist',
@@ -100,6 +116,92 @@ try {
         });
     const toolbox = await showToolbox();
     console.log('Native Firefox', JSON.stringify({ app, toolbox }));
+    let modelChecks;
+    if (modelMode && nonReactMode) {
+        assert.equal(app.value.renderers.length, 0);
+    }
+    if (modelMode) {
+        await command('Marionette:SetContext', { value: 'content' });
+        await execute(
+            `window.__r05Traffic={inspections:[]};const pending=new Set();window.addEventListener('message',event=>{const rpc=event.data?.payload?.json;if(rpc?.m==='getComponentState')pending.add(rpc.i);if(rpc?.t==='s'&&pending.has(rpc.i)){window.__r05Traffic.inspections.push(rpc.r);pending.delete(rpc.i);}});return true;`
+        );
+        await command('Marionette:SetContext', { value: 'chrome' });
+        await command('WebDriver:ExecuteAsyncScript', {
+            script: `const done=arguments[arguments.length-1];const {require}=ChromeUtils.importESModule('resource://devtools/shared/loader/Loader.sys.mjs');const {gDevTools}=require('devtools/client/framework/devtools');gDevTools.showToolboxForTab(gBrowser.selectedTab).then(toolbox=>{const frame=toolbox.doc.querySelector('iframe[aria-label=React]');const browser=frame?.contentDocument?.querySelector('browser');browser.focus();done({focused:!!browser});});`,
+            args: [],
+            newSandbox: true
+        });
+        const keys = Array.from({ length: 4 }, () => [
+            { type: 'keyDown', value: '\uE004' },
+            { type: 'keyUp', value: '\uE004' }
+        ]).flat();
+        keys.push(
+            { type: 'keyDown', value: '\uE007' },
+            { type: 'keyUp', value: '\uE007' }
+        );
+        await command('WebDriver:PerformActions', {
+            actions: [{ type: 'key', id: 'native-panel-keys', actions: keys }]
+        });
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const modelShot = await command('WebDriver:TakeScreenshot', {
+            full: true
+        });
+        fs.writeFileSync(
+            `${output}/models-before.png`,
+            Buffer.from(modelShot.value, 'base64')
+        );
+        await command('Marionette:SetContext', { value: 'content' });
+        const before = await execute('return window.__r05Traffic;');
+        if (!emptyMode && !nonReactMode)
+            await execute(
+                "document.getElementById('increment').click();return true;"
+            );
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const after = await execute(
+            'return {traffic:window.__r05Traffic,annotations:document.querySelectorAll("[data-react-devtools-source], [data-react-devtools-component-id]").length};'
+        );
+        modelChecks = { before, after };
+        fs.writeFileSync(
+            `${output}/model-observations.json`,
+            JSON.stringify(modelChecks, null, 4)
+        );
+        const initial = before.value.inspections.at(-1);
+        const latest = after.value.traffic.inspections.at(-1);
+        if (emptyMode || nonReactMode) {
+            assert.equal(before.value.inspections.length, 0);
+            assert.equal(after.value.traffic.inspections.length, 0);
+        } else {
+            assert(
+                initial?.sections
+                    .find((section) => section.name === 'props')
+                    ?.fields.some(
+                        (field) =>
+                            field.name === 'message' &&
+                            field.value === 'R05 observed prop'
+                    ),
+                'Actual inspected prop missing'
+            );
+            assert.equal(
+                initial.sections.find((section) => section.name === 'hooks')
+                    ?.fields[0]?.value,
+                0
+            );
+            assert.equal(
+                latest?.sections.find((section) => section.name === 'hooks')
+                    ?.fields[0]?.value,
+                1
+            );
+            assert.equal(after.value.annotations, 0);
+        }
+        await command('Marionette:SetContext', { value: 'chrome' });
+        const afterShot = await command('WebDriver:TakeScreenshot', {
+            full: true
+        });
+        fs.writeFileSync(
+            `${output}/models-after.png`,
+            Buffer.from(afterShot.value, 'base64')
+        );
+    }
     const screenshot = await command('WebDriver:TakeScreenshot', {
         full: true
     });
@@ -242,10 +344,17 @@ try {
     }
     fs.writeFileSync(
         `${output}/result.json`,
-        JSON.stringify({ session, app, toolbox, updateChecks }, null, 4)
+        JSON.stringify(
+            { session, app, toolbox, updateChecks, modelChecks },
+            null,
+            4
+        )
     );
 } finally {
     socket?.destroy();
-    child.kill('SIGTERM');
-    await new Promise((resolve) => child.once('exit', resolve));
+    if (child.exitCode === null && child.signalCode === null) {
+        const exited = new Promise((resolve) => child.once('exit', resolve));
+        child.kill('SIGTERM');
+        await exited;
+    }
 }

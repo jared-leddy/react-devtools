@@ -19,6 +19,26 @@ interface ClientFunctions {
 }
 
 describe('broadcast-channel messaging preset', () => {
+    it('releases owned listeners and closes the native channel on disposal', () => {
+        const BroadcastChannel = createMockBroadcastChannelConstructor();
+        const channel = createBroadcastChannelClientChannel({
+            BroadcastChannel
+        });
+        const native = BroadcastChannel.channels[0];
+        const close = jest.fn();
+        native.close = close;
+        const listener = jest.fn();
+        channel.on(listener);
+        channel.dispose?.();
+        native.dispatchMessage({
+            event: BROADCAST_CHANNEL_RPC_EVENT_KEY,
+            sessionId: 'default',
+            senderId: 'other',
+            data: 'after-close'
+        });
+        expect(listener).not.toHaveBeenCalled();
+        expect(close).toHaveBeenCalledTimes(1);
+    });
     it('completes an RPC round-trip between same-origin contexts', async () => {
         const BroadcastChannel = createMockBroadcastChannelConstructor();
         const serverChannel = createBroadcastChannelServerChannel({

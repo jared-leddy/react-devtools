@@ -1,5 +1,15 @@
 export default [
     {
+        files: ['scripts/model-smoke.mjs', 'docs/recovery/r05/*.mjs'],
+        languageOptions: {
+            globals: {
+                process: 'readonly',
+                setTimeout: 'readonly',
+                clearTimeout: 'readonly'
+            }
+        }
+    },
+    {
         files: ['scripts/session-integration.test.mjs'],
         languageOptions: { globals: { structuredClone: 'readonly' } }
     },

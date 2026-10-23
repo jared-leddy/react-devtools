@@ -239,6 +239,14 @@ function createGraphHotContext(
 }
 
 describe('@devtools/client App routing', () => {
+    beforeEach(() =>
+        setClientRuntimeState({
+            connectionStatus: 'connected',
+            reactStatus: 'detected',
+            rootStatus: 'ready',
+            selectionStatus: 'selected'
+        })
+    );
     afterEach(() => {
         window.localStorage.clear();
         resetClientCommandRegistryForTests();
@@ -279,12 +287,11 @@ describe('@devtools/client App routing', () => {
         expect(screen.getByLabelText('Overview page')).toHaveTextContent(
             'Standalone'
         );
-        expect(screen.getByText('Primary renderer')).toBeInTheDocument();
-        expect(screen.getByText('React 18.3.1')).toBeInTheDocument();
-        expect(screen.getByText('App root')).toBeInTheDocument();
-        expect(screen.getByText('#root')).toBeInTheDocument();
+        expect(screen.queryByText('Primary renderer')).not.toBeInTheDocument();
+        expect(screen.queryByText('React 18.3.1')).not.toBeInTheDocument();
+        expect(screen.queryByText('App root')).not.toBeInTheDocument();
         expect(screen.getByText('Standalone client')).toBeInTheDocument();
-        expect(screen.getAllByText('12.4 ms')).toHaveLength(2);
+        expect(screen.getAllByText('Not available').length).toBeGreaterThan(0);
     });
 
     it('renders Overview diagnostics for integrations and performance settings', () => {
@@ -331,7 +338,7 @@ describe('@devtools/client App routing', () => {
         expect(screen.getByText('Overlay iframe')).toBeInTheDocument();
         expect(screen.getByText('No renderers detected')).toBeInTheDocument();
         expect(screen.getByText('No roots found')).toBeInTheDocument();
-        expect(screen.getAllByText('No commits recorded')).toHaveLength(2);
+        expect(screen.getAllByText('Not available').length).toBeGreaterThan(0);
     });
 
     it('renders the Settings page controls', () => {
@@ -2048,115 +2055,37 @@ describe('@devtools/client App routing', () => {
         expect(screen.getByText('No component selected')).toBeInTheDocument();
         expect(
             screen.getByText(
-                'Choose a component from the tree to inspect its props, hooks, and state.'
+                'Select a component after the inspected app mounts React content.'
             )
         ).toBeInTheDocument();
     });
 
-    it('syncs selected component state from the route and updates details after selection', () => {
-        render(
-            <App
-                initialEntries={[
-                    '/components?componentId=component-group-0-child-5'
-                ]}
-            />
-        );
-
-        expect(screen.getAllByText('ComponentLeaf0_5')).toHaveLength(3);
-        expect(
-            screen.getByText('component-group-0-child-5')
-        ).toBeInTheDocument();
-
-        const nextTreeLabel = screen.getAllByText('ComponentLeaf0_6')[0];
-        fireEvent.click(nextTreeLabel.closest('button') as Element);
-
-        expect(screen.getAllByText('ComponentLeaf0_6')).toHaveLength(3);
-        expect(
-            screen.getByText('component-group-0-child-6')
-        ).toBeInTheDocument();
-    });
-
-    it('renders a live parent document tree when running inside the overlay iframe', async () => {
-        const originalParent = window.parent;
+    it('never treats parent DOM annotations or a requested demo ID as component authority', () => {
+        const parent = window.parent;
         const parentDocument = document.implementation.createHTMLDocument();
-        const fetchMock = jest.fn().mockResolvedValue({ ok: true } as Response);
-
-        parentDocument.body.innerHTML = [
-            '<main data-react-devtools-component-id="/src/VitePlaygroundApp.tsx:12:5:main" data-react-devtools-display-name="VitePlaygroundApp" data-react-devtools-source="/src/VitePlaygroundApp.tsx:12:5">',
-            '<h1 data-react-devtools-component-id="/src/VitePlaygroundApp.tsx:14:9:h1" data-react-devtools-display-name="HeroTitle" data-react-devtools-source="/src/VitePlaygroundApp.tsx:14:9">React DevTools Vite Playground</h1>',
-            '<section data-testid="state-count" data-react-devtools-component-id="/src/PlainReactDemos.tsx:28:13:section" data-react-devtools-display-name="CounterDemo" data-react-devtools-source="/src/PlainReactDemos.tsx:28:13">Count: 0</section>',
-            '</main>'
-        ].join('');
+        parentDocument.body.innerHTML =
+            '<main data-react-devtools-component-id="fake" data-react-devtools-display-name="InventedName"></main>';
         Object.defineProperty(window, 'parent', {
             configurable: true,
             value: { document: parentDocument }
         });
-        Object.defineProperty(window, 'fetch', {
-            configurable: true,
-            value: fetchMock
-        });
-
         try {
-            render(<App initialEntries={['/components']} />);
-
-            expect(screen.getAllByText('HeroTitle')[0]).toBeInTheDocument();
-            expect(screen.getAllByText('CounterDemo')[0]).toBeInTheDocument();
+            render(
+                <App
+                    initialEntries={[
+                        '/components?componentId=component-group-0-child-5'
+                    ]}
+                />
+            );
+            expect(screen.queryByText('InventedName')).not.toBeInTheDocument();
+            expect(screen.getByText('Empty React root')).toBeInTheDocument();
             expect(
-                screen.queryByText('ComponentLeaf0_0')
+                screen.queryByText('ComponentLeaf0_5')
             ).not.toBeInTheDocument();
-
-            fireEvent.click(
-                screen
-                    .getAllByText('CounterDemo')[0]
-                    .closest('button') as Element
-            );
-
-            expect(
-                screen.getByText('/src/PlainReactDemos.tsx:28:13:section')
-            ).toBeInTheDocument();
-            expect(
-                screen.getByText('/src/PlainReactDemos.tsx:28:13')
-            ).toBeInTheDocument();
-            expect(screen.getByText('state-count')).toBeInTheDocument();
-
-            fireEvent.click(
-                screen.getByRole('button', { name: 'Open in editor' })
-            );
-
-            expect(fetchMock).toHaveBeenCalledWith(
-                '/__open-in-editor?file=%2Fsrc%2FPlainReactDemos.tsx&line=28&column=13'
-            );
-            expect(
-                await screen.findByText('Editor request sent')
-            ).toBeInTheDocument();
-
-            act(() => {
-                window.dispatchEvent(
-                    new MessageEvent('message', {
-                        data: {
-                            method: 'selectInspectTarget',
-                            payload: {
-                                componentId:
-                                    '/src/VitePlaygroundApp.tsx:14:9:h1'
-                            },
-                            type: 'react-devtools:inspect-target'
-                        }
-                    })
-                );
-            });
-
-            await waitFor(() => {
-                expect(
-                    screen.getByText('/src/VitePlaygroundApp.tsx:14:9:h1')
-                ).toBeInTheDocument();
-            });
-            expect(
-                screen.getByText('/src/VitePlaygroundApp.tsx:14:9')
-            ).toBeInTheDocument();
         } finally {
             Object.defineProperty(window, 'parent', {
                 configurable: true,
-                value: originalParent
+                value: parent
             });
         }
     });

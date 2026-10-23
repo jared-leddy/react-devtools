@@ -727,8 +727,8 @@ describe('extension entrypoints', () => {
         expect(serverFunctions.handshake({ clientId: 'panel' })).toMatchObject({
             capabilities: {
                 roots: true,
-                components: false,
-                componentState: false
+                components: true,
+                componentState: true
             },
             serverId: 'react-devtools-extension-user-app',
             state: {
