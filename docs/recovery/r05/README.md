@@ -54,7 +54,7 @@ development, minified production, empty-root and non-React apps in both overlay
 and standalone hosts. It is not a substitute for native-extension verification.
 
 The overlay previously budgeted 230,000 raw / 75,000 gzip bytes for a shell and
-metadata relay. Shipping an actual page backend adds roughly 30 KB raw. This PR
+metadata relay. Shipping an actual page backend adds roughly 40 KB raw. This PR
 explicitly changes only that budget to 280,000 / 90,000 bytes. All other payload
 budgets and all coverage thresholds remain unchanged. Bundle measurements are
 included with the release evidence; this is not a silent global gate increase.
@@ -65,9 +65,50 @@ Chrome 0.0.19; Firefox 0.0.10 (Firefox 128+). Development release only.
 
 ## Evidence
 
-Final committed-build captures, identities, hashes and outcomes are recorded here
-after release verification. Prototype captures are not substituted for final ones.
-Original owner `_screenshots/` are never modified or published.
+[Build identity, archive hashes, bundle sizes and coverage](evidence/build.json),
+[host matrix observations](evidence/hosts.json) and
+[evidence checksums](evidence/SHA256SUMS) record the delivered build. Application
+source is `7b584d41e888b7a1c579dd77c9e4a9f3deafbf33`; subsequent commits change
+only ignore rules and diagnostic capture/check behavior, not application JS.
+All final native captures use the versioned builds and verified actual app context.
+
+Installed Chrome 155.0.8059.85 and Firefox 159.0 each verified all four modes:
+development and minified production show the observed `message` prop and hook
+value changing from 0 to 1; empty roots have no component rows/values; non-React
+Components panels show `No React detected`, not a fixture or an invented renderer.
+The production component's observed short name is `vo`, not a naming replacement.
+The native tab remains available on non-React pages to explain that state.
+
+Visually checked, unedited native images and associated observations:
+[Chrome development](evidence/chrome-development.png),
+[Chrome production](evidence/chrome-production.png),
+[Chrome empty](evidence/chrome-empty.png),
+[Chrome non-React](evidence/chrome-non-react.png),
+[Firefox development](evidence/firefox-development.png),
+[Firefox production](evidence/firefox-production.png),
+[Firefox empty](evidence/firefox-empty.png),
+[Firefox non-React](evidence/firefox-non-react.png).
+Each image has a same-named JSON report. Chrome values are scrolled into view in
+the real native panel; no screenshot contents were edited.
+
+The headless host matrix checks all four modes in both overlay and standalone,
+with zero JSX/component annotations and live standalone values changing from 1
+to 2. Examples: [standalone production](evidence/standalone-production.png) and
+[non-React overlay](evidence/overlay-non-react.png). The separate eight-test Vite
+product suite uses real data at desktop, 360px and 420px widths and retains real
+asset/graph checks. It no longer asserts synthetic tree labels or annotation IDs.
+
+The measured overlay is 268,889 raw / 84,138 gzip bytes, versus its old shell-only
+229,100 / 72,417 bytes. Other client/extension bundles remain below their unchanged
+limits. Root checks and unchanged 80% coverage gates pass; exact package coverage
+is in the build report.
+
+Earlier Firefox prototypes using a fixed port were excluded after discovering a
+leftover diagnostic instance. Final Firefox captures assert exact disposable
+profile identity on a unique port. Earlier negative diagnostic checks incorrectly
+expected no native tab; corrected checks assert the actual visible non-React
+state and no component values. Raw Firefox profile paths/process IDs are redacted.
+Original owner `_screenshots/` are untouched and excluded from commits/artifacts.
 
 ## Reproduce
 

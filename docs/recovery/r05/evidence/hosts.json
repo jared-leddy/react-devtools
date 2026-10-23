@@ -1,0 +1,37 @@
+{
+    "browser": "153.0.8010.12",
+    "observations": [
+        {
+            "mode": "development",
+            "url": "http://127.0.0.1:9054/development?overlay",
+            "standaloneUrl": "http://127.0.0.1:9054/client/?__devtools_session=broadcast-channel&__devtools_channel=react-devtools%3A50f962f5-c29f-4867-9a69-41b8e5764dc0",
+            "overlay": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nR05Counter\nfunction\nv\nmain\nhost\nh1\nhost\np\nhost\noutput\nhost\nbutton\nhost\n\nSelected component\nR05Counter\n\nNo source file\n\nNAME\nR05Counter\nCOMPONENT ID\nreact-root~3A1:0:FunctionComponent:R05Counter\nTAGS\nNone\nRead-only\nProps\nmessage\n\"R05 observed prop\"\nHooks\nHook 0 (state)\n1",
+            "standalone": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nR05Counter\nfunction\nv\nmain\nhost\nh1\nhost\np\nhost\noutput\nhost\nbutton\nhost\n\nSelected component\nR05Counter\n\nNo source file\n\nNAME\nR05Counter\nCOMPONENT ID\nreact-root~3A1:0:FunctionComponent:R05Counter\nTAGS\nNone\nRead-only\nProps\nmessage\n\"R05 observed prop\"\nHooks\nHook 0 (state)\n2",
+            "errors": []
+        },
+        {
+            "mode": "production",
+            "url": "http://127.0.0.1:9054/production?overlay",
+            "standaloneUrl": "http://127.0.0.1:9054/client/?__devtools_session=broadcast-channel&__devtools_channel=react-devtools%3A062c699f-0ab4-4871-b67c-2d21cc19903b",
+            "overlay": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nvo\nfunction\nv\nmain\nhost\nh1\nhost\np\nhost\noutput\nhost\nbutton\nhost\n\nSelected component\nvo\n\nNo source file\n\nNAME\nvo\nCOMPONENT ID\nreact-root~3A1:0:FunctionComponent:vo\nTAGS\nNone\nRead-only\nProps\nmessage\n\"R05 observed prop\"\nHooks\nHook 0 (reducer)\n1",
+            "standalone": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nvo\nfunction\nv\nmain\nhost\nh1\nhost\np\nhost\noutput\nhost\nbutton\nhost\n\nSelected component\nvo\n\nNo source file\n\nNAME\nvo\nCOMPONENT ID\nreact-root~3A1:0:FunctionComponent:vo\nTAGS\nNone\nRead-only\nProps\nmessage\n\"R05 observed prop\"\nHooks\nHook 0 (reducer)\n2",
+            "errors": []
+        },
+        {
+            "mode": "empty",
+            "url": "http://127.0.0.1:9054/empty?overlay",
+            "standaloneUrl": "http://127.0.0.1:9054/client/?__devtools_session=broadcast-channel&__devtools_channel=react-devtools%3A4de58224-193b-4f5a-b958-30595b179b35",
+            "overlay": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\nEmpty React root\n\nReact is connected, but no mounted components were found in the current root.\n\nSelected component\nNo component selected\n\nSelect a component after the inspected app mounts React content.",
+            "standalone": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\nEmpty React root\n\nReact is connected, but no mounted components were found in the current root.\n\nSelected component\nNo component selected\n\nSelect a component after the inspected app mounts React content.",
+            "errors": []
+        },
+        {
+            "mode": "non-react",
+            "url": "http://127.0.0.1:9054/non-react?overlay",
+            "standaloneUrl": "http://127.0.0.1:9054/client/?__devtools_session=broadcast-channel&__devtools_channel=react-devtools%3A1e6ae640-0716-4ee2-9fa6-29b937777ddf",
+            "overlay": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nNo React detected\n\nThe page is connected, but no React renderer has been detected yet.\n\nno-react-detected\nTroubleshooting",
+            "standalone": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nNo React detected\n\nThe page is connected, but no React renderer has been detected yet.\n\nno-react-detected\nTroubleshooting",
+            "errors": []
+        }
+    ]
+}
