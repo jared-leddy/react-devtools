@@ -270,6 +270,19 @@ try {
                     Buffer.from(shot.result.data, 'base64')
                 );
         }
+        await evaluatePanel(
+            `document.querySelector('.dt-components-detail')?.scrollIntoView({block:'end'});true`
+        );
+        for (const inspector of nativeInspectors) {
+            const shot = await inspector.send('Page.captureScreenshot', {
+                format: 'png'
+            });
+            if (shot.result?.data)
+                fs.writeFileSync(
+                    `${output}/values-${inspector.targetId}.png`,
+                    Buffer.from(shot.result.data, 'base64')
+                );
+        }
     }
     if (updateMode) {
         assert(readPanel, 'Actual inspected native panel not found');
