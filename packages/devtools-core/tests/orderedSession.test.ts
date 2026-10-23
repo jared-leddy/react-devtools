@@ -9,12 +9,72 @@ import {
     type DevToolsSessionUpdate,
     type RpcChannel
 } from '../src/index.js';
+import type {
+    ComponentStateRequest,
+    ComponentStateResponse
+} from '../src/types.js';
 
 const cleanup: Array<() => void> = [];
 afterEach(() => {
     cleanup.splice(0).forEach((dispose) => dispose());
 });
 const settle = () => new Promise((resolve) => setTimeout(resolve, 5));
+describe('revision-bound inspection', () => {
+    it('reads real state and rejects unsupported or disposed inspection', async () => {
+        const h = harness();
+        await expect(
+            h.session.inspectComponent!({ rootId: 'root', componentId: 'node' })
+        ).rejects.toThrow('unavailable');
+        await h.session.connect();
+        const response = {
+            rootId: 'root',
+            componentId: 'node',
+            sections: [{ name: 'props', fields: [{ name: 'count', value: 3 }] }]
+        };
+        h.functions.getComponentState.mockResolvedValue(response);
+        await expect(
+            h.session.inspectComponent!({ rootId: 'root', componentId: 'node' })
+        ).resolves.toEqual(response);
+        h.functions.getComponentState.mockResolvedValue(undefined);
+        await expect(
+            h.session.inspectComponent!({ rootId: 'root', componentId: 'node' })
+        ).resolves.toBeUndefined();
+        h.functions.getComponentState.mockResolvedValue({
+            ...response,
+            componentId: 'foreign'
+        });
+        await expect(
+            h.session.inspectComponent!({ rootId: 'root', componentId: 'node' })
+        ).rejects.toThrow('Invalid');
+        h.session.dispose();
+        await expect(
+            h.session.inspectComponent!({ rootId: 'root', componentId: 'node' })
+        ).rejects.toThrow('unavailable');
+    });
+    it('ignores inspected values after a newer revision or disposal', async () => {
+        const h = harness();
+        await h.session.connect();
+        const response = { rootId: 'root', componentId: 'node', sections: [] };
+        const first = deferred<ComponentStateResponse>();
+        h.functions.getComponentState.mockReturnValueOnce(first.promise);
+        const pending = h.session.inspectComponent!({
+            rootId: 'root',
+            componentId: 'node'
+        });
+        await h.send(0, 1, 'new-root');
+        first.resolve(response);
+        await expect(pending).resolves.toBeUndefined();
+        const next = deferred<ComponentStateResponse>();
+        h.functions.getComponentState.mockReturnValueOnce(next.promise);
+        const disposed = h.session.inspectComponent!({
+            rootId: 'root',
+            componentId: 'node'
+        });
+        h.session.dispose();
+        next.resolve(response);
+        await expect(disposed).resolves.toBeUndefined();
+    });
+});
 function deferred<T>() {
     let resolve!: (value: T) => void;
     const promise = new Promise<T>((done) => {
@@ -55,6 +115,10 @@ function harness(
     let disconnected: (() => void) | undefined;
     const functions = {
         ...base,
+        getComponentState: jest.fn<
+            Promise<ComponentStateResponse | undefined>,
+            [ComponentStateRequest]
+        >(async () => undefined),
         handshake: jest.fn(() => options.handshake ?? initial),
         getSessionSnapshot: jest.fn(() => options.snapshot ?? latest),
         getSessionRevision: jest.fn(() => ({

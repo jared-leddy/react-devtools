@@ -102,6 +102,13 @@ export function createBroadcastChannelRpcChannel(
     >();
 
     return {
+        dispose() {
+            for (const listener of listeners.values())
+                channel.removeEventListener?.('message', listener);
+            listeners.clear();
+            channel.onmessage = null;
+            channel.close?.();
+        },
         off(handler) {
             const listener = listeners.get(handler);
 

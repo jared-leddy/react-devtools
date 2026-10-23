@@ -13,6 +13,12 @@ import type { ClientRuntimeSnapshot } from './runtime';
 const SessionContext = createContext<DevToolsSessionSnapshot | undefined>(
     undefined
 );
+const SessionActionsContext = createContext<DevToolsSession | undefined>(
+    undefined
+);
+export function useDevToolsSession() {
+    return useContext(SessionActionsContext);
+}
 const absentSnapshot: DevToolsSessionSnapshot = {
     sessionId: 'unavailable',
     status: 'waiting'
@@ -33,9 +39,11 @@ export function DevToolsSessionProvider({
         session?.getSnapshot ?? getAbsentSnapshot
     );
     return (
-        <SessionContext.Provider value={session ? snapshot : undefined}>
-            {children}
-        </SessionContext.Provider>
+        <SessionActionsContext.Provider value={session}>
+            <SessionContext.Provider value={session ? snapshot : undefined}>
+                {children}
+            </SessionContext.Provider>
+        </SessionActionsContext.Provider>
     );
 }
 
@@ -55,9 +63,18 @@ export function getSessionRuntimeSnapshot(
                     snapshot.status === 'waiting'
                   ? 'waiting'
                   : 'disconnected',
-        reactStatus: snapshot.state?.renderers.length
-            ? 'detected'
-            : 'not-detected',
+        reactStatus: snapshot.state?.diagnostics.some((diagnostic) =>
+            [
+                'renderer-version-unsupported',
+                'renderer-unsupported',
+                'react-internals-unavailable'
+            ].includes(diagnostic.code)
+        )
+            ? 'unsupported'
+            : snapshot.state?.renderers.length
+              ? 'detected'
+              : 'not-detected',
+        unsupportedReactVersion: snapshot.state?.renderers[0]?.version,
         rootStatus: snapshot.state?.roots.length ? 'ready' : 'empty',
         selectionStatus: snapshot.state?.selectedComponentId
             ? 'selected'

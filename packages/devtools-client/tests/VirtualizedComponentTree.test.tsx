@@ -1,8 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import {
-    VirtualizedComponentTree,
-    generateSyntheticComponentTree
-} from '../src';
+import { generateSyntheticComponentTree } from './fixtures/componentTree';
+import { VirtualizedComponentTree } from '../src';
 
 const largeTree = generateSyntheticComponentTree(20, 25);
 

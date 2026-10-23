@@ -16,6 +16,8 @@ import {
     type DevToolsSession
 } from '@devtools/core/browser';
 import { createIframeServerChannel } from '@devtools/kit';
+import { createPageBackend } from '@devtools/core/page-backend';
+import { createBroadcastChannelServerChannel } from '@devtools/kit';
 
 const SOURCE_METADATA_ATTRIBUTE = 'data-react-devtools-source';
 const COMPONENT_ID_ATTRIBUTE = 'data-react-devtools-component-id';
@@ -123,26 +125,43 @@ export function DevtoolsOverlay({
         })
     );
     const [inspecting, setInspecting] = useState(defaultInspecting);
+    const [channelName] = useState(
+        () => `react-devtools:${globalThis.crypto.randomUUID()}`
+    );
+    useEffect(() => {
+        const channel = createBroadcastChannelServerChannel({ channelName });
+        const server = session
+            ? createDevToolsSessionRelay(session, channel)
+            : createPageBackend(window, channel);
+        return () => server.dispose?.();
+    }, [channelName, session]);
     const [hoverTarget, setHoverTarget] = useState<InspectOverlayTarget | null>(
         null
     );
     const frameHostRef = useRef<HTMLDivElement>(null);
     const mountedIframeRef = useRef(false);
     const minimizeTimerRef = useRef<number | undefined>(undefined);
-    const sessionRelayRef = useRef<
-        ReturnType<typeof createDevToolsSessionRelay> | undefined
-    >(undefined);
+    const sessionRelayRef = useRef<{ dispose?: () => void } | undefined>(
+        undefined
+    );
     const iframeController = useMemo(
         () =>
             createLazyIframeController({
-                clientUrl: session ? getSessionClientUrl(clientUrl) : clientUrl,
+                clientUrl: getSessionClientUrl(clientUrl),
                 async onConnect(transport) {
                     if (!frameHostRef.current?.contains(transport.iframe))
                         return;
-                    sessionRelayRef.current?.dispose();
+                    sessionRelayRef.current?.dispose?.();
                     if (session)
                         sessionRelayRef.current = createDevToolsSessionRelay(
                             session,
+                            createIframeServerChannel({
+                                iframe: transport.iframe
+                            })
+                        );
+                    else
+                        sessionRelayRef.current = createPageBackend(
+                            window,
                             createIframeServerChannel({
                                 iframe: transport.iframe
                             })
@@ -154,7 +173,7 @@ export function DevtoolsOverlay({
     );
     useEffect(
         () => () => {
-            sessionRelayRef.current?.dispose();
+            sessionRelayRef.current?.dispose?.();
             sessionRelayRef.current = undefined;
         },
         [iframeController]
@@ -387,7 +406,13 @@ export function DevtoolsOverlay({
     );
 
     const panelStyle = getPanelStyle(preferences);
-    const separateWindowHref = separateWindowUrl ?? clientUrl;
+    const standaloneUrl = new URL(
+        separateWindowUrl ?? clientUrl,
+        window.location.href
+    );
+    standaloneUrl.searchParams.set('__devtools_session', 'broadcast-channel');
+    standaloneUrl.searchParams.set('__devtools_channel', channelName);
+    const separateWindowHref = standaloneUrl.href;
 
     return (
         <div

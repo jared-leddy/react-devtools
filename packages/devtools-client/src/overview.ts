@@ -49,8 +49,7 @@ export interface ClientOverviewSnapshot {
 export function getClientOverviewSnapshot({
     routeSnapshot,
     runtimeSnapshot,
-    settingsSnapshot,
-    visibleRouteCount
+    settingsSnapshot
 }: {
     routeSnapshot: ClientRouteRegistrySnapshot;
     runtimeSnapshot: ClientRuntimeSnapshot;
@@ -62,61 +61,14 @@ export function getClientOverviewSnapshot({
             connectionStatus: runtimeSnapshot.connectionStatus,
             deliveryMode: routeSnapshot.environment.transport,
             highPerformanceMode: settingsSnapshot.highPerformanceMode,
-            lastCommitTime:
-                runtimeSnapshot.rootStatus === 'ready'
-                    ? '12.4 ms'
-                    : 'No commits recorded',
+            lastCommitTime: 'Not available',
             timelineRecording: settingsSnapshot.timelineRecording,
-            visibleRouteCount
+            visibleRouteCount: null
         },
         integrations: getOverviewIntegrations(routeSnapshot),
-        renderers: getOverviewRenderers(runtimeSnapshot),
-        roots: getOverviewRoots(runtimeSnapshot, routeSnapshot.environment)
+        renderers: [],
+        roots: []
     };
-}
-
-function getOverviewRenderers(
-    runtimeSnapshot: ClientRuntimeSnapshot
-): ClientOverviewRenderer[] {
-    if (runtimeSnapshot.reactStatus === 'not-detected') {
-        return [];
-    }
-
-    const reactVersion =
-        runtimeSnapshot.reactStatus === 'unsupported'
-            ? (runtimeSnapshot.unsupportedReactVersion ?? 'Unsupported')
-            : '18.3.1';
-
-    return [
-        {
-            id: 'renderer:primary',
-            name: 'Primary renderer',
-            reactVersion,
-            rendererPackage: 'react-dom',
-            status: runtimeSnapshot.reactStatus
-        }
-    ];
-}
-
-function getOverviewRoots(
-    runtimeSnapshot: ClientRuntimeSnapshot,
-    environment: ClientRouteEnvironment
-): ClientOverviewRoot[] {
-    if (runtimeSnapshot.reactStatus !== 'detected') {
-        return [];
-    }
-
-    return [
-        {
-            id: 'root:app',
-            isIframe: environment.transport === 'iframe',
-            isPortal: environment.capabilities.includes('next'),
-            mountContainer: '#root',
-            name: 'App root',
-            rendererId: 'renderer:primary',
-            status: runtimeSnapshot.rootStatus
-        }
-    ];
 }
 
 function getOverviewIntegrations(

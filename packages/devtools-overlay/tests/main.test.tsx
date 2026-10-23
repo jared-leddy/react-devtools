@@ -90,13 +90,20 @@ describe('mountDevtoolsOverlay', () => {
 
         expect(document.querySelector('iframe')).toHaveAttribute(
             'src',
-            '/base/__devtools__/'
+            expect.stringContaining(
+                '/base/__devtools__/?__devtools_session=iframe'
+            )
         );
         expect(
             screen.getByRole('link', {
                 name: 'Open React DevTools in separate window'
             })
-        ).toHaveAttribute('href', '/base/__devtools__/?window=1');
+        ).toHaveAttribute(
+            'href',
+            expect.stringContaining(
+                '/base/__devtools__/?window=1&__devtools_session=broadcast-channel'
+            )
+        );
 
         act(() => {
             mountedOverlay!.root.unmount();

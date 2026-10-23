@@ -5,6 +5,8 @@ import {
 import { DEVTOOLS_PROTOCOL_VERSION } from './protocol.js';
 import type {
     DevToolsCoreState,
+    ComponentStateRequest,
+    ComponentStateResponse,
     DevToolsSessionCapabilities,
     DevToolsSessionStateSnapshot,
     DevToolsSessionUpdate
@@ -28,6 +30,9 @@ export interface DevToolsSession {
     getSnapshot(): DevToolsSessionSnapshot;
     subscribe(listener: () => void): () => void;
     connect(): Promise<void>;
+    inspectComponent?(
+        request: ComponentStateRequest
+    ): Promise<ComponentStateResponse | undefined>;
     dispose(): void;
 }
 
@@ -284,6 +289,43 @@ export function createDevToolsSession(
     });
 
     return {
+        async inspectComponent(request) {
+            if (
+                disposed ||
+                snapshot.status !== 'connected' ||
+                !snapshot.capabilities?.componentState
+            )
+                throw new Error('Component inspection unavailable');
+            const streamId = snapshot.streamId;
+            const revision = snapshot.revision;
+            let result: ComponentStateResponse | undefined;
+            try {
+                result = await client.getComponentState(request);
+            } catch (error) {
+                if (
+                    disposed ||
+                    snapshot.status !== 'connected' ||
+                    snapshot.streamId !== streamId ||
+                    snapshot.revision !== revision
+                )
+                    return undefined;
+                throw error;
+            }
+            if (
+                disposed ||
+                snapshot.status !== 'connected' ||
+                snapshot.streamId !== streamId ||
+                snapshot.revision !== revision
+            )
+                return undefined;
+            if (
+                result &&
+                (result.componentId !== request.componentId ||
+                    result.rootId !== request.rootId)
+            )
+                throw new Error('Invalid component inspection response');
+            return result;
+        },
         getSnapshot: () => snapshot,
         subscribe(listener) {
             if (disposed) return () => {};

@@ -42,7 +42,7 @@ describe('standalone delivery bootstrap', () => {
             connectionStatus: 'waiting'
         });
         expect(setClientRuntimeState).toHaveBeenLastCalledWith({
-            connectionStatus: 'connected'
+            connectionStatus: 'disconnected'
         });
     });
 

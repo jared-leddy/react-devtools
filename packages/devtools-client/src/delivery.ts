@@ -19,11 +19,10 @@ export async function initializeStandaloneDelivery(
         try {
             const hot = await connectViteClientContext({ base });
             if (hot && session) await session.connect();
-            // Legacy hosts report the Vite socket only; session-backed hosts require a handshake.
+            // A Vite socket is not evidence that a React backend connected.
             setClientRuntimeState({
                 connectionStatus:
-                    hot &&
-                    (!session || session.getSnapshot().status === 'connected')
+                    hot && session?.getSnapshot().status === 'connected'
                         ? 'connected'
                         : 'disconnected'
             });

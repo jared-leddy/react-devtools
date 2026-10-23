@@ -133,7 +133,7 @@ describe('backend-confirmed sessions', () => {
         await frame.connect();
         expect(frame.getSnapshot()).toMatchObject({
             status: 'connected',
-            capabilities: { components: false }
+            capabilities: { components: true }
         });
         store.setRoots([{ id: 'host-root' }]);
         await new Promise((resolve) => setTimeout(resolve, 40));

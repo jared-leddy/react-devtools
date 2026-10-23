@@ -2,6 +2,7 @@ import { resolve } from 'node:path';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { browserBoundaryPlugin } from '../../scripts/bundle-checks.mjs';
+import { extensionClassicScripts } from '../../scripts/extension-classic-scripts.mjs';
 
 export default defineConfig({
     build: {
@@ -23,5 +24,14 @@ export default defineConfig({
             process.env.NODE_ENV ?? 'development'
         )
     },
-    plugins: [react(), browserBoundaryPlugin()]
+    plugins: [
+        react(),
+        browserBoundaryPlugin(),
+        extensionClassicScripts({
+            prepare: resolve(
+                __dirname,
+                '../devtools-chrome-extension/src/content/prepare.ts'
+            )
+        })
+    ]
 });

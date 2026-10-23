@@ -5,7 +5,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
     plugins: [
         react(),
-        reactDevtools(),
+        reactDevtools({ sourceMetadata: false, componentInspector: false }),
         {
             name: 'playground-overlay-styles',
             apply: 'serve',

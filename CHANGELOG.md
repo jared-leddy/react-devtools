@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.1.11
+
+- Replace production demo components and parent-DOM tree polling with real,
+  session-backed component models. Keep synthetic trees in tests only.
+- Show selected components' observed props and hook values on demand, with
+  revision/selection guards against stale replies and honest failure states.
+- Share the page backend across native extensions, overlay and isolated
+  standalone windows. Exclude the overlay's own root/renderer from app facts.
+- Install the overlay hook before the app's React bundle; remove fabricated
+  renderer/version/root/timing facts and panel-derived app route counts.
+- Add unannotated development/minified-production/empty/non-React host checks,
+  production-output guards and native Chrome/Firefox inspector evidence.
+- Raise only the overlay payload budget to account for its real page backend;
+  unit coverage gates remain unchanged. Development extension artifacts:
+  Chrome 0.0.19 and Firefox 0.0.10, not approved browser-store releases.
+
 ## 0.1.10
 
 - Add protocol-v2 session/stream identities, atomic revisions, coalesced updates,

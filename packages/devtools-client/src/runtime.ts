@@ -15,10 +15,10 @@ export interface ClientRuntimeSnapshot {
 type RuntimeListener = () => void;
 
 const defaultRuntimeSnapshot: ClientRuntimeSnapshot = {
-    connectionStatus: 'connected',
-    reactStatus: 'detected',
-    rootStatus: 'ready',
-    selectionStatus: 'selected'
+    connectionStatus: 'waiting',
+    reactStatus: 'not-detected',
+    rootStatus: 'empty',
+    selectionStatus: 'none'
 };
 const runtimeListeners = new Set<RuntimeListener>();
 let currentRuntimeSnapshot = defaultRuntimeSnapshot;

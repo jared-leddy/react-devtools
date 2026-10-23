@@ -69,7 +69,12 @@ test('connection overview and component tree reflect the inspected page', async 
     await client.getByRole('link', { name: 'Components', exact: true }).click();
     await expect(
         client.getByRole('tree', { name: 'Component tree' })
-    ).toContainText('state-count');
+    ).toContainText('StateCounterDemo');
+    await expect(
+        page.locator(
+            '[data-react-devtools-component-id], [data-react-devtools-source]'
+        )
+    ).toHaveCount(0);
     await expect(
         client.getByRole('tree', { name: 'Component tree' })
     ).not.toContainText('ComponentGroup');
@@ -83,12 +88,12 @@ test('component selection updates details and live page state', async ({
     await client.getByRole('link', { name: 'Components', exact: true }).click();
     const node = client
         .getByRole('tree', { name: 'Component tree' })
-        .getByRole('button', { name: /^strong.*state-count/ })
+        .getByRole('button', { name: /^StateCounterDemo/ })
         .first();
     await node.click();
     const details = client.getByRole('region', { name: 'Component details' });
-    await expect(details).toContainText('state-count');
-    await expect(details).toContainText('PlainReactDemos.tsx');
+    await expect(details).toContainText('StateCounterDemo');
+    await expect(details).toContainText('Hook 0 (state)');
     const counter = page.getByRole('article').filter({
         has: page.getByRole('heading', {
             name: 'useState component',
@@ -99,11 +104,13 @@ test('component selection updates details and live page state', async ({
         .getByRole('button', { name: 'Increment', exact: true })
         .click();
     await expect(page.getByTestId('state-count')).toHaveText('1');
-    await expect(details).toContainText('"1"');
+    await expect(
+        details.locator('.dt-state-viewer__value--number').first()
+    ).toHaveText('1');
     await capturePanel(page, testInfo);
 });
 
-test('inspect mode selects a page component and exits inspect mode', async ({
+test('DOM picker cannot invent an identity on an unannotated app', async ({
     page
 }, testInfo) => {
     const client = await openPanel(page);
@@ -116,14 +123,13 @@ test('inspect mode selects a page component and exits inspect mode', async ({
         exact: true
     });
     await target.hover();
-    await expect(page.getByTestId('react-devtools-inspect-box')).toBeVisible();
-    await target.click();
+    await expect(page.getByTestId('react-devtools-inspect-box')).toHaveCount(0);
+    await page.keyboard.press('Escape');
     await expect(
         page.getByRole('button', { name: 'Toggle inspect mode' })
     ).toHaveAttribute('aria-pressed', 'false');
-    const details = client.getByRole('region', { name: 'Component details' });
-    await expect(details).toContainText('PlainReactDemos.tsx');
-    await expect(details).toContainText('useState component');
+    await client.getByRole('link', { name: 'Components', exact: true }).click();
+    await expect(client.getByRole('tree')).toContainText('StateCounterDemo');
     await capturePanel(page, testInfo);
 });
 
