@@ -598,6 +598,20 @@ function RoutePage({
     }
 
     if (route.id === 'components') {
+        if (sessionSnapshot && !sessionSnapshot.capabilities?.components)
+            return (
+                <RuntimeStatePage
+                    state={{
+                        title: 'Component tree unavailable',
+                        label: 'Inspector unavailable',
+                        description:
+                            'The connected backend does not support component tree inspection.',
+                        tone: 'warning',
+                        troubleshootingHref:
+                            'https://github.com/jared-leddy/react-devtools/issues/250'
+                    }}
+                />
+            );
         return (
             <ComponentsPage
                 runtimeSnapshot={runtimeSnapshot}

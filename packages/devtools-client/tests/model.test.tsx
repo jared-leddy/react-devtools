@@ -107,6 +107,22 @@ function fixture() {
 }
 
 describe('session-backed component model', () => {
+    it('distinguishes an unsupported tree capability from an empty React root', () => {
+        const f = fixture();
+        f.update({
+            capabilities: { ...f.snapshot.capabilities!, components: false }
+        });
+        render(
+            <DevToolsSessionProvider session={f.session}>
+                <App initialEntries={['/components']} />
+            </DevToolsSessionProvider>
+        );
+        expect(
+            screen.getByRole('heading', { name: 'Component tree unavailable' })
+        ).toBeInTheDocument();
+        expect(screen.queryByText('Empty React root')).not.toBeInTheDocument();
+        expect(f.inspect).not.toHaveBeenCalled();
+    });
     it('filters observed names without losing their ancestors or making up rows', () => {
         const nodes = createSessionComponentTree(
             fixture().snapshot.state!.components
