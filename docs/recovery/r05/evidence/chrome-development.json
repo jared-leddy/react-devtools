@@ -11,126 +11,126 @@
     "targets": {
         "targetInfos": [
             {
-                "targetId": "D8514D51BB901A5009A35A9D54D70D13",
+                "targetId": "5FA2C46DFB43AD5D9770E2B5E0939ECB",
                 "type": "service_worker",
                 "title": "Service Worker chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/background.js",
                 "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/background.js",
                 "attached": true,
                 "canAccessOpener": false,
-                "browserContextId": "C66B9858D17BDB07781341A0C3BB2889"
+                "browserContextId": "83DBC682E2B443E8EBD17E42C029C2AA"
             },
             {
-                "targetId": "7E5BA44B2193F16D4A58A4D505CE29F2",
-                "type": "browser_ui",
-                "title": "Omnibox Popup",
-                "url": "chrome://omnibox-popup.top-chrome/",
-                "attached": false,
-                "canAccessOpener": false,
-                "browserContextId": "C66B9858D17BDB07781341A0C3BB2889"
-            },
-            {
-                "targetId": "A62B2315BB6B58AD1BC3549DE66C45CA",
-                "type": "browser_ui",
-                "title": "Omnibox Popup",
-                "url": "chrome://omnibox-popup.top-chrome/omnibox_popup_aim.html",
-                "attached": false,
-                "canAccessOpener": false,
-                "browserContextId": "C66B9858D17BDB07781341A0C3BB2889"
-            },
-            {
-                "targetId": "AD83B06078FDC9F6AD629D2792445BA5",
+                "targetId": "963CD578DDD15EDD4976A336EB7948DF",
                 "type": "page",
                 "title": "about:blank",
                 "url": "about:blank",
                 "attached": true,
                 "canAccessOpener": false,
-                "browserContextId": "C66B9858D17BDB07781341A0C3BB2889"
+                "browserContextId": "83DBC682E2B443E8EBD17E42C029C2AA"
             },
             {
-                "targetId": "A8D8AF363F02CC9F4FB7751F69077665",
+                "targetId": "0170BDC8D52ADE45CC4063B9C154E93A",
+                "type": "browser_ui",
+                "title": "Omnibox Popup",
+                "url": "chrome://omnibox-popup.top-chrome/omnibox_popup_aim.html",
+                "attached": false,
+                "canAccessOpener": false,
+                "browserContextId": "83DBC682E2B443E8EBD17E42C029C2AA"
+            },
+            {
+                "targetId": "CF8C15AD5E8AD1BBBED67F614A082515",
+                "type": "browser_ui",
+                "title": "Omnibox Popup",
+                "url": "chrome://omnibox-popup.top-chrome/",
+                "attached": false,
+                "canAccessOpener": false,
+                "browserContextId": "83DBC682E2B443E8EBD17E42C029C2AA"
+            },
+            {
+                "targetId": "6A7DE8C76EB44E8D1A5B7E488FC07ED6",
                 "type": "page",
                 "title": "DevTools - 127.0.0.1:9054/development",
                 "url": "devtools://devtools/bundled/devtools_app.html?remoteBase=https://chrome-devtools-frontend.appspot.com/serve_file/@0e66b94549a8bd85f03fbdf189b752d6e7b63c32/&targetType=tab&can_dock=true&disableSelfXssWarnings=true",
                 "attached": true,
                 "canAccessOpener": false,
-                "browserContextId": "C66B9858D17BDB07781341A0C3BB2889"
+                "browserContextId": "83DBC682E2B443E8EBD17E42C029C2AA"
             },
             {
-                "targetId": "3792B215A3FB873DDF6D06AB44369987",
+                "targetId": "24BCDCAA92004E5D09A07071CDAA0584",
                 "type": "iframe",
                 "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
                 "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
                 "attached": false,
-                "parentId": "A8D8AF363F02CC9F4FB7751F69077665",
+                "parentId": "6A7DE8C76EB44E8D1A5B7E488FC07ED6",
                 "canAccessOpener": false,
-                "parentFrameId": "A8D8AF363F02CC9F4FB7751F69077665",
-                "browserContextId": "C66B9858D17BDB07781341A0C3BB2889"
+                "parentFrameId": "6A7DE8C76EB44E8D1A5B7E488FC07ED6",
+                "browserContextId": "83DBC682E2B443E8EBD17E42C029C2AA"
             },
             {
-                "targetId": "BC3EC2655FA092559AA3325077B31C91",
+                "targetId": "FADA3F3B59548438FB8F1939F0B08DF3",
                 "type": "iframe",
                 "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
                 "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
                 "attached": false,
-                "parentId": "A8D8AF363F02CC9F4FB7751F69077665",
+                "parentId": "6A7DE8C76EB44E8D1A5B7E488FC07ED6",
                 "canAccessOpener": false,
-                "parentFrameId": "A8D8AF363F02CC9F4FB7751F69077665",
-                "browserContextId": "C66B9858D17BDB07781341A0C3BB2889"
+                "parentFrameId": "6A7DE8C76EB44E8D1A5B7E488FC07ED6",
+                "browserContextId": "83DBC682E2B443E8EBD17E42C029C2AA"
             },
             {
-                "targetId": "B1895EBC39B962072913EB7C538BF1BF",
+                "targetId": "EEB88333A87E70403042B1301E455D14",
                 "type": "page",
                 "title": "R05 development",
                 "url": "http://127.0.0.1:9054/development",
                 "attached": true,
                 "canAccessOpener": false,
-                "browserContextId": "C66B9858D17BDB07781341A0C3BB2889"
+                "browserContextId": "83DBC682E2B443E8EBD17E42C029C2AA"
             },
             {
-                "targetId": "EF849EB98607B3AE857A9687009CEBC7",
+                "targetId": "C1FA327A02695CF4855EC23566EA6A97",
                 "type": "page",
                 "title": "DevTools - about:blank",
                 "url": "devtools://devtools/bundled/devtools_app.html?remoteBase=https://chrome-devtools-frontend.appspot.com/serve_file/@0e66b94549a8bd85f03fbdf189b752d6e7b63c32/&targetType=tab&can_dock=true&disableSelfXssWarnings=true",
                 "attached": true,
                 "canAccessOpener": false,
-                "browserContextId": "C66B9858D17BDB07781341A0C3BB2889"
+                "browserContextId": "83DBC682E2B443E8EBD17E42C029C2AA"
             },
             {
-                "targetId": "B3FAE1DAA463A4D095F1DB5003359BCB",
+                "targetId": "2BA0454A9EF808580D36099AA8BEC528",
                 "type": "iframe",
                 "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
                 "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
                 "attached": false,
-                "parentId": "EF849EB98607B3AE857A9687009CEBC7",
+                "parentId": "C1FA327A02695CF4855EC23566EA6A97",
                 "canAccessOpener": false,
-                "parentFrameId": "EF849EB98607B3AE857A9687009CEBC7",
-                "browserContextId": "C66B9858D17BDB07781341A0C3BB2889"
+                "parentFrameId": "C1FA327A02695CF4855EC23566EA6A97",
+                "browserContextId": "83DBC682E2B443E8EBD17E42C029C2AA"
             },
             {
-                "targetId": "77439EC77E7FEA128C2DAF69F2E4FF2E",
+                "targetId": "C1880A2DD3F347C87EC02795D139C830",
                 "type": "iframe",
                 "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
                 "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
                 "attached": false,
-                "parentId": "EF849EB98607B3AE857A9687009CEBC7",
+                "parentId": "C1FA327A02695CF4855EC23566EA6A97",
                 "canAccessOpener": false,
-                "parentFrameId": "EF849EB98607B3AE857A9687009CEBC7",
-                "browserContextId": "C66B9858D17BDB07781341A0C3BB2889"
+                "parentFrameId": "C1FA327A02695CF4855EC23566EA6A97",
+                "browserContextId": "83DBC682E2B443E8EBD17E42C029C2AA"
             }
         ]
     },
     "results": [
         {
             "target": {
-                "targetId": "3792B215A3FB873DDF6D06AB44369987",
+                "targetId": "24BCDCAA92004E5D09A07071CDAA0584",
                 "type": "iframe",
                 "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
                 "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
                 "attached": false,
-                "parentId": "A8D8AF363F02CC9F4FB7751F69077665",
+                "parentId": "6A7DE8C76EB44E8D1A5B7E488FC07ED6",
                 "canAccessOpener": false,
-                "parentFrameId": "A8D8AF363F02CC9F4FB7751F69077665",
-                "browserContextId": "C66B9858D17BDB07781341A0C3BB2889"
+                "parentFrameId": "6A7DE8C76EB44E8D1A5B7E488FC07ED6",
+                "browserContextId": "83DBC682E2B443E8EBD17E42C029C2AA"
             },
             "result": {
                 "id": 1,
@@ -140,7 +140,7 @@
                         "value": {
                             "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
                             "body": "\n    \n\n",
-                            "tabId": 1049364776,
+                            "tabId": 785707349,
                             "inspected": {
                                 "url": "http://127.0.0.1:9054/development",
                                 "detected": true,
@@ -169,15 +169,15 @@
         },
         {
             "target": {
-                "targetId": "BC3EC2655FA092559AA3325077B31C91",
+                "targetId": "FADA3F3B59548438FB8F1939F0B08DF3",
                 "type": "iframe",
                 "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
                 "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
                 "attached": false,
-                "parentId": "A8D8AF363F02CC9F4FB7751F69077665",
+                "parentId": "6A7DE8C76EB44E8D1A5B7E488FC07ED6",
                 "canAccessOpener": false,
-                "parentFrameId": "A8D8AF363F02CC9F4FB7751F69077665",
-                "browserContextId": "C66B9858D17BDB07781341A0C3BB2889"
+                "parentFrameId": "6A7DE8C76EB44E8D1A5B7E488FC07ED6",
+                "browserContextId": "83DBC682E2B443E8EBD17E42C029C2AA"
             },
             "result": {
                 "id": 1,
@@ -187,7 +187,7 @@
                         "value": {
                             "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
                             "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nOverview\nTransport\nExtension\nConnection\nConnected\nLast commit\nNot available\nRoutes\nNot available\nReact renderers\nreact-dom\nreact-dom\nReact 19.1.1\nDetected\nRoots\nreact-root:1\nreact-root:1\nUnknown\nRenderer 1\nCommits 0\nReady\nIntegrations\nBrowser extension\nTransport\nPerformance diagnostics\nHigh performance mode\nDisabled\nTimeline recording\nDisabled\nLast commit time\nNot available",
-                            "tabId": 1049364776,
+                            "tabId": 785707349,
                             "inspected": {
                                 "url": "http://127.0.0.1:9054/development",
                                 "detected": true,
@@ -216,15 +216,15 @@
         },
         {
             "target": {
-                "targetId": "B3FAE1DAA463A4D095F1DB5003359BCB",
+                "targetId": "2BA0454A9EF808580D36099AA8BEC528",
                 "type": "iframe",
                 "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
                 "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
                 "attached": false,
-                "parentId": "EF849EB98607B3AE857A9687009CEBC7",
+                "parentId": "C1FA327A02695CF4855EC23566EA6A97",
                 "canAccessOpener": false,
-                "parentFrameId": "EF849EB98607B3AE857A9687009CEBC7",
-                "browserContextId": "C66B9858D17BDB07781341A0C3BB2889"
+                "parentFrameId": "C1FA327A02695CF4855EC23566EA6A97",
+                "browserContextId": "83DBC682E2B443E8EBD17E42C029C2AA"
             },
             "result": {
                 "id": 1,
@@ -234,7 +234,7 @@
                         "value": {
                             "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
                             "body": "\n    \n\n",
-                            "tabId": 1049364775,
+                            "tabId": 785707348,
                             "exception": {
                                 "code": "E_FAILED",
                                 "description": "Operation failed: %s",
@@ -248,15 +248,15 @@
         },
         {
             "target": {
-                "targetId": "77439EC77E7FEA128C2DAF69F2E4FF2E",
+                "targetId": "C1880A2DD3F347C87EC02795D139C830",
                 "type": "iframe",
                 "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
                 "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
                 "attached": false,
-                "parentId": "EF849EB98607B3AE857A9687009CEBC7",
+                "parentId": "C1FA327A02695CF4855EC23566EA6A97",
                 "canAccessOpener": false,
-                "parentFrameId": "EF849EB98607B3AE857A9687009CEBC7",
-                "browserContextId": "C66B9858D17BDB07781341A0C3BB2889"
+                "parentFrameId": "C1FA327A02695CF4855EC23566EA6A97",
+                "browserContextId": "83DBC682E2B443E8EBD17E42C029C2AA"
             },
             "result": {
                 "id": 1,
@@ -266,7 +266,7 @@
                         "value": {
                             "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
                             "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nConnection failed\n\nDevTools handshake timed out\n\nDisconnected\nTroubleshooting",
-                            "tabId": 1049364775,
+                            "tabId": 785707348,
                             "exception": {
                                 "code": "E_FAILED",
                                 "description": "Operation failed: %s",
@@ -283,7 +283,7 @@
     "modelChecks": {
         "before": {
             "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
-            "tabId": 1049364776,
+            "tabId": 785707349,
             "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nR05Counter\nfunction\nv\nmain\nhost\nh1\nhost\np\nhost\noutput\nhost\nbutton\nhost\n\nSelected component\nR05Counter\n\nNo source file\n\nNAME\nR05Counter\nCOMPONENT ID\nreact-root~3A1:0:FunctionComponent:R05Counter\nTAGS\nNone\nRead-only\nProps\nmessage\n\"R05 observed prop\"\nHooks\nHook 0 (state)\n0",
             "nodes": [
                 {
@@ -312,7 +312,7 @@
         },
         "after": {
             "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
-            "tabId": 1049364776,
+            "tabId": 785707349,
             "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nR05Counter\nfunction\nv\nmain\nhost\nh1\nhost\np\nhost\noutput\nhost\nbutton\nhost\n\nSelected component\nR05Counter\n\nNo source file\n\nNAME\nR05Counter\nCOMPONENT ID\nreact-root~3A1:0:FunctionComponent:R05Counter\nTAGS\nNone\nRead-only\nProps\nmessage\n\"R05 observed prop\"\nHooks\nHook 0 (state)\n1",
             "nodes": [
                 {

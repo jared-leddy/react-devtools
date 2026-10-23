@@ -1,8 +1,8 @@
 {
-    "recordedAt": "2026-10-23T05:52:07.152Z",
-    "applicationSourceCommit": "7b584d41e888b7a1c579dd77c9e4a9f3deafbf33",
-    "verificationHead": "9f3ed5079b422bbf03161ae4671a96163ac67de0",
-    "provenanceNote": "Subsequent commits change only generated-artifact ignore rules and native diagnostic screenshot/negative-state checks. Application JS, fixture source and versioned release artifacts are unchanged. Native captures use the actual compiled extension builds, not the overlay.",
+    "recordedAt": "2026-10-23T06:05:36.086Z",
+    "applicationSourceCommit": "5e3abcdcc7d593f9b5fe2dce2371cd89e6092d1b",
+    "verificationHead": "5e3abcdcc7d593f9b5fe2dce2371cd89e6092d1b",
+    "provenanceNote": "All native and host-matrix captures were refreshed after the final unsupported-tree capability fix. Subsequent commits update verification documentation only. Native captures use the actual compiled extension builds, not the overlay.",
     "platform": "darwin/x64",
     "node": "v24.16.0",
     "fixture": {
@@ -29,7 +29,7 @@
             "mode": "development",
             "record": "chrome-development.json",
             "screenshot": "chrome-development.png",
-            "capturedAt": "2026-10-23T05:48:33.180Z",
+            "capturedAt": "2026-10-23T06:02:59.605Z",
             "observedVersion": "Chrome/155.0.8059.85"
         },
         {
@@ -37,7 +37,7 @@
             "mode": "production",
             "record": "chrome-production.json",
             "screenshot": "chrome-production.png",
-            "capturedAt": "2026-10-23T05:49:30.325Z",
+            "capturedAt": "2026-10-23T06:03:19.406Z",
             "observedVersion": "Chrome/155.0.8059.85"
         },
         {
@@ -45,7 +45,7 @@
             "mode": "empty",
             "record": "chrome-empty.json",
             "screenshot": "chrome-empty.png",
-            "capturedAt": "2026-10-23T05:45:29.839Z",
+            "capturedAt": "2026-10-23T06:03:37.864Z",
             "observedVersion": "Chrome/155.0.8059.85"
         },
         {
@@ -53,7 +53,7 @@
             "mode": "non-react",
             "record": "chrome-non-react.json",
             "screenshot": "chrome-non-react.png",
-            "capturedAt": "2026-10-23T05:50:18.573Z",
+            "capturedAt": "2026-10-23T06:03:56.103Z",
             "observedVersion": "Chrome/155.0.8059.85"
         },
         {
@@ -61,7 +61,7 @@
             "mode": "development",
             "record": "firefox-development.json",
             "screenshot": "firefox-development.png",
-            "capturedAt": "2026-10-23T05:44:16.151Z",
+            "capturedAt": "2026-10-23T06:03:07.428Z",
             "observedVersion": "159.0"
         },
         {
@@ -69,7 +69,7 @@
             "mode": "production",
             "record": "firefox-production.json",
             "screenshot": "firefox-production.png",
-            "capturedAt": "2026-10-23T05:45:00.208Z",
+            "capturedAt": "2026-10-23T06:03:27.840Z",
             "observedVersion": "159.0"
         },
         {
@@ -77,7 +77,7 @@
             "mode": "empty",
             "record": "firefox-empty.json",
             "screenshot": "firefox-empty.png",
-            "capturedAt": "2026-10-23T05:45:37.423Z",
+            "capturedAt": "2026-10-23T06:03:48.229Z",
             "observedVersion": "159.0"
         },
         {
@@ -85,25 +85,20 @@
             "mode": "non-react",
             "record": "firefox-non-react.json",
             "screenshot": "firefox-non-react.png",
-            "capturedAt": "2026-10-23T05:49:35.197Z",
+            "capturedAt": "2026-10-23T06:04:08.698Z",
             "observedVersion": "159.0"
         }
     ],
     "files": [
         {
             "path": "packages/devtools-client/dist/library/devtools-client.js",
-            "bytes": 132656,
-            "sha256": "7acc16850d3ceef87f1b9423dcac2a4a33d1a9e9c7b115f684c82a7b8507b408"
+            "bytes": 133069,
+            "sha256": "fa5862cad06ae5cb24c0896d88266192f5823c4b305ecfb42b68b4959c119708"
         },
         {
             "path": "packages/devtools-client/dist/library/style.css",
             "bytes": 26062,
             "sha256": "c55ad38654ecfdf376d1278c7d1e5af4dfc3c0d225b805a99cdae9b25b2aa8de"
-        },
-        {
-            "path": "packages/devtools-client/dist/standalone/assets/index-5s5wGcRK.js",
-            "bytes": 344402,
-            "sha256": "05019ddfd6cc000f731d6ed1fc804d946c3109ef4a1ad64ea38d49620dfb290e"
         },
         {
             "path": "packages/devtools-client/dist/standalone/assets/index-BLIbyS7D.js",
@@ -116,9 +111,14 @@
             "sha256": "533047b526d8337b3058a85b56c4e361578b35bbd376a3f14f0f6b23ef82fec9"
         },
         {
+            "path": "packages/devtools-client/dist/standalone/assets/index-CrRagbhW.js",
+            "bytes": 344692,
+            "sha256": "853fe65588a3f3e7565d47bf50b3d0c6504e5ae66b69cf355262f9f02c698408"
+        },
+        {
             "path": "packages/devtools-client/dist/standalone/index.html",
             "bytes": 436,
-            "sha256": "62e3e807515ac851976883d053440165f9f6db4a9819eb627668892d98019e5d"
+            "sha256": "40375dfd7d605db141e52a22e1f78cd7f6d1828075b7df6ef36cba817f1a49ab"
         },
         {
             "path": "packages/devtools-overlay/dist/devtools-overlay.css",
@@ -207,8 +207,8 @@
         },
         {
             "path": "packages/devtools-chrome-extension/dist/devtoolsPanel.js",
-            "bytes": 139555,
-            "sha256": "364cee772fe3c5abe56d63e4f19e556a2701be977c72a10214f3c2bbf47ef9c1"
+            "bytes": 139845,
+            "sha256": "2c9ff1e8f499159201db00a8a5a6d0e605eed024f5d0d01e788964149591589b"
         },
         {
             "path": "packages/devtools-chrome-extension/dist/index.js",
@@ -327,8 +327,8 @@
         },
         {
             "path": "packages/devtools-firefox-extension/dist/devtoolsPanel.js",
-            "bytes": 139576,
-            "sha256": "c3e21dbb3da0561bd97acbb3fb7301ea47003698deb3871cac05e32dff198762"
+            "bytes": 139866,
+            "sha256": "028cbba1615c7fa75b01428f4cbb9a660d125b01b704b68c0f7908dbf7fe3e0c"
         },
         {
             "path": "packages/devtools-firefox-extension/dist/index.js",
@@ -384,19 +384,19 @@
     "archives": [
         {
             "path": "dist/extensions/react-devtools-chrome-extension-v0.0.19.zip",
-            "bytes": 154839,
-            "sha256": "f77538ec02161cd89edffe8912945747535f80029f6c5cb9b19e50eff62d289f"
+            "bytes": 154914,
+            "sha256": "b395a681d9c63f7378085daebcc4dae07aa0b555532da22a7b6219faa531788b"
         },
         {
             "path": "dist/extensions/react-devtools-firefox-extension-v0.0.10.zip",
-            "bytes": 154811,
-            "sha256": "8588f435e6725808f94884e34bf98f0417ee52ecee74fce90f4cdd80d58ca35a"
+            "bytes": 154887,
+            "sha256": "cb80cd240cd4c4fb765846a8c9224c8eb4bfb97111292941867af4c629025bb4"
         }
     ],
     "coverage": {
         "core": "All files         |   93.21 |    82.03 |   94.96 |   93.51 |",
         "kit": "All files                                |   90.97 |    81.95 |   89.71 |   91.24 |",
-        "client": "All files                |   91.82 |    81.24 |   93.91 |   91.88 |",
+        "client": "All files                |   91.83 |    81.31 |   93.91 |   91.89 |",
         "overlay": "All files           |   94.38 |    81.59 |   97.61 |   94.23 |",
         "chrome-extension": "All files                |   94.08 |    86.41 |   96.34 |   94.31 |",
         "firefox-extension": "All files           |   96.45 |    83.94 |   98.14 |   96.42 |",
@@ -407,15 +407,15 @@
         "bundles": [
             {
                 "name": "client-library",
-                "rawBytes": 158718,
-                "gzipBytes": 34119,
+                "rawBytes": 159131,
+                "gzipBytes": 34178,
                 "files": 2,
                 "limits": { "rawBytes": 190000, "gzipBytes": 42000 }
             },
             {
                 "name": "client-standalone",
-                "rawBytes": 377529,
-                "gzipBytes": 114455,
+                "rawBytes": 377819,
+                "gzipBytes": 114522,
                 "files": 3,
                 "limits": { "rawBytes": 430000, "gzipBytes": 130000 }
             },
@@ -428,15 +428,15 @@
             },
             {
                 "name": "chrome-extension",
-                "rawBytes": 466645,
-                "gzipBytes": 146955,
+                "rawBytes": 466935,
+                "gzipBytes": 147030,
                 "files": 19,
                 "limits": { "rawBytes": 500000, "gzipBytes": 160000 }
             },
             {
                 "name": "firefox-extension",
-                "rawBytes": 467474,
-                "gzipBytes": 147434,
+                "rawBytes": 467764,
+                "gzipBytes": 147510,
                 "files": 20,
                 "limits": { "rawBytes": 500000, "gzipBytes": 160000 }
             }

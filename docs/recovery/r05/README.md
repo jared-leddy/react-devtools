@@ -68,8 +68,9 @@ Chrome 0.0.19; Firefox 0.0.10 (Firefox 128+). Development release only.
 [Build identity, archive hashes, bundle sizes and coverage](evidence/build.json),
 [host matrix observations](evidence/hosts.json) and
 [evidence checksums](evidence/SHA256SUMS) record the delivered build. Application
-source is `7b584d41e888b7a1c579dd77c9e4a9f3deafbf33`; subsequent commits change
-only ignore rules and diagnostic capture/check behavior, not application JS.
+source is `5e3abcdcc7d593f9b5fe2dce2371cd89e6092d1b`; all captures were refreshed
+after its unsupported-tree capability fix. Subsequent changes are verification
+documentation only, not application JS.
 All final native captures use the versioned builds and verified actual app context.
 
 Installed Chrome 155.0.8059.85 and Firefox 159.0 each verified all four modes:
