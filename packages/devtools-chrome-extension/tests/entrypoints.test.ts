@@ -756,7 +756,7 @@ describe('extension entrypoints', () => {
             components: [
                 expect.objectContaining({
                     displayName: 'App',
-                    id: 'react-root~3A1:0:FunctionComponent:App',
+                    id: expect.stringMatching(/^c:[0-9a-f-]{36}:[0-9a-z]+$/),
                     rootId: 'react-root:1',
                     type: 'function'
                 })
@@ -764,11 +764,15 @@ describe('extension entrypoints', () => {
         });
         expect(
             serverFunctions.getComponentState({
-                componentId: 'react-root~3A1:0:FunctionComponent:App',
+                componentId: serverFunctions.getComponents({
+                    rootId: 'react-root:1'
+                }).components[0].id,
                 rootId: 'react-root:1'
             })
         ).toMatchObject({
-            componentId: 'react-root~3A1:0:FunctionComponent:App',
+            componentId: serverFunctions.getComponents({
+                rootId: 'react-root:1'
+            }).components[0].id,
             rootId: 'react-root:1',
             sections: [
                 {
@@ -831,13 +835,15 @@ describe('extension entrypoints', () => {
         );
         expect(readValue).not.toHaveBeenCalled();
         functions.getComponentState({
-            componentId: 'react-root~3A1:0:FunctionComponent:App',
+            componentId: functions.getComponents({ rootId: 'react-root:1' })
+                .components[0].id,
             rootId: 'react-root:1'
         });
         expect(readValue).toHaveBeenCalledTimes(1);
         expect(
             functions.getComponentState({
-                componentId: 'react-root~3A1:0:FunctionComponent:App',
+                componentId: functions.getComponents({ rootId: 'react-root:1' })
+                    .components[0].id,
                 rootId: 'wrong-root'
             })
         ).toBeUndefined();
@@ -882,7 +888,9 @@ describe('extension entrypoints', () => {
             1
         );
         functions.selectRoot('react-root:1');
-        functions.selectComponent('react-root~3A1:0:FunctionComponent:App');
+        functions.selectComponent(
+            functions.getComponents({ rootId: 'react-root:1' }).components[0].id
+        );
         root.current.memoizedState = { element: null };
         hook.emit('commit-fiber-root', { rendererID: 1, root });
         jest.advanceTimersByTime(16);

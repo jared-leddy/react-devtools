@@ -8,6 +8,79 @@ jest.mock('@devtools/kit', () => ({
     }))
 }));
 describe('shared page backend', () => {
+    it('roundtrips observed DOM bounds, rejects wrong roots, and retires removed selections and highlights', () => {
+        jest.useFakeTimers();
+        const target = createMockUserAppWindow();
+        const hook = createMockReactHook();
+        target.__REACT_DEVTOOLS_GLOBAL_HOOK__ = hook;
+        const root = [
+            ...hook.getFiberRoots(1)
+        ][0] as import('../src/index.js').ReactFiberRoot;
+        const app = root.current.child!;
+        app.child = {
+            ...app,
+            tag: 5,
+            type: 'article',
+            child: null,
+            sibling: null,
+            return: app,
+            stateNode: {
+                nodeType: 1,
+                tagName: 'ARTICLE',
+                getBoundingClientRect: () => ({
+                    x: 10,
+                    y: 20,
+                    width: 30,
+                    height: 40
+                })
+            }
+        };
+        const { createRpcServer } = jest.requireMock('@devtools/kit') as {
+            createRpcServer: jest.Mock;
+        };
+        const backend = createPageBackend(
+            target,
+            createExtensionServerChannel()
+        );
+        const functions = createRpcServer.mock.calls.at(-1)![0];
+        const session = functions.handshake({ clientId: 'identity-test' });
+        const id = functions.getComponents({ rootId: 'react-root:1' })
+            .components[0].id;
+        expect(
+            functions.getComponentState({
+                rootId: 'react-root:1',
+                componentId: id
+            })
+        ).toMatchObject({ domRect: { x: 10, y: 20, width: 30, height: 40 } });
+        functions.selectComponent(id);
+        functions.highlightComponent({
+            rootId: 'react-root:1',
+            componentId: id
+        });
+        expect(
+            functions.highlightComponent({
+                rootId: 'other-root',
+                componentId: id
+            }).highlightedComponentId
+        ).toBeNull();
+        functions.highlightComponent({
+            rootId: 'react-root:1',
+            componentId: id
+        });
+        root.current.child = null;
+        hook.emit('commit-fiber-root', { rendererID: 1, root });
+        jest.advanceTimersByTime(16);
+        const state = functions.getSessionSnapshot(session).state;
+        expect(state.selectedComponentId).toBeNull();
+        expect(state.highlightedComponentId).toBeNull();
+        expect(
+            functions.getComponentState({
+                rootId: 'react-root:1',
+                componentId: id
+            })
+        ).toBeUndefined();
+        backend.dispose?.();
+    });
     afterEach(() => {
         jest.useRealTimers();
         jest.clearAllMocks();
@@ -72,7 +145,7 @@ describe('shared page backend', () => {
             components: [
                 expect.objectContaining({
                     displayName: 'App',
-                    id: 'react-root~3A1:0:FunctionComponent:App',
+                    id: expect.stringMatching(/^c:[0-9a-f-]{36}:[0-9a-z]+$/),
                     rootId: 'react-root:1',
                     type: 'function'
                 })
@@ -80,11 +153,15 @@ describe('shared page backend', () => {
         });
         expect(
             serverFunctions.getComponentState({
-                componentId: 'react-root~3A1:0:FunctionComponent:App',
+                componentId: serverFunctions.getComponents({
+                    rootId: 'react-root:1'
+                }).components[0].id,
                 rootId: 'react-root:1'
             })
         ).toMatchObject({
-            componentId: 'react-root~3A1:0:FunctionComponent:App',
+            componentId: serverFunctions.getComponents({
+                rootId: 'react-root:1'
+            }).components[0].id,
             rootId: 'react-root:1',
             sections: [
                 {
@@ -150,13 +227,15 @@ describe('shared page backend', () => {
         );
         expect(readValue).not.toHaveBeenCalled();
         functions.getComponentState({
-            componentId: 'react-root~3A1:0:FunctionComponent:App',
+            componentId: functions.getComponents({ rootId: 'react-root:1' })
+                .components[0].id,
             rootId: 'react-root:1'
         });
         expect(readValue).toHaveBeenCalledTimes(1);
         expect(
             functions.getComponentState({
-                componentId: 'react-root~3A1:0:FunctionComponent:App',
+                componentId: functions.getComponents({ rootId: 'react-root:1' })
+                    .components[0].id,
                 rootId: 'wrong-root'
             })
         ).toBeUndefined();
@@ -204,7 +283,9 @@ describe('shared page backend', () => {
             1
         );
         functions.selectRoot('react-root:1');
-        functions.selectComponent('react-root~3A1:0:FunctionComponent:App');
+        functions.selectComponent(
+            functions.getComponents({ rootId: 'react-root:1' }).components[0].id
+        );
         root.current.memoizedState = { element: null };
         hook.emit('commit-fiber-root', { rendererID: 1, root });
         jest.advanceTimersByTime(16);

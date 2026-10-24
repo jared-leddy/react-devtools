@@ -8,6 +8,7 @@ if (!url) throw new Error('Provide a fixture URL');
 const output = process.argv[3] ?? '/private/tmp/r03-firefox';
 const updateMode = process.argv.includes('--updates');
 const modelMode = process.argv.includes('--models');
+const identityMode = process.argv.includes('--identity');
 const emptyMode = process.argv.includes('--empty');
 const nonReactMode = process.argv.includes('--non-react');
 const port = await new Promise((resolve, reject) => {
@@ -116,6 +117,103 @@ try {
         });
     const toolbox = await showToolbox();
     console.log('Native Firefox', JSON.stringify({ app, toolbox }));
+    let identityChecks;
+    if (identityMode) {
+        await command('Marionette:SetContext', { value: 'content' });
+        await execute(
+            `window.__r06Inspections=[];const pending=new Set();window.addEventListener('message',event=>{const rpc=event.data?.payload?.json;if(rpc?.m==='getComponentState')pending.add(rpc.i);if(rpc?.t==='s'&&pending.has(rpc.i)){window.__r06Inspections.push(rpc.r);pending.delete(rpc.i);}});return true;`
+        );
+        await command('Marionette:SetContext', { value: 'chrome' });
+        await command('WebDriver:ExecuteAsyncScript', {
+            script: `const done=arguments[arguments.length-1];const {require}=ChromeUtils.importESModule('resource://devtools/shared/loader/Loader.sys.mjs');const {gDevTools}=require('devtools/client/framework/devtools');gDevTools.showToolboxForTab(gBrowser.selectedTab).then(t=>{t.doc.querySelector('iframe[aria-label=React]').contentDocument.querySelector('browser').focus();done(true);});`,
+            args: [],
+            newSandbox: true
+        });
+        const keys = async (values) =>
+            command('WebDriver:PerformActions', {
+                actions: [
+                    {
+                        type: 'key',
+                        id: 'identity-keys',
+                        actions: values.flatMap((value) => [
+                            { type: 'keyDown', value },
+                            { type: 'keyUp', value }
+                        ])
+                    }
+                ]
+            });
+        await keys(['\uE004', '\uE004', '\uE004', '\uE004', '\uE007']);
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        await keys([
+            '\uE004',
+            '\uE004',
+            '\uE004',
+            ...'Row',
+            '\uE004',
+            '\uE004',
+            '\uE011'
+        ]);
+        let selected;
+        for (let i = 0; i < 30; i++) {
+            await command('Marionette:SetContext', { value: 'chrome' });
+            await keys(['\uE015']);
+            await new Promise((resolve) => setTimeout(resolve, 150));
+            await command('Marionette:SetContext', { value: 'content' });
+            selected = (await execute('return window.__r06Inspections.at(-1);'))
+                .value;
+            if (
+                selected?.sections?.some((section) =>
+                    section.fields.some(
+                        (field) => field.name === 'rowId' && field.value === 'b'
+                    )
+                )
+            )
+                break;
+        }
+        assert(
+            selected?.sections?.some((section) =>
+                section.fields.some(
+                    (field) => field.name === 'rowId' && field.value === 'b'
+                )
+            ),
+            'Native keyboard did not select row b'
+        );
+        const snapshots = [{ stage: 'selected', inspection: selected }];
+        for (const [stage, selector] of [
+            ['increment', '#increment-b'],
+            ['reorder', '#reorder'],
+            ['rename', '#rename']
+        ]) {
+            await execute(
+                `document.querySelector(${JSON.stringify(selector)}).click();return true;`
+            );
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            const observed = (
+                await execute(
+                    'const rect=document.querySelector("[data-row=b]").getBoundingClientRect();return {inspection:window.__r06Inspections.at(-1),rect:{x:rect.x,y:rect.y,width:rect.width,height:rect.height}};'
+                )
+            ).value;
+            assert.equal(observed.inspection.componentId, selected.componentId);
+            assert.deepEqual(observed.inspection.domRect, observed.rect);
+            assert(
+                observed.inspection.sections.some((section) =>
+                    section.fields.some(
+                        (field) =>
+                            field.name.startsWith('Hook 0 (') &&
+                            field.value === 1
+                    )
+                )
+            );
+            snapshots.push({ stage, ...observed });
+        }
+        identityChecks = { snapshots };
+        await command('Marionette:SetContext', { value: 'chrome' });
+        const shot = await command('WebDriver:TakeScreenshot', { full: true });
+        fs.writeFileSync(
+            `${output}/identity.png`,
+            Buffer.from(shot.value, 'base64')
+        );
+    }
     let modelChecks;
     if (modelMode && nonReactMode) {
         assert.equal(app.value.renderers.length, 0);
@@ -345,7 +443,14 @@ try {
     fs.writeFileSync(
         `${output}/result.json`,
         JSON.stringify(
-            { session, app, toolbox, updateChecks, modelChecks },
+            {
+                session,
+                app,
+                toolbox,
+                updateChecks,
+                modelChecks,
+                identityChecks
+            },
             null,
             4
         )

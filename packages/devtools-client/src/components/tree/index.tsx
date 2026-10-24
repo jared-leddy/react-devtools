@@ -8,6 +8,7 @@ import {
 import type { StateViewerSection } from '../state';
 
 export interface ComponentTreeNode {
+    componentKey?: string | null;
     children?: ComponentTreeNode[];
     elementId?: string;
     id: string;
@@ -82,6 +83,20 @@ export function VirtualizedComponentTree({
     const [expandedIds, setExpandedIds] = useState(
         () => new Set(computedDefaultExpandedIds)
     );
+    const knownExpandableIds = useRef(new Set(computedDefaultExpandedIds));
+    useEffect(() => {
+        const nextKnown = new Set(computedDefaultExpandedIds);
+        const previousKnown = knownExpandableIds.current;
+        setExpandedIds((current) => {
+            const next = new Set(
+                [...current].filter((id) => nextKnown.has(id))
+            );
+            for (const id of nextKnown)
+                if (!previousKnown.has(id)) next.add(id);
+            return next;
+        });
+        knownExpandableIds.current = nextKnown;
+    }, [computedDefaultExpandedIds]);
     const [selectedId, setSelectedId] = useState(
         () => initialSelectedId ?? findFirstNodeId(nodes) ?? ''
     );
@@ -265,6 +280,8 @@ function TreeRow({
                 isSelected ? ' dt-components-tree__row--selected' : ''
             }`}
             data-node-id={row.node.id}
+            data-component-key={row.node.componentKey ?? undefined}
+            data-root-id={row.node.rootId}
             id={getComponentTreeItemId(row.node.id)}
             onMouseEnter={() => {
                 highlightBridge?.highlightElement?.(highlightRequest);
@@ -315,6 +332,11 @@ function TreeRow({
                         {tag}
                     </span>
                 ))}
+                {row.node.componentKey != null ? (
+                    <span className="dt-components-tree__tag">
+                        key: {row.node.componentKey}
+                    </span>
+                ) : null}
             </button>
         </div>
     );

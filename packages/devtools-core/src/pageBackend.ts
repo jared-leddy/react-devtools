@@ -11,7 +11,11 @@ import { createDevToolsUpdatePublisher } from './updates.js';
 import { createFiberRootRegistry } from './fiber/record.js';
 import { createFiberWalker } from './fiberWalker.js';
 import { getHooksStateSection, getPropsStateSection } from './fiber/state.js';
-import { highlightElement, unhighlightElement } from './highlighter.js';
+import {
+    getBoundingRect,
+    highlightElement,
+    unhighlightElement
+} from './highlighter.js';
 import {
     inspectReactFiberContexts,
     inspectReactFiberDiagnostics,
@@ -229,12 +233,15 @@ function createUserAppServerFunctions(
                 : undefined;
         },
         highlightComponent(request) {
-            const fiber = findFiberByComponentId(registry, request.componentId);
+            if (hasPendingRefresh()) flushRefresh();
+            const fiber = registry.records
+                .find((record) => record.id === request.rootId)
+                ?.instanceMap.get(request.componentId);
 
             if (!fiber) {
                 unhighlightElement();
 
-                return coreFunctions.highlightComponent(request);
+                return store.update({ highlightedComponentId: null });
             }
 
             highlightElement(fiber);
@@ -522,11 +529,24 @@ function refreshRootsAndComponents({
         updatedAt: Date.now()
     }));
     const components = registry.records.flatMap((record) =>
-        walker.getComponentTree(record.root, { rootId: record.id })
+        walker.getComponentTree(record.root, {
+            rootId: record.id,
+            identities: record.identities
+        })
     );
 
     store.setRoots(roots);
-    store.setComponents(flattenComponents(components));
+    const flatComponents = flattenComponents(components);
+    store.setComponents(flatComponents);
+    const activeIds = new Set(flatComponents.map((component) => component.id));
+    const selected = store.getState().selectedComponentId;
+    if (selected && !activeIds.has(selected))
+        store.update({ selectedComponentId: null });
+    const highlighted = store.getState().highlightedComponentId;
+    if (highlighted && !activeIds.has(highlighted)) {
+        unhighlightElement();
+        store.update({ highlightedComponentId: null });
+    }
 
     for (const record of registry.records) record.refresh();
 }
@@ -536,7 +556,18 @@ function createComponentStateResponse(
     rootId: string,
     fiber: ReactFiber
 ): ComponentStateResponse {
+    const rect = getBoundingRect(fiber);
     return {
+        ...(rect
+            ? {
+                  domRect: {
+                      x: rect.x,
+                      y: rect.y,
+                      width: rect.width,
+                      height: rect.height
+                  }
+              }
+            : {}),
         componentId,
         contexts: inspectReactFiberContexts(fiber).map(
             ({ value: _value, ...context }) => context
@@ -554,21 +585,6 @@ function flattenComponents(nodes: ComponentNode[]): ComponentNode[] {
         node,
         ...flattenComponents(node.children ?? [])
     ]);
-}
-
-function findFiberByComponentId(
-    registry: ReturnType<typeof createFiberRootRegistry>,
-    componentId: string
-): ReactFiber | null {
-    for (const record of registry.records) {
-        const fiber = record.instanceMap.get(componentId);
-
-        if (fiber) {
-            return fiber;
-        }
-    }
-
-    return null;
 }
 
 function createRootEvent({

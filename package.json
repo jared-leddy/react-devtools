@@ -1,6 +1,6 @@
 {
     "name": "react-devtools",
-    "version": "0.1.11",
+    "version": "0.1.12",
     "private": true,
     "license": "UNLICENSED",
     "scripts": {
@@ -12,8 +12,8 @@
         "extensions:prepare": "node scripts/extension-release.mjs prepare",
         "extensions:version": "node scripts/extension-release.mjs version",
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-        "format:check": "prettier --check \"**/*.{ts,tsx,md}\" scripts/bundle-checks.mjs scripts/check-bundles.mjs scripts/bundle-checks.test.mjs scripts/eslint.config.mjs scripts/bundle-budgets.json scripts/extension-classic-scripts.mjs scripts/extension-classic-scripts.test.mjs scripts/native-session-chrome.mjs scripts/native-session-firefox.mjs scripts/session-integration.test.mjs docs/recovery/r04/serve-fixture.mjs scripts/model-guards.test.mjs scripts/model-smoke.mjs docs/recovery/r05/serve-fixture.mjs docs/recovery/r05/verify-models.mjs",
-        "lint": "turbo lint && eslint --config scripts/eslint.config.mjs scripts/bundle-checks.mjs scripts/check-bundles.mjs scripts/bundle-checks.test.mjs scripts/extension-classic-scripts.mjs scripts/extension-classic-scripts.test.mjs scripts/native-session-chrome.mjs scripts/native-session-firefox.mjs scripts/session-integration.test.mjs docs/recovery/r04/serve-fixture.mjs scripts/model-guards.test.mjs scripts/model-smoke.mjs docs/recovery/r05/serve-fixture.mjs docs/recovery/r05/verify-models.mjs",
+        "format:check": "prettier --check \"**/*.{ts,tsx,md}\" scripts/bundle-checks.mjs scripts/check-bundles.mjs scripts/bundle-checks.test.mjs scripts/eslint.config.mjs scripts/bundle-budgets.json scripts/extension-classic-scripts.mjs scripts/extension-classic-scripts.test.mjs scripts/native-session-chrome.mjs scripts/native-session-firefox.mjs scripts/session-integration.test.mjs docs/recovery/r04/serve-fixture.mjs scripts/model-guards.test.mjs scripts/model-smoke.mjs docs/recovery/r05/serve-fixture.mjs docs/recovery/r05/verify-models.mjs scripts/identity-smoke.mjs scripts/native-identity.mjs docs/recovery/r06/serve-fixture.mjs docs/recovery/r06/verify-identity.mjs",
+        "lint": "turbo lint && eslint --config scripts/eslint.config.mjs scripts/bundle-checks.mjs scripts/check-bundles.mjs scripts/bundle-checks.test.mjs scripts/extension-classic-scripts.mjs scripts/extension-classic-scripts.test.mjs scripts/native-session-chrome.mjs scripts/native-session-firefox.mjs scripts/session-integration.test.mjs docs/recovery/r04/serve-fixture.mjs scripts/model-guards.test.mjs scripts/model-smoke.mjs docs/recovery/r05/serve-fixture.mjs docs/recovery/r05/verify-models.mjs scripts/identity-smoke.mjs scripts/native-identity.mjs docs/recovery/r06/serve-fixture.mjs docs/recovery/r06/verify-identity.mjs",
         "postinstall": "simple-git-hooks",
         "start:dev": "turbo start:dev",
         "test:e2e": "turbo test:e2e",
@@ -26,7 +26,8 @@
         "test:model-guards": "node --test scripts/model-guards.test.mjs",
         "test:model-smoke": "node scripts/model-smoke.mjs",
         "test:types": "turbo test:types --filter=@devtools/api",
-        "typecheck": "turbo typecheck && npm run test:types"
+        "typecheck": "turbo typecheck && npm run test:types",
+        "test:identity-smoke": "node scripts/identity-smoke.mjs"
     },
     "devDependencies": {
         "esbuild": "^0.28.2",

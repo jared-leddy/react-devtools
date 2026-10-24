@@ -21,31 +21,41 @@ describe('FiberWalker', () => {
                 children: [
                     {
                         children: [],
-                        id: 'fixture:0.0.0:FunctionComponent:HeaderPanel',
+                        id: expect.stringMatching(
+                            /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                        ),
                         name: 'HeaderPanel'
                     },
                     {
                         children: [],
-                        id: 'fixture:0.0.1:Memo:MemoPanel',
+                        id: expect.stringMatching(
+                            /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                        ),
                         name: 'MemoPanel'
                     },
                     {
                         children: [],
-                        id: 'fixture:0.0.2:ForwardRef:ForwardedInput',
+                        id: expect.stringMatching(
+                            /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                        ),
                         name: 'ForwardedInput'
                     },
                     {
                         children: [],
-                        id: 'fixture:0.0.3:Lazy:LazyPanel',
+                        id: expect.stringMatching(
+                            /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                        ),
                         name: 'LazyPanel'
                     },
                     {
                         children: [],
-                        id: 'fixture:0.0.4:HostComponent:section',
+                        id: expect.stringMatching(
+                            /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                        ),
                         name: 'section'
                     }
                 ],
-                id: 'fixture:0:FunctionComponent:key~3Dapp-key:App',
+                id: expect.stringMatching(/^c:[0-9a-f-]{36}:[0-9a-z]+$/),
                 name: 'App'
             }
         ]);
@@ -207,7 +217,7 @@ describe('FiberWalker', () => {
         expect(counterNode).toMatchObject({
             displayName: 'ClassCounter',
             fiberTag: 'ClassComponent',
-            id: 'class-root:0:ClassComponent:ClassCounter',
+            id: expect.stringMatching(/^c:[0-9a-f-]{36}:[0-9a-z]+$/),
             key: null,
             name: 'ClassCounter',
             rootId: 'class-root',

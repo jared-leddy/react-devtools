@@ -5,6 +5,37 @@ import { VirtualizedComponentTree } from '../src';
 const largeTree = generateSyntheticComponentTree(20, 25);
 
 describe('VirtualizedComponentTree', () => {
+    it('expands newly mounted root identities after the old tree is removed', async () => {
+        const { rerender } = render(
+            <VirtualizedComponentTree
+                nodes={[
+                    {
+                        id: 'old',
+                        label: 'Old',
+                        children: [{ id: 'old-child', label: 'Old child' }]
+                    }
+                ]}
+            />
+        );
+        rerender(<VirtualizedComponentTree nodes={[]} />);
+        rerender(
+            <VirtualizedComponentTree
+                nodes={[
+                    {
+                        id: 'new',
+                        label: 'New',
+                        children: [
+                            { id: 'new-child', label: 'Remounted child' }
+                        ]
+                    }
+                ]}
+            />
+        );
+        await waitFor(() =>
+            expect(screen.getByText('Remounted child')).toBeInTheDocument()
+        );
+        expect(screen.queryByText('Old child')).not.toBeInTheDocument();
+    });
     it('renders a bounded window for a 500+ node tree', () => {
         render(
             <VirtualizedComponentTree

@@ -29,7 +29,9 @@ describe('Phase 0 fiber walker fixture suite', () => {
                                 children: [],
                                 fiberTag: 'HostComponent',
                                 hasChildren: false,
-                                id: 'phase-0:0.0.0:HostComponent:button',
+                                id: expect.stringMatching(
+                                    /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                                ),
                                 name: 'button',
                                 tags: ['HostComponent', 'host'],
                                 type: 'host'
@@ -37,7 +39,9 @@ describe('Phase 0 fiber walker fixture suite', () => {
                         ],
                         fiberTag: 'FunctionComponent',
                         hasChildren: true,
-                        id: 'phase-0:0.0:FunctionComponent:StateCounterDemo',
+                        id: expect.stringMatching(
+                            /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                        ),
                         name: 'StateCounterDemo',
                         tags: ['FunctionComponent', 'component', 'function'],
                         type: 'function'
@@ -48,7 +52,9 @@ describe('Phase 0 fiber walker fixture suite', () => {
                                 children: [],
                                 fiberTag: 'HostComponent',
                                 hasChildren: false,
-                                id: 'phase-0:0.1.0:HostComponent:button',
+                                id: expect.stringMatching(
+                                    /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                                ),
                                 name: 'button',
                                 tags: ['HostComponent', 'host'],
                                 type: 'host'
@@ -56,7 +62,9 @@ describe('Phase 0 fiber walker fixture suite', () => {
                         ],
                         fiberTag: 'FunctionComponent',
                         hasChildren: true,
-                        id: 'phase-0:0.1:FunctionComponent:ReducerCounterDemo',
+                        id: expect.stringMatching(
+                            /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                        ),
                         name: 'ReducerCounterDemo',
                         tags: ['FunctionComponent', 'component', 'function'],
                         type: 'function'
@@ -69,7 +77,9 @@ describe('Phase 0 fiber walker fixture suite', () => {
                                         children: [],
                                         fiberTag: 'HostComponent',
                                         hasChildren: false,
-                                        id: 'phase-0:0.2.0.0:HostComponent:span',
+                                        id: expect.stringMatching(
+                                            /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                                        ),
                                         name: 'span',
                                         tags: ['HostComponent', 'host'],
                                         type: 'host'
@@ -84,7 +94,9 @@ describe('Phase 0 fiber walker fixture suite', () => {
                                 ],
                                 fiberTag: 'FunctionComponent',
                                 hasChildren: true,
-                                id: 'phase-0:0.2.0:FunctionComponent:ContextReaderDemo',
+                                id: expect.stringMatching(
+                                    /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                                ),
                                 name: 'ContextReaderDemo',
                                 tags: [
                                     'FunctionComponent',
@@ -103,7 +115,9 @@ describe('Phase 0 fiber walker fixture suite', () => {
                         ],
                         fiberTag: 'ContextProvider',
                         hasChildren: true,
-                        id: 'phase-0:0.2:ContextProvider:ThemeContext.Provider',
+                        id: expect.stringMatching(
+                            /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                        ),
                         name: 'ThemeContext.Provider',
                         tags: ['ContextProvider', 'context-provider'],
                         type: 'context-provider'
@@ -114,7 +128,9 @@ describe('Phase 0 fiber walker fixture suite', () => {
                                 children: [],
                                 fiberTag: 'HostComponent',
                                 hasChildren: false,
-                                id: 'phase-0:0.3.0:HostComponent:article',
+                                id: expect.stringMatching(
+                                    /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                                ),
                                 name: 'article',
                                 tags: ['HostComponent', 'host'],
                                 type: 'host'
@@ -122,7 +138,9 @@ describe('Phase 0 fiber walker fixture suite', () => {
                         ],
                         fiberTag: 'Memo',
                         hasChildren: true,
-                        id: 'phase-0:0.3:Memo:MemoPanelDemo',
+                        id: expect.stringMatching(
+                            /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                        ),
                         name: 'MemoPanelDemo',
                         tags: ['Memo', 'component', 'memo'],
                         type: 'Memo'
@@ -135,7 +153,9 @@ describe('Phase 0 fiber walker fixture suite', () => {
                                         children: [],
                                         fiberTag: 'HostComponent',
                                         hasChildren: false,
-                                        id: 'phase-0:0.4.0.0:HostComponent:p',
+                                        id: expect.stringMatching(
+                                            /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                                        ),
                                         name: 'p',
                                         tags: ['HostComponent', 'host'],
                                         type: 'host'
@@ -143,7 +163,9 @@ describe('Phase 0 fiber walker fixture suite', () => {
                                 ],
                                 fiberTag: 'Lazy',
                                 hasChildren: true,
-                                id: 'phase-0:0.4.0:Lazy:LazyPanelDemo',
+                                id: expect.stringMatching(
+                                    /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                                ),
                                 name: 'LazyPanelDemo',
                                 tags: ['Lazy', 'component', 'lazy'],
                                 type: 'Lazy'
@@ -158,7 +180,9 @@ describe('Phase 0 fiber walker fixture suite', () => {
                         ],
                         fiberTag: 'Suspense',
                         hasChildren: true,
-                        id: 'phase-0:0.4:Suspense:Suspense',
+                        id: expect.stringMatching(
+                            /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                        ),
                         name: 'Suspense',
                         tags: ['Suspense', 'boundary', 'suspense'],
                         type: 'suspense'
@@ -169,7 +193,9 @@ describe('Phase 0 fiber walker fixture suite', () => {
                                 children: [],
                                 fiberTag: 'HostComponent',
                                 hasChildren: false,
-                                id: 'phase-0:0.5.0:HostComponent:section',
+                                id: expect.stringMatching(
+                                    /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                                ),
                                 name: 'section',
                                 tags: ['HostComponent', 'host'],
                                 type: 'host'
@@ -177,7 +203,9 @@ describe('Phase 0 fiber walker fixture suite', () => {
                         ],
                         fiberTag: 'ClassComponent',
                         hasChildren: true,
-                        id: 'phase-0:0.5:ClassComponent:ClassCounterDemo',
+                        id: expect.stringMatching(
+                            /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                        ),
                         name: 'ClassCounterDemo',
                         tags: ['ClassComponent', 'component', 'class'],
                         type: 'class'
@@ -188,7 +216,9 @@ describe('Phase 0 fiber walker fixture suite', () => {
                                 children: [],
                                 fiberTag: 'HostComponent',
                                 hasChildren: false,
-                                id: 'phase-0:0.6.0:HostComponent:pre',
+                                id: expect.stringMatching(
+                                    /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                                ),
                                 name: 'pre',
                                 tags: ['HostComponent', 'host'],
                                 type: 'host'
@@ -205,7 +235,9 @@ describe('Phase 0 fiber walker fixture suite', () => {
                         ],
                         fiberTag: 'ClassComponent',
                         hasChildren: true,
-                        id: 'phase-0:0.6:ClassComponent:ErrorBoundaryDemo',
+                        id: expect.stringMatching(
+                            /^c:[0-9a-f-]{36}:[0-9a-z]+$/
+                        ),
                         name: 'ErrorBoundaryDemo',
                         tags: [
                             'ClassComponent',
@@ -218,7 +250,7 @@ describe('Phase 0 fiber walker fixture suite', () => {
                 ],
                 fiberTag: 'FunctionComponent',
                 hasChildren: true,
-                id: 'phase-0:0:FunctionComponent:Phase0DemoSurface',
+                id: expect.stringMatching(/^c:[0-9a-f-]{36}:[0-9a-z]+$/),
                 name: 'Phase0DemoSurface',
                 tags: ['FunctionComponent', 'component', 'function'],
                 type: 'function'
@@ -234,19 +266,17 @@ describe('Phase 0 fiber walker fixture suite', () => {
             theme: 'light'
         });
 
+        const walker = createFiberWalker();
+        const before = collectIds(
+            walker.getComponentTree(initial.root, { rootId: 'phase-0' })
+        );
+        pairAlternates(initial.root.current, rerender.root.current);
+        initial.root.current = rerender.root.current;
         expect(
             collectIds(
-                createFiberWalker().getComponentTree(initial.root, {
-                    rootId: 'phase-0'
-                })
+                walker.getComponentTree(initial.root, { rootId: 'phase-0' })
             )
-        ).toEqual(
-            collectIds(
-                createFiberWalker().getComponentTree(rerender.root, {
-                    rootId: 'phase-0'
-                })
-            )
-        );
+        ).toEqual(before);
     });
 
     it('formats props and hooks state sections for demo components', () => {
@@ -572,4 +602,17 @@ function createFiberFixture(options: {
         type: options.type ?? null,
         updateQueue: null
     };
+}
+
+function pairAlternates(
+    current: import('../src/index.js').ReactFiber,
+    next: import('../src/index.js').ReactFiber
+): void {
+    current.alternate = next;
+    next.alternate = current;
+    next.type = current.type;
+    next.elementType = current.elementType;
+    if (current.child && next.child) pairAlternates(current.child, next.child);
+    if (current.sibling && next.sibling)
+        pairAlternates(current.sibling, next.sibling);
 }

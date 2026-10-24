@@ -24,6 +24,7 @@ lerna-debug.log*
 coverage
 /artifacts/bundle-report.json
 /artifacts/r05-model-smoke/
+/artifacts/r06-identity-smoke/
 /.nyc_output
 playwright-report
 test-results

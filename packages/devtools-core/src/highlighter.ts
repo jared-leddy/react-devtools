@@ -141,17 +141,17 @@ function findNearestHostNode(fiber: ReactFiber): null | HighlighterElement {
             }
         }
 
-        if (current.child) {
-            candidates.unshift(current.child);
-        }
-
+        const children: ReactFiber[] = [];
+        const siblings = new Set<ReactFiber>();
         for (
-            let sibling = current.sibling;
-            sibling;
-            sibling = sibling.sibling
+            let child = current.child;
+            child && !siblings.has(child);
+            child = child.sibling
         ) {
-            candidates.push(sibling);
+            siblings.add(child);
+            children.push(child);
         }
+        candidates.unshift(...children);
     }
 
     return null;

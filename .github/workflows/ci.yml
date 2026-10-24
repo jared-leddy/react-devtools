@@ -107,6 +107,9 @@ jobs:
             - name: Real model host matrix
               run: npm run test:model-smoke
 
+            - name: Real component identity matrix
+              run: npm run test:identity-smoke
+
             - name: Upload product smoke diagnostics
               if: ${{ !cancelled() }}
               uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -116,5 +119,6 @@ jobs:
                       apps/vite-playground/playwright-report
                       apps/vite-playground/test-results
                       artifacts/r05-model-smoke
+                      artifacts/r06-identity-smoke
                   if-no-files-found: ignore
                   retention-days: 7
