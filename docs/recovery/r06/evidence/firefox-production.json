@@ -1,0 +1,256 @@
+{
+    "session": {
+        "sessionId": "38664c21-6b31-4652-9bf3-b4bc7f670bd5",
+        "capabilities": {
+            "acceptInsecureCerts": false,
+            "browserName": "firefox",
+            "browserVersion": "159.0",
+            "platformName": "mac",
+            "setWindowRect": true,
+            "unhandledPromptBehavior": "dismiss and notify",
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:159.0) Gecko/20100101 Firefox/159.0",
+            "moz:buildID": "20261021090508",
+            "moz:headless": false,
+            "moz:platformVersion": "24.5.0",
+            "moz:shutdownTimeout": 73000,
+            "pageLoadStrategy": "normal",
+            "timeouts": {
+                "implicit": 0,
+                "pageLoad": 300000,
+                "script": 30000
+            },
+            "strictFileInteractability": false,
+            "moz:accessibilityChecks": false,
+            "moz:webdriverClick": true,
+            "moz:windowless": false,
+            "proxy": {}
+        }
+    },
+    "app": {
+        "value": {
+            "url": "http://127.0.0.1:9055/production",
+            "hook": true,
+            "renderers": [
+                {
+                    "id": 1,
+                    "version": "19.1.1",
+                    "roots": 2
+                }
+            ]
+        }
+    },
+    "toolbox": {
+        "value": {
+            "url": "http://127.0.0.1:9055/production",
+            "browsingContextId": 11,
+            "tools": [
+                {
+                    "id": "webext-devtools-panel-react-devtools_local_dev-159-0",
+                    "label": "React"
+                }
+            ],
+            "panelUrl": null,
+            "panelBody": null,
+            "panelBrowsingContextId": 19
+        }
+    },
+    "identityChecks": {
+        "snapshots": [
+            {
+                "stage": "selected",
+                "inspection": {
+                    "domRect": {
+                        "x": 8,
+                        "y": 155.26666259765625,
+                        "width": 1469,
+                        "height": 22
+                    },
+                    "componentId": "c:905e5f87-cfe9-4a02-b7d4-ad91ffbbb950:h",
+                    "contexts": [
+                        {
+                            "displayName": "FixtureTheme",
+                            "kind": "dependency"
+                        }
+                    ],
+                    "diagnostics": [],
+                    "rootId": "react-root:1",
+                    "sections": [
+                        {
+                            "fields": [
+                                {
+                                    "name": "rowId",
+                                    "value": "b"
+                                }
+                            ],
+                            "name": "props"
+                        },
+                        {
+                            "fields": [
+                                {
+                                    "name": "Hook 0 (reducer)",
+                                    "value": 0
+                                },
+                                {
+                                    "name": "Hook 1 (context)",
+                                    "value": "initial"
+                                }
+                            ],
+                            "name": "hooks"
+                        }
+                    ]
+                }
+            },
+            {
+                "stage": "increment",
+                "inspection": {
+                    "domRect": {
+                        "x": 8,
+                        "y": 155.26666259765625,
+                        "width": 1469,
+                        "height": 22
+                    },
+                    "componentId": "c:905e5f87-cfe9-4a02-b7d4-ad91ffbbb950:h",
+                    "contexts": [
+                        {
+                            "displayName": "FixtureTheme",
+                            "kind": "dependency"
+                        }
+                    ],
+                    "diagnostics": [],
+                    "rootId": "react-root:1",
+                    "sections": [
+                        {
+                            "fields": [
+                                {
+                                    "name": "rowId",
+                                    "value": "b"
+                                }
+                            ],
+                            "name": "props"
+                        },
+                        {
+                            "fields": [
+                                {
+                                    "name": "Hook 0 (reducer)",
+                                    "value": 1
+                                },
+                                {
+                                    "name": "Hook 1 (context)",
+                                    "value": "initial"
+                                }
+                            ],
+                            "name": "hooks"
+                        }
+                    ]
+                },
+                "rect": {
+                    "x": 8,
+                    "y": 155.26666259765625,
+                    "width": 1469,
+                    "height": 22
+                }
+            },
+            {
+                "stage": "reorder",
+                "inspection": {
+                    "domRect": {
+                        "x": 8,
+                        "y": 133.26666259765625,
+                        "width": 1469,
+                        "height": 22
+                    },
+                    "componentId": "c:905e5f87-cfe9-4a02-b7d4-ad91ffbbb950:h",
+                    "contexts": [
+                        {
+                            "displayName": "FixtureTheme",
+                            "kind": "dependency"
+                        }
+                    ],
+                    "diagnostics": [],
+                    "rootId": "react-root:1",
+                    "sections": [
+                        {
+                            "fields": [
+                                {
+                                    "name": "rowId",
+                                    "value": "b"
+                                }
+                            ],
+                            "name": "props"
+                        },
+                        {
+                            "fields": [
+                                {
+                                    "name": "Hook 0 (reducer)",
+                                    "value": 1
+                                },
+                                {
+                                    "name": "Hook 1 (context)",
+                                    "value": "initial"
+                                }
+                            ],
+                            "name": "hooks"
+                        }
+                    ]
+                },
+                "rect": {
+                    "x": 8,
+                    "y": 133.26666259765625,
+                    "width": 1469,
+                    "height": 22
+                }
+            },
+            {
+                "stage": "rename",
+                "inspection": {
+                    "domRect": {
+                        "x": 8,
+                        "y": 133.26666259765625,
+                        "width": 1469,
+                        "height": 22
+                    },
+                    "componentId": "c:905e5f87-cfe9-4a02-b7d4-ad91ffbbb950:h",
+                    "contexts": [
+                        {
+                            "displayName": "FixtureTheme",
+                            "kind": "dependency"
+                        }
+                    ],
+                    "diagnostics": [],
+                    "rootId": "react-root:1",
+                    "sections": [
+                        {
+                            "fields": [
+                                {
+                                    "name": "rowId",
+                                    "value": "b"
+                                }
+                            ],
+                            "name": "props"
+                        },
+                        {
+                            "fields": [
+                                {
+                                    "name": "Hook 0 (reducer)",
+                                    "value": 1
+                                },
+                                {
+                                    "name": "Hook 1 (context)",
+                                    "value": "renamed"
+                                }
+                            ],
+                            "name": "hooks"
+                        }
+                    ]
+                },
+                "rect": {
+                    "x": 8,
+                    "y": 133.26666259765625,
+                    "width": 1469,
+                    "height": 22
+                }
+            }
+        ]
+    },
+    "applicationSourceCommit": "1e6dbc1a6fd96514e1ef2380af441cec3896fb7a"
+}

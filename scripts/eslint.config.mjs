@@ -1,11 +1,18 @@
 export default [
     {
-        files: ['scripts/model-smoke.mjs', 'docs/recovery/r05/*.mjs'],
+        files: [
+            'scripts/model-smoke.mjs',
+            'scripts/identity-smoke.mjs',
+            'docs/recovery/r05/*.mjs',
+            'docs/recovery/r06/*.mjs'
+        ],
         languageOptions: {
             globals: {
                 process: 'readonly',
                 setTimeout: 'readonly',
-                clearTimeout: 'readonly'
+                clearTimeout: 'readonly',
+                window: 'readonly',
+                document: 'readonly'
             }
         }
     },
@@ -14,7 +21,7 @@ export default [
         languageOptions: { globals: { structuredClone: 'readonly' } }
     },
     {
-        files: ['scripts/native-session-*.mjs'],
+        files: ['scripts/native-session-*.mjs', 'scripts/native-identity.mjs'],
         languageOptions: {
             globals: {
                 process: 'readonly',
@@ -24,7 +31,9 @@ export default [
                 setTimeout: 'readonly',
                 clearTimeout: 'readonly',
                 window: 'readonly',
-                document: 'readonly'
+                document: 'readonly',
+                HTMLInputElement: 'readonly',
+                Event: 'readonly'
             }
         }
     },

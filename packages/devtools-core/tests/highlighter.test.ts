@@ -6,12 +6,102 @@
 import {
     ReactFiberTag,
     getBoundingRect,
+    createFiberRootRegistry,
+    createFiberWalker,
+    getPropsStateSection,
     highlightElement,
     unhighlightElement
 } from '../src/index.js';
 import type { ReactFiber } from '../src/index.js';
 
 describe('component highlighter', () => {
+    it('never resolves an empty component to a neighboring component host node', () => {
+        const empty = createFiberFixture({
+            tag: ReactFiberTag.FunctionComponent
+        });
+        const neighbor = createFiberFixture({
+            tag: ReactFiberTag.HostComponent,
+            stateNode: document.createElement('button')
+        });
+        mockRect(neighbor.stateNode as HTMLElement, createRect(4, 8, 60, 20));
+        empty.sibling = neighbor;
+        expect(getBoundingRect(empty)).toBeNull();
+        const parent = createFiberFixture({
+            tag: ReactFiberTag.FunctionComponent
+        });
+        parent.child = empty;
+        expect(getBoundingRect(parent)?.left).toBe(4);
+        neighbor.sibling = empty;
+        expect(getBoundingRect(parent)?.left).toBe(4);
+    });
+    it('resolves one opaque tree ID to the same props and portal DOM target after reorder', () => {
+        function Row() {}
+        const rootFiber = createFiberFixture({ tag: ReactFiberTag.HostRoot });
+        const a = createFiberFixture({
+            tag: ReactFiberTag.FunctionComponent,
+            type: Row,
+            returnFiber: rootFiber
+        });
+        const b = createFiberFixture({
+            tag: ReactFiberTag.FunctionComponent,
+            type: Row,
+            returnFiber: rootFiber
+        });
+        b.memoizedProps = { label: 'b' };
+        const portal = createFiberFixture({
+            tag: ReactFiberTag.HostPortal,
+            returnFiber: b
+        });
+        const button = document.createElement('button');
+        document.body.append(button);
+        mockRect(button, createRect(110, 70, 80, 25));
+        const host = createFiberFixture({
+            tag: ReactFiberTag.HostComponent,
+            stateNode: button,
+            returnFiber: portal
+        });
+        rootFiber.child = a;
+        a.sibling = b;
+        b.child = portal;
+        portal.child = host;
+        const root = { current: rootFiber, tag: 1 };
+        const registry = createFiberRootRegistry();
+        const record = registry.recordCommit(root);
+        const tree = createFiberWalker().getComponentTree(root, {
+            rootId: record.id,
+            identities: record.identities
+        });
+        const selected = tree[1].id;
+        expect(
+            getPropsStateSection(record.instanceMap.get(selected)!)
+        ).toMatchObject({ fields: [{ name: 'label', value: 'b' }] });
+        expect(getBoundingRect(record.instanceMap.get(selected)!)?.left).toBe(
+            110
+        );
+        const nextB = {
+            ...b,
+            alternate: b,
+            sibling: a,
+            memoizedProps: { label: 'b-updated' }
+        };
+        b.alternate = nextB;
+        a.sibling = null;
+        rootFiber.child = nextB;
+        registry.recordCommit(root);
+        expect(record.instanceMap.get(selected)).toBe(nextB);
+        expect(
+            getPropsStateSection(record.instanceMap.get(selected)!)
+        ).toMatchObject({ fields: [{ name: 'label', value: 'b-updated' }] });
+        expect(highlightElement(record.instanceMap.get(selected)!)?.left).toBe(
+            110
+        );
+        expect(
+            document.querySelector('[data-react-devtools-highlighter]')
+        ).not.toBeNull();
+        rootFiber.child = a;
+        registry.recordCommit(root);
+        expect(record.instanceMap.has(selected)).toBe(false);
+    });
     afterEach(() => {
         unhighlightElement();
         document.body.innerHTML = '';

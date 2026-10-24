@@ -24,9 +24,11 @@ export function createSessionComponentTree(
     );
     const convert = (node: ComponentNode): ComponentTreeNode => ({
         id: node.id,
+        componentKey: node.key,
         rootId: node.rootId,
         label: node.displayName,
         type: node.type,
+        tags: node.tags,
         source: node.source,
         children: node.children?.map(convert)
     });

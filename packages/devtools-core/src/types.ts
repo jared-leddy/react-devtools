@@ -209,6 +209,7 @@ export interface InspectModeState {
 }
 
 export interface ComponentNode {
+    tags?: string[];
     children?: ComponentNode[];
     contexts?: ComponentContextRecord[];
     diagnostics?: ComponentDiagnosticRecord[];
@@ -230,6 +231,7 @@ export interface ComponentStateSection {
 }
 
 export interface ComponentStateResponse {
+    domRect?: InspectTargetRecord['domRect'];
     componentId: string;
     contexts?: ComponentContextRecord[];
     diagnostics?: ComponentDiagnosticRecord[];

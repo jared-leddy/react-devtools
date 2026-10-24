@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
+import { verifyNativeIdentity } from './native-identity.mjs';
 
 const url = process.argv[2];
 if (!url) throw new Error('Provide an inspected fixture URL');
@@ -22,6 +23,7 @@ const context = await chromium.launchPersistentContext(profile, {
 const sockets = [];
 const updateMode = process.argv.includes('--updates');
 const modelMode = process.argv.includes('--models');
+const identityMode = process.argv.includes('--identity');
 const emptyMode = process.argv.includes('--empty');
 const nonReactMode = process.argv.includes('--non-react');
 const nativeInspectors = [];
@@ -192,7 +194,7 @@ try {
             `new Promise(resolve => { const identity={url:location.href,body:document.body.innerText,tabId:chrome.devtools.inspectedWindow.tabId}; chrome.devtools.inspectedWindow.eval(${JSON.stringify(inspectedExpression)},(result,exception)=>resolve({...identity,inspected:result,exception})); })`
         );
         if (
-            (updateMode || modelMode) &&
+            (updateMode || modelMode || identityMode) &&
             target.url.endsWith('/devtools-panel.html') &&
             result.result?.result?.value?.inspected?.url === url
         ) {
@@ -209,6 +211,30 @@ try {
     }
     let updateChecks;
     let modelChecks;
+    let identityChecks;
+    if (identityMode) {
+        assert(evaluatePanel, 'Actual native extension panel not found');
+        identityChecks = await verifyNativeIdentity(
+            page,
+            evaluatePanel,
+            async () => {
+                await evaluatePanel(
+                    `document.querySelector('.dt-components-detail')?.scrollIntoView({block:'end'});true`
+                );
+                for (const inspector of nativeInspectors) {
+                    const shot = await inspector.send(
+                        'Page.captureScreenshot',
+                        { format: 'png' }
+                    );
+                    if (shot.result?.data)
+                        fs.writeFileSync(
+                            `${output}/identity-${inspector.targetId}.png`,
+                            Buffer.from(shot.result.data, 'base64')
+                        );
+                }
+            }
+        );
+    }
     if (modelMode && nonReactMode) {
         const inspected = results
             .map((item) => item.result.result?.result?.value)
@@ -407,7 +433,8 @@ try {
                 results,
                 errors,
                 updateChecks,
-                modelChecks
+                modelChecks,
+                identityChecks
             },
             null,
             4

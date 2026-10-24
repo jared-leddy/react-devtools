@@ -1,4 +1,4 @@
-import { createFiberComponentId } from '../fiberWalker.js';
+import { FiberIdentityMap, shouldSurfaceFiber } from './identity.js';
 import {
     ReactFiberTag,
     type ReactFiber,
@@ -13,6 +13,7 @@ export class FiberRootRecord {
     public readonly id: string;
     public instanceMap = new Map<string, ReactFiber>();
     public rootFiber: ReactFiber;
+    public readonly identities = new FiberIdentityMap();
 
     public constructor(
         public readonly root: ReactFiberRoot,
@@ -25,9 +26,18 @@ export class FiberRootRecord {
 
     public refresh(): this {
         this.rootFiber = this.root.current;
-        this.instanceMap = createFiberInstanceMap(this.id, this.rootFiber);
+        this.instanceMap = createFiberInstanceMap(
+            this.id,
+            this.rootFiber,
+            this.identities
+        );
 
         return this;
+    }
+
+    public dispose(): void {
+        this.identities.dispose();
+        this.instanceMap.clear();
     }
 }
 
@@ -67,6 +77,7 @@ export class FiberRootRegistry {
 
     public clear(): void {
         for (const root of this.roots) {
+            this.recordsByRoot.get(root)?.dispose();
             this.recordsByRoot.delete(root);
         }
 
@@ -109,6 +120,7 @@ export class FiberRootRegistry {
         }
 
         this.roots.splice(rootIndex, 1);
+        this.recordsByRoot.get(root)?.dispose();
         this.recordsByRoot.delete(root);
 
         return true;
@@ -127,7 +139,14 @@ export class FiberRootRegistry {
             return null;
         }
 
-        return this.roots.find((root) => root.current === rootFiber) ?? null;
+        return (
+            this.roots.find(
+                (root) =>
+                    root.current === rootFiber ||
+                    (root.current.alternate === rootFiber &&
+                        rootFiber.alternate === root.current)
+            ) ?? null
+        );
     }
 }
 
@@ -138,54 +157,34 @@ export function createFiberRootRegistry(
 }
 
 export function createFiberInstanceMap(
-    rootId: string,
-    rootFiber: ReactFiber
+    _rootId: string,
+    rootFiber: ReactFiber,
+    identities = new FiberIdentityMap()
 ): Map<string, ReactFiber> {
-    const instanceMap = new Map<string, ReactFiber>();
-
-    collectFiberInstances(rootId, rootFiber, [], instanceMap);
-
-    return instanceMap;
+    const fibers: ReactFiber[] = [];
+    collectFiberInstances(rootFiber, fibers, new Set([rootFiber]));
+    return identities.reconcile(fibers);
 }
 
 function collectFiberInstances(
-    rootId: string,
     fiber: ReactFiber,
-    path: number[],
-    instanceMap: Map<string, ReactFiber>
+    instances: ReactFiber[],
+    visited: Set<ReactFiber>
 ): void {
     let child = fiber.child;
-    let childIndex = 0;
-
-    while (child) {
-        const childPath = [...path, childIndex];
-
-        if (shouldRecordFiber(child)) {
-            instanceMap.set(
-                createFiberComponentId(rootId, childPath, child),
-                child
-            );
-        }
-
-        collectFiberInstances(rootId, child, childPath, instanceMap);
+    while (child && !visited.has(child)) {
+        visited.add(child);
+        if (shouldSurfaceFiber(child)) instances.push(child);
+        collectFiberInstances(child, instances, visited);
         child = child.sibling;
-        childIndex += 1;
     }
-}
-
-function shouldRecordFiber(fiber: ReactFiber): boolean {
-    return (
-        fiber.tag !== ReactFiberTag.HostRoot &&
-        fiber.tag !== ReactFiberTag.HostText &&
-        fiber.tag !== ReactFiberTag.Fragment &&
-        fiber.tag !== ReactFiberTag.Mode
-    );
 }
 
 function findHostRootFiber(fiber: ReactFiber): null | ReactFiber {
     let current: null | ReactFiber = fiber;
-
-    while (current) {
+    const visited = new Set<ReactFiber>();
+    while (current && !visited.has(current)) {
+        visited.add(current);
         if (current.tag === ReactFiberTag.HostRoot) {
             return current;
         }

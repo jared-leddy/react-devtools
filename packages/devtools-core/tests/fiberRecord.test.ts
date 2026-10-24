@@ -41,12 +41,12 @@ describe('FiberRootRecord registry', () => {
         expect(registry.records).toHaveLength(2);
         expect(firstRecord.id).not.toBe(secondRecord.id);
         expect(Array.from(firstRecord.instanceMap.keys())).toEqual([
-            'fiber-root~3A1:0:FunctionComponent:FirstApp',
-            'fiber-root~3A1:0.0:FunctionComponent:FirstPanel'
+            expect.stringMatching(/^c:[0-9a-f-]{36}:[0-9a-z]+$/),
+            expect.stringMatching(/^c:[0-9a-f-]{36}:[0-9a-z]+$/)
         ]);
         expect(Array.from(secondRecord.instanceMap.keys())).toEqual([
-            'fiber-root~3A2:0:FunctionComponent:SecondApp',
-            'fiber-root~3A2:0.0:FunctionComponent:SecondPanel'
+            expect.stringMatching(/^c:[0-9a-f-]{36}:[0-9a-z]+$/),
+            expect.stringMatching(/^c:[0-9a-f-]{36}:[0-9a-z]+$/)
         ]);
         expect(
             haveOverlappingEntries(
@@ -74,8 +74,8 @@ describe('FiberRootRecord registry', () => {
         expect(refreshedRecord).toBe(initialRecord);
         expect(refreshedRecord.rootFiber).toBe(root.current);
         expect(Array.from(refreshedRecord.instanceMap.keys())).toEqual([
-            'fiber-root~3A1:0:FunctionComponent:CounterApp',
-            'fiber-root~3A1:0.0:FunctionComponent:UpdatedPanel'
+            expect.stringMatching(/^c:[0-9a-f-]{36}:[0-9a-z]+$/),
+            expect.stringMatching(/^c:[0-9a-f-]{36}:[0-9a-z]+$/)
         ]);
     });
 
@@ -124,7 +124,8 @@ describe('FiberRootRecord registry', () => {
         const registry = createFiberRootRegistry();
         const record = registry.recordCommit(root);
         const tree = createFiberWalker().getComponentTree(root, {
-            rootId: record.id
+            rootId: record.id,
+            identities: record.identities
         });
 
         expect(Array.from(record.instanceMap.keys())).toEqual([

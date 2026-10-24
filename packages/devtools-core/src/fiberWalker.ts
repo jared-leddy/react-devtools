@@ -10,6 +10,7 @@ import {
     type ReactFiber,
     type ReactFiberRoot
 } from './fiber.js';
+import { FiberIdentityMap, shouldSurfaceFiber } from './fiber/identity.js';
 import type { ComponentNode } from './types.js';
 
 export interface ComponentTreeNode extends ComponentNode {
@@ -22,9 +23,14 @@ export interface ComponentTreeNode extends ComponentNode {
 
 export interface FiberWalkerOptions {
     rootId?: string;
+    identities?: FiberIdentityMap;
 }
 
 export class FiberWalker {
+    private readonly scopes = new WeakMap<
+        object,
+        Map<string, FiberIdentityMap>
+    >();
     public getComponentTree(
         root: ReactFiber | ReactFiberRoot,
         options: FiberWalkerOptions = {}
@@ -36,11 +42,26 @@ export class FiberWalker {
             return [];
         }
 
-        return walkFiberChildren(rootFiber, {
-            path: [],
+        let scopes =
+            this.scopes.get(root) ??
+            this.scopes.get(rootFiber.alternate ?? rootFiber);
+        if (!scopes) scopes = new Map();
+        this.scopes.set(root, scopes);
+        if (rootFiber.alternate) this.scopes.set(rootFiber.alternate, scopes);
+        let identities = options.identities ?? scopes.get(rootId);
+        if (!identities) {
+            identities = new FiberIdentityMap();
+            scopes.set(rootId, identities);
+        }
+        const visited = new Set<ReactFiber>([rootFiber]);
+        const nodes = walkFiberChildren(rootFiber, {
             rootId,
-            visited: new Set<ReactFiber>()
+            identities,
+            visited
         });
+        if (!options.identities)
+            identities.reconcile([...visited].filter(shouldSurfaceFiber));
+        return nodes;
     }
 }
 
@@ -54,6 +75,8 @@ export function getFiberDisplayName(fiber: ReactFiber): string {
             return 'Root';
         case ReactFiberTag.HostComponent:
             return getTypeDisplayName(fiber.type) ?? 'HostComponent';
+        case ReactFiberTag.HostPortal:
+            return 'Portal';
         case ReactFiberTag.ContextProvider:
             return `${getContextDisplayName(fiber)}.Provider`;
         case ReactFiberTag.ContextConsumer:
@@ -62,7 +85,7 @@ export function getFiberDisplayName(fiber: ReactFiber): string {
             return getForwardRefDisplayName(fiber.type);
         case ReactFiberTag.MemoComponent:
         case ReactFiberTag.SimpleMemoComponent:
-            return getMemoDisplayName(fiber.type);
+            return getMemoDisplayName(fiber.elementType ?? fiber.type);
         case ReactFiberTag.LazyComponent:
             return getLazyDisplayName(fiber.type);
         case ReactFiberTag.SuspenseComponent:
@@ -81,8 +104,8 @@ export function getFiberDisplayName(fiber: ReactFiber): string {
 }
 
 interface WalkContext {
-    path: number[];
     rootId: string;
+    identities: FiberIdentityMap;
     visited: Set<ReactFiber>;
 }
 
@@ -92,17 +115,9 @@ function walkFiberChildren(
 ): ComponentTreeNode[] {
     const nodes: ComponentTreeNode[] = [];
     let child = fiber.child;
-    let childIndex = 0;
-
-    while (child) {
-        nodes.push(
-            ...walkFiber(child, {
-                ...context,
-                path: [...context.path, childIndex]
-            })
-        );
+    while (child && !context.visited.has(child)) {
+        nodes.push(...walkFiber(child, context));
         child = child.sibling;
-        childIndex += 1;
     }
 
     return nodes;
@@ -122,6 +137,7 @@ function walkFiber(
         return walkFiberChildren(fiber, context);
     }
 
+    const id = context.identities.getId(fiber);
     const children = walkFiberChildren(fiber, context);
     const name = getFiberDisplayName(fiber);
 
@@ -133,7 +149,8 @@ function walkFiber(
             displayName: name,
             fiberTag: getReactFiberTagName(fiber.tag),
             hasChildren: children.length > 0,
-            id: createComponentId(context.rootId, context.path, fiber),
+            id,
+            source: getFiberSourceLocation(fiber),
             key: fiber.key,
             name,
             rootId: context.rootId,
@@ -143,17 +160,13 @@ function walkFiber(
     ];
 }
 
-function shouldSurfaceFiber(fiber: ReactFiber): boolean {
-    return (
-        fiber.tag !== ReactFiberTag.HostRoot &&
-        fiber.tag !== ReactFiberTag.HostText &&
-        fiber.tag !== ReactFiberTag.Fragment &&
-        fiber.tag !== ReactFiberTag.Mode
-    );
-}
-
 function getFiberTags(fiber: ReactFiber): string[] {
     const tags = [getReactFiberTagName(fiber.tag)];
+    tags.push(
+        ...getWrapperTags(fiber.elementType),
+        ...getWrapperTags(fiber.type)
+    );
+    if (fiber.tag === ReactFiberTag.HostPortal) tags.push('portal');
 
     if (fiber.tag === ReactFiberTag.HostComponent) {
         tags.push('host');
@@ -218,10 +231,31 @@ function getFiberTags(fiber: ReactFiber): string[] {
     return Array.from(new Set(tags));
 }
 
+function getWrapperTags(value: unknown, seen = new Set<unknown>()): string[] {
+    const record = getRecord(value);
+    if (!record || seen.has(value) || seen.size >= 32) return [];
+    seen.add(value);
+    const kind = record.$$typeof;
+    if (kind === Symbol.for('react.memo'))
+        return ['memo', ...getWrapperTags(record.type, seen)];
+    if (kind === Symbol.for('react.forward_ref')) return ['forward-ref'];
+    if (kind === Symbol.for('react.lazy')) {
+        const payload = getRecord(record._payload);
+        const resolved = payload?._status === 1 ? payload._result : undefined;
+        return [
+            'lazy',
+            ...getWrapperTags(getRecord(resolved)?.default ?? resolved, seen)
+        ];
+    }
+    return [];
+}
+
 function getComponentTypeLabel(fiber: ReactFiber): string {
     switch (fiber.tag) {
         case ReactFiberTag.HostComponent:
             return 'host';
+        case ReactFiberTag.HostPortal:
+            return 'portal';
         case ReactFiberTag.ClassComponent:
             return 'class';
         case ReactFiberTag.FunctionComponent:
@@ -239,32 +273,51 @@ function getComponentTypeLabel(fiber: ReactFiber): string {
     }
 }
 
+const legacyScopes = new WeakMap<ReactFiber, Map<string, FiberIdentityMap>>();
+
+// Legacy callers may allocate an ID, but must never derive a server ID from a path.
 export function createFiberComponentId(
     rootId: string,
-    path: number[],
+    _path: number[],
     fiber: ReactFiber
 ): string {
-    return createComponentId(rootId, path, fiber);
+    let owner = fiber;
+    const visited = new Set<ReactFiber>();
+    while (owner.return && !visited.has(owner.return)) {
+        visited.add(owner);
+        owner = owner.return;
+    }
+    let scopes =
+        legacyScopes.get(owner) ?? legacyScopes.get(owner.alternate ?? owner);
+    if (!scopes) scopes = new Map();
+    legacyScopes.set(owner, scopes);
+    if (owner.alternate) legacyScopes.set(owner.alternate, scopes);
+    let identities = scopes.get(rootId);
+    if (!identities) {
+        identities = new FiberIdentityMap();
+        scopes.set(rootId, identities);
+    }
+    return identities.getId(fiber);
 }
 
-function createComponentId(
-    rootId: string,
-    path: number[],
-    fiber: ReactFiber
-): string {
-    const pathKey = path.length > 0 ? path.join('.') : '0';
-    return `${sanitizeIdPart(rootId)}:${pathKey}:${getFiberTypeSignature(fiber)}`;
-}
-
-function getFiberTypeSignature(fiber: ReactFiber): string {
-    return [
-        getReactFiberTagName(fiber.tag),
-        fiber.key ? `key=${fiber.key}` : null,
-        getFiberDisplayName(fiber)
-    ]
-        .filter((part): part is string => part !== null)
-        .map(sanitizeIdPart)
-        .join(':');
+function getFiberSourceLocation(fiber: ReactFiber): ComponentNode['source'] {
+    const source = fiber._debugSource;
+    if (
+        !source ||
+        typeof source.fileName !== 'string' ||
+        !source.fileName.trim() ||
+        !Number.isInteger(source.lineNumber) ||
+        source.lineNumber! <= 0
+    )
+        return undefined;
+    return {
+        fileName: source.fileName,
+        lineNumber: source.lineNumber!,
+        columnNumber:
+            Number.isInteger(source.columnNumber) && source.columnNumber! > 0
+                ? source.columnNumber!
+                : 0
+    };
 }
 
 function getRootFiber(root: ReactFiber | ReactFiberRoot): null | ReactFiber {
@@ -275,25 +328,30 @@ function getRootFiber(root: ReactFiber | ReactFiberRoot): null | ReactFiber {
     return root;
 }
 
-function getTypeDisplayName(value: unknown): null | string {
-    if (typeof value === 'string' && value.trim() !== '') {
-        return value;
-    }
-
-    if (typeof value === 'function') {
-        const record = value as Function & { displayName?: string };
-        return record.displayName || record.name || null;
-    }
-
-    const record = getRecord(value);
-    const displayName = record?.displayName;
-    const name = record?.name;
-
-    if (typeof displayName === 'string' && displayName.trim() !== '') {
-        return displayName;
-    }
-
-    return typeof name === 'string' && name.trim() !== '' ? name : null;
+function getTypeDisplayName(
+    value: unknown,
+    seen = new Set<unknown>()
+): null | string {
+    if (typeof value === 'string') return value.trim() ? value : null;
+    if (
+        !value ||
+        (typeof value !== 'object' && typeof value !== 'function') ||
+        seen.has(value) ||
+        seen.size >= 32
+    )
+        return null;
+    seen.add(value);
+    const record = value as Record<string, unknown>;
+    for (const name of [record.displayName, record.name])
+        if (typeof name === 'string' && name.trim()) return name;
+    const payload = getRecord(record._payload);
+    const resolved = payload?._status === 1 ? payload._result : undefined;
+    const module = getRecord(resolved);
+    return (
+        getTypeDisplayName(record.type, seen) ??
+        getTypeDisplayName(record.render, seen) ??
+        getTypeDisplayName(module?.default ?? resolved, seen)
+    );
 }
 
 function getMemoDisplayName(type: unknown): string {
@@ -348,10 +406,6 @@ function getContextRecord(value: unknown): null | Record<PropertyKey, unknown> {
             '_currentValue2' in record)
         ? record
         : null;
-}
-
-function sanitizeIdPart(value: string): string {
-    return encodeURIComponent(value.trim()).replaceAll('%', '~');
 }
 
 function getRecord(value: unknown): null | Record<PropertyKey, unknown> {

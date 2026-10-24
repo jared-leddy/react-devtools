@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.12
+
+- Give components opaque root-scoped identities that survive alternate Fibers,
+  keyed reordering and display-name changes. Retire identities on unmount.
+- Preserve available wrapper names and tags, source locations and React keys;
+  retain truthful minified or anonymous labels when richer metadata is absent.
+- Resolve inspection and highlighting through the same root-scoped Fiber map,
+  keeping DOM lookup inside the selected subtree. Include observed DOM bounds
+  in on-demand inspection replies.
+- Add real development and production identity regressions across overlay and
+  standalone hosts, plus native extension diagnostics. Development artifacts:
+  Chrome 0.0.20 and Firefox 0.0.11; browser-store readiness remains separate work.
+
 ## 0.1.11
 
 - Replace production demo components and parent-DOM tree polling with real,
