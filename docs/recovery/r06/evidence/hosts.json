@@ -1,0 +1,90 @@
+{
+    "applicationSourceCommit": "1e6dbc1a6fd96514e1ef2380af441cec3896fb7a",
+    "browser": "153.0.8010.12",
+    "observations": [
+        {
+            "mode": "development",
+            "host": "overlay",
+            "expectedNames": [
+                "PlainFunction",
+                "NamedClassFixture",
+                "MemoFixture",
+                "ForwardFixture",
+                "FixtureTheme.Provider",
+                "FixtureTheme.Consumer",
+                "Suspense",
+                "Portal",
+                "PortalLeafFixture",
+                "OtherRootFixture"
+            ],
+            "originalId": "c:fa75ca92-57e4-4bf4-8b7f-a6b6a9f8a0b0:h",
+            "remountedId": "c:fa75ca92-57e4-4bf4-8b7f-a6b6a9f8a0b0:1e",
+            "rootId": "react-root:1",
+            "restoredRootId": "react-root:4",
+            "errors": []
+        },
+        {
+            "mode": "development",
+            "host": "standalone",
+            "expectedNames": [
+                "PlainFunction",
+                "NamedClassFixture",
+                "MemoFixture",
+                "ForwardFixture",
+                "FixtureTheme.Provider",
+                "FixtureTheme.Consumer",
+                "Suspense",
+                "Portal",
+                "PortalLeafFixture",
+                "OtherRootFixture"
+            ],
+            "originalId": "c:4b7770c3-90cf-4b3c-8d3d-0b875f684be2:h",
+            "remountedId": "c:4b7770c3-90cf-4b3c-8d3d-0b875f684be2:1e",
+            "rootId": "react-root:1",
+            "restoredRootId": "react-root:4",
+            "errors": []
+        },
+        {
+            "mode": "production",
+            "host": "overlay",
+            "expectedNames": [
+                "Sd",
+                "NamedClassFixture",
+                "MemoFixture",
+                "ForwardFixture",
+                "FixtureTheme.Provider",
+                "FixtureTheme.Consumer",
+                "Suspense",
+                "Portal",
+                "PortalLeafFixture",
+                "OtherRootFixture"
+            ],
+            "originalId": "c:af62d247-1a91-4163-adc3-669b1f402b3d:h",
+            "remountedId": "c:af62d247-1a91-4163-adc3-669b1f402b3d:1e",
+            "rootId": "react-root:1",
+            "restoredRootId": "react-root:4",
+            "errors": []
+        },
+        {
+            "mode": "production",
+            "host": "standalone",
+            "expectedNames": [
+                "Sd",
+                "NamedClassFixture",
+                "MemoFixture",
+                "ForwardFixture",
+                "FixtureTheme.Provider",
+                "FixtureTheme.Consumer",
+                "Suspense",
+                "Portal",
+                "PortalLeafFixture",
+                "OtherRootFixture"
+            ],
+            "originalId": "c:5e1f3b26-6a2a-4939-950f-1d24c23623da:h",
+            "remountedId": "c:5e1f3b26-6a2a-4939-950f-1d24c23623da:1e",
+            "rootId": "react-root:1",
+            "restoredRootId": "react-root:4",
+            "errors": []
+        }
+    ]
+}

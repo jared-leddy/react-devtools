@@ -1,0 +1,534 @@
+{
+    "browser": {
+        "protocolVersion": "1.3",
+        "product": "Chrome/155.0.8059.85",
+        "revision": "@0e66b94549a8bd85f03fbdf189b752d6e7b63c32",
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+        "jsVersion": "15.5.35.25"
+    },
+    "extension": {
+        "id": "kmncihlalbfcggkeiigdaakkbabaload"
+    },
+    "url": "http://127.0.0.1:9055/development",
+    "targets": {
+        "targetInfos": [
+            {
+                "targetId": "1EFEBDC35D2783FC99A17260D48DE27E",
+                "type": "service_worker",
+                "title": "Service Worker chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/background.js",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/background.js",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "1C10DFC569463CBA6A2993B096C4F6D7"
+            },
+            {
+                "targetId": "879CCC86B27F28039440BB7FDEB11AA8",
+                "type": "browser_ui",
+                "title": "Omnibox Popup",
+                "url": "chrome://omnibox-popup.top-chrome/",
+                "attached": false,
+                "canAccessOpener": false,
+                "browserContextId": "1C10DFC569463CBA6A2993B096C4F6D7"
+            },
+            {
+                "targetId": "60D9EF3EEBFAE15CA5CB686CD26BF09E",
+                "type": "browser_ui",
+                "title": "Omnibox Popup",
+                "url": "chrome://omnibox-popup.top-chrome/omnibox_popup_aim.html",
+                "attached": false,
+                "canAccessOpener": false,
+                "browserContextId": "1C10DFC569463CBA6A2993B096C4F6D7"
+            },
+            {
+                "targetId": "AD2A812494D10DD2AA0B340857262F85",
+                "type": "page",
+                "title": "about:blank",
+                "url": "about:blank",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "1C10DFC569463CBA6A2993B096C4F6D7"
+            },
+            {
+                "targetId": "A6C5ADDEEBF955AB1F55FF4659EF5993",
+                "type": "page",
+                "title": "DevTools - 127.0.0.1:9055/development",
+                "url": "devtools://devtools/bundled/devtools_app.html?remoteBase=https://chrome-devtools-frontend.appspot.com/serve_file/@0e66b94549a8bd85f03fbdf189b752d6e7b63c32/&targetType=tab&can_dock=true&disableSelfXssWarnings=true",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "1C10DFC569463CBA6A2993B096C4F6D7"
+            },
+            {
+                "targetId": "5F334BB5B65A2F2A96152B247DBE5C5A",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "attached": false,
+                "parentId": "A6C5ADDEEBF955AB1F55FF4659EF5993",
+                "canAccessOpener": false,
+                "parentFrameId": "A6C5ADDEEBF955AB1F55FF4659EF5993",
+                "browserContextId": "1C10DFC569463CBA6A2993B096C4F6D7"
+            },
+            {
+                "targetId": "BA0AB08A2670CB6357BDC9DE7D220172",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "attached": false,
+                "parentId": "A6C5ADDEEBF955AB1F55FF4659EF5993",
+                "canAccessOpener": false,
+                "parentFrameId": "A6C5ADDEEBF955AB1F55FF4659EF5993",
+                "browserContextId": "1C10DFC569463CBA6A2993B096C4F6D7"
+            },
+            {
+                "targetId": "E645297B5FF0FB75272671F07A225DC6",
+                "type": "page",
+                "title": "R06 development",
+                "url": "http://127.0.0.1:9055/development",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "1C10DFC569463CBA6A2993B096C4F6D7"
+            },
+            {
+                "targetId": "932823B5F2FA17C5FCDF1474B54823E1",
+                "type": "page",
+                "title": "DevTools - about:blank",
+                "url": "devtools://devtools/bundled/devtools_app.html?remoteBase=https://chrome-devtools-frontend.appspot.com/serve_file/@0e66b94549a8bd85f03fbdf189b752d6e7b63c32/&targetType=tab&can_dock=true&disableSelfXssWarnings=true",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "1C10DFC569463CBA6A2993B096C4F6D7"
+            },
+            {
+                "targetId": "4C0B4C1088A44390563B3DB1DD9BCCEB",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "attached": false,
+                "parentId": "932823B5F2FA17C5FCDF1474B54823E1",
+                "canAccessOpener": false,
+                "parentFrameId": "932823B5F2FA17C5FCDF1474B54823E1",
+                "browserContextId": "1C10DFC569463CBA6A2993B096C4F6D7"
+            },
+            {
+                "targetId": "37197C345E8078DB2AD96565F53EECB9",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "attached": false,
+                "parentId": "932823B5F2FA17C5FCDF1474B54823E1",
+                "canAccessOpener": false,
+                "parentFrameId": "932823B5F2FA17C5FCDF1474B54823E1",
+                "browserContextId": "1C10DFC569463CBA6A2993B096C4F6D7"
+            }
+        ]
+    },
+    "results": [
+        {
+            "target": {
+                "targetId": "5F334BB5B65A2F2A96152B247DBE5C5A",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "attached": false,
+                "parentId": "A6C5ADDEEBF955AB1F55FF4659EF5993",
+                "canAccessOpener": false,
+                "parentFrameId": "A6C5ADDEEBF955AB1F55FF4659EF5993",
+                "browserContextId": "1C10DFC569463CBA6A2993B096C4F6D7"
+            },
+            "result": {
+                "id": 1,
+                "result": {
+                    "result": {
+                        "type": "object",
+                        "value": {
+                            "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                            "body": "\n    \n\n",
+                            "tabId": 135902069,
+                            "inspected": {
+                                "url": "http://127.0.0.1:9055/development",
+                                "detected": true,
+                                "backendScript": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/user-app.js",
+                                "frames": 0,
+                                "hookKeys": [
+                                    "emit",
+                                    "getFiberRoots",
+                                    "inject",
+                                    "off",
+                                    "on",
+                                    "once",
+                                    "onCommitFiberRoot",
+                                    "onCommitFiberUnmount",
+                                    "onPostCommitFiberRoot",
+                                    "rendererInterfaces",
+                                    "renderers",
+                                    "sub",
+                                    "supportsFiber"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "target": {
+                "targetId": "BA0AB08A2670CB6357BDC9DE7D220172",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "attached": false,
+                "parentId": "A6C5ADDEEBF955AB1F55FF4659EF5993",
+                "canAccessOpener": false,
+                "parentFrameId": "A6C5ADDEEBF955AB1F55FF4659EF5993",
+                "browserContextId": "1C10DFC569463CBA6A2993B096C4F6D7"
+            },
+            "result": {
+                "id": 1,
+                "result": {
+                    "result": {
+                        "type": "object",
+                        "value": {
+                            "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                            "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nOverview\nTransport\nExtension\nConnection\nConnected\nLast commit\nNot available\nRoutes\nNot available\nReact renderers\nreact-dom\nreact-dom\nReact 19.1.1\nDetected\nRoots\nreact-root:1\nreact-root:1\nUnknown\nRenderer 1\nCommits 0\nReady\nreact-root:2\nreact-root:2\nUnknown\nRenderer 1\nCommits 0\nReady\nIntegrations\nBrowser extension\nTransport\nPerformance diagnostics\nHigh performance mode\nDisabled\nTimeline recording\nDisabled\nLast commit time\nNot available",
+                            "tabId": 135902069,
+                            "inspected": {
+                                "url": "http://127.0.0.1:9055/development",
+                                "detected": true,
+                                "backendScript": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/user-app.js",
+                                "frames": 0,
+                                "hookKeys": [
+                                    "emit",
+                                    "getFiberRoots",
+                                    "inject",
+                                    "off",
+                                    "on",
+                                    "once",
+                                    "onCommitFiberRoot",
+                                    "onCommitFiberUnmount",
+                                    "onPostCommitFiberRoot",
+                                    "rendererInterfaces",
+                                    "renderers",
+                                    "sub",
+                                    "supportsFiber"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "target": {
+                "targetId": "4C0B4C1088A44390563B3DB1DD9BCCEB",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "attached": false,
+                "parentId": "932823B5F2FA17C5FCDF1474B54823E1",
+                "canAccessOpener": false,
+                "parentFrameId": "932823B5F2FA17C5FCDF1474B54823E1",
+                "browserContextId": "1C10DFC569463CBA6A2993B096C4F6D7"
+            },
+            "result": {
+                "id": 1,
+                "result": {
+                    "result": {
+                        "type": "object",
+                        "value": {
+                            "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                            "body": "\n    \n\n",
+                            "tabId": 135902068,
+                            "exception": {
+                                "code": "E_FAILED",
+                                "description": "Operation failed: %s",
+                                "details": ["Permission denied"],
+                                "isError": true
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "target": {
+                "targetId": "37197C345E8078DB2AD96565F53EECB9",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "attached": false,
+                "parentId": "932823B5F2FA17C5FCDF1474B54823E1",
+                "canAccessOpener": false,
+                "parentFrameId": "932823B5F2FA17C5FCDF1474B54823E1",
+                "browserContextId": "1C10DFC569463CBA6A2993B096C4F6D7"
+            },
+            "result": {
+                "id": 1,
+                "result": {
+                    "result": {
+                        "type": "object",
+                        "value": {
+                            "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                            "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nConnection failed\n\nDevTools handshake timed out\n\nDisconnected\nTroubleshooting",
+                            "tabId": 135902068,
+                            "exception": {
+                                "code": "E_FAILED",
+                                "description": "Operation failed: %s",
+                                "details": ["Permission denied"],
+                                "isError": true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "errors": [],
+    "identityChecks": {
+        "original": {
+            "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:h",
+            "rootId": "react-root:1",
+            "key": "b",
+            "selected": "false",
+            "label": "v\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: b"
+        },
+        "remounted": {
+            "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:1c",
+            "rootId": "react-root:1",
+            "key": "b",
+            "selected": "false",
+            "label": "v\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: b"
+        },
+        "snapshots": [
+            {
+                "stage": "rows",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n22 visible nodes\n1 selected\nv\nIdentityFixture\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nFixtureTheme.Provider\ncontext-provider\nContextProvider\ncontext-provider\nv\nmain\nhost\nHostComponent\nhost\nv\nsection\nhost\nHostComponent\nhost\nv\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: a\nv\narticle\nhost\nHostComponent\nhost\nstrong\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\nv\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: b\nv\narticle\nhost\nHostComponent\nhost\nstrong\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\nv\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: c\nv\narticle\nhost\nHostComponent\nhost\n\nSelected component\nIdentityFixture\n\nNo source file\n\nNAME\nIdentityFixture\nCOMPONENT ID\nc:21b0bc14-7225-4786-b6f6-0d596529241c:1\nTAGS\nFunctionComponent, component, function\nRead-only\nHooks\nHook 0 (state)\nArray(3)\narray\n0\n\"a\"\n1\n\"b\"\n2\n\"c\"\nHook 1 (state)\ntrue\nHook 2 (state)\n\"initial\"",
+                "rows": [
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:b",
+                        "rootId": "react-root:1",
+                        "key": "a",
+                        "selected": "false",
+                        "label": "v\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: a"
+                    },
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:h",
+                        "rootId": "react-root:1",
+                        "key": "b",
+                        "selected": "false",
+                        "label": "v\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: b"
+                    },
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:n",
+                        "rootId": "react-root:1",
+                        "key": "c",
+                        "selected": "false",
+                        "label": "v\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: c"
+                    }
+                ],
+                "values": [
+                    "Array(3)",
+                    "\"a\"",
+                    "\"b\"",
+                    "\"c\"",
+                    "true",
+                    "\"initial\""
+                ]
+            },
+            {
+                "stage": "selected",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n22 visible nodes\n11 selected\nv\nIdentityFixture\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nFixtureTheme.Provider\ncontext-provider\nContextProvider\ncontext-provider\nv\nmain\nhost\nHostComponent\nhost\nv\nsection\nhost\nHostComponent\nhost\nv\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: a\nv\narticle\nhost\nHostComponent\nhost\nstrong\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\nv\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: b\nv\narticle\nhost\nHostComponent\nhost\nstrong\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\nv\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: c\nv\narticle\nhost\nHostComponent\nhost\n\nSelected component\nSelectableRow\n\nNo source file\n\nNAME\nSelectableRow\nCOMPONENT ID\nc:21b0bc14-7225-4786-b6f6-0d596529241c:h\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nrowId\n\"b\"\nHooks\nHook 0 (state)\n0\nHook 1 (context)\n\"initial\"",
+                "rows": [
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:b",
+                        "rootId": "react-root:1",
+                        "key": "a",
+                        "selected": "false",
+                        "label": "v\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: a"
+                    },
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:h",
+                        "rootId": "react-root:1",
+                        "key": "b",
+                        "selected": "true",
+                        "label": "v\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: b"
+                    },
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:n",
+                        "rootId": "react-root:1",
+                        "key": "c",
+                        "selected": "false",
+                        "label": "v\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: c"
+                    }
+                ],
+                "values": ["\"b\"", "0", "\"initial\""]
+            },
+            {
+                "stage": "state-update",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n22 visible nodes\n11 selected\nv\nIdentityFixture\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nFixtureTheme.Provider\ncontext-provider\nContextProvider\ncontext-provider\nv\nmain\nhost\nHostComponent\nhost\nv\nsection\nhost\nHostComponent\nhost\nv\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: a\nv\narticle\nhost\nHostComponent\nhost\nstrong\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\nv\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: b\nv\narticle\nhost\nHostComponent\nhost\nstrong\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\nv\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: c\nv\narticle\nhost\nHostComponent\nhost\n\nSelected component\nSelectableRow\n\nNo source file\n\nNAME\nSelectableRow\nCOMPONENT ID\nc:21b0bc14-7225-4786-b6f6-0d596529241c:h\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nrowId\n\"b\"\nHooks\nHook 0 (state)\n1\nHook 1 (context)\n\"initial\"",
+                "rows": [
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:b",
+                        "rootId": "react-root:1",
+                        "key": "a",
+                        "selected": "false",
+                        "label": "v\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: a"
+                    },
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:h",
+                        "rootId": "react-root:1",
+                        "key": "b",
+                        "selected": "true",
+                        "label": "v\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: b"
+                    },
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:n",
+                        "rootId": "react-root:1",
+                        "key": "c",
+                        "selected": "false",
+                        "label": "v\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: c"
+                    }
+                ],
+                "values": ["\"b\"", "1", "\"initial\""]
+            },
+            {
+                "stage": "reorder",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n22 visible nodes\n5 selected\nv\nIdentityFixture\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nFixtureTheme.Provider\ncontext-provider\nContextProvider\ncontext-provider\nv\nmain\nhost\nHostComponent\nhost\nv\nsection\nhost\nHostComponent\nhost\nv\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: b\nv\narticle\nhost\nHostComponent\nhost\nstrong\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\nv\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: c\nv\narticle\nhost\nHostComponent\nhost\nstrong\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\nv\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: a\nv\narticle\nhost\nHostComponent\nhost\n\nSelected component\nSelectableRow\n\nNo source file\n\nNAME\nSelectableRow\nCOMPONENT ID\nc:21b0bc14-7225-4786-b6f6-0d596529241c:h\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nrowId\n\"b\"\nHooks\nHook 0 (state)\n1\nHook 1 (context)\n\"initial\"",
+                "rows": [
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:h",
+                        "rootId": "react-root:1",
+                        "key": "b",
+                        "selected": "true",
+                        "label": "v\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: b"
+                    },
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:n",
+                        "rootId": "react-root:1",
+                        "key": "c",
+                        "selected": "false",
+                        "label": "v\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: c"
+                    },
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:b",
+                        "rootId": "react-root:1",
+                        "key": "a",
+                        "selected": "false",
+                        "label": "v\nSelectableRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: a"
+                    }
+                ],
+                "values": ["\"b\"", "1", "\"initial\""]
+            },
+            {
+                "stage": "rename",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n22 visible nodes\n5 selected\nv\nIdentityFixture\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nFixtureTheme.Provider\ncontext-provider\nContextProvider\ncontext-provider\nv\nmain\nhost\nHostComponent\nhost\nv\nsection\nhost\nHostComponent\nhost\nv\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: b\nv\narticle\nhost\nHostComponent\nhost\nstrong\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\nv\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: c\nv\narticle\nhost\nHostComponent\nhost\nstrong\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\nv\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: a\nv\narticle\nhost\nHostComponent\nhost\n\nSelected component\nRenamedRow\n\nNo source file\n\nNAME\nRenamedRow\nCOMPONENT ID\nc:21b0bc14-7225-4786-b6f6-0d596529241c:h\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nrowId\n\"b\"\nHooks\nHook 0 (state)\n1\nHook 1 (context)\n\"renamed\"",
+                "rows": [
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:h",
+                        "rootId": "react-root:1",
+                        "key": "b",
+                        "selected": "true",
+                        "label": "v\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: b"
+                    },
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:n",
+                        "rootId": "react-root:1",
+                        "key": "c",
+                        "selected": "false",
+                        "label": "v\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: c"
+                    },
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:b",
+                        "rootId": "react-root:1",
+                        "key": "a",
+                        "selected": "false",
+                        "label": "v\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: a"
+                    }
+                ],
+                "values": ["\"b\"", "1", "\"renamed\""]
+            },
+            {
+                "stage": "unmounted",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n16 visible nodes\n0 selected\nv\nIdentityFixture\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nFixtureTheme.Provider\ncontext-provider\nContextProvider\ncontext-provider\nv\nmain\nhost\nHostComponent\nhost\nv\nsection\nhost\nHostComponent\nhost\nv\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: c\nv\narticle\nhost\nHostComponent\nhost\nstrong\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\nv\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: a\nv\narticle\nhost\nHostComponent\nhost\nstrong\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nNo component selected\n\nChoose a component from the tree to inspect its props, hooks, and state.",
+                "rows": [
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:n",
+                        "rootId": "react-root:1",
+                        "key": "c",
+                        "selected": "false",
+                        "label": "v\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: c"
+                    },
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:b",
+                        "rootId": "react-root:1",
+                        "key": "a",
+                        "selected": "false",
+                        "label": "v\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: a"
+                    }
+                ],
+                "values": []
+            },
+            {
+                "stage": "remounted",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n22 visible nodes\n0 selected\nv\nIdentityFixture\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nFixtureTheme.Provider\ncontext-provider\nContextProvider\ncontext-provider\nv\nmain\nhost\nHostComponent\nhost\nv\nsection\nhost\nHostComponent\nhost\nv\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: b\nv\narticle\nhost\nHostComponent\nhost\nstrong\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\nv\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: c\nv\narticle\nhost\nHostComponent\nhost\nstrong\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\nv\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: a\nv\narticle\nhost\nHostComponent\nhost\n\nSelected component\nNo component selected\n\nChoose a component from the tree to inspect its props, hooks, and state.",
+                "rows": [
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:1c",
+                        "rootId": "react-root:1",
+                        "key": "b",
+                        "selected": "false",
+                        "label": "v\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: b"
+                    },
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:n",
+                        "rootId": "react-root:1",
+                        "key": "c",
+                        "selected": "false",
+                        "label": "v\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: c"
+                    },
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:b",
+                        "rootId": "react-root:1",
+                        "key": "a",
+                        "selected": "false",
+                        "label": "v\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: a"
+                    }
+                ],
+                "values": []
+            },
+            {
+                "stage": "reset-state",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n22 visible nodes\n5 selected\nv\nIdentityFixture\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nFixtureTheme.Provider\ncontext-provider\nContextProvider\ncontext-provider\nv\nmain\nhost\nHostComponent\nhost\nv\nsection\nhost\nHostComponent\nhost\nv\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: b\nv\narticle\nhost\nHostComponent\nhost\nstrong\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\nv\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: c\nv\narticle\nhost\nHostComponent\nhost\nstrong\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\nv\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: a\nv\narticle\nhost\nHostComponent\nhost\n\nSelected component\nRenamedRow\n\nNo source file\n\nNAME\nRenamedRow\nCOMPONENT ID\nc:21b0bc14-7225-4786-b6f6-0d596529241c:1c\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nrowId\n\"b\"\nHooks\nHook 0 (state)\n0\nHook 1 (context)\n\"renamed\"",
+                "rows": [
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:1c",
+                        "rootId": "react-root:1",
+                        "key": "b",
+                        "selected": "true",
+                        "label": "v\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: b"
+                    },
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:n",
+                        "rootId": "react-root:1",
+                        "key": "c",
+                        "selected": "false",
+                        "label": "v\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: c"
+                    },
+                    {
+                        "id": "c:21b0bc14-7225-4786-b6f6-0d596529241c:b",
+                        "rootId": "react-root:1",
+                        "key": "a",
+                        "selected": "false",
+                        "label": "v\nRenamedRow\nfunction\nFunctionComponent\ncomponent\nfunction\nkey: a"
+                    }
+                ],
+                "values": ["\"b\"", "0", "\"renamed\""]
+            },
+            {
+                "stage": "root-removed",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n0 visible nodes\n0 selected\n\nSelected component\nNo component selected\n\nChoose a component from the tree to inspect its props, hooks, and state.",
+                "rows": [],
+                "values": []
+            }
+        ]
+    },
+    "applicationSourceCommit": "1e6dbc1a6fd96514e1ef2380af441cec3896fb7a"
+}

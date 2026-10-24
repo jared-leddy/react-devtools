@@ -74,3 +74,25 @@ unchanged. CI runs the identity matrix in addition to existing product/model tes
 Versions: workspace0.1.12, core0.0.25, client0.0.33, overlay0.0.12,
 Chrome0.0.20, Firefox0.0.11. These are development builds, not approved store releases.
 Final build, browser observations and checksums are recorded in `evidence/`.
+
+The application source is `1e6dbc1a6fd96514e1ef2380af441cec3896fb7a`.
+[Build provenance, coverage and archive hashes](evidence/build.json) and
+[four host scenarios](evidence/hosts.json) record the observed build.
+Installed Chrome155.0.8059.85 and Firefox159.0 passed both development and
+minified production checks. Unedited native captures and matching JSON reports:
+[Chrome development](evidence/chrome-development.png),
+[Chrome production](evidence/chrome-production.png),
+[Firefox development](evidence/firefox-development.png),
+[Firefox production](evidence/firefox-production.png).
+The production Firefox report verifies actual selected state and DOM bounds
+despite limited production hook-kind inference. Chrome's reports retain the
+expected permission error from its spare `about:blank` tab; the scenario explicitly
+binds to the panel inspecting the fixture, rather than that spare tab.
+
+All required gates pass, including the eight product smoke tests, eight existing
+model host checks and four new identity host checks. Core has153 passing tests.
+The initial unrestricted unit run timed out in an unchanged Firefox bootstrap
+test under parallel browser load; the full CI-concurrency rerun passed with no
+timeout or threshold changes. New allocator coverage is100% in every metric.
+The overlay measures271,097 raw /84,864 gzip bytes; all payloads fit unchanged
+budgets. Evidence checksums are in [SHA256SUMS](evidence/SHA256SUMS).
