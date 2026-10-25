@@ -129,6 +129,7 @@ export function createDevToolsSession(
     };
     const fail = (error: unknown) => {
         if (!disposed) {
+            generation += 1;
             close();
             connection = undefined;
             publish({
@@ -334,12 +335,14 @@ export function createDevToolsSession(
                 throw new Error('Component inspection unavailable');
             const streamId = snapshot.streamId;
             const revision = snapshot.revision;
+            const inspectionGeneration = generation;
             let result: ComponentStateResponse | undefined;
             try {
                 result = await client.getComponentState(request);
             } catch (error) {
                 if (
                     disposed ||
+                    generation !== inspectionGeneration ||
                     snapshot.status !== 'connected' ||
                     snapshot.streamId !== streamId ||
                     snapshot.revision !== revision
@@ -349,6 +352,7 @@ export function createDevToolsSession(
             }
             if (
                 disposed ||
+                generation !== inspectionGeneration ||
                 snapshot.status !== 'connected' ||
                 snapshot.streamId !== streamId ||
                 snapshot.revision !== revision
