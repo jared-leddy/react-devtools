@@ -1,4 +1,6 @@
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { verifyNativeIdentity } from './native-identity.mjs';
@@ -9,7 +11,9 @@ const url = process.argv[2];
 if (!url) throw new Error('Provide an inspected fixture URL');
 const output = process.argv[3] ?? '/private/tmp/r03-chrome';
 fs.mkdirSync(output, { recursive: true });
-const profile = fs.mkdtempSync('/private/tmp/r03-chrome-profile-');
+const profile = fs.mkdtempSync(
+    path.join(os.tmpdir(), 'react-devtools-chrome-profile-')
+);
 const context = await chromium.launchPersistentContext(profile, {
     executablePath:
         process.env.CHROME_EXECUTABLE_PATH ??

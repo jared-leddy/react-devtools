@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { createServer } from 'vite';
 import react from '@vitejs/plugin-react';
 const directory = path.dirname(fileURLToPath(import.meta.url));
+fs.mkdirSync('artifacts', { recursive: true });
 const temporary = fs.mkdtempSync(path.resolve('artifacts/r08-fixture-'));
 const source = fs.readFileSync(path.join(directory, 'fixture.tsx'), 'utf8');
 const update = (version) =>
