@@ -8,6 +8,45 @@ jest.mock('@devtools/kit', () => ({
     }))
 }));
 describe('shared page backend', () => {
+    it('keeps separately owned channels independent in the same document', () => {
+        const target = createMockUserAppWindow();
+        target.__REACT_DEVTOOLS_GLOBAL_HOOK__ = createMockReactHook();
+        const iframe = createPageBackend(
+            target,
+            createExtensionServerChannel()
+        );
+        const standalone = createPageBackend(
+            target,
+            createExtensionServerChannel()
+        );
+        expect(iframe).not.toBe(standalone);
+        iframe.dispose?.();
+        standalone.dispose?.();
+    });
+    it('shares one backend per document and replaces it only after disposal', () => {
+        const target = createMockUserAppWindow();
+        target.__REACT_DEVTOOLS_GLOBAL_HOOK__ = createMockReactHook();
+        const first = createPageBackend(
+            target,
+            createExtensionServerChannel(),
+            Symbol.for('native-test')
+        );
+        const again = createPageBackend(
+            target,
+            createExtensionServerChannel(),
+            Symbol.for('native-test')
+        );
+        expect(again).toBe(first);
+        first.dispose?.();
+        first.dispose?.();
+        const fresh = createPageBackend(
+            target,
+            createExtensionServerChannel(),
+            Symbol.for('native-test')
+        );
+        expect(fresh).not.toBe(first);
+        fresh.dispose?.();
+    });
     it('pushes context metadata without raw values and inspects them only on demand', () => {
         const target = createMockUserAppWindow();
         const hook = createMockReactHook();

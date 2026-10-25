@@ -92,7 +92,7 @@ describe('firefox extension manifest', () => {
         expect(manifest.content_scripts).toEqual([
             {
                 all_frames: true,
-                js: ['prepare.js', 'detector.js'],
+                js: ['prepare.js', 'detector.js', 'user-app.js'],
                 world: 'MAIN',
                 matches: ['http://*/*', 'https://*/*'],
                 run_at: 'document_start'

@@ -1,0 +1,1602 @@
+{
+    "applicationSourceCommit": "8afe6b54d6c6c8839ee65a1ce0b09b4b1f8cec2d",
+    "browser": {
+        "protocolVersion": "1.3",
+        "product": "Chrome/155.0.8059.85",
+        "revision": "@0e66b94549a8bd85f03fbdf189b752d6e7b63c32",
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+        "jsVersion": "15.5.35.25"
+    },
+    "extension": {
+        "id": "kmncihlalbfcggkeiigdaakkbabaload"
+    },
+    "url": "http://127.0.0.1:9057/?name=A&defer=1",
+    "targets": {
+        "targetInfos": [
+            {
+                "targetId": "C6B42D6D351DAB1C50E61F3ABEB0400B",
+                "type": "service_worker",
+                "title": "Service Worker chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/background.js",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/background.js",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "C989ABDCCC60950F75D992FDA501FA4A",
+                "type": "worker",
+                "title": "",
+                "url": "",
+                "attached": false,
+                "parentId": "A509150142561EE7BF38873C123CFAD6",
+                "canAccessOpener": false,
+                "parentFrameId": "A509150142561EE7BF38873C123CFAD6",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "2305AE1D4D956CCCFE5BD0EEB6C9A34F",
+                "type": "worker",
+                "title": "",
+                "url": "",
+                "attached": false,
+                "parentId": "0A497EF32878C90E5765301D85C10E1E",
+                "canAccessOpener": false,
+                "parentFrameId": "0A497EF32878C90E5765301D85C10E1E",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "E18CFB5755DFB577BB7AE5D3C88734AF",
+                "type": "worker",
+                "title": "",
+                "url": "",
+                "attached": false,
+                "parentId": "A509150142561EE7BF38873C123CFAD6",
+                "canAccessOpener": false,
+                "parentFrameId": "A509150142561EE7BF38873C123CFAD6",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "11DF174D6BBCE9B822693828D622A9B0",
+                "type": "worker",
+                "title": "",
+                "url": "",
+                "attached": false,
+                "parentId": "A509150142561EE7BF38873C123CFAD6",
+                "canAccessOpener": false,
+                "parentFrameId": "A509150142561EE7BF38873C123CFAD6",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "7C907ED752C3D4D1A3EFC8D429A3E26E",
+                "type": "worker",
+                "title": "",
+                "url": "",
+                "attached": false,
+                "parentId": "A509150142561EE7BF38873C123CFAD6",
+                "canAccessOpener": false,
+                "parentFrameId": "A509150142561EE7BF38873C123CFAD6",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "ECA2C11E36D60BF0404C2AB53A7CA605",
+                "type": "worker",
+                "title": "",
+                "url": "",
+                "attached": false,
+                "parentId": "A509150142561EE7BF38873C123CFAD6",
+                "canAccessOpener": false,
+                "parentFrameId": "A509150142561EE7BF38873C123CFAD6",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "26BF2B0FAC52CFABFF1CA03F0C196B2A",
+                "type": "worker",
+                "title": "",
+                "url": "",
+                "attached": false,
+                "parentId": "A509150142561EE7BF38873C123CFAD6",
+                "canAccessOpener": false,
+                "parentFrameId": "A509150142561EE7BF38873C123CFAD6",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "5F048BB654681ACEABA0347544531F61",
+                "type": "worker",
+                "title": "",
+                "url": "",
+                "attached": false,
+                "parentId": "0A497EF32878C90E5765301D85C10E1E",
+                "canAccessOpener": false,
+                "parentFrameId": "0A497EF32878C90E5765301D85C10E1E",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "A3E64DEFA8600D8CF68EAC02ECD9D57B",
+                "type": "worker",
+                "title": "",
+                "url": "",
+                "attached": false,
+                "parentId": "0A497EF32878C90E5765301D85C10E1E",
+                "canAccessOpener": false,
+                "parentFrameId": "0A497EF32878C90E5765301D85C10E1E",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "D8BA995693A28B05E8846A00D3F78E5A",
+                "type": "browser_ui",
+                "title": "Omnibox Popup",
+                "url": "chrome://omnibox-popup.top-chrome/omnibox_popup_aim.html",
+                "attached": false,
+                "canAccessOpener": false,
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "EAA1BC95F654F0D66FF2FF5503AA7297",
+                "type": "page",
+                "title": "about:blank",
+                "url": "about:blank",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "A509150142561EE7BF38873C123CFAD6",
+                "type": "page",
+                "title": "DevTools - 127.0.0.1:9057/?name=A&defer=1",
+                "url": "devtools://devtools/bundled/devtools_app.html?remoteBase=https://chrome-devtools-frontend.appspot.com/serve_file/@0e66b94549a8bd85f03fbdf189b752d6e7b63c32/&targetType=tab&can_dock=true&disableSelfXssWarnings=true",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "50AD3ECBD93659F16B804EC49B88440A",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "attached": false,
+                "parentId": "A509150142561EE7BF38873C123CFAD6",
+                "canAccessOpener": false,
+                "parentFrameId": "A509150142561EE7BF38873C123CFAD6",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "19D70A147B6E9DA46C3C366515FD883B",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "attached": false,
+                "parentId": "A509150142561EE7BF38873C123CFAD6",
+                "canAccessOpener": false,
+                "parentFrameId": "A509150142561EE7BF38873C123CFAD6",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "74CA54F2BB14DC603D7DDACC93EA94EE",
+                "type": "page",
+                "title": "DevTools - about:blank",
+                "url": "devtools://devtools/bundled/devtools_app.html?remoteBase=https://chrome-devtools-frontend.appspot.com/serve_file/@0e66b94549a8bd85f03fbdf189b752d6e7b63c32/&targetType=tab&can_dock=true&disableSelfXssWarnings=true",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "E921B2FE697699BB6E88ED16501D696C",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "attached": false,
+                "parentId": "74CA54F2BB14DC603D7DDACC93EA94EE",
+                "canAccessOpener": false,
+                "parentFrameId": "74CA54F2BB14DC603D7DDACC93EA94EE",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "E0FE971CE7DA323B04118C515ED22163",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "attached": false,
+                "parentId": "74CA54F2BB14DC603D7DDACC93EA94EE",
+                "canAccessOpener": false,
+                "parentFrameId": "74CA54F2BB14DC603D7DDACC93EA94EE",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "3D95FB4F1123164B37253B8447915902",
+                "type": "browser_ui",
+                "title": "Omnibox Popup",
+                "url": "chrome://omnibox-popup.top-chrome/",
+                "attached": false,
+                "canAccessOpener": false,
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "6CCA4A8FA48CB1D41129B85E242DE4C3",
+                "type": "page",
+                "title": "R08 lifecycle",
+                "url": "http://127.0.0.1:9057/?name=A&defer=1",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "0A497EF32878C90E5765301D85C10E1E",
+                "type": "page",
+                "title": "DevTools - 127.0.0.1:9057/?name=B",
+                "url": "devtools://devtools/bundled/devtools_app.html?remoteBase=https://chrome-devtools-frontend.appspot.com/serve_file/@0e66b94549a8bd85f03fbdf189b752d6e7b63c32/&targetType=tab&can_dock=true&disableSelfXssWarnings=true",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "057A04E1D5345F28D2FBF9F6AB2EE096",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "attached": false,
+                "parentId": "0A497EF32878C90E5765301D85C10E1E",
+                "canAccessOpener": false,
+                "parentFrameId": "0A497EF32878C90E5765301D85C10E1E",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "C350FC4B990508363DC8241A4FFB553C",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "attached": false,
+                "parentId": "0A497EF32878C90E5765301D85C10E1E",
+                "canAccessOpener": false,
+                "parentFrameId": "0A497EF32878C90E5765301D85C10E1E",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            {
+                "targetId": "776DDFAD8046B325AEFEF406F358435C",
+                "type": "page",
+                "title": "R08 lifecycle",
+                "url": "http://127.0.0.1:9057/?name=B",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            }
+        ]
+    },
+    "results": [
+        {
+            "target": {
+                "targetId": "50AD3ECBD93659F16B804EC49B88440A",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "attached": false,
+                "parentId": "A509150142561EE7BF38873C123CFAD6",
+                "canAccessOpener": false,
+                "parentFrameId": "A509150142561EE7BF38873C123CFAD6",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            "result": {
+                "id": 1,
+                "result": {
+                    "result": {
+                        "type": "object",
+                        "value": {
+                            "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                            "body": "\n    \n\n",
+                            "tabId": 897422016,
+                            "inspected": {
+                                "url": "http://127.0.0.1:9057/?name=A&defer=1",
+                                "detected": true,
+                                "backendScript": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/user-app.js",
+                                "frames": 1,
+                                "hookKeys": [
+                                    "emit",
+                                    "getFiberRoots",
+                                    "inject",
+                                    "off",
+                                    "on",
+                                    "once",
+                                    "onCommitFiberRoot",
+                                    "onCommitFiberUnmount",
+                                    "onPostCommitFiberRoot",
+                                    "rendererInterfaces",
+                                    "renderers",
+                                    "sub",
+                                    "supportsFiber",
+                                    "onScheduleFiberRoot"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "target": {
+                "targetId": "19D70A147B6E9DA46C3C366515FD883B",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "attached": false,
+                "parentId": "A509150142561EE7BF38873C123CFAD6",
+                "canAccessOpener": false,
+                "parentFrameId": "A509150142561EE7BF38873C123CFAD6",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            "result": {
+                "id": 1,
+                "result": {
+                    "result": {
+                        "type": "object",
+                        "value": {
+                            "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                            "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nOverview\nTransport\nExtension\nConnection\nConnected\nLast commit\nNot available\nRoutes\nNot available\nReact renderers\nreact-dom\nreact-dom\nReact 19.1.1\nDetected\nRoots\nNo roots found\n\nReact was not detected yet, so there are no mounted roots to inspect.\n\nIntegrations\nBrowser extension\nTransport\nPerformance diagnostics\nHigh performance mode\nDisabled\nTimeline recording\nDisabled\nLast commit time\nNot available",
+                            "tabId": 897422016,
+                            "inspected": {
+                                "url": "http://127.0.0.1:9057/?name=A&defer=1",
+                                "detected": true,
+                                "backendScript": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/user-app.js",
+                                "frames": 1,
+                                "hookKeys": [
+                                    "emit",
+                                    "getFiberRoots",
+                                    "inject",
+                                    "off",
+                                    "on",
+                                    "once",
+                                    "onCommitFiberRoot",
+                                    "onCommitFiberUnmount",
+                                    "onPostCommitFiberRoot",
+                                    "rendererInterfaces",
+                                    "renderers",
+                                    "sub",
+                                    "supportsFiber",
+                                    "onScheduleFiberRoot"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "target": {
+                "targetId": "E921B2FE697699BB6E88ED16501D696C",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "attached": false,
+                "parentId": "74CA54F2BB14DC603D7DDACC93EA94EE",
+                "canAccessOpener": false,
+                "parentFrameId": "74CA54F2BB14DC603D7DDACC93EA94EE",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            "result": {
+                "id": 1,
+                "result": {
+                    "result": {
+                        "type": "object",
+                        "value": {
+                            "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                            "body": "\n    \n\n",
+                            "tabId": 897422015,
+                            "exception": {
+                                "code": "E_FAILED",
+                                "description": "Operation failed: %s",
+                                "details": ["Permission denied"],
+                                "isError": true
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "target": {
+                "targetId": "E0FE971CE7DA323B04118C515ED22163",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "attached": false,
+                "parentId": "74CA54F2BB14DC603D7DDACC93EA94EE",
+                "canAccessOpener": false,
+                "parentFrameId": "74CA54F2BB14DC603D7DDACC93EA94EE",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            "result": {
+                "id": 1,
+                "result": {
+                    "result": {
+                        "type": "object",
+                        "value": {
+                            "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                            "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nBackend connection\n\nNo backend-confirmed snapshot is available.\n\nWaiting for backend\nTroubleshooting",
+                            "tabId": 897422015,
+                            "exception": {
+                                "code": "E_FAILED",
+                                "description": "Operation failed: %s",
+                                "details": ["Permission denied"],
+                                "isError": true
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "target": {
+                "targetId": "057A04E1D5345F28D2FBF9F6AB2EE096",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "attached": false,
+                "parentId": "0A497EF32878C90E5765301D85C10E1E",
+                "canAccessOpener": false,
+                "parentFrameId": "0A497EF32878C90E5765301D85C10E1E",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            "result": {
+                "id": 1,
+                "result": {
+                    "result": {
+                        "type": "object",
+                        "value": {
+                            "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                            "body": "\n    \n\n",
+                            "tabId": 897422017,
+                            "inspected": {
+                                "url": "http://127.0.0.1:9057/?name=B",
+                                "detected": true,
+                                "backendScript": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/user-app.js",
+                                "frames": 1,
+                                "hookKeys": [
+                                    "emit",
+                                    "getFiberRoots",
+                                    "inject",
+                                    "off",
+                                    "on",
+                                    "once",
+                                    "onCommitFiberRoot",
+                                    "onCommitFiberUnmount",
+                                    "onPostCommitFiberRoot",
+                                    "rendererInterfaces",
+                                    "renderers",
+                                    "sub",
+                                    "supportsFiber",
+                                    "onScheduleFiberRoot"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "target": {
+                "targetId": "C350FC4B990508363DC8241A4FFB553C",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "attached": false,
+                "parentId": "0A497EF32878C90E5765301D85C10E1E",
+                "canAccessOpener": false,
+                "parentFrameId": "0A497EF32878C90E5765301D85C10E1E",
+                "browserContextId": "5CD595E62C86A3228E93E898E400DB72"
+            },
+            "result": {
+                "id": 1,
+                "result": {
+                    "result": {
+                        "type": "object",
+                        "value": {
+                            "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                            "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nOverview\nTransport\nExtension\nConnection\nConnected\nLast commit\nNot available\nRoutes\nNot available\nReact renderers\nreact-dom\nreact-dom\nReact 19.1.1\nDetected\nRoots\nreact-root:1\nreact-root:1\nUnknown\nRenderer 1\nCommits 0\nReady\nIntegrations\nBrowser extension\nTransport\nPerformance diagnostics\nHigh performance mode\nDisabled\nTimeline recording\nDisabled\nLast commit time\nNot available",
+                            "tabId": 897422017,
+                            "inspected": {
+                                "url": "http://127.0.0.1:9057/?name=B",
+                                "detected": true,
+                                "backendScript": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/user-app.js",
+                                "frames": 1,
+                                "hookKeys": [
+                                    "emit",
+                                    "getFiberRoots",
+                                    "inject",
+                                    "off",
+                                    "on",
+                                    "once",
+                                    "onCommitFiberRoot",
+                                    "onCommitFiberUnmount",
+                                    "onPostCommitFiberRoot",
+                                    "rendererInterfaces",
+                                    "renderers",
+                                    "sub",
+                                    "supportsFiber",
+                                    "onScheduleFiberRoot"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "errors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ],
+    "lifecycleChecks": {
+        "early": {
+            "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\nEmpty React root\n\nReact is connected, but no mounted components were found in the current root.\n\nSelected component\nNo component selected\n\nSelect a component after the inspected app mounts React content.",
+            "tabId": 897422016,
+            "nodes": [],
+            "values": []
+        },
+        "snapshots": [
+            {
+                "stage": "tree-ready",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nLifecycleApp\n\nNo source file\n\nNAME\nLifecycleApp\nCOMPONENT ID\nc:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:1\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nmarker\n\"A\"\nHooks\n\nObserved hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable.\n\nHook 0 (state)\n0\nHook 1 (memo)\n\"v1\"",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": ["\"A\"", "0", "\"v1\""]
+            },
+            {
+                "stage": "tree-ready",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nLifecycleApp\n\nNo source file\n\nNAME\nLifecycleApp\nCOMPONENT ID\nc:efd8ea6d-0707-499e-822a-0c4f1561c3a4:1\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nmarker\n\"B\"\nHooks\n\nObserved hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable.\n\nHook 0 (state)\n0\nHook 1 (memo)\n\"v1\"",
+                "tabId": 897422017,
+                "nodes": [
+                    {
+                        "id": "c:efd8ea6d-0707-499e-822a-0c4f1561c3a4:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:efd8ea6d-0707-499e-822a-0c4f1561c3a4:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:efd8ea6d-0707-499e-822a-0c4f1561c3a4:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:efd8ea6d-0707-499e-822a-0c4f1561c3a4:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:efd8ea6d-0707-499e-822a-0c4f1561c3a4:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:efd8ea6d-0707-499e-822a-0c4f1561c3a4:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": ["\"B\"", "0", "\"v1\""]
+            },
+            {
+                "stage": "tab-A",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nLifecycleApp\n\nNo source file\n\nNAME\nLifecycleApp\nCOMPONENT ID\nc:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:1\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nmarker\n\"A\"\nHooks\n\nObserved hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable.\n\nHook 0 (state)\n0\nHook 1 (memo)\n\"v1\"",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": ["\"A\"", "0", "\"v1\""]
+            },
+            {
+                "stage": "tab-B",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nLifecycleApp\n\nNo source file\n\nNAME\nLifecycleApp\nCOMPONENT ID\nc:efd8ea6d-0707-499e-822a-0c4f1561c3a4:1\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nmarker\n\"B\"\nHooks\n\nObserved hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable.\n\nHook 0 (state)\n0\nHook 1 (memo)\n\"v1\"",
+                "tabId": 897422017,
+                "nodes": [
+                    {
+                        "id": "c:efd8ea6d-0707-499e-822a-0c4f1561c3a4:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:efd8ea6d-0707-499e-822a-0c4f1561c3a4:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:efd8ea6d-0707-499e-822a-0c4f1561c3a4:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:efd8ea6d-0707-499e-822a-0c4f1561c3a4:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:efd8ea6d-0707-499e-822a-0c4f1561c3a4:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:efd8ea6d-0707-499e-822a-0c4f1561c3a4:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": ["\"B\"", "0", "\"v1\""]
+            },
+            {
+                "stage": "independent-frame-and-tab",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nLifecycleApp\n\nNo source file\n\nNAME\nLifecycleApp\nCOMPONENT ID\nc:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:1\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nmarker\n\"A\"\nHooks\n\nObserved hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable.\n\nHook 0 (state)\n1\nHook 1 (memo)\n\"v1\"",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": ["\"A\"", "1", "\"v1\""]
+            },
+            {
+                "stage": "actual-vite-fast-refresh",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nLifecycleApp\n\nNo source file\n\nNAME\nLifecycleApp\nCOMPONENT ID\nc:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:1\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nmarker\n\"A\"\nHooks\n\nObserved hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable.\n\nHook 0 (state)\n1\nHook 1 (memo)\n\"v1792909119361\"",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:1ef96fdf-14aa-4734-a5d9-e0622f28ea9e:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": ["\"A\"", "1", "\"v1792909119361\""]
+            },
+            {
+                "stage": "reload-0-clears-old-selection",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nNo component selected\n\nChoose a component from the tree to inspect its props, hooks, and state.",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:bc857777-67ca-47de-a1f0-219ed6e3c765:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:bc857777-67ca-47de-a1f0-219ed6e3c765:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:bc857777-67ca-47de-a1f0-219ed6e3c765:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:bc857777-67ca-47de-a1f0-219ed6e3c765:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:bc857777-67ca-47de-a1f0-219ed6e3c765:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:bc857777-67ca-47de-a1f0-219ed6e3c765:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": []
+            },
+            {
+                "stage": "tree-ready",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nNo component selected\n\nChoose a component from the tree to inspect its props, hooks, and state.",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:bc857777-67ca-47de-a1f0-219ed6e3c765:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:bc857777-67ca-47de-a1f0-219ed6e3c765:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:bc857777-67ca-47de-a1f0-219ed6e3c765:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:bc857777-67ca-47de-a1f0-219ed6e3c765:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:bc857777-67ca-47de-a1f0-219ed6e3c765:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:bc857777-67ca-47de-a1f0-219ed6e3c765:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": []
+            },
+            {
+                "stage": "reload-0-fresh",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nLifecycleApp\n\nNo source file\n\nNAME\nLifecycleApp\nCOMPONENT ID\nc:bc857777-67ca-47de-a1f0-219ed6e3c765:1\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nmarker\n\"A\"\nHooks\n\nObserved hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable.\n\nHook 0 (state)\n0\nHook 1 (memo)\n\"v1792909119361\"",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:bc857777-67ca-47de-a1f0-219ed6e3c765:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:bc857777-67ca-47de-a1f0-219ed6e3c765:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:bc857777-67ca-47de-a1f0-219ed6e3c765:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:bc857777-67ca-47de-a1f0-219ed6e3c765:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:bc857777-67ca-47de-a1f0-219ed6e3c765:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:bc857777-67ca-47de-a1f0-219ed6e3c765:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": ["\"A\"", "0", "\"v1792909119361\""]
+            },
+            {
+                "stage": "reload-1-clears-old-selection",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nNo component selected\n\nChoose a component from the tree to inspect its props, hooks, and state.",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:aad2ff90-7a91-46ca-b6c8-14ac47257e2d:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:aad2ff90-7a91-46ca-b6c8-14ac47257e2d:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:aad2ff90-7a91-46ca-b6c8-14ac47257e2d:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:aad2ff90-7a91-46ca-b6c8-14ac47257e2d:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:aad2ff90-7a91-46ca-b6c8-14ac47257e2d:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:aad2ff90-7a91-46ca-b6c8-14ac47257e2d:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": []
+            },
+            {
+                "stage": "tree-ready",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nNo component selected\n\nChoose a component from the tree to inspect its props, hooks, and state.",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:aad2ff90-7a91-46ca-b6c8-14ac47257e2d:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:aad2ff90-7a91-46ca-b6c8-14ac47257e2d:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:aad2ff90-7a91-46ca-b6c8-14ac47257e2d:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:aad2ff90-7a91-46ca-b6c8-14ac47257e2d:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:aad2ff90-7a91-46ca-b6c8-14ac47257e2d:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:aad2ff90-7a91-46ca-b6c8-14ac47257e2d:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": []
+            },
+            {
+                "stage": "reload-1-fresh",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nLifecycleApp\n\nNo source file\n\nNAME\nLifecycleApp\nCOMPONENT ID\nc:aad2ff90-7a91-46ca-b6c8-14ac47257e2d:1\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nmarker\n\"A\"\nHooks\n\nObserved hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable.\n\nHook 0 (state)\n0\nHook 1 (memo)\n\"v1792909119361\"",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:aad2ff90-7a91-46ca-b6c8-14ac47257e2d:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:aad2ff90-7a91-46ca-b6c8-14ac47257e2d:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:aad2ff90-7a91-46ca-b6c8-14ac47257e2d:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:aad2ff90-7a91-46ca-b6c8-14ac47257e2d:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:aad2ff90-7a91-46ca-b6c8-14ac47257e2d:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:aad2ff90-7a91-46ca-b6c8-14ac47257e2d:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": ["\"A\"", "0", "\"v1792909119361\""]
+            },
+            {
+                "stage": "reload-2-clears-old-selection",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nNo component selected\n\nChoose a component from the tree to inspect its props, hooks, and state.",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:f5b01667-c5dc-4926-abe5-1fec38b51c4e:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:f5b01667-c5dc-4926-abe5-1fec38b51c4e:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:f5b01667-c5dc-4926-abe5-1fec38b51c4e:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:f5b01667-c5dc-4926-abe5-1fec38b51c4e:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:f5b01667-c5dc-4926-abe5-1fec38b51c4e:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:f5b01667-c5dc-4926-abe5-1fec38b51c4e:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": []
+            },
+            {
+                "stage": "tree-ready",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nNo component selected\n\nChoose a component from the tree to inspect its props, hooks, and state.",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:f5b01667-c5dc-4926-abe5-1fec38b51c4e:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:f5b01667-c5dc-4926-abe5-1fec38b51c4e:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:f5b01667-c5dc-4926-abe5-1fec38b51c4e:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:f5b01667-c5dc-4926-abe5-1fec38b51c4e:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:f5b01667-c5dc-4926-abe5-1fec38b51c4e:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:f5b01667-c5dc-4926-abe5-1fec38b51c4e:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": []
+            },
+            {
+                "stage": "reload-2-fresh",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nLifecycleApp\n\nNo source file\n\nNAME\nLifecycleApp\nCOMPONENT ID\nc:f5b01667-c5dc-4926-abe5-1fec38b51c4e:1\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nmarker\n\"A\"\nHooks\n\nObserved hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable.\n\nHook 0 (state)\n0\nHook 1 (memo)\n\"v1792909119361\"",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:f5b01667-c5dc-4926-abe5-1fec38b51c4e:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:f5b01667-c5dc-4926-abe5-1fec38b51c4e:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:f5b01667-c5dc-4926-abe5-1fec38b51c4e:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:f5b01667-c5dc-4926-abe5-1fec38b51c4e:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:f5b01667-c5dc-4926-abe5-1fec38b51c4e:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:f5b01667-c5dc-4926-abe5-1fec38b51c4e:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": ["\"A\"", "0", "\"v1792909119361\""]
+            },
+            {
+                "stage": "worker-restart-snapshot",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nNo component selected\n\nChoose a component from the tree to inspect its props, hooks, and state.",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:39301765-b61b-420c-b56f-fad4aef376ba:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:39301765-b61b-420c-b56f-fad4aef376ba:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:39301765-b61b-420c-b56f-fad4aef376ba:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:39301765-b61b-420c-b56f-fad4aef376ba:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:39301765-b61b-420c-b56f-fad4aef376ba:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:39301765-b61b-420c-b56f-fad4aef376ba:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": []
+            },
+            {
+                "stage": "tree-ready",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nNo component selected\n\nChoose a component from the tree to inspect its props, hooks, and state.",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:39301765-b61b-420c-b56f-fad4aef376ba:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:39301765-b61b-420c-b56f-fad4aef376ba:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:39301765-b61b-420c-b56f-fad4aef376ba:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:39301765-b61b-420c-b56f-fad4aef376ba:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:39301765-b61b-420c-b56f-fad4aef376ba:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:39301765-b61b-420c-b56f-fad4aef376ba:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": []
+            },
+            {
+                "stage": "worker-restart-values",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nLifecycleApp\n\nNo source file\n\nNAME\nLifecycleApp\nCOMPONENT ID\nc:39301765-b61b-420c-b56f-fad4aef376ba:1\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nmarker\n\"A\"\nHooks\n\nObserved hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable.\n\nHook 0 (state)\n0\nHook 1 (memo)\n\"v1792909119361\"",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:39301765-b61b-420c-b56f-fad4aef376ba:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:39301765-b61b-420c-b56f-fad4aef376ba:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:39301765-b61b-420c-b56f-fad4aef376ba:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:39301765-b61b-420c-b56f-fad4aef376ba:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:39301765-b61b-420c-b56f-fad4aef376ba:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:39301765-b61b-420c-b56f-fad4aef376ba:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": ["\"A\"", "0", "\"v1792909119361\""]
+            },
+            {
+                "stage": "tree-ready",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nNo component selected\n\nChoose a component from the tree to inspect its props, hooks, and state.",
+                "tabId": 897422017,
+                "nodes": [
+                    {
+                        "id": "c:b576adbe-a613-4d82-b607-1a0cb3cf06ff:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:b576adbe-a613-4d82-b607-1a0cb3cf06ff:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:b576adbe-a613-4d82-b607-1a0cb3cf06ff:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:b576adbe-a613-4d82-b607-1a0cb3cf06ff:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:b576adbe-a613-4d82-b607-1a0cb3cf06ff:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:b576adbe-a613-4d82-b607-1a0cb3cf06ff:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": []
+            },
+            {
+                "stage": "other-tab-after-worker-restart",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nLifecycleApp\n\nNo source file\n\nNAME\nLifecycleApp\nCOMPONENT ID\nc:b576adbe-a613-4d82-b607-1a0cb3cf06ff:1\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nmarker\n\"B\"\nHooks\n\nObserved hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable.\n\nHook 0 (state)\n0\nHook 1 (memo)\n\"v1792909119361\"",
+                "tabId": 897422017,
+                "nodes": [
+                    {
+                        "id": "c:b576adbe-a613-4d82-b607-1a0cb3cf06ff:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:b576adbe-a613-4d82-b607-1a0cb3cf06ff:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:b576adbe-a613-4d82-b607-1a0cb3cf06ff:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:b576adbe-a613-4d82-b607-1a0cb3cf06ff:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:b576adbe-a613-4d82-b607-1a0cb3cf06ff:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:b576adbe-a613-4d82-b607-1a0cb3cf06ff:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": ["\"B\"", "0", "\"v1792909119361\""]
+            },
+            {
+                "stage": "root-unmount",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\nEmpty React root\n\nReact is connected, but no mounted components were found in the current root.\n\nSelected component\nNo component selected\n\nSelect a component after the inspected app mounts React content.",
+                "tabId": 897422016,
+                "nodes": [],
+                "values": []
+            },
+            {
+                "stage": "tree-ready",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nNo component selected\n\nChoose a component from the tree to inspect its props, hooks, and state.",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:618e2c7d-29d0-4521-9aa8-fdfedc1fbf51:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:618e2c7d-29d0-4521-9aa8-fdfedc1fbf51:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:618e2c7d-29d0-4521-9aa8-fdfedc1fbf51:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:618e2c7d-29d0-4521-9aa8-fdfedc1fbf51:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:618e2c7d-29d0-4521-9aa8-fdfedc1fbf51:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:618e2c7d-29d0-4521-9aa8-fdfedc1fbf51:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": []
+            },
+            {
+                "stage": "root-remount",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nLifecycleApp\n\nNo source file\n\nNAME\nLifecycleApp\nCOMPONENT ID\nc:618e2c7d-29d0-4521-9aa8-fdfedc1fbf51:1\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nmarker\n\"A\"\nHooks\n\nObserved hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable.\n\nHook 0 (state)\n0\nHook 1 (memo)\n\"v1792909119361\"",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:618e2c7d-29d0-4521-9aa8-fdfedc1fbf51:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:618e2c7d-29d0-4521-9aa8-fdfedc1fbf51:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:618e2c7d-29d0-4521-9aa8-fdfedc1fbf51:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:618e2c7d-29d0-4521-9aa8-fdfedc1fbf51:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:618e2c7d-29d0-4521-9aa8-fdfedc1fbf51:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:618e2c7d-29d0-4521-9aa8-fdfedc1fbf51:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": ["\"A\"", "0", "\"v1792909119361\""]
+            },
+            {
+                "stage": "restricted-document-clears-values",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nBackend connection\n\nNo backend-confirmed snapshot is available.\n\nDisconnected\nTroubleshooting",
+                "tabId": 897422016,
+                "nodes": [],
+                "values": []
+            },
+            {
+                "stage": "tree-ready",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nNo component selected\n\nChoose a component from the tree to inspect its props, hooks, and state.",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:3833d37b-6951-4f19-8e82-a3cedf9335bc:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:3833d37b-6951-4f19-8e82-a3cedf9335bc:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:3833d37b-6951-4f19-8e82-a3cedf9335bc:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:3833d37b-6951-4f19-8e82-a3cedf9335bc:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:3833d37b-6951-4f19-8e82-a3cedf9335bc:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:3833d37b-6951-4f19-8e82-a3cedf9335bc:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": []
+            },
+            {
+                "stage": "navigation-restored",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nLifecycleApp\n\nNo source file\n\nNAME\nLifecycleApp\nCOMPONENT ID\nc:3833d37b-6951-4f19-8e82-a3cedf9335bc:1\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nmarker\n\"A\"\nHooks\n\nObserved hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable.\n\nHook 0 (state)\n0\nHook 1 (memo)\n\"v1792909119361\"",
+                "tabId": 897422016,
+                "nodes": [
+                    {
+                        "id": "c:3833d37b-6951-4f19-8e82-a3cedf9335bc:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:3833d37b-6951-4f19-8e82-a3cedf9335bc:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:3833d37b-6951-4f19-8e82-a3cedf9335bc:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:3833d37b-6951-4f19-8e82-a3cedf9335bc:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:3833d37b-6951-4f19-8e82-a3cedf9335bc:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:3833d37b-6951-4f19-8e82-a3cedf9335bc:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": ["\"A\"", "0", "\"v1792909119361\""]
+            },
+            {
+                "stage": "inspected-tab-closed-other-tab-live",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n6 visible nodes\n1 selected\nv\nLifecycleApp\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nLifecycleApp\n\nNo source file\n\nNAME\nLifecycleApp\nCOMPONENT ID\nc:b576adbe-a613-4d82-b607-1a0cb3cf06ff:1\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nmarker\n\"B\"\nHooks\n\nObserved hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable.\n\nHook 0 (state)\n1\nHook 1 (memo)\n\"v1792909119361\"",
+                "tabId": 897422017,
+                "nodes": [
+                    {
+                        "id": "c:b576adbe-a613-4d82-b607-1a0cb3cf06ff:1",
+                        "label": "LifecycleApp",
+                        "selected": "true"
+                    },
+                    {
+                        "id": "c:b576adbe-a613-4d82-b607-1a0cb3cf06ff:2",
+                        "label": "main",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:b576adbe-a613-4d82-b607-1a0cb3cf06ff:3",
+                        "label": "h1",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:b576adbe-a613-4d82-b607-1a0cb3cf06ff:4",
+                        "label": "output",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:b576adbe-a613-4d82-b607-1a0cb3cf06ff:5",
+                        "label": "span",
+                        "selected": "false"
+                    },
+                    {
+                        "id": "c:b576adbe-a613-4d82-b607-1a0cb3cf06ff:6",
+                        "label": "button",
+                        "selected": "false"
+                    }
+                ],
+                "values": ["\"B\"", "1", "\"v1792909119361\""]
+            }
+        ],
+        "permissionDenial": {
+            "exception": {
+                "code": "E_FAILED",
+                "description": "Operation failed: %s",
+                "details": ["Permission denied"],
+                "isError": true
+            }
+        },
+        "workerRestart": {
+            "versionId": "0",
+            "oldTargetId": "C6B42D6D351DAB1C50E61F3ABEB0400B",
+            "events": [
+                {
+                    "versionId": "0",
+                    "registrationId": "0",
+                    "scriptURL": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/background.js",
+                    "runningStatus": "stopping",
+                    "status": "activated",
+                    "scriptLastModified": 1792907079,
+                    "scriptResponseTime": 0,
+                    "controlledClients": [
+                        "0A497EF32878C90E5765301D85C10E1E",
+                        "74CA54F2BB14DC603D7DDACC93EA94EE",
+                        "A509150142561EE7BF38873C123CFAD6"
+                    ],
+                    "targetId": "C6B42D6D351DAB1C50E61F3ABEB0400B"
+                },
+                {
+                    "versionId": "0",
+                    "registrationId": "0",
+                    "scriptURL": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/background.js",
+                    "runningStatus": "stopped",
+                    "status": "activated",
+                    "scriptLastModified": 1792907079,
+                    "scriptResponseTime": 0,
+                    "controlledClients": [
+                        "0A497EF32878C90E5765301D85C10E1E",
+                        "74CA54F2BB14DC603D7DDACC93EA94EE",
+                        "A509150142561EE7BF38873C123CFAD6"
+                    ]
+                },
+                {
+                    "versionId": "0",
+                    "registrationId": "0",
+                    "scriptURL": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/background.js",
+                    "runningStatus": "starting",
+                    "status": "activated",
+                    "scriptLastModified": 1792907079,
+                    "scriptResponseTime": 0,
+                    "controlledClients": [
+                        "0A497EF32878C90E5765301D85C10E1E",
+                        "74CA54F2BB14DC603D7DDACC93EA94EE",
+                        "A509150142561EE7BF38873C123CFAD6"
+                    ]
+                },
+                {
+                    "versionId": "0",
+                    "registrationId": "0",
+                    "scriptURL": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/background.js",
+                    "runningStatus": "starting",
+                    "status": "activated",
+                    "scriptLastModified": 1792907079,
+                    "scriptResponseTime": 0,
+                    "controlledClients": [
+                        "0A497EF32878C90E5765301D85C10E1E",
+                        "74CA54F2BB14DC603D7DDACC93EA94EE",
+                        "A509150142561EE7BF38873C123CFAD6"
+                    ],
+                    "targetId": "C6B42D6D351DAB1C50E61F3ABEB0400B"
+                },
+                {
+                    "versionId": "0",
+                    "registrationId": "0",
+                    "scriptURL": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/background.js",
+                    "runningStatus": "starting",
+                    "status": "activated",
+                    "scriptLastModified": 1792907079,
+                    "scriptResponseTime": 0,
+                    "controlledClients": [
+                        "0A497EF32878C90E5765301D85C10E1E",
+                        "74CA54F2BB14DC603D7DDACC93EA94EE",
+                        "A509150142561EE7BF38873C123CFAD6"
+                    ],
+                    "targetId": "C6B42D6D351DAB1C50E61F3ABEB0400B"
+                },
+                {
+                    "versionId": "0",
+                    "registrationId": "0",
+                    "scriptURL": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/background.js",
+                    "runningStatus": "running",
+                    "status": "activated",
+                    "scriptLastModified": 1792907079,
+                    "scriptResponseTime": 0,
+                    "controlledClients": [
+                        "0A497EF32878C90E5765301D85C10E1E",
+                        "74CA54F2BB14DC603D7DDACC93EA94EE",
+                        "A509150142561EE7BF38873C123CFAD6"
+                    ],
+                    "targetId": "C6B42D6D351DAB1C50E61F3ABEB0400B"
+                }
+            ]
+        },
+        "framePolicy": "top-document only; child frames cannot replace the inspected document"
+    }
+}

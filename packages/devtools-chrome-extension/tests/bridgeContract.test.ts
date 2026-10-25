@@ -280,7 +280,7 @@ function createMockWindow(): MockExtensionWindow {
         },
         dispatchMessage(event) {
             for (const listener of listeners) {
-                listener(event);
+                listener({ source: this, ...event });
             }
         },
         postMessage(payload, targetOrigin) {

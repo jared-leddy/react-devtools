@@ -1,5 +1,5 @@
 jest.mock('@devtools/client', () => ({
-    mountDevToolsClient: jest.fn(),
+    mountDevToolsClient: jest.fn(() => ({ unmount: jest.fn() })),
     setClientRouteEnvironment: jest.fn()
 }));
 
@@ -128,6 +128,37 @@ describe('extension entrypoints', () => {
         expect(tabOnePanelPort.sentMessages).toEqual([{ from: 'page-101' }]);
         expect(tabTwoPagePort.sentMessages).toEqual([{ from: 'panel-202' }]);
         expect(tabTwoPanelPort.sentMessages).toEqual([{ from: 'page-202' }]);
+    });
+
+    it('isolates frames and retired documents and rejects a second live panel', async () => {
+        const chrome = createMockBackgroundChrome();
+        (globalThis as typeof globalThis & { chrome?: unknown }).chrome =
+            chrome.api;
+        await import('../src/background');
+        const panel = createMockBackgroundPort('101');
+        const page = createMockBackgroundPort('content-script', 101);
+        chrome.connect(panel);
+        chrome.connect(page);
+        const frame = createMockBackgroundPort('content-script', 101);
+        frame.sender = { tab: { id: 101 }, frameId: 3 };
+        chrome.connect(frame);
+        frame.emitMessage('foreign-frame');
+        panel.emitMessage('top-only');
+        expect(page.sentMessages).toEqual(['top-only']);
+        expect(frame.sentMessages).toEqual([]);
+        const next = createMockBackgroundPort('content-script', 101);
+        chrome.connect(next);
+        page.emitMessage('retired-document');
+        next.emitMessage('new-document');
+        expect(panel.sentMessages).toContain('new-document');
+        expect(panel.sentMessages).not.toContain('retired-document');
+        const duplicate = createMockBackgroundPort('101');
+        chrome.connect(duplicate);
+        duplicate.emitMessage('duplicate-panel');
+        expect(next.sentMessages).not.toContain('duplicate-panel');
+        chrome.removeTab(101);
+        next.emitMessage('closed-tab');
+        expect(panel.sentMessages).not.toContain('closed-tab');
     });
 
     it('cleans background tab state on disconnect, close, and navigation', async () => {
@@ -507,6 +538,7 @@ describe('extension entrypoints', () => {
 
         window.dispatchEvent(
             new MessageEvent('message', {
+                source: window,
                 data: {
                     source: 'react-devtools-extension',
                     type: 'react-devtools:react-detected'
@@ -515,6 +547,7 @@ describe('extension entrypoints', () => {
         );
         window.dispatchEvent(
             new MessageEvent('message', {
+                source: window,
                 data: {
                     event: EXTENSION_RPC_EVENT_KEY,
                     payload: { from: 'page' },
@@ -524,6 +557,7 @@ describe('extension entrypoints', () => {
         );
         window.dispatchEvent(
             new MessageEvent('message', {
+                source: window,
                 data: {
                     event: EXTENSION_RPC_EVENT_KEY,
                     payload: { ignored: true },

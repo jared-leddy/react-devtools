@@ -70,7 +70,7 @@ describe('chrome extension manifest', () => {
         expect(manifest.content_scripts).toEqual([
             expect.objectContaining({
                 all_frames: true,
-                js: ['prepare.js'],
+                js: ['prepare.js', 'user-app.js'],
                 matches: ['http://*/*', 'https://*/*'],
                 run_at: 'document_start',
                 world: 'MAIN'

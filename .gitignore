@@ -26,6 +26,8 @@ coverage
 /artifacts/r05-model-smoke/
 /artifacts/r06-identity-smoke/
 /artifacts/r07-values-smoke/
+/artifacts/r08-fixture-*/
+/artifacts/r08-lifecycle-smoke/
 /.nyc_output
 playwright-report
 test-results

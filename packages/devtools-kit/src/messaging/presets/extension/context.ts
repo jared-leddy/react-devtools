@@ -84,6 +84,8 @@ export interface CreateExtensionClientChannelOptions {
     reconnectDelayMs?: false | number;
     setContext?: boolean;
     setTimeout?: (handler: () => void, delay: number) => unknown;
+    clearTimeout?: (timer: unknown) => void;
+    onPort?: (port: ExtensionPortLike) => void;
 }
 
 export interface CreateExtensionServerChannelOptions {

@@ -40,6 +40,7 @@ interface ExtensionEventTargetLike<Handler extends (...args: never[]) => void> {
 
 interface ExtensionPortLike {
     name?: string;
+    disconnect?: () => void;
     onDisconnect: ExtensionEventTargetLike<() => void>;
     onMessage: ExtensionEventTargetLike<(message: unknown) => void>;
     postMessage: (message: unknown) => void;
@@ -93,12 +94,34 @@ extensionApi?.runtime?.onConnect?.addListener?.((port) => {
 
     const tabPorts = getTabPorts(tabId);
 
-    if (port.name === CONTENT_SCRIPT_PORT_NAME) {
-        tabPorts.pagePort = port;
-    } else {
-        tabPorts.devtoolsPort = port;
+    const key =
+        port.name === CONTENT_SCRIPT_PORT_NAME ? 'pagePort' : 'devtoolsPort';
+    const previous = tabPorts[key];
+    if (key === 'devtoolsPort' && previous && previous !== port) {
+        port.disconnect?.();
+        return;
     }
-
+    if (previous && previous !== port) {
+        tabPorts[key] = port;
+        try {
+            previous.postMessage({
+                event: '__react-devtools-extension-disconnect__'
+            });
+        } catch {
+            /* retired document */
+        }
+        previous.disconnect?.();
+    }
+    if (key === 'pagePort' && previous) {
+        try {
+            tabPorts.devtoolsPort?.postMessage({
+                event: '__react-devtools-extension-disconnect__'
+            });
+        } catch {
+            /* panel gone */
+        }
+    }
+    tabPorts[key] = port;
     attachPortRelay(tabId, port);
 });
 
@@ -121,7 +144,18 @@ function markReactDetected(tabId: number) {
 
 function clearTabState(tabId: number) {
     detectedReactTabs.delete(tabId);
+    const ports = portsByTab.get(tabId);
     portsByTab.delete(tabId);
+    for (const port of [ports?.pagePort, ports?.devtoolsPort]) {
+        try {
+            port?.postMessage({
+                event: '__react-devtools-extension-disconnect__'
+            });
+        } catch {
+            /*closed*/
+        }
+        port?.disconnect?.();
+    }
     setToolbarState(tabId, false);
 }
 
@@ -187,9 +221,17 @@ function attachPortRelay(tabId: number, port: ExtensionPortLike) {
 
         if (tabPorts.pagePort === port) {
             delete tabPorts.pagePort;
+            try {
+                tabPorts.devtoolsPort?.postMessage({
+                    event: '__react-devtools-extension-disconnect__'
+                });
+            } catch {
+                /* panel gone */
+            }
         }
 
         port.onMessage.removeListener?.(relayMessage);
+        port.onDisconnect.removeListener?.(disconnect);
 
         if (!tabPorts.devtoolsPort && !tabPorts.pagePort) {
             portsByTab.delete(tabId);
@@ -210,16 +252,23 @@ function getCounterpartPort(
         return undefined;
     }
 
-    return tabPorts.devtoolsPort === port
-        ? tabPorts.pagePort
-        : tabPorts.devtoolsPort;
+    if (tabPorts.devtoolsPort === port) return tabPorts.pagePort;
+    if (tabPorts.pagePort === port) return tabPorts.devtoolsPort;
+    return undefined;
 }
 
 function getPortTabId(port: ExtensionPortLike): number | undefined {
     if (port.name === CONTENT_SCRIPT_PORT_NAME) {
+        if (
+            isRecord(port.sender) &&
+            typeof port.sender.frameId === 'number' &&
+            port.sender.frameId !== 0
+        )
+            return undefined;
         return getSenderTabId(port.sender);
     }
 
+    if (!port.name || !/^\d+$/.test(port.name)) return undefined;
     const tabId = Number(port.name);
 
     return Number.isInteger(tabId) && tabId >= 0 ? tabId : undefined;
@@ -230,6 +279,8 @@ function getSenderTabId(sender: unknown): number | undefined {
         return undefined;
     }
 
+    if (typeof sender.frameId === 'number' && sender.frameId !== 0)
+        return undefined;
     const tab = sender.tab;
 
     if (!isRecord(tab) || typeof tab.id !== 'number') {

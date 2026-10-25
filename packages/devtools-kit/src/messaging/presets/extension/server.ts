@@ -59,6 +59,7 @@ export function createExtensionServerChannel(
         on(handler) {
             const listener: ExtensionWindowMessageListener = (event) => {
                 if (
+                    event.source !== window ||
                     !isExtensionRpcEnvelope(
                         event.data,
                         EXTENSION_RPC_MESSAGE_SOURCE.PROXY_TO_SERVER,

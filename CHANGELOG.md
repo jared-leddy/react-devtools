@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.14
+
+- Reconnect native sessions with fresh snapshots after document/port changes and
+  worker restarts; clear obsolete values and selections immediately on disconnect.
+- Bootstrap a passive, idempotent page backend at document start and restore it
+  after page lifecycle teardown. Reuse isolated relay listeners across reconnects.
+- Enforce top-document routing, reject foreign-window messages and retired ports,
+  and clean up owned listeners, requests and reconnect timers on disposal.
+- Add actual multi-tab/frame, reload, React Fast Refresh, worker stop/start,
+  restricted-document and DevTools reopen evidence. Native Chromium lifecycle
+  checks join CI. Development extensions: Chrome 0.0.22 and Firefox 0.0.13.
+
 ## 0.1.13
 
 - Inspect committed props, nested hook slots, reducer values, class state and

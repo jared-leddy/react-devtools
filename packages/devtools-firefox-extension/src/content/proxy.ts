@@ -1,4 +1,8 @@
-import { createExtensionProxyChannel, type ChromeLike } from '@devtools/kit';
+import {
+    createExtensionProxyChannel,
+    type ChromeLike,
+    type RpcChannel
+} from '@devtools/kit';
 
 interface FirefoxRuntimeLike {
     runtime?: {
@@ -30,17 +34,36 @@ interface ReactDetectedRuntimeMessage {
 const REACT_DETECTED_MESSAGE_SOURCE = 'react-devtools-extension';
 const REACT_DETECTED_MESSAGE_TYPE = 'react-devtools:react-detected';
 
+const proxyOwner = window as Window & { __reactDevtoolsProxy?: RpcChannel };
+const hadProxy = Boolean(proxyOwner.__reactDevtoolsProxy);
 const didOpenProxyRelay = openExtensionProxyRelay();
 
 const forwardReactDetectedMessage = (event: MessageEvent) => {
-    if (!isReactDetectedMessage(event.data)) {
+    if (
+        event.source !== window ||
+        window.top !== window ||
+        !isReactDetectedMessage(event.data)
+    ) {
         return;
     }
 
     getFirefoxRuntime()?.sendMessage?.(createReactDetectedRuntimeMessage());
 };
 
-window.addEventListener('message', forwardReactDetectedMessage);
+if (!hadProxy) {
+    window.addEventListener('message', forwardReactDetectedMessage);
+    window.addEventListener('pagehide', () => {
+        proxyOwner.__reactDevtoolsProxy?.dispose?.();
+        delete proxyOwner.__reactDevtoolsProxy;
+        window.removeEventListener('message', forwardReactDetectedMessage);
+    });
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted) {
+            window.addEventListener('message', forwardReactDetectedMessage);
+            openExtensionProxyRelay();
+        }
+    });
+}
 
 window.dispatchEvent(
     new CustomEvent('__react_devtools_proxy_ready__', {
@@ -52,13 +75,15 @@ window.dispatchEvent(
 );
 
 export function openExtensionProxyRelay(): boolean {
+    if (window.top !== window) return false;
+    if (proxyOwner.__reactDevtoolsProxy) return true;
     const extensionApi = getFirefoxApi();
 
     if (!extensionApi?.runtime?.connect) {
         return false;
     }
 
-    createExtensionProxyChannel({
+    proxyOwner.__reactDevtoolsProxy = createExtensionProxyChannel({
         chrome: extensionApi as ChromeLike,
         window
     });

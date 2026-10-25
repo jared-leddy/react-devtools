@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import net from 'node:net';
 import { spawn } from 'node:child_process';
 import { verifyFirefoxValues } from './firefox-values.mjs';
+import { verifyFirefoxLifecycles } from './firefox-lifecycles.mjs';
 
 const url = process.argv[2];
 if (!url) throw new Error('Provide a fixture URL');
@@ -11,6 +12,7 @@ const updateMode = process.argv.includes('--updates');
 const modelMode = process.argv.includes('--models');
 const identityMode = process.argv.includes('--identity');
 const valuesMode = process.argv.includes('--values');
+const lifecycleMode = process.argv.includes('--lifecycles');
 const emptyMode = process.argv.includes('--empty');
 const nonReactMode = process.argv.includes('--non-react');
 const port = await new Promise((resolve, reject) => {
@@ -120,6 +122,15 @@ try {
     const toolbox = await showToolbox();
     console.log('Native Firefox', JSON.stringify({ app, toolbox }));
     let identityChecks;
+    let lifecycleChecks;
+    if (lifecycleMode)
+        lifecycleChecks = await verifyFirefoxLifecycles({
+            command,
+            execute,
+            showToolbox,
+            toolbox,
+            output
+        });
     let valueChecks;
     if (valuesMode)
         valueChecks = await verifyFirefoxValues(command, execute, output);
@@ -455,7 +466,8 @@ try {
                 updateChecks,
                 modelChecks,
                 identityChecks,
-                valueChecks
+                valueChecks,
+                lifecycleChecks
             },
             null,
             4

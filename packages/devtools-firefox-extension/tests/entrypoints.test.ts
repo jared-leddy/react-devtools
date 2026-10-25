@@ -1,5 +1,5 @@
 jest.mock('@devtools/client', () => ({
-    mountDevToolsClient: jest.fn(),
+    mountDevToolsClient: jest.fn(() => ({ unmount: jest.fn() })),
     setClientRouteEnvironment: jest.fn()
 }));
 
@@ -110,6 +110,37 @@ describe('extension entrypoints', () => {
             tabId: 42,
             text: ''
         });
+    });
+
+    it('isolates frames and retired documents and rejects a second live panel', async () => {
+        const browser = createMockBackgroundBrowser();
+        (globalThis as typeof globalThis & { browser?: unknown }).browser =
+            browser.api;
+        await import('../src/background');
+        const panel = createMockBackgroundPort('101');
+        const page = createMockBackgroundPort('content-script', 101);
+        browser.connect(panel);
+        browser.connect(page);
+        const frame = createMockBackgroundPort('content-script', 101);
+        frame.sender = { tab: { id: 101 }, frameId: 3 };
+        browser.connect(frame);
+        frame.emitMessage('foreign-frame');
+        panel.emitMessage('top-only');
+        expect(page.sentMessages).toEqual(['top-only']);
+        expect(frame.sentMessages).toEqual([]);
+        const next = createMockBackgroundPort('content-script', 101);
+        browser.connect(next);
+        page.emitMessage('retired-document');
+        next.emitMessage('new-document');
+        expect(panel.sentMessages).toContain('new-document');
+        expect(panel.sentMessages).not.toContain('retired-document');
+        const duplicate = createMockBackgroundPort('101');
+        browser.connect(duplicate);
+        duplicate.emitMessage('duplicate-panel');
+        expect(next.sentMessages).not.toContain('duplicate-panel');
+        browser.removeTab(101);
+        next.emitMessage('closed-tab');
+        expect(panel.sentMessages).not.toContain('closed-tab');
     });
 
     it('relays background ports only within the same tab', async () => {
@@ -262,12 +293,14 @@ describe('extension entrypoints', () => {
             })
         );
 
-        window.postMessage(
-            {
-                source: 'react-devtools-extension',
-                type: 'react-devtools:react-detected'
-            },
-            '*'
+        window.dispatchEvent(
+            new MessageEvent('message', {
+                source: window,
+                data: {
+                    source: 'react-devtools-extension',
+                    type: 'react-devtools:react-detected'
+                }
+            })
         );
         await new Promise((resolve) => {
             setTimeout(resolve, 0);

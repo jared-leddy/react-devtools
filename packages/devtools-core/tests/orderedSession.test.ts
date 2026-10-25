@@ -196,8 +196,7 @@ describe('ordered session reconciliation', () => {
         gate.resolve(h.initial);
         await connecting;
         expect(h.session.getSnapshot()).toMatchObject({
-            status: 'disconnected',
-            revision: 1
+            status: 'disconnected'
         });
     });
     it('reflects a disconnected backend discovered by heartbeat resynchronization', async () => {
@@ -348,7 +347,7 @@ describe('ordered session reconciliation', () => {
         });
         await settle();
         expect(h.session.getSnapshot().status).toBe('error');
-        expect(h.session.getSnapshot().state?.roots[0].id).toBe('initial');
+        expect(h.session.getSnapshot().state).toBeUndefined();
     });
     it('times out a stuck resynchronization without reporting a healthy connection', async () => {
         const h = harness({ snapshot: new Promise(() => {}), timeoutMs: 15 });
