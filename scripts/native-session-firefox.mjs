@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import net from 'node:net';
 import { spawn } from 'node:child_process';
+import { verifyFirefoxValues } from './firefox-values.mjs';
 
 const url = process.argv[2];
 if (!url) throw new Error('Provide a fixture URL');
@@ -9,6 +10,7 @@ const output = process.argv[3] ?? '/private/tmp/r03-firefox';
 const updateMode = process.argv.includes('--updates');
 const modelMode = process.argv.includes('--models');
 const identityMode = process.argv.includes('--identity');
+const valuesMode = process.argv.includes('--values');
 const emptyMode = process.argv.includes('--empty');
 const nonReactMode = process.argv.includes('--non-react');
 const port = await new Promise((resolve, reject) => {
@@ -118,6 +120,9 @@ try {
     const toolbox = await showToolbox();
     console.log('Native Firefox', JSON.stringify({ app, toolbox }));
     let identityChecks;
+    let valueChecks;
+    if (valuesMode)
+        valueChecks = await verifyFirefoxValues(command, execute, output);
     if (identityMode) {
         await command('Marionette:SetContext', { value: 'content' });
         await execute(
@@ -449,7 +454,8 @@ try {
                 toolbox,
                 updateChecks,
                 modelChecks,
-                identityChecks
+                identityChecks,
+                valueChecks
             },
             null,
             4

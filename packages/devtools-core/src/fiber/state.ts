@@ -1,15 +1,31 @@
-import type { ReactFiber, ReactFiberContextDependency } from '../fiber.js';
+import {
+    ReactFiberTag,
+    type ReactFiber,
+    type ReactFiberContextDependency
+} from '../fiber.js';
 import type { ComponentStateSection } from '../types.js';
-import { formatDisplayableValue } from '../valueFormat.js';
+import {
+    formatDisplayableValue,
+    createDisplayableValueFormatter,
+    unavailableValue
+} from '../valueFormat.js';
 
 export interface FiberPropsOptions {
     includeChildren?: boolean;
 }
 
 export type FiberHookKind =
-    'context' | 'effect' | 'memo' | 'reducer' | 'ref' | 'state' | 'unknown';
+    | 'context'
+    | 'effect'
+    | 'memo'
+    | 'reducer'
+    | 'ref'
+    | 'state'
+    | 'state-or-reducer'
+    | 'unknown';
 
 export interface FiberHookRecord {
+    unavailable?: boolean;
     index: number;
     name: string;
     type: FiberHookKind;
@@ -29,38 +45,99 @@ export function getProps(
     }
 
     const includeChildren = options.includeChildren ?? false;
-    const entries = Object.entries(props).filter(
-        ([key]) => includeChildren || key !== 'children'
-    );
+    const entries = Object.keys(props)
+        .filter((key) => includeChildren || key !== 'children')
+        .map((key) => {
+            const descriptor = Object.getOwnPropertyDescriptor(props, key);
+            return [
+                key,
+                descriptor && 'value' in descriptor
+                    ? descriptor.value
+                    : unavailableValue('[Accessor not evaluated]')
+            ];
+        });
 
     return Object.fromEntries(entries);
 }
 
 export function getPropsStateSection(
     fiber: ReactFiber,
-    options: FiberPropsOptions = {}
+    options: FiberPropsOptions = {},
+    format = formatDisplayableValue
 ): ComponentStateSection {
     return {
-        fields: Object.entries(getProps(fiber, options)).map(
-            ([name, value]) => ({
-                name,
-                value: formatDisplayableValue(value)
-            })
-        ),
+        fields: Object.keys(getPropsRecord(fiber.memoizedProps) ?? {})
+            .filter((name) => options.includeChildren || name !== 'children')
+            .slice(0, 50)
+            .map((name) => {
+                const descriptor = Object.getOwnPropertyDescriptor(
+                    fiber.memoizedProps,
+                    name
+                );
+                return {
+                    name,
+                    value:
+                        descriptor && 'value' in descriptor
+                            ? format(descriptor.value)
+                            : unavailableValue('[Accessor not evaluated]')
+                };
+            }),
         name: 'props'
     };
 }
 
 export function getHooks(fiber: ReactFiber): FiberHookRecord[] {
+    if (
+        ![
+            ReactFiberTag.FunctionComponent,
+            ReactFiberTag.ForwardRef,
+            ReactFiberTag.SimpleMemoComponent,
+            ReactFiberTag.MemoComponent
+        ].includes(fiber.tag)
+    )
+        return [];
     const hooks: FiberHookRecord[] = [];
     let current = fiber.memoizedState;
     const visited = new Set<unknown>();
+    const debugTypes = (fiber as ReactFiber & { _debugHookTypes?: string[] })
+        ._debugHookTypes;
+    const slotTypes =
+        Array.isArray(debugTypes) &&
+        debugTypes.every((type) =>
+            [
+                'useState',
+                'useReducer',
+                'useRef',
+                'useMemo',
+                'useCallback',
+                'useEffect',
+                'useLayoutEffect',
+                'useInsertionEffect',
+                'useContext',
+                'useDebugValue'
+            ].includes(type)
+        )
+            ? debugTypes.filter(
+                  (type) => type !== 'useContext' && type !== 'useDebugValue'
+              )
+            : [];
+    const kinds: Record<string, FiberHookKind> = {
+        useState: 'state',
+        useReducer: 'reducer',
+        useRef: 'ref',
+        useMemo: 'memo',
+        useCallback: 'memo',
+        useEffect: 'effect',
+        useLayoutEffect: 'effect',
+        useInsertionEffect: 'effect'
+    };
 
-    while (isRecord(current) && !visited.has(current)) {
+    while (isRecord(current) && !visited.has(current) && hooks.length < 100) {
         visited.add(current);
 
-        const type = inferHookType(current);
+        const type = kinds[slotTypes[hooks.length]] ?? inferHookType(current);
         hooks.push({
+            ...(!('memoizedState' in current) ? { unavailable: true } : {}),
             index: hooks.length,
             name: getHookName(hooks.length),
             type,
@@ -82,12 +159,19 @@ export function getHooks(fiber: ReactFiber): FiberHookRecord[] {
     return hooks;
 }
 
-export function getHooksStateSection(fiber: ReactFiber): ComponentStateSection {
+export function getHooksStateSection(
+    fiber: ReactFiber,
+    format = formatDisplayableValue
+): ComponentStateSection {
     return {
-        fields: getHooks(fiber).map((hook) => ({
-            name: `${hook.name} (${hook.type})`,
-            value: formatDisplayableValue(hook.value)
-        })),
+        fields: getHooks(fiber)
+            .filter((hook) => hook.type !== 'context')
+            .map((hook) => ({
+                name: `${hook.name} (${hook.type})`,
+                value: hook.unavailable
+                    ? unavailableValue('[Hook value not recorded]')
+                    : format(hook.value)
+            })),
         name: 'hooks'
     };
 }
@@ -102,7 +186,10 @@ function inferHookType(hook: Record<PropertyKey, unknown>): FiberHookKind {
     const memoizedState = hook.memoizedState;
 
     if (isRecord(hook.queue)) {
-        return isReducerQueue(hook.queue) ? 'reducer' : 'state';
+        return typeof hook.queue.lastRenderedReducer === 'function' &&
+            hook.queue.lastRenderedReducer.name === 'basicStateReducer'
+            ? 'state'
+            : 'state-or-reducer';
     }
 
     if (isRecord(memoizedState) && 'current' in memoizedState) {
@@ -152,7 +239,11 @@ function getContextDependencies(
     let current = fiber.dependencies?.firstContext;
     const visited = new Set<unknown>();
 
-    while (isRecord(current) && !visited.has(current)) {
+    while (
+        isRecord(current) &&
+        !visited.has(current) &&
+        dependencies.length < 100
+    ) {
         visited.add(current);
         dependencies.push(current as ReactFiberContextDependency);
         current = current.next;
@@ -173,9 +264,82 @@ function isRecord(value: unknown): value is Record<PropertyKey, unknown> {
     return typeof value === 'object' && value !== null;
 }
 
-function isReducerQueue(queue: Record<PropertyKey, unknown>): boolean {
-    return (
-        typeof queue.lastRenderedReducer === 'function' &&
-        queue.lastRenderedReducer.name !== 'basicStateReducer'
-    );
+export function getComponentStateSections(
+    fiber: ReactFiber
+): ComponentStateSection[] {
+    const sections: ComponentStateSection[] = [];
+    const format = createDisplayableValueFormatter({
+        maxNodes: 1000,
+        maxStringLength: 2000
+    });
+    try {
+        const props = getPropsStateSection(fiber, {}, format);
+        const count = Object.keys(getProps(fiber)).length;
+        sections.push({
+            ...props,
+            status: count > 50 ? 'truncated' : 'available',
+            ...(count > 50 ? { notice: 'Props truncated to 50 fields.' } : {})
+        });
+    } catch {
+        sections.push({
+            name: 'props',
+            fields: [],
+            status: 'unavailable',
+            notice: 'Props unavailable.'
+        });
+    }
+    const isFunction = [
+        ReactFiberTag.FunctionComponent,
+        ReactFiberTag.ForwardRef,
+        ReactFiberTag.SimpleMemoComponent,
+        ReactFiberTag.MemoComponent
+    ].includes(fiber.tag);
+    if (isFunction) {
+        const hooks = getHooksStateSection(fiber, format);
+        sections.push({
+            ...hooks,
+            status: hooks.fields.length >= 100 ? 'truncated' : 'available',
+            notice: 'Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable.'
+        });
+    }
+    if (fiber.tag === ReactFiberTag.ClassComponent) {
+        const state = fiber.memoizedState;
+        const formatted = format(state);
+        sections.push({
+            name: 'state',
+            status: 'available',
+            fields: [{ name: 'Class state', value: formatted }]
+        });
+    }
+    const fields = getContextDependencies(fiber)
+        .slice(0, 100)
+        .map((dependency, index) => ({
+            name: `${isRecord(dependency.context) && typeof dependency.context.displayName === 'string' ? dependency.context.displayName : 'Context'} ${index}`,
+            value:
+                'memoizedValue' in dependency
+                    ? format(dependency.memoizedValue)
+                    : unavailableValue('[Context value not recorded]')
+        }));
+    if (fiber.tag === ReactFiberTag.ContextProvider)
+        fields.unshift({
+            name: 'Provided value',
+            value: format(getProps(fiber, { includeChildren: true }).value)
+        });
+    if (fields.length)
+        sections.push({
+            name: 'context',
+            fields,
+            status: fields.length >= 100 ? 'truncated' : 'available',
+            ...(fields.length >= 100
+                ? { notice: 'Context inspection limited to 100 dependencies.' }
+                : {})
+        });
+    else if (fiber.tag === ReactFiberTag.ContextConsumer)
+        sections.push({
+            name: 'context',
+            fields: [],
+            status: 'unavailable',
+            notice: 'This renderer did not record the consumed context value.'
+        });
+    return sections;
 }

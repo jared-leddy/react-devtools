@@ -80,6 +80,51 @@ const formattedSections: StateViewerSection[] = [
 ];
 
 describe('StateViewer', () => {
+    it('shows explicit unavailable/truncated values and metadata-only notices', () => {
+        render(
+            <StateViewer
+                sections={[
+                    {
+                        name: 'context',
+                        fields: [],
+                        status: 'unavailable',
+                        notice: 'Context value not recorded.'
+                    },
+                    {
+                        name: 'props',
+                        fields: [
+                            {
+                                name: 'large',
+                                value: {
+                                    _custom: {
+                                        type: 'array',
+                                        display: 'Array(80)',
+                                        truncated: true
+                                    }
+                                }
+                            },
+                            {
+                                name: 'getter',
+                                value: {
+                                    _custom: {
+                                        type: 'unavailable',
+                                        display: 'Accessor not evaluated',
+                                        unavailable: true
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]}
+            />
+        );
+        expect(
+            screen.getByText('Context value not recorded.')
+        ).toBeInTheDocument();
+        expect(screen.getByText('Truncated')).toBeInTheDocument();
+        expect(screen.getByText('Unavailable')).toBeInTheDocument();
+        expect(screen.getByText('Read-only')).toBeInTheDocument();
+    });
     it('renders grouped formatted props, hooks, and class state values', () => {
         render(<StateViewer sections={formattedSections} />);
 

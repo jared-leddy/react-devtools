@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { verifyNativeIdentity } from './native-identity.mjs';
+import { verifyNativeValues } from './native-values.mjs';
 
 const url = process.argv[2];
 if (!url) throw new Error('Provide an inspected fixture URL');
@@ -24,6 +25,7 @@ const sockets = [];
 const updateMode = process.argv.includes('--updates');
 const modelMode = process.argv.includes('--models');
 const identityMode = process.argv.includes('--identity');
+const valuesMode = process.argv.includes('--values');
 const emptyMode = process.argv.includes('--empty');
 const nonReactMode = process.argv.includes('--non-react');
 const nativeInspectors = [];
@@ -194,7 +196,7 @@ try {
             `new Promise(resolve => { const identity={url:location.href,body:document.body.innerText,tabId:chrome.devtools.inspectedWindow.tabId}; chrome.devtools.inspectedWindow.eval(${JSON.stringify(inspectedExpression)},(result,exception)=>resolve({...identity,inspected:result,exception})); })`
         );
         if (
-            (updateMode || modelMode || identityMode) &&
+            (updateMode || modelMode || identityMode || valuesMode) &&
             target.url.endsWith('/devtools-panel.html') &&
             result.result?.result?.value?.inspected?.url === url
         ) {
@@ -212,6 +214,31 @@ try {
     let updateChecks;
     let modelChecks;
     let identityChecks;
+    let valueChecks;
+    if (valuesMode) {
+        assert(evaluatePanel, 'Actual native panel missing');
+        valueChecks = await verifyNativeValues(
+            page,
+            evaluatePanel,
+            async (stage) => {
+                await evaluatePanel(
+                    `document.querySelector('.dt-state-viewer')?.scrollIntoView({block:'end'});true`
+                );
+                await page.waitForTimeout(300);
+                for (const inspector of nativeInspectors) {
+                    const shot = await inspector.send(
+                        'Page.captureScreenshot',
+                        { format: 'png' }
+                    );
+                    if (shot.result?.data)
+                        fs.writeFileSync(
+                            `${output}/${stage}-${inspector.targetId}.png`,
+                            Buffer.from(shot.result.data, 'base64')
+                        );
+                }
+            }
+        );
+    }
     if (identityMode) {
         assert(evaluatePanel, 'Actual native extension panel not found');
         identityChecks = await verifyNativeIdentity(
@@ -434,7 +461,8 @@ try {
                 errors,
                 updateChecks,
                 modelChecks,
-                identityChecks
+                identityChecks,
+                valueChecks
             },
             null,
             4

@@ -299,13 +299,13 @@ describe('Phase 0 fiber walker fixture suite', () => {
             name: 'props'
         });
         expect(getHooksStateSection(fixture.stateCounter)).toEqual({
-            fields: [{ name: 'Hook 0 (state)', value: 1 }],
+            fields: [{ name: 'Hook 0 (state-or-reducer)', value: 1 }],
             name: 'hooks'
         });
         expect(getHooksStateSection(fixture.reducerCounter)).toEqual({
             fields: [
                 {
-                    name: 'Hook 0 (reducer)',
+                    name: 'Hook 0 (state-or-reducer)',
                     value: {
                         _custom: {
                             display: 'Object',
@@ -318,7 +318,7 @@ describe('Phase 0 fiber walker fixture suite', () => {
             name: 'hooks'
         });
         expect(getHooksStateSection(fixture.contextReader)).toEqual({
-            fields: [{ name: 'Hook 0 (context)', value: 'dark' }],
+            fields: [],
             name: 'hooks'
         });
         expect(getPropsStateSection(fixture.memoPanel)).toEqual({

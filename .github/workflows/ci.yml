@@ -110,6 +110,9 @@ jobs:
             - name: Real component identity matrix
               run: npm run test:identity-smoke
 
+            - name: Real selected value matrix
+              run: npm run test:values-smoke
+
             - name: Upload product smoke diagnostics
               if: ${{ !cancelled() }}
               uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -120,5 +123,6 @@ jobs:
                       apps/vite-playground/test-results
                       artifacts/r05-model-smoke
                       artifacts/r06-identity-smoke
+                      artifacts/r07-values-smoke
                   if-no-files-found: ignore
                   retention-days: 7

@@ -3,8 +3,10 @@ export default [
         files: [
             'scripts/model-smoke.mjs',
             'scripts/identity-smoke.mjs',
+            'scripts/values-smoke.mjs',
             'docs/recovery/r05/*.mjs',
-            'docs/recovery/r06/*.mjs'
+            'docs/recovery/r06/*.mjs',
+            'docs/recovery/r07/*.mjs'
         ],
         languageOptions: {
             globals: {
@@ -21,7 +23,12 @@ export default [
         languageOptions: { globals: { structuredClone: 'readonly' } }
     },
     {
-        files: ['scripts/native-session-*.mjs', 'scripts/native-identity.mjs'],
+        files: [
+            'scripts/native-session-*.mjs',
+            'scripts/native-identity.mjs',
+            'scripts/native-values.mjs',
+            'scripts/firefox-values.mjs'
+        ],
         languageOptions: {
             globals: {
                 process: 'readonly',

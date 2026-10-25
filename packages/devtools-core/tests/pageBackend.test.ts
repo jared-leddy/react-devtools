@@ -8,6 +8,49 @@ jest.mock('@devtools/kit', () => ({
     }))
 }));
 describe('shared page backend', () => {
+    it('pushes context metadata without raw values and inspects them only on demand', () => {
+        const target = createMockUserAppWindow();
+        const hook = createMockReactHook();
+        target.__REACT_DEVTOOLS_GLOBAL_HOOK__ = hook;
+        const root = [
+            ...hook.getFiberRoots(1)
+        ][0] as import('../src/index.js').ReactFiberRoot;
+        root.current.child!.dependencies = {
+            firstContext: {
+                context: { displayName: 'ObservedTheme' },
+                memoizedValue: { marker: 'observed-context-value' },
+                next: null
+            }
+        };
+        const { createRpcServer } = jest.requireMock('@devtools/kit') as {
+            createRpcServer: jest.Mock;
+        };
+        const backend = createPageBackend(
+            target,
+            createExtensionServerChannel()
+        );
+        const functions = createRpcServer.mock.calls.at(-1)![0];
+        const response = functions.handshake({ clientId: 'metadata-only' });
+        expect(JSON.stringify(response)).not.toContain(
+            'observed-context-value'
+        );
+        const id = functions.getComponents({ rootId: 'react-root:1' })
+            .components[0].id;
+        const inspection = functions.getComponentState({
+            rootId: 'react-root:1',
+            componentId: id
+        });
+        expect(JSON.stringify(inspection.sections)).toContain(
+            'observed-context-value'
+        );
+        expect(inspection.editing).toEqual({
+            props: false,
+            hooks: false,
+            state: false,
+            context: false
+        });
+        backend.dispose?.();
+    });
     it('roundtrips observed DOM bounds, rejects wrong roots, and retires removed selections and highlights', () => {
         jest.useFakeTimers();
         const target = createMockUserAppWindow();
@@ -231,7 +274,7 @@ describe('shared page backend', () => {
                 .components[0].id,
             rootId: 'react-root:1'
         });
-        expect(readValue).toHaveBeenCalledTimes(1);
+        expect(readValue).not.toHaveBeenCalled();
         expect(
             functions.getComponentState({
                 componentId: functions.getComponents({ rootId: 'react-root:1' })
