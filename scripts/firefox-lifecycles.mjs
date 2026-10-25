@@ -94,8 +94,23 @@ export async function verifyFirefoxLifecycles({
     await observe();
     // Selection from the old document is deliberately invalid; backend commits must
     // nevertheless reach the still-open native panel's newly negotiated stream.
-    await execute(`document.getElementById('increment').click();return true;`);
+    // Commit real app updates until negotiation finishes, rather than requiring a
+    // single commit to occur after an arbitrary startup delay.
+    for (let attempt = 0; attempt < 60; attempt++) {
+        if ((await read()).updates.length) break;
+        await execute(
+            `document.getElementById('increment').click();return true;`
+        );
+        await pause();
+    }
     await wait('reload-auto-reconnect', (state) => state.updates.length > 0);
+    const reloadCount = Number(
+        (
+            await execute(
+                `return document.getElementById('counter').textContent;`
+            )
+        ).value
+    );
     await ctx('chrome');
     const retained = await showToolbox();
     assert.equal(
@@ -127,7 +142,8 @@ export async function verifyFirefoxLifecycles({
         (state) =>
             has(state, '"A"') &&
             value(state)?.sections.find((section) => section.name === 'hooks')
-                ?.fields[0].value === 2
+                ?.fields[0].value ===
+                reloadCount + 1
     );
     assert.notEqual(value(restored).componentId, value(initial).componentId);
     await ctx('chrome');
@@ -138,6 +154,7 @@ export async function verifyFirefoxLifecycles({
     );
     return {
         snapshots,
+        reloadCount,
         originalContext: toolbox.value.panelBrowsingContextId,
         retainedContext: retained.value.panelBrowsingContextId,
         reopenedContext: reopened.value.panelBrowsingContextId,
