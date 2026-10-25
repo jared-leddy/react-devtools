@@ -76,3 +76,31 @@ checksums are recorded under `evidence/` for delivery.
 Versions: workspace 0.1.13, core 0.0.26, client 0.0.34, overlay 0.0.13,
 Chrome 0.0.21 and Firefox 0.0.12. These are development builds, not approved
 browser-store distributions.
+
+## Delivery evidence
+
+Application source: `f89d7b883b2f71cd221d68a2d621c0e9cd4fa374`.
+Verification head: `9fddbab59c6e522f03ef45994298fd3efdfa5c3a`; the latter changes
+only the borrowed-session test's fixed delay to an observed-update wait.
+[Build provenance, coverage, bundle sizes and archive hashes](evidence/build.json)
+and [web-host observations](evidence/hosts.json) identify the tested application.
+Installed Chrome 155.0.8059.85 and Firefox 159.0 passed development and production
+checks. Matching JSON reports accompany these unedited native captures:
+
+- [Chrome development class state](evidence/chrome-development-class.png)
+- [Chrome production class state](evidence/chrome-production-class.png)
+- [Firefox development class state](evidence/firefox-development-class.png)
+- [Firefox production class state](evidence/firefox-production-class.png)
+- [Chrome production hook values](evidence/chrome-production-function.png)
+
+The reports record nested hook state 5→6, reducer count 2→3, props revision 0→1,
+context light→dark and class state 10→11 on the same component identities. The
+Firefox records retain typed inspection replies and explicit edit capabilities.
+Chrome's raw report retains expected permission failures for its spare
+`about:blank` tab; the scenario explicitly binds to the fixture's real native panel.
+
+All required local gates pass, including 161 core tests, the async-selection race
+regression, eight product smoke tests and all three host matrices. The overlay is
+275,639 raw / 86,122 gzip bytes, within unchanged limits. Evidence integrity is
+recorded in [SHA256SUMS](evidence/SHA256SUMS). Browser-store approval, visual parity,
+hook-name reconstruction and arbitrary React editing are not claimed.

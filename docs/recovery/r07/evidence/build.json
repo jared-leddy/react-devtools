@@ -1,0 +1,241 @@
+{
+    "recordedAt": "2026-10-25T02:15:46.961Z",
+    "applicationSourceCommit": "f89d7b883b2f71cd221d68a2d621c0e9cd4fa374",
+    "verificationHead": "9fddbab59c6e522f03ef45994298fd3efdfa5c3a",
+    "provenance": "Final native and web-host captures use the committed versioned application. The next commit changes only a session test to await an observed update instead of a fixed delay; later changes add evidence documentation. Native screenshots are unedited. Spare about:blank Chrome permission errors remain in raw reports; scenarios bind to the actual inspected fixture panel.",
+    "node": "v24.16.0",
+    "platform": "darwin/x64",
+    "fixture": {
+        "source": "docs/recovery/r07/fixture.tsx",
+        "sha256": "dfe10ccdbb59896dc798e5da2e6ffa066f8698509e78be8763633fa866c105e7",
+        "bundles": {
+            "development": "d900ae3e11cf374fbf1566b2ed4de128ded9daf0128cca42da3b63de6260d10f",
+            "production": "0f5557f0b8adb1dbc75de995206468ed5d9b4428d0e743bd29a8b6c42303f1a4"
+        },
+        "react": "19.1.1",
+        "annotations": false
+    },
+    "versions": {
+        "package.json": "0.1.13",
+        "packages/devtools-core/package.json": "0.0.26",
+        "packages/devtools-client/package.json": "0.0.34",
+        "packages/devtools-overlay/package.json": "0.0.13",
+        "packages/devtools-chrome-extension/package.json": "0.0.21",
+        "packages/devtools-firefox-extension/package.json": "0.0.12"
+    },
+    "captures": [
+        {
+            "browser": "chrome",
+            "mode": "development",
+            "version": "Chrome/155.0.8059.85",
+            "report": "chrome-development.json",
+            "capturedAt": "2026-10-25T02:14:24.931Z"
+        },
+        {
+            "browser": "chrome",
+            "mode": "production",
+            "version": "Chrome/155.0.8059.85",
+            "report": "chrome-production.json",
+            "capturedAt": "2026-10-25T02:14:45.309Z"
+        },
+        {
+            "browser": "firefox",
+            "mode": "development",
+            "version": "159.0",
+            "report": "firefox-development.json",
+            "capturedAt": "2026-10-25T02:14:39.112Z"
+        },
+        {
+            "browser": "firefox",
+            "mode": "production",
+            "version": "159.0",
+            "report": "firefox-production.json",
+            "capturedAt": "2026-10-25T02:15:03.659Z"
+        }
+    ],
+    "coverage": {
+        "packages/devtools-api": {
+            "lines": 100,
+            "functions": 83.33333333333333,
+            "branches": null
+        },
+        "packages/devtools-chrome-extension": {
+            "lines": 94.31137724550898,
+            "functions": 96.34146341463415,
+            "branches": 86.41975308641975
+        },
+        "packages/devtools-client": {
+            "lines": 92.02702702702703,
+            "functions": 93.95161290322581,
+            "branches": 81.64967562557923
+        },
+        "packages/devtools-core": {
+            "lines": 95.55412371134021,
+            "functions": 95.93908629441624,
+            "branches": 85.63402889245586
+        },
+        "packages/devtools-firefox-extension": {
+            "lines": 96.42857142857143,
+            "functions": 98.14814814814815,
+            "branches": 83.94160583941606
+        },
+        "packages/devtools-kit": {
+            "lines": 91.24087591240875,
+            "functions": 89.7196261682243,
+            "branches": 81.95876288659794
+        },
+        "packages/devtools-nextjs-plugin": {
+            "lines": 98.46938775510205,
+            "functions": 100,
+            "branches": 89.18032786885246
+        },
+        "packages/devtools-overlay": {
+            "lines": 94.23728813559322,
+            "functions": 97.61904761904762,
+            "branches": 81.59509202453988
+        },
+        "packages/devtools-plugin-nekuta": {
+            "lines": 98.21428571428571,
+            "functions": 100,
+            "branches": 85.41666666666667
+        },
+        "packages/devtools-react-router-plugin": {
+            "lines": 99.27536231884058,
+            "functions": 100,
+            "branches": 85.36585365853658
+        },
+        "packages/devtools-shared": {
+            "lines": 98.59154929577464,
+            "functions": 100,
+            "branches": 88.88888888888889
+        },
+        "packages/devtools-ui": {
+            "lines": 100,
+            "functions": 100,
+            "branches": 91.52542372881356
+        },
+        "packages/devtools-vite-plugin": {
+            "lines": 89.72099853157121,
+            "functions": 92.25352112676056,
+            "branches": 81.56862745098039
+        },
+        "packages/jest-config": {
+            "lines": 100,
+            "functions": 100,
+            "branches": 93.75
+        },
+        "apps/docs": {
+            "lines": 100,
+            "functions": 100,
+            "branches": null
+        },
+        "apps/playground": {
+            "lines": 90.0990099009901,
+            "functions": 96.72131147540983,
+            "branches": 92.3076923076923
+        },
+        "apps/vite-playground": {
+            "lines": 96.3855421686747,
+            "functions": 98.21428571428571,
+            "branches": 83.6734693877551
+        }
+    },
+    "coverageThresholds": {
+        "statements": 80,
+        "branches": 80,
+        "functions": 80,
+        "lines": 80
+    },
+    "coreTests": 161,
+    "archives": [
+        {
+            "file": "react-devtools-chrome-extension-v0.0.21.zip",
+            "sha256": "041276d926b221b990925bf22bb6f4950ed7ea905d12fa930e5e31add7f140b0",
+            "bytes": 157099
+        },
+        {
+            "file": "react-devtools-firefox-extension-v0.0.12.zip",
+            "sha256": "d2669ba53dc79af120be1574976d72f37c90366ffad5784130d4c2b8f78766f5",
+            "bytes": 157071
+        }
+    ],
+    "bundleReport": {
+        "apiPackages": 8,
+        "bundles": [
+            {
+                "name": "client-library",
+                "rawBytes": 160035,
+                "gzipBytes": 34383,
+                "files": 2,
+                "limits": {
+                    "rawBytes": 190000,
+                    "gzipBytes": 42000
+                }
+            },
+            {
+                "name": "client-standalone",
+                "rawBytes": 378440,
+                "gzipBytes": 114732,
+                "files": 3,
+                "limits": {
+                    "rawBytes": 430000,
+                    "gzipBytes": 130000
+                }
+            },
+            {
+                "name": "overlay",
+                "rawBytes": 275639,
+                "gzipBytes": 86122,
+                "files": 3,
+                "limits": {
+                    "rawBytes": 280000,
+                    "gzipBytes": 90000
+                }
+            },
+            {
+                "name": "chrome-extension",
+                "rawBytes": 474216,
+                "gzipBytes": 149215,
+                "files": 19,
+                "limits": {
+                    "rawBytes": 500000,
+                    "gzipBytes": 160000
+                }
+            },
+            {
+                "name": "firefox-extension",
+                "rawBytes": 475045,
+                "gzipBytes": 149694,
+                "files": 20,
+                "limits": {
+                    "rawBytes": 500000,
+                    "gzipBytes": 160000
+                }
+            }
+        ]
+    },
+    "gates": [
+        "format:check",
+        "lint",
+        "typecheck",
+        "test:unit -- --concurrency=2",
+        "test:bundle-checks",
+        "test:release-packaging",
+        "test:firefox-uat-helper",
+        "test:extension-scripts",
+        "test:session-integration",
+        "test:model-guards",
+        "build",
+        "check:bundles",
+        "test:product-smoke (8 tests)",
+        "test:model-smoke (8 host scenarios)",
+        "test:identity-smoke (4 host scenarios)",
+        "test:values-smoke (4 host scenarios)"
+    ],
+    "limitations": [
+        "Development/unsigned extension artifacts, not store-approved distributions.",
+        "No reconstructed custom-hook/variable names or unsupported server metadata. Production state/reducer slots may remain ambiguous.",
+        "Raw React editing is explicitly unsupported. Vue-style visual redesign remains separate work.",
+        "Proxy traps and custom collection implementations cannot be guaranteed side-effect-free; unreadable values are contained."
+    ]
+}
