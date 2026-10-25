@@ -85,3 +85,31 @@ artifacts, not approved browser-store releases or a Vue-style visual-parity clai
 
 Final commit/build, browser versions, actual results, screenshots, coverage and
 archive checksums are recorded under `evidence/` for delivery.
+
+## Delivery evidence
+
+Application source: `8afe6b54d6c6c8839ee65a1ce0b09b4b1f8cec2d`.
+Verification head: `c5fab69ce3a92aaa8bb40effac7af8e9f687b96b`; subsequent changes
+adjust only diagnostic startup paths and observe actual app commits during Firefox
+reload negotiation. [Build provenance, coverage, versions and archive hashes](evidence/build.json)
+identify the delivered application.
+
+[Chrome's native lifecycle report](evidence/chrome.json) records distinct tab IDs,
+isolated markers, stable HMR identity, three fresh reload snapshots, actual worker
+stopped/starting/running events, root removal, a real browser permission denial,
+history recovery and continued live data in the other tab after closure.
+[Firefox's report](evidence/firefox.json) records panel context 19 surviving reload
+and context 24 after actual toolbox reopening. It checks current state against real
+commits rather than assuming a fixed startup delay. Installed versions were Chrome
+155.0.8059.85 and Firefox 159.0, with React 19.1.1 and real Vite Fast Refresh.
+
+Unedited captures: [Chrome recovered panel](evidence/chrome-recovered.png) and
+[Firefox reopened panel](evidence/firefox-recovered.png). Raw reports retain expected
+errors from Chrome's spare `about:blank` tab; that tab never supplies the fixture
+panel's data. Profile/process fields are redacted from the Firefox report.
+
+All required local gates pass, including 168 core tests, 79 kit tests, eight product
+smoke tests, existing model/identity/value matrices and the new native Chrome
+lifecycle command. The native evidence does not rely on overlay screenshots or
+mocked RPC as proof of extension behavior. Coverage and payload limits remain
+unchanged. [SHA256SUMS](evidence/SHA256SUMS) records evidence integrity.

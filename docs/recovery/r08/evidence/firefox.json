@@ -1,0 +1,2031 @@
+{
+    "applicationSourceCommit": "8afe6b54d6c6c8839ee65a1ce0b09b4b1f8cec2d",
+    "session": {
+        "sessionId": "ded0a49d-a136-42b6-b52f-d6263895fec2",
+        "capabilities": {
+            "acceptInsecureCerts": false,
+            "browserName": "firefox",
+            "browserVersion": "159.0",
+            "platformName": "mac",
+            "setWindowRect": true,
+            "unhandledPromptBehavior": "dismiss and notify",
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:159.0) Gecko/20100101 Firefox/159.0",
+            "moz:buildID": "20261021090508",
+            "moz:headless": false,
+            "moz:platformVersion": "24.5.0",
+            "moz:shutdownTimeout": 73000,
+            "pageLoadStrategy": "normal",
+            "timeouts": {
+                "implicit": 0,
+                "pageLoad": 300000,
+                "script": 30000
+            },
+            "strictFileInteractability": false,
+            "moz:accessibilityChecks": false,
+            "moz:webdriverClick": true,
+            "moz:windowless": false,
+            "proxy": {}
+        }
+    },
+    "app": {
+        "value": {
+            "url": "http://127.0.0.1:9057/?name=A",
+            "hook": true,
+            "renderers": [
+                {
+                    "id": 1,
+                    "version": "19.1.1",
+                    "roots": 1
+                }
+            ]
+        }
+    },
+    "toolbox": {
+        "value": {
+            "url": "http://127.0.0.1:9057/?name=A",
+            "browsingContextId": 11,
+            "tools": [
+                {
+                    "id": "webext-devtools-panel-react-devtools_local_dev-159-0",
+                    "label": "React"
+                }
+            ],
+            "panelUrl": null,
+            "panelBody": null,
+            "panelBrowsingContextId": 19
+        }
+    },
+    "lifecycleChecks": {
+        "snapshots": [
+            {
+                "stage": "late-open-values",
+                "inspections": [
+                    {
+                        "domRect": {
+                            "x": 8,
+                            "y": 51.43333435058594,
+                            "width": 1469,
+                            "height": 81.83332824707031
+                        },
+                        "componentId": "c:393def47-fcae-4ab5-a981-58c72162004c:1",
+                        "contexts": [],
+                        "diagnostics": [],
+                        "rootId": "react-root:1",
+                        "editing": {
+                            "props": false,
+                            "hooks": false,
+                            "state": false,
+                            "context": false
+                        },
+                        "sections": [
+                            {
+                                "fields": [
+                                    {
+                                        "name": "marker",
+                                        "value": "A"
+                                    }
+                                ],
+                                "name": "props",
+                                "status": "available"
+                            },
+                            {
+                                "fields": [
+                                    {
+                                        "name": "Hook 0 (state)",
+                                        "value": 0
+                                    },
+                                    {
+                                        "name": "Hook 1 (memo)",
+                                        "value": "v1792909318189"
+                                    }
+                                ],
+                                "name": "hooks",
+                                "status": "available",
+                                "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                            }
+                        ]
+                    }
+                ],
+                "updates": [],
+                "disconnects": 0
+            },
+            {
+                "stage": "increment",
+                "inspections": [
+                    {
+                        "domRect": {
+                            "x": 8,
+                            "y": 51.43333435058594,
+                            "width": 1469,
+                            "height": 81.83332824707031
+                        },
+                        "componentId": "c:393def47-fcae-4ab5-a981-58c72162004c:1",
+                        "contexts": [],
+                        "diagnostics": [],
+                        "rootId": "react-root:1",
+                        "editing": {
+                            "props": false,
+                            "hooks": false,
+                            "state": false,
+                            "context": false
+                        },
+                        "sections": [
+                            {
+                                "fields": [
+                                    {
+                                        "name": "marker",
+                                        "value": "A"
+                                    }
+                                ],
+                                "name": "props",
+                                "status": "available"
+                            },
+                            {
+                                "fields": [
+                                    {
+                                        "name": "Hook 0 (state)",
+                                        "value": 0
+                                    },
+                                    {
+                                        "name": "Hook 1 (memo)",
+                                        "value": "v1792909318189"
+                                    }
+                                ],
+                                "name": "hooks",
+                                "status": "available",
+                                "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                            }
+                        ]
+                    },
+                    {
+                        "domRect": {
+                            "x": 8,
+                            "y": 51.43333435058594,
+                            "width": 1469,
+                            "height": 81.83332824707031
+                        },
+                        "componentId": "c:393def47-fcae-4ab5-a981-58c72162004c:1",
+                        "contexts": [],
+                        "diagnostics": [],
+                        "rootId": "react-root:1",
+                        "editing": {
+                            "props": false,
+                            "hooks": false,
+                            "state": false,
+                            "context": false
+                        },
+                        "sections": [
+                            {
+                                "fields": [
+                                    {
+                                        "name": "marker",
+                                        "value": "A"
+                                    }
+                                ],
+                                "name": "props",
+                                "status": "available"
+                            },
+                            {
+                                "fields": [
+                                    {
+                                        "name": "Hook 0 (state)",
+                                        "value": 1
+                                    },
+                                    {
+                                        "name": "Hook 1 (memo)",
+                                        "value": "v1792909318189"
+                                    }
+                                ],
+                                "name": "hooks",
+                                "status": "available",
+                                "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                            }
+                        ]
+                    }
+                ],
+                "updates": [
+                    {
+                        "sessionId": "d0b4646b-af64-42b0-9860-857cd7072ee1",
+                        "streamId": "20412369-08b0-4c7e-bc3c-fa6e2af7887e",
+                        "baseRevision": 6,
+                        "revision": 9,
+                        "patch": {
+                            "diagnostics": [],
+                            "performance": {
+                                "flags": {
+                                    "commitCountInWindow": 0,
+                                    "lastCommitAt": 1792909445587,
+                                    "lastTreeRefreshAt": null,
+                                    "pluginSetupPaused": false,
+                                    "treeRefreshPaused": false,
+                                    "windowStartedAt": null
+                                },
+                                "settings": {
+                                    "autoPauseCommitThreshold": 120,
+                                    "autoPauseWindowMs": 1000,
+                                    "commitDebounceMs": 100,
+                                    "enabled": false,
+                                    "maxNodeCount": 2500,
+                                    "maxTreeDepth": 50,
+                                    "pauseExpensiveTreeRefreshes": true,
+                                    "pausePluginSetup": false
+                                }
+                            },
+                            "rootEvents": [
+                                {
+                                    "didError": null,
+                                    "id": "root-event:1:react-root:1:getFiberRoots:1792909438423",
+                                    "lifecycle": "added",
+                                    "priorityLevel": null,
+                                    "rendererId": 1,
+                                    "rootId": "react-root:1",
+                                    "source": "getFiberRoots",
+                                    "targetId": "top",
+                                    "timestamp": 1792909438423
+                                },
+                                {
+                                    "didError": false,
+                                    "id": "root-event:1:react-root:1:onCommitFiberRoot:1792909445587",
+                                    "lifecycle": "committed",
+                                    "priorityLevel": 1,
+                                    "rendererId": 1,
+                                    "rootId": "react-root:1",
+                                    "source": "onCommitFiberRoot",
+                                    "targetId": "top",
+                                    "timestamp": 1792909445587
+                                }
+                            ],
+                            "roots": [
+                                {
+                                    "commitCount": 1,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:1",
+                                    "lifecycle": "committed",
+                                    "mountedAt": 1792909438423,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792909445587,
+                                    "label": "react-root:1"
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "children": [
+                                        {
+                                            "children": [
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "h1",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:3",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "h1",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "output",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:4",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "output",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "span",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:5",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "span",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "button",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:6",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "button",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                }
+                                            ],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "main",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": true,
+                                            "id": "c:393def47-fcae-4ab5-a981-58c72162004c:2",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "main",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        }
+                                    ],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "LifecycleApp",
+                                    "fiberTag": "FunctionComponent",
+                                    "hasChildren": true,
+                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:1",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "LifecycleApp",
+                                    "rootId": "react-root:1",
+                                    "tags": [
+                                        "FunctionComponent",
+                                        "component",
+                                        "function"
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "h1",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:393def47-fcae-4ab5-a981-58c72162004c:3",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "h1",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        },
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "output",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:393def47-fcae-4ab5-a981-58c72162004c:4",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "output",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        },
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "span",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:393def47-fcae-4ab5-a981-58c72162004c:5",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "span",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        },
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "button",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:393def47-fcae-4ab5-a981-58c72162004c:6",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "button",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        }
+                                    ],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "main",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": true,
+                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:2",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "main",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "h1",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:3",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "h1",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "output",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:4",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "output",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "span",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:5",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "span",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "button",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:6",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "button",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                }
+                            ]
+                        },
+                        "invalidatedComponents": [
+                            "c:393def47-fcae-4ab5-a981-58c72162004c:1",
+                            "c:393def47-fcae-4ab5-a981-58c72162004c:2",
+                            "c:393def47-fcae-4ab5-a981-58c72162004c:3",
+                            "c:393def47-fcae-4ab5-a981-58c72162004c:4",
+                            "c:393def47-fcae-4ab5-a981-58c72162004c:5",
+                            "c:393def47-fcae-4ab5-a981-58c72162004c:6"
+                        ]
+                    }
+                ],
+                "disconnects": 0
+            },
+            {
+                "stage": "actual-fast-refresh",
+                "inspections": [
+                    {
+                        "domRect": {
+                            "x": 8,
+                            "y": 51.43333435058594,
+                            "width": 1469,
+                            "height": 81.83332824707031
+                        },
+                        "componentId": "c:393def47-fcae-4ab5-a981-58c72162004c:1",
+                        "contexts": [],
+                        "diagnostics": [],
+                        "rootId": "react-root:1",
+                        "editing": {
+                            "props": false,
+                            "hooks": false,
+                            "state": false,
+                            "context": false
+                        },
+                        "sections": [
+                            {
+                                "fields": [
+                                    {
+                                        "name": "marker",
+                                        "value": "A"
+                                    }
+                                ],
+                                "name": "props",
+                                "status": "available"
+                            },
+                            {
+                                "fields": [
+                                    {
+                                        "name": "Hook 0 (state)",
+                                        "value": 0
+                                    },
+                                    {
+                                        "name": "Hook 1 (memo)",
+                                        "value": "v1792909318189"
+                                    }
+                                ],
+                                "name": "hooks",
+                                "status": "available",
+                                "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                            }
+                        ]
+                    },
+                    {
+                        "domRect": {
+                            "x": 8,
+                            "y": 51.43333435058594,
+                            "width": 1469,
+                            "height": 81.83332824707031
+                        },
+                        "componentId": "c:393def47-fcae-4ab5-a981-58c72162004c:1",
+                        "contexts": [],
+                        "diagnostics": [],
+                        "rootId": "react-root:1",
+                        "editing": {
+                            "props": false,
+                            "hooks": false,
+                            "state": false,
+                            "context": false
+                        },
+                        "sections": [
+                            {
+                                "fields": [
+                                    {
+                                        "name": "marker",
+                                        "value": "A"
+                                    }
+                                ],
+                                "name": "props",
+                                "status": "available"
+                            },
+                            {
+                                "fields": [
+                                    {
+                                        "name": "Hook 0 (state)",
+                                        "value": 1
+                                    },
+                                    {
+                                        "name": "Hook 1 (memo)",
+                                        "value": "v1792909318189"
+                                    }
+                                ],
+                                "name": "hooks",
+                                "status": "available",
+                                "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                            }
+                        ]
+                    },
+                    {
+                        "domRect": {
+                            "x": 8,
+                            "y": 51.43333435058594,
+                            "width": 1469,
+                            "height": 81.83332824707031
+                        },
+                        "componentId": "c:393def47-fcae-4ab5-a981-58c72162004c:1",
+                        "contexts": [],
+                        "diagnostics": [],
+                        "rootId": "react-root:1",
+                        "editing": {
+                            "props": false,
+                            "hooks": false,
+                            "state": false,
+                            "context": false
+                        },
+                        "sections": [
+                            {
+                                "fields": [
+                                    {
+                                        "name": "marker",
+                                        "value": "A"
+                                    }
+                                ],
+                                "name": "props",
+                                "status": "available"
+                            },
+                            {
+                                "fields": [
+                                    {
+                                        "name": "Hook 0 (state)",
+                                        "value": 1
+                                    },
+                                    {
+                                        "name": "Hook 1 (memo)",
+                                        "value": "v1792909445744"
+                                    }
+                                ],
+                                "name": "hooks",
+                                "status": "available",
+                                "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                            }
+                        ]
+                    }
+                ],
+                "updates": [
+                    {
+                        "sessionId": "d0b4646b-af64-42b0-9860-857cd7072ee1",
+                        "streamId": "20412369-08b0-4c7e-bc3c-fa6e2af7887e",
+                        "baseRevision": 6,
+                        "revision": 9,
+                        "patch": {
+                            "diagnostics": [],
+                            "performance": {
+                                "flags": {
+                                    "commitCountInWindow": 0,
+                                    "lastCommitAt": 1792909445587,
+                                    "lastTreeRefreshAt": null,
+                                    "pluginSetupPaused": false,
+                                    "treeRefreshPaused": false,
+                                    "windowStartedAt": null
+                                },
+                                "settings": {
+                                    "autoPauseCommitThreshold": 120,
+                                    "autoPauseWindowMs": 1000,
+                                    "commitDebounceMs": 100,
+                                    "enabled": false,
+                                    "maxNodeCount": 2500,
+                                    "maxTreeDepth": 50,
+                                    "pauseExpensiveTreeRefreshes": true,
+                                    "pausePluginSetup": false
+                                }
+                            },
+                            "rootEvents": [
+                                {
+                                    "didError": null,
+                                    "id": "root-event:1:react-root:1:getFiberRoots:1792909438423",
+                                    "lifecycle": "added",
+                                    "priorityLevel": null,
+                                    "rendererId": 1,
+                                    "rootId": "react-root:1",
+                                    "source": "getFiberRoots",
+                                    "targetId": "top",
+                                    "timestamp": 1792909438423
+                                },
+                                {
+                                    "didError": false,
+                                    "id": "root-event:1:react-root:1:onCommitFiberRoot:1792909445587",
+                                    "lifecycle": "committed",
+                                    "priorityLevel": 1,
+                                    "rendererId": 1,
+                                    "rootId": "react-root:1",
+                                    "source": "onCommitFiberRoot",
+                                    "targetId": "top",
+                                    "timestamp": 1792909445587
+                                }
+                            ],
+                            "roots": [
+                                {
+                                    "commitCount": 1,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:1",
+                                    "lifecycle": "committed",
+                                    "mountedAt": 1792909438423,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792909445587,
+                                    "label": "react-root:1"
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "children": [
+                                        {
+                                            "children": [
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "h1",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:3",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "h1",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "output",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:4",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "output",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "span",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:5",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "span",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "button",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:6",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "button",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                }
+                                            ],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "main",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": true,
+                                            "id": "c:393def47-fcae-4ab5-a981-58c72162004c:2",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "main",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        }
+                                    ],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "LifecycleApp",
+                                    "fiberTag": "FunctionComponent",
+                                    "hasChildren": true,
+                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:1",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "LifecycleApp",
+                                    "rootId": "react-root:1",
+                                    "tags": [
+                                        "FunctionComponent",
+                                        "component",
+                                        "function"
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "h1",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:393def47-fcae-4ab5-a981-58c72162004c:3",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "h1",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        },
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "output",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:393def47-fcae-4ab5-a981-58c72162004c:4",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "output",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        },
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "span",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:393def47-fcae-4ab5-a981-58c72162004c:5",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "span",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        },
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "button",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:393def47-fcae-4ab5-a981-58c72162004c:6",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "button",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        }
+                                    ],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "main",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": true,
+                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:2",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "main",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "h1",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:3",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "h1",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "output",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:4",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "output",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "span",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:5",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "span",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "button",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:6",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "button",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                }
+                            ]
+                        },
+                        "invalidatedComponents": [
+                            "c:393def47-fcae-4ab5-a981-58c72162004c:1",
+                            "c:393def47-fcae-4ab5-a981-58c72162004c:2",
+                            "c:393def47-fcae-4ab5-a981-58c72162004c:3",
+                            "c:393def47-fcae-4ab5-a981-58c72162004c:4",
+                            "c:393def47-fcae-4ab5-a981-58c72162004c:5",
+                            "c:393def47-fcae-4ab5-a981-58c72162004c:6"
+                        ]
+                    },
+                    {
+                        "sessionId": "d0b4646b-af64-42b0-9860-857cd7072ee1",
+                        "streamId": "20412369-08b0-4c7e-bc3c-fa6e2af7887e",
+                        "baseRevision": 9,
+                        "revision": 12,
+                        "patch": {
+                            "diagnostics": [],
+                            "performance": {
+                                "flags": {
+                                    "commitCountInWindow": 0,
+                                    "lastCommitAt": 1792909445945,
+                                    "lastTreeRefreshAt": null,
+                                    "pluginSetupPaused": false,
+                                    "treeRefreshPaused": false,
+                                    "windowStartedAt": null
+                                },
+                                "settings": {
+                                    "autoPauseCommitThreshold": 120,
+                                    "autoPauseWindowMs": 1000,
+                                    "commitDebounceMs": 100,
+                                    "enabled": false,
+                                    "maxNodeCount": 2500,
+                                    "maxTreeDepth": 50,
+                                    "pauseExpensiveTreeRefreshes": true,
+                                    "pausePluginSetup": false
+                                }
+                            },
+                            "rootEvents": [
+                                {
+                                    "didError": null,
+                                    "id": "root-event:1:react-root:1:getFiberRoots:1792909438423",
+                                    "lifecycle": "added",
+                                    "priorityLevel": null,
+                                    "rendererId": 1,
+                                    "rootId": "react-root:1",
+                                    "source": "getFiberRoots",
+                                    "targetId": "top",
+                                    "timestamp": 1792909438423
+                                },
+                                {
+                                    "didError": false,
+                                    "id": "root-event:1:react-root:1:onCommitFiberRoot:1792909445587",
+                                    "lifecycle": "committed",
+                                    "priorityLevel": 1,
+                                    "rendererId": 1,
+                                    "rootId": "react-root:1",
+                                    "source": "onCommitFiberRoot",
+                                    "targetId": "top",
+                                    "timestamp": 1792909445587
+                                },
+                                {
+                                    "didError": false,
+                                    "id": "root-event:1:react-root:1:onCommitFiberRoot:1792909445945",
+                                    "lifecycle": "committed",
+                                    "priorityLevel": 1,
+                                    "rendererId": 1,
+                                    "rootId": "react-root:1",
+                                    "source": "onCommitFiberRoot",
+                                    "targetId": "top",
+                                    "timestamp": 1792909445945
+                                }
+                            ],
+                            "roots": [
+                                {
+                                    "commitCount": 2,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:1",
+                                    "lifecycle": "committed",
+                                    "mountedAt": 1792909438423,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792909445946,
+                                    "label": "react-root:1"
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "children": [
+                                        {
+                                            "children": [
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "h1",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:3",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "h1",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "output",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:4",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "output",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "span",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:5",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "span",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "button",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:6",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "button",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                }
+                                            ],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "main",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": true,
+                                            "id": "c:393def47-fcae-4ab5-a981-58c72162004c:2",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "main",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        }
+                                    ],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "LifecycleApp",
+                                    "fiberTag": "FunctionComponent",
+                                    "hasChildren": true,
+                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:1",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "LifecycleApp",
+                                    "rootId": "react-root:1",
+                                    "tags": [
+                                        "FunctionComponent",
+                                        "component",
+                                        "function"
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "h1",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:393def47-fcae-4ab5-a981-58c72162004c:3",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "h1",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        },
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "output",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:393def47-fcae-4ab5-a981-58c72162004c:4",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "output",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        },
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "span",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:393def47-fcae-4ab5-a981-58c72162004c:5",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "span",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        },
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "button",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:393def47-fcae-4ab5-a981-58c72162004c:6",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "button",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        }
+                                    ],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "main",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": true,
+                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:2",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "main",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "h1",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:3",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "h1",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "output",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:4",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "output",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "span",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:5",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "span",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "button",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:393def47-fcae-4ab5-a981-58c72162004c:6",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "button",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                }
+                            ]
+                        },
+                        "invalidatedComponents": [
+                            "c:393def47-fcae-4ab5-a981-58c72162004c:1",
+                            "c:393def47-fcae-4ab5-a981-58c72162004c:2",
+                            "c:393def47-fcae-4ab5-a981-58c72162004c:3",
+                            "c:393def47-fcae-4ab5-a981-58c72162004c:4",
+                            "c:393def47-fcae-4ab5-a981-58c72162004c:5",
+                            "c:393def47-fcae-4ab5-a981-58c72162004c:6"
+                        ]
+                    }
+                ],
+                "disconnects": 0
+            },
+            {
+                "stage": "reload-auto-reconnect",
+                "inspections": [],
+                "updates": [
+                    {
+                        "sessionId": "d0b4646b-af64-42b0-9860-857cd7072ee1",
+                        "streamId": "892a1b94-d047-4315-8669-16758b643a17",
+                        "baseRevision": 6,
+                        "revision": 9,
+                        "patch": {
+                            "diagnostics": [],
+                            "performance": {
+                                "flags": {
+                                    "commitCountInWindow": 0,
+                                    "lastCommitAt": 1792909447126,
+                                    "lastTreeRefreshAt": null,
+                                    "pluginSetupPaused": false,
+                                    "treeRefreshPaused": false,
+                                    "windowStartedAt": null
+                                },
+                                "settings": {
+                                    "autoPauseCommitThreshold": 120,
+                                    "autoPauseWindowMs": 1000,
+                                    "commitDebounceMs": 100,
+                                    "enabled": false,
+                                    "maxNodeCount": 2500,
+                                    "maxTreeDepth": 50,
+                                    "pauseExpensiveTreeRefreshes": true,
+                                    "pausePluginSetup": false
+                                }
+                            },
+                            "rootEvents": [
+                                {
+                                    "didError": null,
+                                    "id": "root-event:1:react-root:1:getFiberRoots:1792909447088",
+                                    "lifecycle": "added",
+                                    "priorityLevel": null,
+                                    "rendererId": 1,
+                                    "rootId": "react-root:1",
+                                    "source": "getFiberRoots",
+                                    "targetId": "top",
+                                    "timestamp": 1792909447088
+                                },
+                                {
+                                    "didError": false,
+                                    "id": "root-event:1:react-root:1:onCommitFiberRoot:1792909447126",
+                                    "lifecycle": "committed",
+                                    "priorityLevel": 1,
+                                    "rendererId": 1,
+                                    "rootId": "react-root:1",
+                                    "source": "onCommitFiberRoot",
+                                    "targetId": "top",
+                                    "timestamp": 1792909447126
+                                }
+                            ],
+                            "roots": [
+                                {
+                                    "commitCount": 1,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:1",
+                                    "lifecycle": "committed",
+                                    "mountedAt": 1792909447088,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792909447127,
+                                    "label": "react-root:1"
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "children": [
+                                        {
+                                            "children": [
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "h1",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:3",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "h1",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "output",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:4",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "output",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "span",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:5",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "span",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "button",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:6",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "button",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                }
+                                            ],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "main",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": true,
+                                            "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:2",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "main",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        }
+                                    ],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "LifecycleApp",
+                                    "fiberTag": "FunctionComponent",
+                                    "hasChildren": true,
+                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:1",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "LifecycleApp",
+                                    "rootId": "react-root:1",
+                                    "tags": [
+                                        "FunctionComponent",
+                                        "component",
+                                        "function"
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "h1",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:3",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "h1",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        },
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "output",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:4",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "output",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        },
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "span",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:5",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "span",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        },
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "button",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:6",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "button",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        }
+                                    ],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "main",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": true,
+                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:2",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "main",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "h1",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:3",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "h1",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "output",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:4",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "output",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "span",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:5",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "span",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "button",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:6",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "button",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                }
+                            ]
+                        },
+                        "invalidatedComponents": [
+                            "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:1",
+                            "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:2",
+                            "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:3",
+                            "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:4",
+                            "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:5",
+                            "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:6"
+                        ]
+                    }
+                ],
+                "disconnects": 0
+            },
+            {
+                "stage": "actual-devtools-reopen",
+                "inspections": [
+                    {
+                        "domRect": {
+                            "x": 8,
+                            "y": 51.43333435058594,
+                            "width": 1469,
+                            "height": 81.83332824707031
+                        },
+                        "componentId": "c:4a0e4e01-bb16-42f8-8b11-8672c7ebdbc5:1",
+                        "contexts": [],
+                        "diagnostics": [],
+                        "rootId": "react-root:1",
+                        "editing": {
+                            "props": false,
+                            "hooks": false,
+                            "state": false,
+                            "context": false
+                        },
+                        "sections": [
+                            {
+                                "fields": [
+                                    {
+                                        "name": "marker",
+                                        "value": "A"
+                                    }
+                                ],
+                                "name": "props",
+                                "status": "available"
+                            },
+                            {
+                                "fields": [
+                                    {
+                                        "name": "Hook 0 (state)",
+                                        "value": 7
+                                    },
+                                    {
+                                        "name": "Hook 1 (memo)",
+                                        "value": "v1792909445744"
+                                    }
+                                ],
+                                "name": "hooks",
+                                "status": "available",
+                                "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                            }
+                        ]
+                    }
+                ],
+                "updates": [
+                    {
+                        "sessionId": "d0b4646b-af64-42b0-9860-857cd7072ee1",
+                        "streamId": "892a1b94-d047-4315-8669-16758b643a17",
+                        "baseRevision": 6,
+                        "revision": 9,
+                        "patch": {
+                            "diagnostics": [],
+                            "performance": {
+                                "flags": {
+                                    "commitCountInWindow": 0,
+                                    "lastCommitAt": 1792909447126,
+                                    "lastTreeRefreshAt": null,
+                                    "pluginSetupPaused": false,
+                                    "treeRefreshPaused": false,
+                                    "windowStartedAt": null
+                                },
+                                "settings": {
+                                    "autoPauseCommitThreshold": 120,
+                                    "autoPauseWindowMs": 1000,
+                                    "commitDebounceMs": 100,
+                                    "enabled": false,
+                                    "maxNodeCount": 2500,
+                                    "maxTreeDepth": 50,
+                                    "pauseExpensiveTreeRefreshes": true,
+                                    "pausePluginSetup": false
+                                }
+                            },
+                            "rootEvents": [
+                                {
+                                    "didError": null,
+                                    "id": "root-event:1:react-root:1:getFiberRoots:1792909447088",
+                                    "lifecycle": "added",
+                                    "priorityLevel": null,
+                                    "rendererId": 1,
+                                    "rootId": "react-root:1",
+                                    "source": "getFiberRoots",
+                                    "targetId": "top",
+                                    "timestamp": 1792909447088
+                                },
+                                {
+                                    "didError": false,
+                                    "id": "root-event:1:react-root:1:onCommitFiberRoot:1792909447126",
+                                    "lifecycle": "committed",
+                                    "priorityLevel": 1,
+                                    "rendererId": 1,
+                                    "rootId": "react-root:1",
+                                    "source": "onCommitFiberRoot",
+                                    "targetId": "top",
+                                    "timestamp": 1792909447126
+                                }
+                            ],
+                            "roots": [
+                                {
+                                    "commitCount": 1,
+                                    "disconnectedAt": null,
+                                    "id": "react-root:1",
+                                    "lifecycle": "committed",
+                                    "mountedAt": 1792909447088,
+                                    "rendererId": 1,
+                                    "targetId": "top",
+                                    "updatedAt": 1792909447127,
+                                    "label": "react-root:1"
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "children": [
+                                        {
+                                            "children": [
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "h1",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:3",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "h1",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "output",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:4",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "output",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "span",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:5",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "span",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "contexts": [],
+                                                    "diagnostics": [],
+                                                    "displayName": "button",
+                                                    "fiberTag": "HostComponent",
+                                                    "hasChildren": false,
+                                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:6",
+                                                    "source": null,
+                                                    "key": null,
+                                                    "name": "button",
+                                                    "rootId": "react-root:1",
+                                                    "tags": [
+                                                        "HostComponent",
+                                                        "host"
+                                                    ],
+                                                    "type": "host"
+                                                }
+                                            ],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "main",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": true,
+                                            "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:2",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "main",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        }
+                                    ],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "LifecycleApp",
+                                    "fiberTag": "FunctionComponent",
+                                    "hasChildren": true,
+                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:1",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "LifecycleApp",
+                                    "rootId": "react-root:1",
+                                    "tags": [
+                                        "FunctionComponent",
+                                        "component",
+                                        "function"
+                                    ],
+                                    "type": "function"
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "h1",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:3",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "h1",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        },
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "output",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:4",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "output",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        },
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "span",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:5",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "span",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        },
+                                        {
+                                            "children": [],
+                                            "contexts": [],
+                                            "diagnostics": [],
+                                            "displayName": "button",
+                                            "fiberTag": "HostComponent",
+                                            "hasChildren": false,
+                                            "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:6",
+                                            "source": null,
+                                            "key": null,
+                                            "name": "button",
+                                            "rootId": "react-root:1",
+                                            "tags": ["HostComponent", "host"],
+                                            "type": "host"
+                                        }
+                                    ],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "main",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": true,
+                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:2",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "main",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "h1",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:3",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "h1",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "output",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:4",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "output",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "span",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:5",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "span",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                },
+                                {
+                                    "children": [],
+                                    "contexts": [],
+                                    "diagnostics": [],
+                                    "displayName": "button",
+                                    "fiberTag": "HostComponent",
+                                    "hasChildren": false,
+                                    "id": "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:6",
+                                    "source": null,
+                                    "key": null,
+                                    "name": "button",
+                                    "rootId": "react-root:1",
+                                    "tags": ["HostComponent", "host"],
+                                    "type": "host"
+                                }
+                            ]
+                        },
+                        "invalidatedComponents": [
+                            "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:1",
+                            "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:2",
+                            "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:3",
+                            "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:4",
+                            "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:5",
+                            "c:d1f70f59-1d1a-4685-a0f3-b0ac08378084:6"
+                        ]
+                    }
+                ],
+                "disconnects": 1
+            }
+        ],
+        "reloadCount": 6,
+        "originalContext": 19,
+        "retainedContext": 19,
+        "reopenedContext": 24,
+        "stoppedUpdates": 1
+    }
+}
