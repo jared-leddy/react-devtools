@@ -40,6 +40,69 @@ function channels(): [RpcChannel, RpcChannel, Set<(data: unknown) => void>] {
 }
 
 describe('backend-confirmed sessions', () => {
+    it('clears obsolete values on disconnect and automatically negotiates a fresh snapshot', async () => {
+        const [channel, backend, listeners] = channels();
+        const store = createDevToolsCoreStateStore();
+        store.setRoots([{ id: 'old-document' }]);
+        const server = createDevToolsCoreServer({ channel: backend, store });
+        let disconnected: (() => void) | undefined;
+        const session = createDevToolsSession({
+            channel: {
+                ...channel,
+                subscribeDisconnect(fn) {
+                    disconnected = fn;
+                    return () => {
+                        disconnected = undefined;
+                    };
+                }
+            },
+            reconnectMs: 10
+        });
+        try {
+            await session.connect();
+            expect(session.getSnapshot().state?.roots[0].id).toBe(
+                'old-document'
+            );
+            const delivered = new Promise<void>((resolve, reject) => {
+                const timeout = setTimeout(
+                    () => reject(Error('Fresh snapshot missing')),
+                    1000
+                );
+                const unsubscribe = session.subscribe(() => {
+                    if (
+                        session.getSnapshot().status === 'connected' &&
+                        session.getSnapshot().state?.roots[0]?.id ===
+                            'new-document'
+                    ) {
+                        clearTimeout(timeout);
+                        unsubscribe();
+                        resolve();
+                    }
+                });
+            });
+            disconnected?.();
+            expect(session.getSnapshot()).toMatchObject({
+                status: 'disconnected'
+            });
+            expect(session.getSnapshot().state).toBeUndefined();
+            expect(listeners.size).toBe(0);
+            store.setRoots([{ id: 'new-document' }]);
+            await delivered;
+        } finally {
+            session.dispose();
+            server.dispose();
+        }
+        expect(listeners.size).toBe(0);
+        expect(disconnected).toBeUndefined();
+    });
+    it.each([0, -1, NaN, Infinity])(
+        'rejects invalid reconnect delay %s',
+        (reconnectMs) => {
+            expect(() => createDevToolsSession({ reconnectMs })).toThrow(
+                'positive'
+            );
+        }
+    );
     it('uses distinct session identities when clients reuse the same display alias', async () => {
         const [channel, backend] = channels();
         const store = createDevToolsCoreStateStore();
@@ -108,7 +171,7 @@ describe('backend-confirmed sessions', () => {
         const connecting = session.connect();
         disconnect?.();
         await connecting;
-        expect(session.getSnapshot().status).toBe('error');
+        expect(session.getSnapshot().status).toBe('disconnected');
         expect(onDisconnect).toHaveBeenCalledTimes(1);
         session.dispose();
         server.dispose();

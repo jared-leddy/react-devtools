@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { verifyNativeIdentity } from './native-identity.mjs';
 import { verifyNativeValues } from './native-values.mjs';
+import { verifyChromeLifecycles } from './native-lifecycles.mjs';
 
 const url = process.argv[2];
 if (!url) throw new Error('Provide an inspected fixture URL');
@@ -11,7 +12,10 @@ fs.mkdirSync(output, { recursive: true });
 const profile = fs.mkdtempSync('/private/tmp/r03-chrome-profile-');
 const context = await chromium.launchPersistentContext(profile, {
     executablePath:
-        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+        process.env.CHROME_EXECUTABLE_PATH ??
+        (process.platform === 'darwin'
+            ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+            : chromium.executablePath()),
     headless: false,
     ignoreDefaultArgs: ['--disable-extensions'],
     args: [
@@ -26,6 +30,7 @@ const updateMode = process.argv.includes('--updates');
 const modelMode = process.argv.includes('--models');
 const identityMode = process.argv.includes('--identity');
 const valuesMode = process.argv.includes('--values');
+const lifecycleMode = process.argv.includes('--lifecycles');
 const emptyMode = process.argv.includes('--empty');
 const nonReactMode = process.argv.includes('--non-react');
 const nativeInspectors = [];
@@ -39,6 +44,16 @@ try {
         ).pathname
     });
     const page = await context.newPage();
+    if (lifecycleMode)
+        await page.addInitScript(() => {
+            window.__r08Rpc = [];
+            window.addEventListener('message', (event) => {
+                if (event.data?.payload?.json) {
+                    window.__r08Rpc.push(event.data.payload.json);
+                    if (window.__r08Rpc.length > 100) window.__r08Rpc.shift();
+                }
+            });
+        });
     if (updateMode)
         await page.addInitScript(() => {
             window.__r04Traffic = { updates: [], disconnects: 0 };
@@ -71,6 +86,12 @@ try {
     });
     await page.goto(url);
     await page.waitForTimeout(3000);
+    let otherPage;
+    if (lifecycleMode) {
+        otherPage = await context.newPage();
+        await otherPage.goto('http://127.0.0.1:9057/?name=B');
+        await otherPage.waitForTimeout(3000);
+    }
     const debugPort = Number(
         fs.readFileSync(`${profile}/DevToolsActivePort`, 'utf8').split('\n')[0]
     );
@@ -117,12 +138,30 @@ try {
             returnByValue: true
         });
         console.log('Tabs', tabs.result?.result?.value);
-        const inventory = await send('Runtime.evaluate', {
-            expression:
-                '(async () => {const UI=await import("./ui/legacy/legacy.js");const pane=UI.InspectorView.InspectorView.instance().tabbedPane;return {ids:pane.tabIds(),keys:Object.keys(pane),tabs:pane.tabs?.map(t=>({id:t.id,title:t.title}))};})()',
-            awaitPromise: true,
-            returnByValue: true
-        });
+        let inventory;
+        for (let attempt = 0; attempt < 60; attempt++) {
+            const ready = await send('Runtime.evaluate', {
+                expression:
+                    '(() => {const roots=[document];const tabs=[];for(let i=0;i<roots.length;i++)for(const e of roots[i].querySelectorAll("*")){if(e.shadowRoot)roots.push(e.shadowRoot);if(e.getAttribute("role")==="tab")tabs.push(e.textContent);}return tabs.length;})()',
+                returnByValue: true
+            });
+            if (ready.result?.result?.value) {
+                inventory = await send('Runtime.evaluate', {
+                    expression:
+                        '(async () => {const UI=await import("./ui/legacy/legacy.js");const pane=UI.InspectorView.InspectorView.instance().tabbedPane;return {ids:pane.tabIds(),keys:Object.keys(pane),tabs:pane.tabs?.map(t=>({id:t.id,title:t.title}))};})()',
+                    awaitPromise: true,
+                    returnByValue: true
+                });
+                if (
+                    inventory.result?.result?.value?.tabs?.some(
+                        (tab) => tab.title === 'React'
+                    )
+                )
+                    break;
+            }
+            await page.waitForTimeout(250);
+        }
+        inventory ??= {};
         console.log(
             'Registered native panels',
             inventory.result?.result?.value,
@@ -154,6 +193,7 @@ try {
     const results = [];
     let readPanel;
     let evaluatePanel;
+    const panels = [];
     for (const target of targets.targetInfos.filter(
         (t) =>
             t.url.endsWith('/devtools.html') ||
@@ -163,25 +203,32 @@ try {
             targetId: target.targetId,
             flatten: false
         });
+        let requestId = 0;
         const evaluate = (expression) =>
-            new Promise(async (resolve) => {
+            new Promise((resolve, reject) => {
+                const id = ++requestId;
+                const cleanup = () => {
+                    clearTimeout(timer);
+                    cdp.off('Target.receivedMessageFromTarget', listener);
+                };
                 const listener = (event) => {
                     if (event.sessionId === sessionId) {
                         const reply = JSON.parse(event.message);
-                        if (reply.id === 1) {
-                            cdp.off(
-                                'Target.receivedMessageFromTarget',
-                                listener
-                            );
+                        if (reply.id === id) {
+                            cleanup();
                             resolve(reply);
                         }
                     }
                 };
+                const timer = setTimeout(() => {
+                    cleanup();
+                    reject(new Error('Native panel evaluation timed out'));
+                }, 15000);
                 cdp.on('Target.receivedMessageFromTarget', listener);
-                await cdp.send('Target.sendMessageToTarget', {
+                cdp.send('Target.sendMessageToTarget', {
                     sessionId,
                     message: JSON.stringify({
-                        id: 1,
+                        id,
                         method: 'Runtime.evaluate',
                         params: {
                             expression,
@@ -189,6 +236,9 @@ try {
                             returnByValue: true
                         }
                     })
+                }).catch((error) => {
+                    cleanup();
+                    reject(error);
                 });
             });
         const inspectedExpression = `({url:location.href,detected:Boolean(window.__REACT_DEVTOOLS_GLOBAL_HOOK__?.renderers?.size),backendScript:document.getElementById('__react-devtools-user-app__')?.src,frames:document.querySelectorAll('iframe').length,hookKeys:Object.keys(window.__REACT_DEVTOOLS_GLOBAL_HOOK__??{})})`;
@@ -196,7 +246,11 @@ try {
             `new Promise(resolve => { const identity={url:location.href,body:document.body.innerText,tabId:chrome.devtools.inspectedWindow.tabId}; chrome.devtools.inspectedWindow.eval(${JSON.stringify(inspectedExpression)},(result,exception)=>resolve({...identity,inspected:result,exception})); })`
         );
         if (
-            (updateMode || modelMode || identityMode || valuesMode) &&
+            (updateMode ||
+                modelMode ||
+                identityMode ||
+                valuesMode ||
+                lifecycleMode) &&
             target.url.endsWith('/devtools-panel.html') &&
             result.result?.result?.value?.inspected?.url === url
         ) {
@@ -208,6 +262,11 @@ try {
                 return reply.result?.result?.value;
             };
         }
+        if (target.url.endsWith('/devtools-panel.html'))
+            panels.push({
+                url: result.result?.result?.value?.inspected?.url,
+                evaluate
+            });
         results.push({ target, result });
         console.log('Native panel/host', JSON.stringify(result));
     }
@@ -215,6 +274,29 @@ try {
     let modelChecks;
     let identityChecks;
     let valueChecks;
+    let lifecycleChecks;
+    if (lifecycleMode)
+        lifecycleChecks = await verifyChromeLifecycles({
+            page,
+            otherPage,
+            context,
+            cdp,
+            panels,
+            extension,
+            capture: async (stage) => {
+                for (const inspector of nativeInspectors) {
+                    const shot = await inspector.send(
+                        'Page.captureScreenshot',
+                        { format: 'png' }
+                    );
+                    if (shot.result?.data)
+                        fs.writeFileSync(
+                            `${output}/${stage}-${inspector.targetId}.png`,
+                            Buffer.from(shot.result.data, 'base64')
+                        );
+                }
+            }
+        });
     if (valuesMode) {
         assert(evaluatePanel, 'Actual native panel missing');
         valueChecks = await verifyNativeValues(
@@ -462,7 +544,8 @@ try {
                 updateChecks,
                 modelChecks,
                 identityChecks,
-                valueChecks
+                valueChecks,
+                lifecycleChecks
             },
             null,
             4

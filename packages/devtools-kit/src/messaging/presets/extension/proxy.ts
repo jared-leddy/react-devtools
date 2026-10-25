@@ -1,10 +1,10 @@
 import type { RpcChannel } from '../../index.js';
+import { createExtensionClientChannel } from './client.js';
 import { createNoopChannel } from '../iframe/context.js';
 import {
     EXTENSION_RPC_EVENT_KEY,
     EXTENSION_DISCONNECT_EVENT_KEY,
     EXTENSION_RPC_MESSAGE_SOURCE,
-    connectExtensionPort,
     getChromeRuntime,
     getExtensionWindow,
     isExtensionRpcEnvelope,
@@ -26,19 +26,14 @@ export function createExtensionProxyChannel(
 
     const eventKey = options.eventKey ?? EXTENSION_RPC_EVENT_KEY;
     const targetOrigin = options.targetOrigin ?? '*';
-    const port = connectExtensionPort(
+    const channel = createExtensionClientChannel({
         chrome,
-        options.portName ?? 'content-script'
-    );
-
-    if (!port) {
-        return createNoopChannel();
-    }
-
-    if (options.setContext !== false) {
-        setExtensionProxyContext(port);
-    }
-
+        portName: options.portName ?? 'content-script',
+        setContext: false,
+        onPort(port) {
+            if (options.setContext !== false) setExtensionProxyContext(port);
+        }
+    });
     const sendMessageToServer: ExtensionMessageHandler = (payload) => {
         if (
             payload &&
@@ -63,6 +58,7 @@ export function createExtensionProxyChannel(
     };
     const sendMessageToClient: ExtensionWindowMessageListener = (event) => {
         if (
+            event.source !== window ||
             !isExtensionRpcEnvelope(
                 event.data,
                 EXTENSION_RPC_MESSAGE_SOURCE.SERVER_TO_PROXY,
@@ -73,21 +69,27 @@ export function createExtensionProxyChannel(
         }
 
         try {
-            port.postMessage(event.data.payload);
+            channel.post(event.data.payload);
         } catch {
             // Port disconnections are expected while panels close or tabs reload.
         }
     };
 
-    port.onMessage.addListener(sendMessageToServer);
+    channel.on(sendMessageToServer);
     window.addEventListener('message', sendMessageToClient);
-    port.onDisconnect.addListener(() => {
-        port.onMessage.removeListener?.(sendMessageToServer);
-        window.removeEventListener?.('message', sendMessageToClient);
-    });
-
+    const unsubscribe = channel.subscribeDisconnect?.(() =>
+        window.postMessage(
+            { event: EXTENSION_DISCONNECT_EVENT_KEY },
+            targetOrigin
+        )
+    );
     return {
         on() {},
-        post() {}
+        post() {},
+        dispose() {
+            unsubscribe?.();
+            channel.dispose?.();
+            window.removeEventListener?.('message', sendMessageToClient);
+        }
     };
 }

@@ -58,8 +58,13 @@ interface UserAppWindow {
 
 export function createPageBackend(
     target: UserAppWindow,
-    channel: RpcChannel
+    channel: RpcChannel,
+    singletonKey?: symbol
 ): UserAppRpcServerBootstrapResult {
+    const owner = target as UserAppWindow & {
+        [key: symbol]: UserAppRpcServerBootstrapResult | undefined;
+    };
+    if (singletonKey && owner[singletonKey]) return owner[singletonKey]!;
     const hookInstallation = resolveReactDevToolsHook(target);
 
     if (!hookInstallation.hook) {
@@ -140,14 +145,19 @@ export function createPageBackend(
         options: { timeout: 5000 },
         onDisconnect: () => updates.suspend()
     });
+    let disposed = false;
     const dispose = () => {
+        if (disposed) return;
+        disposed = true;
+        if (singletonKey && owner[singletonKey] === result)
+            delete owner[singletonKey];
         updates.dispose();
         server.dispose();
         target.removeEventListener('pagehide', dispose);
     };
     target.addEventListener('pagehide', dispose);
 
-    return {
+    const result = {
         didOpenRpcServer: true,
         hookMode: hookInstallation.mode,
         rendererCount: hookInstallation.hook.renderers.size,
@@ -158,6 +168,8 @@ export function createPageBackend(
         ),
         dispose
     };
+    if (singletonKey) owner[singletonKey] = result;
+    return result;
 }
 
 function resolveReactDevToolsHook(target: UserAppWindow): {

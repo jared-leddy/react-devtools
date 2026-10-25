@@ -1,6 +1,7 @@
 import type { RpcChannel } from '../../index.js';
 import { createNoopChannel } from '../iframe/context.js';
 import {
+    EXTENSION_DISCONNECT_EVENT_KEY,
     connectExtensionPort,
     getChromeRuntime,
     getDefaultExtensionClientPortName,
@@ -23,6 +24,11 @@ export function createExtensionClientChannel(
 
     const reconnectDelayMs = options.reconnectDelayMs ?? 1000;
     const setReconnectTimer = options.setTimeout ?? globalThis.setTimeout;
+    const clearReconnectTimer =
+        options.clearTimeout ??
+        ((timer: unknown) =>
+            globalThis.clearTimeout(timer as ReturnType<typeof setTimeout>));
+    let reconnectTimer: unknown;
     const portName =
         options.portName ?? getDefaultExtensionClientPortName(chrome);
     const handlers = new Map<
@@ -59,14 +65,23 @@ export function createExtensionClientChannel(
     const connect = () => {
         if (disposed) return;
         detachPort();
-        port = connectExtensionPort(chrome as ChromeLike, portName);
+        let failed = false;
+        try {
+            port = connectExtensionPort(chrome as ChromeLike, portName);
+        } catch {
+            port = null;
+            failed = true;
+        }
 
         if (!port) {
             isConnected = false;
+            if (failed && reconnectDelayMs !== false)
+                reconnectTimer = setReconnectTimer(connect, reconnectDelayMs);
             return;
         }
 
         isConnected = true;
+        options.onPort?.(port);
 
         if (options.setContext !== false) {
             setExtensionClientContext(port);
@@ -78,12 +93,13 @@ export function createExtensionClientChannel(
 
         disconnectHandler = () => {
             isConnected = false;
+            pendingMessages.length = 0;
             detachPort();
             port = null;
             disconnectListeners.forEach((listener) => listener());
 
             if (reconnectDelayMs !== false) {
-                setReconnectTimer(connect, reconnectDelayMs);
+                reconnectTimer = setReconnectTimer(connect, reconnectDelayMs);
             }
         };
         port.onDisconnect.addListener(disconnectHandler);
@@ -101,6 +117,7 @@ export function createExtensionClientChannel(
         },
         dispose() {
             disposed = true;
+            clearReconnectTimer(reconnectTimer);
             detachPort();
             port?.disconnect?.();
             port = null;
@@ -119,8 +136,18 @@ export function createExtensionClientChannel(
             port?.onMessage.removeListener?.(listener);
         },
         on(handler) {
+            if (handlers.has(handler)) return;
             const listener: ExtensionMessageHandler = (payload) => {
                 if (isConnected) {
+                    if (
+                        payload &&
+                        typeof payload === 'object' &&
+                        (payload as { event?: unknown }).event ===
+                            EXTENSION_DISCONNECT_EVENT_KEY
+                    ) {
+                        disconnectListeners.forEach((listener) => listener());
+                        return;
+                    }
                     handler(payload);
                 }
             };
@@ -130,11 +157,17 @@ export function createExtensionClientChannel(
         },
         post(data) {
             if (!port || !isConnected) {
+                if (disposed) return;
+                if (pendingMessages.length === 64) pendingMessages.shift();
                 pendingMessages.push(data);
                 return;
             }
 
-            port.postMessage(data);
+            try {
+                port.postMessage(data);
+            } catch {
+                disconnectHandler?.();
+            }
         }
     };
 }

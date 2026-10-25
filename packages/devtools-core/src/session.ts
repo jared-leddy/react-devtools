@@ -41,6 +41,7 @@ export function createDevToolsSession(
         clientId?: string;
         timeoutMs?: number;
         heartbeatMs?: number;
+        reconnectMs?: number | false;
     } = {}
 ): DevToolsSession {
     if (
@@ -49,6 +50,23 @@ export function createDevToolsSession(
     )
         throw new Error('Session timeout must be a positive finite number');
     const sessionId = globalThis.crypto.randomUUID();
+    const reconnectMs =
+        options.reconnectMs ?? (options.preset === 'extension' ? 1000 : false);
+    if (
+        reconnectMs !== false &&
+        (!Number.isFinite(reconnectMs) || reconnectMs <= 0)
+    )
+        throw new Error('Session reconnect delay must be positive');
+    let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
+    let clientClosed = false;
+    const scheduleReconnect = () => {
+        if (disposed || reconnectMs === false || reconnectTimer !== undefined)
+            return;
+        reconnectTimer = setTimeout(() => {
+            reconnectTimer = undefined;
+            void api.connect();
+        }, reconnectMs);
+    };
     const clientId = options.clientId ?? sessionId;
     if (
         options.heartbeatMs !== undefined &&
@@ -105,23 +123,40 @@ export function createDevToolsSession(
                 .disconnectSession({ sessionId, streamId: snapshot.streamId })
                 .catch(() => {});
         client.$close();
+        clientClosed = true;
         timers.forEach(clearTimeout);
         timers.clear();
     };
     const fail = (error: unknown) => {
         if (!disposed) {
             close();
+            connection = undefined;
             publish({
-                ...snapshot,
+                sessionId,
                 status: 'error',
                 error:
                     error instanceof Error
                         ? error.message
                         : 'Backend rejected handshake'
             });
+            scheduleReconnect();
         }
     };
+    const disconnect = (closeClient = true) => {
+        clearTimeout(heartbeat);
+        generation += 1;
+        pending = [];
+        needsSnapshot = false;
+        connection = undefined;
+        if (closeClient) close();
+        if (!disposed) publish({ sessionId, status: 'disconnected' });
+        scheduleReconnect();
+    };
     const accept = (update: DevToolsSessionUpdate) => {
+        if (update.patch.transportStatus === 'disconnected') {
+            disconnect(false);
+            return;
+        }
         const componentState = { ...snapshot.state!.componentState };
         update.invalidatedComponents.forEach((id) => {
             delete componentState[id];
@@ -181,15 +216,18 @@ export function createDevToolsSession(
             )
                 throw new Error('Invalid resynchronization snapshot');
             if (response.revision > snapshot.revision!)
-                publish({
-                    ...snapshot,
-                    revision: response.revision,
-                    state: response.state,
-                    status:
-                        response.state.transportStatus === 'connected'
-                            ? 'connected'
-                            : 'disconnected'
-                });
+                if (response.state.transportStatus === 'disconnected')
+                    disconnect(false);
+                else
+                    publish({
+                        ...snapshot,
+                        revision: response.revision,
+                        state: response.state,
+                        status:
+                            response.state.transportStatus === 'connected'
+                                ? 'connected'
+                                : 'disconnected'
+                    });
             pending = pending.filter(
                 (update) =>
                     update.streamId === streamId &&
@@ -247,48 +285,46 @@ export function createDevToolsSession(
                 );
         }
     };
-    const client = createDevToolsCoreClient({
-        ...options,
-        options: {
-            ...options.options,
-            timeout: options.timeoutMs ?? 5000
-        },
-        onDisconnect() {
-            clearTimeout(heartbeat);
-            generation += 1;
-            pending = [];
-            needsSnapshot = false;
-            if (!disposed) publish({ sessionId, status: 'disconnected' });
-            options.onDisconnect?.();
-        },
-        // Protocol-v1 callbacks remain available to direct RPC callers, not session state.
-        onStateUpdated: (patch) => options.onStateUpdated?.(patch),
-        onTransportStatus: (status) => options.onTransportStatus?.(status),
-        onSessionUpdated(update) {
-            if (
-                disposed ||
-                !validUpdate(update) ||
-                update.sessionId !== sessionId
-            )
-                return;
-            if (snapshot.streamId && update.streamId !== snapshot.streamId)
-                return;
-            if (
-                snapshot.status !== 'connecting' &&
-                snapshot.status !== 'connected'
-            )
-                return;
-            if (pending.length === 64) {
-                pending.shift();
-                needsSnapshot = true;
+    const makeClient = () =>
+        createDevToolsCoreClient({
+            ...options,
+            options: {
+                ...options.options,
+                timeout: options.timeoutMs ?? 5000
+            },
+            onDisconnect() {
+                disconnect();
+                options.onDisconnect?.();
+            },
+            // Protocol-v1 callbacks remain available to direct RPC callers, not session state.
+            onStateUpdated: (patch) => options.onStateUpdated?.(patch),
+            onTransportStatus: (status) => options.onTransportStatus?.(status),
+            onSessionUpdated(update) {
+                if (
+                    disposed ||
+                    !validUpdate(update) ||
+                    update.sessionId !== sessionId
+                )
+                    return;
+                if (snapshot.streamId && update.streamId !== snapshot.streamId)
+                    return;
+                if (
+                    snapshot.status !== 'connecting' &&
+                    snapshot.status !== 'connected'
+                )
+                    return;
+                if (pending.length === 64) {
+                    pending.shift();
+                    needsSnapshot = true;
+                }
+                pending.push(update);
+                drain();
+                options.onSessionUpdated?.(update);
             }
-            pending.push(update);
-            drain();
-            options.onSessionUpdated?.(update);
-        }
-    });
+        });
+    let client = makeClient();
 
-    return {
+    const api: DevToolsSession = {
         async inspectComponent(request) {
             if (
                 disposed ||
@@ -337,6 +373,13 @@ export function createDevToolsSession(
         connect() {
             if (disposed) return Promise.resolve();
             if (connection) return connection;
+            clearTimeout(reconnectTimer);
+            reconnectTimer = undefined;
+            if (snapshot.status === 'disconnected' && !clientClosed) close();
+            if (clientClosed) {
+                client = makeClient();
+                clientClosed = false;
+            }
             publish({ sessionId, status: 'connecting' });
             const expectedGeneration = generation;
             connection = (async () => {
@@ -412,18 +455,21 @@ export function createDevToolsSession(
                         capabilities: response.capabilities
                     });
                     drain();
-                    heartbeat = setTimeout(
-                        checkRevision,
-                        options.heartbeatMs ?? 1000
-                    );
+                    if (snapshot.status === 'connected')
+                        heartbeat = setTimeout(
+                            checkRevision,
+                            options.heartbeatMs ?? 1000
+                        );
                 } catch (error) {
-                    fail(error);
+                    if (generation === expectedGeneration) fail(error);
                 }
             })();
             return connection;
         },
         dispose() {
             if (disposed) return;
+            clearTimeout(reconnectTimer);
+            reconnectTimer = undefined;
             close();
             disposed = true;
             generation += 1;
@@ -432,6 +478,7 @@ export function createDevToolsSession(
             listeners.clear();
         }
     };
+    return api;
 }
 
 function validSnapshot(value: DevToolsSessionStateSnapshot): boolean {

@@ -7,6 +7,12 @@ import { createDevToolsSession } from '@devtools/core/browser';
 
 interface ChromeDevToolsPanelLike {
     devtools?: {
+        network?: {
+            onNavigated?: {
+                addListener?: (listener: () => void) => void;
+                removeListener?: (listener: () => void) => void;
+            };
+        };
         inspectedWindow?: {
             tabId?: number;
             eval?: (
@@ -40,6 +46,16 @@ const USER_APP_SCRIPT_ID = '__react-devtools-user-app__';
 const USER_APP_SCRIPT_PATH = 'user-app.js';
 
 const bootstrapResult = bootstrapDevToolsPanel();
+const navigationListener = () => {
+    injectUserAppIntoInspectedWindow();
+};
+const navigationApi = getChromeApi()?.devtools?.network?.onNavigated;
+navigationApi?.addListener?.(navigationListener);
+globalThis.addEventListener(
+    'unload',
+    () => navigationApi?.removeListener?.(navigationListener),
+    { once: true }
+);
 
 globalThis.dispatchEvent(
     new CustomEvent('__react_devtools_panel_ready__', {
@@ -90,8 +106,11 @@ function mountPanelClient(): boolean {
     }
 
     setClientRouteEnvironment({ transport: 'extension' });
-    mountDevToolsClient(root, {
+    const mounted = mountDevToolsClient(root, {
         session: createDevToolsSession({ preset: 'extension' })
+    });
+    globalThis.addEventListener('unload', () => mounted.unmount(), {
+        once: true
     });
 
     return true;

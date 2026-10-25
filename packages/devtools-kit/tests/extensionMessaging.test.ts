@@ -34,6 +34,131 @@ interface ClientFunctions {
 }
 
 describe('extension messaging preset', () => {
+    it('retries a transient runtime connect exception and disposes its retry', () => {
+        jest.useFakeTimers();
+        const runtime = createMockExtensionRuntime();
+        const connect = jest
+            .spyOn(runtime.runtime!, 'connect')
+            .mockImplementationOnce(() => {
+                throw Error('worker starting');
+            });
+        const channel = createExtensionClientChannel({
+            chrome: createMockChrome(runtime, 7)
+        });
+        expect(jest.getTimerCount()).toBe(1);
+        jest.advanceTimersByTime(1000);
+        expect(connect).toHaveBeenCalledTimes(2);
+        expect(runtime.getPort('7')).toBeDefined();
+        channel.dispose?.();
+        expect(jest.getTimerCount()).toBe(0);
+    });
+    it('rejects valid envelopes from a child or unrelated window', () => {
+        const runtime = createMockExtensionRuntime();
+        const window = createMockWindow();
+        const foreign = createMockWindow();
+        const server = createExtensionServerChannel({ window });
+        const handler = jest.fn();
+        server.on(handler);
+        const proxy = createExtensionProxyChannel({
+            chrome: createMockChrome(runtime),
+            window
+        });
+        for (const source of [foreign, null]) {
+            window.dispatchMessage({
+                source,
+                data: {
+                    event: EXTENSION_RPC_EVENT_KEY,
+                    source: EXTENSION_RPC_MESSAGE_SOURCE.PROXY_TO_SERVER,
+                    payload: 'foreign'
+                }
+            });
+            window.dispatchMessage({
+                source,
+                data: {
+                    event: EXTENSION_RPC_EVENT_KEY,
+                    source: EXTENSION_RPC_MESSAGE_SOURCE.SERVER_TO_PROXY,
+                    payload: 'foreign'
+                }
+            });
+        }
+        expect(handler).not.toHaveBeenCalled();
+        expect(runtime.getPort('content-script')?.sentMessages).toEqual([]);
+        proxy.dispose?.();
+        server.off?.(handler);
+    });
+    it('keeps one listener across reconnect cycles and cancels owned timers on disposal', () => {
+        jest.useFakeTimers();
+        const runtime = createMockExtensionRuntime();
+        const channel = createExtensionClientChannel({
+            chrome: createMockChrome(runtime, 7)
+        });
+        const handler = jest.fn();
+        const disconnected = jest.fn();
+        channel.on(handler);
+        channel.on(handler);
+        channel.subscribeDisconnect?.(disconnected);
+        for (let i = 0; i < 5; i++) {
+            runtime.getPort('7')?.emitMessage(i);
+            runtime.getPort('7')?.disconnect();
+            jest.advanceTimersByTime(1000);
+        }
+        expect(handler).toHaveBeenCalledTimes(5);
+        expect(disconnected).toHaveBeenCalledTimes(5);
+        runtime.getPort('7')?.disconnect();
+        expect(jest.getTimerCount()).toBe(1);
+        channel.dispose?.();
+        expect(jest.getTimerCount()).toBe(0);
+        channel.post('after-disposal');
+        jest.runOnlyPendingTimers();
+        expect(runtime.connectCalls).toHaveLength(6);
+    });
+    it('reconnects the isolated relay without adding another window listener', () => {
+        jest.useFakeTimers();
+        const runtime = createMockExtensionRuntime();
+        const window = createMockWindow();
+        const add = jest.spyOn(window, 'addEventListener');
+        const remove = jest.spyOn(window, 'removeEventListener');
+        const proxy = createExtensionProxyChannel({
+            chrome: createMockChrome(runtime),
+            window
+        });
+        runtime.getPort('content-script')?.disconnect();
+        jest.advanceTimersByTime(1000);
+        window.postMessage(
+            {
+                event: EXTENSION_RPC_EVENT_KEY,
+                source: EXTENSION_RPC_MESSAGE_SOURCE.SERVER_TO_PROXY,
+                payload: 'fresh'
+            },
+            '*'
+        );
+        expect(runtime.getPort('content-script')?.sentMessages).toEqual([
+            'fresh'
+        ]);
+        expect(add).toHaveBeenCalledTimes(1);
+        proxy.dispose?.();
+        expect(remove).toHaveBeenCalledTimes(1);
+        expect(jest.getTimerCount()).toBe(0);
+    });
+    it('bounds offline traffic and treats physical delivery failures as disconnects', () => {
+        jest.useFakeTimers();
+        const runtime = createMockExtensionRuntime();
+        const channel = createExtensionClientChannel({
+            chrome: createMockChrome(runtime, 7)
+        });
+        const disconnected = jest.fn();
+        channel.subscribeDisconnect?.(disconnected);
+        const port = runtime.getPort('7')!;
+        jest.spyOn(port, 'postMessage').mockImplementation(() => {
+            throw Error('closed');
+        });
+        channel.post('failed');
+        expect(disconnected).toHaveBeenCalledTimes(1);
+        for (let i = 0; i < 100; i++) channel.post(i);
+        jest.advanceTimersByTime(1000);
+        expect(runtime.getPort('7')?.sentMessages).toHaveLength(64);
+        channel.dispose?.();
+    });
     it('forwards native panel disconnects and disposes the server lifecycle listener', () => {
         const runtime = createMockExtensionRuntime();
         const window = createMockWindow();
