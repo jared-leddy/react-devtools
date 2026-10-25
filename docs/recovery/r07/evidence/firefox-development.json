@@ -1,0 +1,628 @@
+{
+    "session": {
+        "sessionId": "dc9860c6-f911-490c-993a-a3a4a0e92098",
+        "capabilities": {
+            "acceptInsecureCerts": false,
+            "browserName": "firefox",
+            "browserVersion": "159.0",
+            "platformName": "mac",
+            "setWindowRect": true,
+            "unhandledPromptBehavior": "dismiss and notify",
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:159.0) Gecko/20100101 Firefox/159.0",
+            "moz:buildID": "20261021090508",
+            "moz:headless": false,
+            "moz:platformVersion": "24.5.0",
+            "moz:shutdownTimeout": 73000,
+            "pageLoadStrategy": "normal",
+            "timeouts": {
+                "implicit": 0,
+                "pageLoad": 300000,
+                "script": 30000
+            },
+            "strictFileInteractability": false,
+            "moz:accessibilityChecks": false,
+            "moz:webdriverClick": true,
+            "moz:windowless": false,
+            "proxy": {}
+        }
+    },
+    "app": {
+        "value": {
+            "url": "http://127.0.0.1:9056/development",
+            "hook": true,
+            "renderers": [
+                {
+                    "id": 1,
+                    "version": "19.1.1",
+                    "roots": 1
+                }
+            ]
+        }
+    },
+    "toolbox": {
+        "value": {
+            "url": "http://127.0.0.1:9056/development",
+            "browsingContextId": 11,
+            "tools": [
+                {
+                    "id": "webext-devtools-panel-react-devtools_local_dev-159-0",
+                    "label": "React"
+                }
+            ],
+            "panelUrl": null,
+            "panelBody": null,
+            "panelBrowsingContextId": 19
+        }
+    },
+    "valueChecks": {
+        "snapshots": [
+            {
+                "stage": "function-before",
+                "inspection": {
+                    "domRect": {
+                        "x": 8,
+                        "y": 51.43333435058594,
+                        "width": 1469,
+                        "height": 103.83332824707031
+                    },
+                    "componentId": "c:449be17e-e8fe-4d9a-b792-f1f3e1bfc3e9:2",
+                    "contexts": [
+                        {
+                            "displayName": "FixtureTheme",
+                            "kind": "dependency"
+                        }
+                    ],
+                    "diagnostics": [],
+                    "rootId": "react-root:1",
+                    "editing": {
+                        "props": false,
+                        "hooks": false,
+                        "state": false,
+                        "context": false
+                    },
+                    "sections": [
+                        {
+                            "fields": [
+                                {
+                                    "name": "marker",
+                                    "value": "R07 props 0"
+                                },
+                                {
+                                    "name": "typed",
+                                    "value": {
+                                        "_custom": {
+                                            "display": "Object",
+                                            "type": "object",
+                                            "value": {
+                                                "missing": {
+                                                    "_custom": {
+                                                        "display": "undefined",
+                                                        "type": "undefined"
+                                                    }
+                                                },
+                                                "big": {
+                                                    "_custom": {
+                                                        "display": "42n",
+                                                        "type": "bigint"
+                                                    }
+                                                },
+                                                "map": {
+                                                    "_custom": {
+                                                        "display": "Map(1)",
+                                                        "type": "map",
+                                                        "value": [
+                                                            {
+                                                                "_custom": {
+                                                                    "display": "Entry 0",
+                                                                    "type": "map-entry",
+                                                                    "value": [
+                                                                        "key",
+                                                                        7
+                                                                    ]
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "set": {
+                                                    "_custom": {
+                                                        "display": "Set(1)",
+                                                        "type": "set",
+                                                        "value": ["member"]
+                                                    }
+                                                },
+                                                "date": {
+                                                    "_custom": {
+                                                        "display": "2026-01-02T00:00:00.000Z",
+                                                        "type": "date"
+                                                    }
+                                                },
+                                                "nan": {
+                                                    "_custom": {
+                                                        "display": "NaN",
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                "large": {
+                                                    "_custom": {
+                                                        "display": "Array(80)",
+                                                        "type": "array",
+                                                        "value": [
+                                                            0, 1, 2, 3, 4, 5, 6,
+                                                            7, 8, 9, 10, 11, 12,
+                                                            13, 14, 15, 16, 17,
+                                                            18, 19, 20, 21, 22,
+                                                            23, 24, 25, 26, 27,
+                                                            28, 29, 30, 31, 32,
+                                                            33, 34, 35, 36, 37,
+                                                            38, 39, 40, 41, 42,
+                                                            43, 44, 45, 46, 47,
+                                                            48, 49
+                                                        ],
+                                                        "truncated": true
+                                                    }
+                                                },
+                                                "deep": {
+                                                    "_custom": {
+                                                        "display": "Object",
+                                                        "type": "object",
+                                                        "value": {
+                                                            "one": {
+                                                                "_custom": {
+                                                                    "display": "Object",
+                                                                    "type": "object",
+                                                                    "value": {
+                                                                        "two": {
+                                                                            "_custom": {
+                                                                                "display": "Object",
+                                                                                "type": "object",
+                                                                                "value": {
+                                                                                    "three": {
+                                                                                        "_custom": {
+                                                                                            "type": "Object",
+                                                                                            "display": "[MaxDepth]",
+                                                                                            "truncated": true,
+                                                                                            "readOnly": true
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "accessor": {
+                                                    "_custom": {
+                                                        "type": "unavailable",
+                                                        "display": "[Accessor not evaluated]",
+                                                        "unavailable": true,
+                                                        "readOnly": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "name": "props",
+                            "status": "available"
+                        },
+                        {
+                            "fields": [
+                                {
+                                    "name": "Hook 0 (state)",
+                                    "value": 5
+                                },
+                                {
+                                    "name": "Hook 1 (reducer)",
+                                    "value": {
+                                        "_custom": {
+                                            "display": "Object",
+                                            "type": "object",
+                                            "value": {
+                                                "count": 2
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "name": "hooks",
+                            "status": "available",
+                            "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                        },
+                        {
+                            "name": "context",
+                            "fields": [
+                                {
+                                    "name": "FixtureTheme 0",
+                                    "value": {
+                                        "_custom": {
+                                            "display": "Object",
+                                            "type": "object",
+                                            "value": {
+                                                "mode": "light",
+                                                "revision": 0
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "status": "available"
+                        }
+                    ]
+                }
+            },
+            {
+                "stage": "function-after",
+                "inspection": {
+                    "domRect": {
+                        "x": 8,
+                        "y": 51.43333435058594,
+                        "width": 1469,
+                        "height": 103.83332824707031
+                    },
+                    "componentId": "c:449be17e-e8fe-4d9a-b792-f1f3e1bfc3e9:2",
+                    "contexts": [
+                        {
+                            "displayName": "FixtureTheme",
+                            "kind": "dependency"
+                        }
+                    ],
+                    "diagnostics": [],
+                    "rootId": "react-root:1",
+                    "editing": {
+                        "props": false,
+                        "hooks": false,
+                        "state": false,
+                        "context": false
+                    },
+                    "sections": [
+                        {
+                            "fields": [
+                                {
+                                    "name": "marker",
+                                    "value": "R07 props 1"
+                                },
+                                {
+                                    "name": "typed",
+                                    "value": {
+                                        "_custom": {
+                                            "display": "Object",
+                                            "type": "object",
+                                            "value": {
+                                                "missing": {
+                                                    "_custom": {
+                                                        "display": "undefined",
+                                                        "type": "undefined"
+                                                    }
+                                                },
+                                                "big": {
+                                                    "_custom": {
+                                                        "display": "42n",
+                                                        "type": "bigint"
+                                                    }
+                                                },
+                                                "map": {
+                                                    "_custom": {
+                                                        "display": "Map(1)",
+                                                        "type": "map",
+                                                        "value": [
+                                                            {
+                                                                "_custom": {
+                                                                    "display": "Entry 0",
+                                                                    "type": "map-entry",
+                                                                    "value": [
+                                                                        "key",
+                                                                        7
+                                                                    ]
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "set": {
+                                                    "_custom": {
+                                                        "display": "Set(1)",
+                                                        "type": "set",
+                                                        "value": ["member"]
+                                                    }
+                                                },
+                                                "date": {
+                                                    "_custom": {
+                                                        "display": "2026-01-02T00:00:00.000Z",
+                                                        "type": "date"
+                                                    }
+                                                },
+                                                "nan": {
+                                                    "_custom": {
+                                                        "display": "NaN",
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                "large": {
+                                                    "_custom": {
+                                                        "display": "Array(80)",
+                                                        "type": "array",
+                                                        "value": [
+                                                            0, 1, 2, 3, 4, 5, 6,
+                                                            7, 8, 9, 10, 11, 12,
+                                                            13, 14, 15, 16, 17,
+                                                            18, 19, 20, 21, 22,
+                                                            23, 24, 25, 26, 27,
+                                                            28, 29, 30, 31, 32,
+                                                            33, 34, 35, 36, 37,
+                                                            38, 39, 40, 41, 42,
+                                                            43, 44, 45, 46, 47,
+                                                            48, 49
+                                                        ],
+                                                        "truncated": true
+                                                    }
+                                                },
+                                                "deep": {
+                                                    "_custom": {
+                                                        "display": "Object",
+                                                        "type": "object",
+                                                        "value": {
+                                                            "one": {
+                                                                "_custom": {
+                                                                    "display": "Object",
+                                                                    "type": "object",
+                                                                    "value": {
+                                                                        "two": {
+                                                                            "_custom": {
+                                                                                "display": "Object",
+                                                                                "type": "object",
+                                                                                "value": {
+                                                                                    "three": {
+                                                                                        "_custom": {
+                                                                                            "type": "Object",
+                                                                                            "display": "[MaxDepth]",
+                                                                                            "truncated": true,
+                                                                                            "readOnly": true
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "accessor": {
+                                                    "_custom": {
+                                                        "type": "unavailable",
+                                                        "display": "[Accessor not evaluated]",
+                                                        "unavailable": true,
+                                                        "readOnly": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "name": "props",
+                            "status": "available"
+                        },
+                        {
+                            "fields": [
+                                {
+                                    "name": "Hook 0 (state)",
+                                    "value": 6
+                                },
+                                {
+                                    "name": "Hook 1 (reducer)",
+                                    "value": {
+                                        "_custom": {
+                                            "display": "Object",
+                                            "type": "object",
+                                            "value": {
+                                                "count": 3
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "name": "hooks",
+                            "status": "available",
+                            "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                        },
+                        {
+                            "name": "context",
+                            "fields": [
+                                {
+                                    "name": "FixtureTheme 0",
+                                    "value": {
+                                        "_custom": {
+                                            "display": "Object",
+                                            "type": "object",
+                                            "value": {
+                                                "mode": "dark",
+                                                "revision": 1
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "status": "available"
+                        }
+                    ]
+                }
+            },
+            {
+                "stage": "class-before",
+                "inspection": {
+                    "domRect": {
+                        "x": 8,
+                        "y": 133.26666259765625,
+                        "width": 1469,
+                        "height": 22
+                    },
+                    "componentId": "c:449be17e-e8fe-4d9a-b792-f1f3e1bfc3e9:9",
+                    "contexts": [
+                        {
+                            "displayName": "FixtureTheme",
+                            "kind": "dependency"
+                        }
+                    ],
+                    "diagnostics": [],
+                    "rootId": "react-root:1",
+                    "editing": {
+                        "props": false,
+                        "hooks": false,
+                        "state": false,
+                        "context": false
+                    },
+                    "sections": [
+                        {
+                            "fields": [
+                                {
+                                    "name": "marker",
+                                    "value": "class-prop"
+                                }
+                            ],
+                            "name": "props",
+                            "status": "available"
+                        },
+                        {
+                            "name": "state",
+                            "status": "available",
+                            "fields": [
+                                {
+                                    "name": "Class state",
+                                    "value": {
+                                        "_custom": {
+                                            "display": "Object",
+                                            "type": "object",
+                                            "value": {
+                                                "clicks": 10,
+                                                "nested": {
+                                                    "_custom": {
+                                                        "display": "Object",
+                                                        "type": "object",
+                                                        "value": {
+                                                            "ready": true
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "context",
+                            "fields": [
+                                {
+                                    "name": "FixtureTheme 0",
+                                    "value": {
+                                        "_custom": {
+                                            "display": "Object",
+                                            "type": "object",
+                                            "value": {
+                                                "mode": "dark",
+                                                "revision": 1
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "status": "available"
+                        }
+                    ]
+                }
+            },
+            {
+                "stage": "class-after",
+                "inspection": {
+                    "domRect": {
+                        "x": 8,
+                        "y": 133.26666259765625,
+                        "width": 1469,
+                        "height": 22
+                    },
+                    "componentId": "c:449be17e-e8fe-4d9a-b792-f1f3e1bfc3e9:9",
+                    "contexts": [
+                        {
+                            "displayName": "FixtureTheme",
+                            "kind": "dependency"
+                        }
+                    ],
+                    "diagnostics": [],
+                    "rootId": "react-root:1",
+                    "editing": {
+                        "props": false,
+                        "hooks": false,
+                        "state": false,
+                        "context": false
+                    },
+                    "sections": [
+                        {
+                            "fields": [
+                                {
+                                    "name": "marker",
+                                    "value": "class-prop"
+                                }
+                            ],
+                            "name": "props",
+                            "status": "available"
+                        },
+                        {
+                            "name": "state",
+                            "status": "available",
+                            "fields": [
+                                {
+                                    "name": "Class state",
+                                    "value": {
+                                        "_custom": {
+                                            "display": "Object",
+                                            "type": "object",
+                                            "value": {
+                                                "clicks": 11,
+                                                "nested": {
+                                                    "_custom": {
+                                                        "display": "Object",
+                                                        "type": "object",
+                                                        "value": {
+                                                            "ready": true
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "context",
+                            "fields": [
+                                {
+                                    "name": "FixtureTheme 0",
+                                    "value": {
+                                        "_custom": {
+                                            "display": "Object",
+                                            "type": "object",
+                                            "value": {
+                                                "mode": "dark",
+                                                "revision": 1
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "status": "available"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "applicationSourceCommit": "f89d7b883b2f71cd221d68a2d621c0e9cd4fa374"
+}

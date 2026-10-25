@@ -135,8 +135,23 @@ describe('backend-confirmed sessions', () => {
             status: 'connected',
             capabilities: { components: true }
         });
-        store.setRoots([{ id: 'host-root' }]);
-        await new Promise((resolve) => setTimeout(resolve, 40));
+        await new Promise<void>((resolve, reject) => {
+            let unsubscribe = () => {};
+            const timeout = setTimeout(() => {
+                unsubscribe();
+                reject(
+                    new Error('Borrowed host root update was not delivered')
+                );
+            }, 1000);
+            unsubscribe = frame.subscribe(() => {
+                if (frame.getSnapshot().state?.roots[0]?.id === 'host-root') {
+                    clearTimeout(timeout);
+                    unsubscribe();
+                    resolve();
+                }
+            });
+            store.setRoots([{ id: 'host-root' }]);
+        });
         expect(frame.getSnapshot().state?.roots[0].id).toBe('host-root');
         relay.dispose();
         expect(host.getSnapshot().status).toBe('connected');

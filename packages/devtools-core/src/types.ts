@@ -222,6 +222,8 @@ export interface ComponentNode {
 }
 
 export interface ComponentStateSection {
+    status?: 'available' | 'unavailable' | 'not-applicable' | 'truncated';
+    notice?: string;
     fields: Array<{
         editable?: boolean;
         name: string;
@@ -231,6 +233,7 @@ export interface ComponentStateSection {
 }
 
 export interface ComponentStateResponse {
+    editing?: { props: false; hooks: false; state: false; context: false };
     domRect?: InspectTargetRecord['domRect'];
     componentId: string;
     contexts?: ComponentContextRecord[];

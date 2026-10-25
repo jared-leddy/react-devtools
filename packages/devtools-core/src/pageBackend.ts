@@ -10,7 +10,7 @@ import {
 import { createDevToolsUpdatePublisher } from './updates.js';
 import { createFiberRootRegistry } from './fiber/record.js';
 import { createFiberWalker } from './fiberWalker.js';
-import { getHooksStateSection, getPropsStateSection } from './fiber/state.js';
+import { getComponentStateSections } from './fiber/state.js';
 import {
     getBoundingRect,
     highlightElement,
@@ -529,10 +529,12 @@ function refreshRootsAndComponents({
         updatedAt: Date.now()
     }));
     const components = registry.records.flatMap((record) =>
-        walker.getComponentTree(record.root, {
-            rootId: record.id,
-            identities: record.identities
-        })
+        metadataOnly(
+            walker.getComponentTree(record.root, {
+                rootId: record.id,
+                identities: record.identities
+            })
+        )
     );
 
     store.setRoots(roots);
@@ -549,6 +551,19 @@ function refreshRootsAndComponents({
     }
 
     for (const record of registry.records) record.refresh();
+}
+
+function metadataOnly(nodes: ComponentNode[]): ComponentNode[] {
+    return nodes.map((node) => ({
+        ...node,
+        children: metadataOnly(node.children ?? []),
+        contexts: node.contexts?.map(
+            ({ value: _value, ...context }) => context
+        ),
+        diagnostics: node.diagnostics?.map(
+            ({ capturedError: _error, ...diagnostic }) => diagnostic
+        )
+    }));
 }
 
 function createComponentStateResponse(
@@ -576,7 +591,8 @@ function createComponentStateResponse(
             ({ capturedError: _error, ...diagnostic }) => diagnostic
         ),
         rootId,
-        sections: [getPropsStateSection(fiber), getHooksStateSection(fiber)]
+        editing: { props: false, hooks: false, state: false, context: false },
+        sections: getComponentStateSections(fiber)
     };
 }
 

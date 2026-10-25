@@ -19,6 +19,8 @@ export interface StateViewerCustomValue {
         preview?: string;
         readOnly?: boolean;
         type: string;
+        truncated?: boolean;
+        unavailable?: boolean;
         value?: StateViewerValue | StateViewerValue[] | StateViewerValueMap;
     };
 }
@@ -33,6 +35,8 @@ export interface StateViewerField {
 }
 
 export interface StateViewerSection {
+    status?: 'available' | 'unavailable' | 'not-applicable' | 'truncated';
+    notice?: string;
     fields: StateViewerField[];
     name: 'context' | 'hooks' | 'props' | 'state' | string;
 }
@@ -51,7 +55,9 @@ export function StateViewer({
     onEditField,
     sections
 }: StateViewerProps) {
-    const visibleSections = sections.filter((section) => section.fields.length);
+    const visibleSections = sections.filter(
+        (section) => section.fields.length || section.notice
+    );
     const hasEditableFields = sections.some((section) =>
         section.fields.some((field) => field.editable)
     );
@@ -77,6 +83,9 @@ export function StateViewer({
                         key={section.name}
                     >
                         <h3>{getSectionLabel(section.name)}</h3>
+                        {section.notice ? (
+                            <p role="status">{section.notice}</p>
+                        ) : null}
                         <dl className="dt-state-viewer__fields">
                             {section.fields.map((field) => (
                                 <div
@@ -315,6 +324,8 @@ function CustomStateValue({ value }: { value: StateViewerCustomValue }) {
                     {custom.display}
                 </span>
                 <span className="dt-state-viewer__type">{custom.type}</span>
+                {custom.truncated ? <span>Truncated</span> : null}
+                {custom.unavailable ? <span>Unavailable</span> : null}
                 {custom.readOnly === true ? (
                     <span className="dt-state-viewer__readonly">read-only</span>
                 ) : null}

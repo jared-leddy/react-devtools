@@ -839,7 +839,7 @@ describe('extension entrypoints', () => {
                 .components[0].id,
             rootId: 'react-root:1'
         });
-        expect(readValue).toHaveBeenCalledTimes(1);
+        expect(readValue).not.toHaveBeenCalled();
         expect(
             functions.getComponentState({
                 componentId: functions.getComponents({ rootId: 'react-root:1' })

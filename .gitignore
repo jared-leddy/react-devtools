@@ -25,6 +25,7 @@ coverage
 /artifacts/bundle-report.json
 /artifacts/r05-model-smoke/
 /artifacts/r06-identity-smoke/
+/artifacts/r07-values-smoke/
 /.nyc_output
 playwright-report
 test-results

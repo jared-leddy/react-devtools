@@ -119,11 +119,11 @@ describe('fiber state extraction', () => {
         });
 
         expect(getHooks(fiber)).toEqual([
-            { index: 0, name: 'Hook 0', type: 'state', value: 3 },
+            { index: 0, name: 'Hook 0', type: 'state-or-reducer', value: 3 },
             {
                 index: 1,
                 name: 'Hook 1',
-                type: 'reducer',
+                type: 'state-or-reducer',
                 value: reducerState
             }
         ]);
@@ -172,7 +172,7 @@ describe('fiber state extraction', () => {
         });
 
         expect(getHooks(fiber)).toEqual([
-            { index: 0, name: 'Hook 0', type: 'state', value: 0 },
+            { index: 0, name: 'Hook 0', type: 'state-or-reducer', value: 0 },
             { index: 1, name: 'Hook 1', type: 'context', value: 'dark' },
             { index: 2, name: 'Hook 2', type: 'context', value: 'en-US' }
         ]);
@@ -195,7 +195,7 @@ describe('fiber state extraction', () => {
 
         expect(getHooksStateSection(fiber)).toEqual({
             fields: [
-                { name: 'Hook 0 (state)', value: false },
+                { name: 'Hook 0 (state-or-reducer)', value: false },
                 {
                     name: 'Hook 1 (ref)',
                     value: {
@@ -205,8 +205,7 @@ describe('fiber state extraction', () => {
                             value: { current: null }
                         }
                     }
-                },
-                { name: 'Hook 2 (context)', value: 'light' }
+                }
             ],
             name: 'hooks'
         });
@@ -274,7 +273,12 @@ describe('fiber state extraction', () => {
         });
 
         expect(getHooks(fiber)).toEqual([
-            { index: 0, name: 'Hook 0', type: 'state', value: 'first' },
+            {
+                index: 0,
+                name: 'Hook 0',
+                type: 'state-or-reducer',
+                value: 'first'
+            },
             { index: 1, name: 'Hook 1', type: 'context', value: 'cyclic' }
         ]);
     });

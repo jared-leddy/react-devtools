@@ -197,6 +197,8 @@ describe('displayable value formatter', () => {
                                 child: {
                                     _custom: {
                                         display: '[MaxDepth]',
+                                        truncated: true,
+                                        readOnly: true,
                                         type: 'Object'
                                     }
                                 }
@@ -228,6 +230,7 @@ describe('displayable value formatter', () => {
         ).toEqual({
             _custom: {
                 display: 'Object',
+                truncated: true,
                 type: 'object',
                 value: {
                     a: 1,
@@ -238,6 +241,7 @@ describe('displayable value formatter', () => {
         expect(formatDisplayableValue([1, 2, 3], { maxEntries: 2 })).toEqual({
             _custom: {
                 display: 'Array(3)',
+                truncated: true,
                 type: 'array',
                 value: [1, 2]
             }

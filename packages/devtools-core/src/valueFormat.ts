@@ -1,6 +1,8 @@
 export interface DisplayableValueOptions {
     maxDepth?: number;
     maxEntries?: number;
+    maxNodes?: number;
+    maxStringLength?: number;
 }
 
 export type DisplayableValue =
@@ -12,6 +14,8 @@ export interface DisplayableCustomValue {
         preview?: string;
         readOnly?: boolean;
         type: string;
+        truncated?: boolean;
+        unavailable?: boolean;
         value?: DisplayableValue | DisplayableValueMap | DisplayableValue[];
     };
 }
@@ -22,6 +26,8 @@ interface FormatContext {
     maxDepth: number;
     maxEntries: number;
     seen: WeakSet<object>;
+    remaining: number;
+    maxStringLength: number;
 }
 
 const DEFAULT_MAX_DEPTH = 4;
@@ -31,11 +37,20 @@ export function formatDisplayableValue(
     value: unknown,
     options: DisplayableValueOptions = {}
 ): DisplayableValue {
-    return formatValue(value, {
+    return createDisplayableValueFormatter(options)(value);
+}
+
+export function createDisplayableValueFormatter(
+    options: DisplayableValueOptions = {}
+): (value: unknown) => DisplayableValue {
+    const context: FormatContext = {
         maxDepth: options.maxDepth ?? DEFAULT_MAX_DEPTH,
         maxEntries: options.maxEntries ?? DEFAULT_MAX_ENTRIES,
+        remaining: options.maxNodes ?? 500,
+        maxStringLength: options.maxStringLength ?? 10000,
         seen: new WeakSet<object>()
-    });
+    };
+    return (value) => formatValue(value, context);
 }
 
 function formatValue(
@@ -43,6 +58,55 @@ function formatValue(
     context: FormatContext,
     depth = 0
 ): DisplayableValue {
+    if (--context.remaining < 0)
+        return {
+            _custom: {
+                type: 'truncated',
+                display: '[Value budget exceeded]',
+                truncated: true,
+                readOnly: true
+            }
+        };
+    const alreadySeen =
+        typeof value === 'object' && value !== null && context.seen.has(value);
+    try {
+        return formatValueUnsafe(value, context, depth);
+    } catch {
+        return unavailableValue();
+    } finally {
+        if (typeof value === 'object' && value !== null && !alreadySeen)
+            context.seen.delete(value);
+    }
+}
+
+export function unavailableValue(
+    display = '[Property unavailable]'
+): DisplayableCustomValue {
+    return {
+        _custom: {
+            type: 'unavailable',
+            display,
+            unavailable: true,
+            readOnly: true
+        }
+    };
+}
+
+function formatValueUnsafe(
+    value: unknown,
+    context: FormatContext,
+    depth = 0
+): DisplayableValue {
+    if (typeof value === 'string' && value.length > context.maxStringLength) {
+        return {
+            _custom: {
+                type: 'string',
+                display: value.slice(0, context.maxStringLength),
+                truncated: true,
+                readOnly: true
+            }
+        };
+    }
     if (value === null || typeof value === 'string') {
         return value;
     }
@@ -87,7 +151,14 @@ function formatValue(
     }
 
     if (depth >= context.maxDepth) {
-        return createCustom(getObjectTypeName(value), '[MaxDepth]');
+        return {
+            _custom: {
+                type: getObjectTypeName(value),
+                display: '[MaxDepth]',
+                truncated: true,
+                readOnly: true
+            }
+        };
     }
 
     if (isDomNodeLike(value)) {
@@ -100,44 +171,65 @@ function formatValue(
     }
 
     context.seen.add(value);
+    if (value instanceof Date)
+        return createCustom(
+            'date',
+            Number.isNaN(Date.prototype.getTime.call(value))
+                ? 'Invalid Date'
+                : Date.prototype.toISOString.call(value)
+        );
+    if (value instanceof RegExp)
+        return createCustom('regexp', RegExp.prototype.toString.call(value));
 
     if (Array.isArray(value)) {
-        return createCustom(
+        const result = createCustom(
             'array',
             `Array(${value.length})`,
             formatArray(value, context, depth + 1)
         );
+        if (value.length > context.maxEntries) result._custom.truncated = true;
+        return result;
     }
 
     if (value instanceof Map) {
-        return createCustom(
+        const result = createCustom(
             'map',
             `Map(${value.size})`,
             formatMap(value, context, depth + 1)
         );
+        if (value.size > context.maxEntries) result._custom.truncated = true;
+        return result;
     }
 
     if (value instanceof Set) {
-        return createCustom(
+        const result = createCustom(
             'set',
             `Set(${value.size})`,
             formatSet(value, context, depth + 1)
         );
+        if (value.size > context.maxEntries) result._custom.truncated = true;
+        return result;
     }
 
     if (isPlainObject(value)) {
-        return createCustom(
+        const result = createCustom(
             'object',
             'Object',
             formatObject(value as Record<string, unknown>, context, depth + 1)
         );
+        if (Object.keys(value).length > context.maxEntries)
+            result._custom.truncated = true;
+        return result;
     }
 
-    return createCustom(
+    const result = createCustom(
         'instance',
         getObjectTypeName(value),
         formatObject(value as Record<string, unknown>, context, depth + 1)
     );
+    if (Object.keys(value).length > context.maxEntries)
+        result._custom.truncated = true;
+    return result;
 }
 
 function formatArray(
@@ -145,9 +237,10 @@ function formatArray(
     context: FormatContext,
     depth: number
 ): DisplayableValue[] {
-    return value
-        .slice(0, context.maxEntries)
-        .map((item) => formatValue(item, context, depth));
+    return Array.from(
+        { length: Math.min(value.length, context.maxEntries) },
+        (_item, index) => formatProperty(value, String(index), context, depth)
+    );
 }
 
 function formatMap(
@@ -200,14 +293,30 @@ function formatObject(
     context: FormatContext,
     depth: number
 ): DisplayableValueMap {
-    const result: DisplayableValueMap = {};
+    const result: DisplayableValueMap = Object.create(null);
     const keys = Object.keys(value).slice(0, context.maxEntries);
 
     for (const key of keys) {
-        result[key] = formatValue(value[key], context, depth);
+        result[key] = formatProperty(value, key, context, depth);
     }
 
     return result;
+}
+
+function formatProperty(
+    value: object,
+    key: string,
+    context: FormatContext,
+    depth: number
+): DisplayableValue {
+    try {
+        const descriptor = Object.getOwnPropertyDescriptor(value, key);
+        return descriptor && 'value' in descriptor
+            ? formatValue(descriptor.value, context, depth)
+            : unavailableValue('[Accessor not evaluated]');
+    } catch {
+        return unavailableValue();
+    }
 }
 
 function createCustom(
@@ -227,7 +336,8 @@ function createCustom(
 }
 
 function getFunctionDisplayName(value: { name?: string }): string {
-    return value.name ? `ƒ ${value.name}()` : 'ƒ anonymous()';
+    const name = Object.getOwnPropertyDescriptor(value, 'name')?.value;
+    return typeof name === 'string' && name ? `ƒ ${name}()` : 'ƒ anonymous()';
 }
 
 function getDomNodeDisplayName(value: Record<PropertyKey, unknown>): string {
@@ -236,16 +346,26 @@ function getDomNodeDisplayName(value: Record<PropertyKey, unknown>): string {
 }
 
 function getObjectTypeName(value: object): string {
-    return value.constructor?.name || 'Object';
+    const prototype = Object.getPrototypeOf(value);
+    const constructor =
+        prototype &&
+        Object.getOwnPropertyDescriptor(prototype, 'constructor')?.value;
+    return typeof constructor === 'function'
+        ? Object.getOwnPropertyDescriptor(constructor, 'name')?.value ||
+              'Object'
+        : 'Object';
 }
 
 function isDomNodeLike(
     value: Record<PropertyKey, unknown>
 ): value is Record<PropertyKey, unknown> & { nodeType: number } {
     return (
-        typeof value.nodeType === 'number' &&
-        (typeof value.nodeName === 'string' ||
-            typeof value.tagName === 'string')
+        typeof Object.getOwnPropertyDescriptor(value, 'nodeType')?.value ===
+            'number' &&
+        (typeof Object.getOwnPropertyDescriptor(value, 'nodeName')?.value ===
+            'string' ||
+            typeof Object.getOwnPropertyDescriptor(value, 'tagName')?.value ===
+                'string')
     );
 }
 

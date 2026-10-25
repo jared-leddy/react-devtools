@@ -1,0 +1,362 @@
+{
+    "browser": {
+        "protocolVersion": "1.3",
+        "product": "Chrome/155.0.8059.85",
+        "revision": "@0e66b94549a8bd85f03fbdf189b752d6e7b63c32",
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+        "jsVersion": "15.5.35.25"
+    },
+    "extension": {
+        "id": "kmncihlalbfcggkeiigdaakkbabaload"
+    },
+    "url": "http://127.0.0.1:9056/production",
+    "targets": {
+        "targetInfos": [
+            {
+                "targetId": "18C797391539D122DFDF9BE703F33601",
+                "type": "service_worker",
+                "title": "Service Worker chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/background.js",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/background.js",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "CBC86230223FA4BF05104BA5F58372F9"
+            },
+            {
+                "targetId": "083CCCA857971FA48E2A09B5845EFBFA",
+                "type": "page",
+                "title": "about:blank",
+                "url": "about:blank",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "CBC86230223FA4BF05104BA5F58372F9"
+            },
+            {
+                "targetId": "E1A0E51864481022ED3601C6EA155DCF",
+                "type": "browser_ui",
+                "title": "Omnibox Popup",
+                "url": "chrome://omnibox-popup.top-chrome/omnibox_popup_aim.html",
+                "attached": false,
+                "canAccessOpener": false,
+                "browserContextId": "CBC86230223FA4BF05104BA5F58372F9"
+            },
+            {
+                "targetId": "9EA5BBF79B6E5E51DBF337DDA500C0BE",
+                "type": "browser_ui",
+                "title": "Omnibox Popup",
+                "url": "chrome://omnibox-popup.top-chrome/",
+                "attached": false,
+                "canAccessOpener": false,
+                "browserContextId": "CBC86230223FA4BF05104BA5F58372F9"
+            },
+            {
+                "targetId": "B3F443D2650794E20CBC9959E91E44F4",
+                "type": "page",
+                "title": "DevTools - 127.0.0.1:9056/production",
+                "url": "devtools://devtools/bundled/devtools_app.html?remoteBase=https://chrome-devtools-frontend.appspot.com/serve_file/@0e66b94549a8bd85f03fbdf189b752d6e7b63c32/&targetType=tab&can_dock=true&disableSelfXssWarnings=true",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "CBC86230223FA4BF05104BA5F58372F9"
+            },
+            {
+                "targetId": "481763CA62D2B94A9FC0622D409B6772",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "attached": false,
+                "parentId": "B3F443D2650794E20CBC9959E91E44F4",
+                "canAccessOpener": false,
+                "parentFrameId": "B3F443D2650794E20CBC9959E91E44F4",
+                "browserContextId": "CBC86230223FA4BF05104BA5F58372F9"
+            },
+            {
+                "targetId": "B0A2F8AFF9B00DFA32704DE91B9ED0A3",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "attached": false,
+                "parentId": "B3F443D2650794E20CBC9959E91E44F4",
+                "canAccessOpener": false,
+                "parentFrameId": "B3F443D2650794E20CBC9959E91E44F4",
+                "browserContextId": "CBC86230223FA4BF05104BA5F58372F9"
+            },
+            {
+                "targetId": "263B5EAF75B5906BDFBA7B50ECBD42E1",
+                "type": "page",
+                "title": "R07 production",
+                "url": "http://127.0.0.1:9056/production",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "CBC86230223FA4BF05104BA5F58372F9"
+            },
+            {
+                "targetId": "25A090A1FA99D15BFE465D060FEEAAFD",
+                "type": "page",
+                "title": "DevTools - about:blank",
+                "url": "devtools://devtools/bundled/devtools_app.html?remoteBase=https://chrome-devtools-frontend.appspot.com/serve_file/@0e66b94549a8bd85f03fbdf189b752d6e7b63c32/&targetType=tab&can_dock=true&disableSelfXssWarnings=true",
+                "attached": true,
+                "canAccessOpener": false,
+                "browserContextId": "CBC86230223FA4BF05104BA5F58372F9"
+            },
+            {
+                "targetId": "6B59FCE4532E21467609DE3F8E919533",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "attached": false,
+                "parentId": "25A090A1FA99D15BFE465D060FEEAAFD",
+                "canAccessOpener": false,
+                "parentFrameId": "25A090A1FA99D15BFE465D060FEEAAFD",
+                "browserContextId": "CBC86230223FA4BF05104BA5F58372F9"
+            },
+            {
+                "targetId": "EA29FDA3127B0067F3441E9003B93D31",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "attached": false,
+                "parentId": "25A090A1FA99D15BFE465D060FEEAAFD",
+                "canAccessOpener": false,
+                "parentFrameId": "25A090A1FA99D15BFE465D060FEEAAFD",
+                "browserContextId": "CBC86230223FA4BF05104BA5F58372F9"
+            }
+        ]
+    },
+    "results": [
+        {
+            "target": {
+                "targetId": "481763CA62D2B94A9FC0622D409B6772",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "attached": false,
+                "parentId": "B3F443D2650794E20CBC9959E91E44F4",
+                "canAccessOpener": false,
+                "parentFrameId": "B3F443D2650794E20CBC9959E91E44F4",
+                "browserContextId": "CBC86230223FA4BF05104BA5F58372F9"
+            },
+            "result": {
+                "id": 1,
+                "result": {
+                    "result": {
+                        "type": "object",
+                        "value": {
+                            "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                            "body": "\n    \n\n",
+                            "tabId": 1023017978,
+                            "inspected": {
+                                "url": "http://127.0.0.1:9056/production",
+                                "detected": true,
+                                "backendScript": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/user-app.js",
+                                "frames": 0,
+                                "hookKeys": [
+                                    "emit",
+                                    "getFiberRoots",
+                                    "inject",
+                                    "off",
+                                    "on",
+                                    "once",
+                                    "onCommitFiberRoot",
+                                    "onCommitFiberUnmount",
+                                    "onPostCommitFiberRoot",
+                                    "rendererInterfaces",
+                                    "renderers",
+                                    "sub",
+                                    "supportsFiber"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "target": {
+                "targetId": "B0A2F8AFF9B00DFA32704DE91B9ED0A3",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "attached": false,
+                "parentId": "B3F443D2650794E20CBC9959E91E44F4",
+                "canAccessOpener": false,
+                "parentFrameId": "B3F443D2650794E20CBC9959E91E44F4",
+                "browserContextId": "CBC86230223FA4BF05104BA5F58372F9"
+            },
+            "result": {
+                "id": 1,
+                "result": {
+                    "result": {
+                        "type": "object",
+                        "value": {
+                            "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                            "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nOverview\nTransport\nExtension\nConnection\nConnected\nLast commit\nNot available\nRoutes\nNot available\nReact renderers\nreact-dom\nreact-dom\nReact 19.1.1\nDetected\nRoots\nreact-root:1\nreact-root:1\nUnknown\nRenderer 1\nCommits 0\nReady\nIntegrations\nBrowser extension\nTransport\nPerformance diagnostics\nHigh performance mode\nDisabled\nTimeline recording\nDisabled\nLast commit time\nNot available",
+                            "tabId": 1023017978,
+                            "inspected": {
+                                "url": "http://127.0.0.1:9056/production",
+                                "detected": true,
+                                "backendScript": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/user-app.js",
+                                "frames": 0,
+                                "hookKeys": [
+                                    "emit",
+                                    "getFiberRoots",
+                                    "inject",
+                                    "off",
+                                    "on",
+                                    "once",
+                                    "onCommitFiberRoot",
+                                    "onCommitFiberUnmount",
+                                    "onPostCommitFiberRoot",
+                                    "rendererInterfaces",
+                                    "renderers",
+                                    "sub",
+                                    "supportsFiber"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "target": {
+                "targetId": "6B59FCE4532E21467609DE3F8E919533",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                "attached": false,
+                "parentId": "25A090A1FA99D15BFE465D060FEEAAFD",
+                "canAccessOpener": false,
+                "parentFrameId": "25A090A1FA99D15BFE465D060FEEAAFD",
+                "browserContextId": "CBC86230223FA4BF05104BA5F58372F9"
+            },
+            "result": {
+                "id": 1,
+                "result": {
+                    "result": {
+                        "type": "object",
+                        "value": {
+                            "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools.html",
+                            "body": "\n    \n\n",
+                            "tabId": 1023017977,
+                            "exception": {
+                                "code": "E_FAILED",
+                                "description": "Operation failed: %s",
+                                "details": ["Permission denied"],
+                                "isError": true
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "target": {
+                "targetId": "EA29FDA3127B0067F3441E9003B93D31",
+                "type": "iframe",
+                "title": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                "attached": false,
+                "parentId": "25A090A1FA99D15BFE465D060FEEAAFD",
+                "canAccessOpener": false,
+                "parentFrameId": "25A090A1FA99D15BFE465D060FEEAAFD",
+                "browserContextId": "CBC86230223FA4BF05104BA5F58372F9"
+            },
+            "result": {
+                "id": 1,
+                "result": {
+                    "result": {
+                        "type": "object",
+                        "value": {
+                            "url": "chrome-extension://kmncihlalbfcggkeiigdaakkbabaload/devtools-panel.html",
+                            "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nConnection failed\n\nDevTools handshake timed out\n\nDisconnected\nTroubleshooting",
+                            "tabId": 1023017977,
+                            "exception": {
+                                "code": "E_FAILED",
+                                "description": "Operation failed: %s",
+                                "details": ["Permission denied"],
+                                "isError": true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "errors": [],
+    "valueChecks": {
+        "snapshots": [
+            {
+                "stage": "function-before",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n12 visible nodes\n2 selected\nv\nFixtureTheme.Provider\ncontext-provider\nContextProvider\ncontext-provider\nv\nInspectorFunction\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\nv\nInspectorClass\nclass\nClassComponent\ncomponent\nclass\nv\nsection\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nInspectorFunction\n\nNo source file\n\nNAME\nInspectorFunction\nCOMPONENT ID\nc:4663df42-eb26-4d56-885c-ccb4a4a0d5d9:2\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nmarker\n\"R07 props 0\"\ntyped\nObject\nobject\nmissing\nundefined\nundefined\nbig\n42n\nbigint\nmap\nMap(1)\nmap\n0\nEntry 0\nmap-entry\n0\n\"key\"\n1\n7\nset\nSet(1)\nset\nValue 0\n\"member\"\ndate\n2026-01-02T00:00:00.000Z\ndate\nnan\nNaN\nnumber\nlarge\nArray(80)\narray\nTruncated\n0\n0\n1\n1\n2\n2\n3\n3\n4\n4\n5\n5\n6\n6\n7\n7\n8\n8\n9\n9\n10\n10\n11\n11\n12\n12\n13\n13\n14\n14\n15\n15\n16\n16\n17\n17\n18\n18\n19\n19\n20\n20\n21\n21\n22\n22\n23\n23\n24\n24\n25\n25\n26\n26\n27\n27\n28\n28\n29\n29\n30\n30\n31\n31\n32\n32\n33\n33\n34\n34\n35\n35\n36\n36\n37\n37\n38\n38\n39\n39\n40\n40\n41\n41\n42\n42\n43\n43\n44\n44\n45\n45\n46\n46\n47\n47\n48\n48\n49\n49\ndeep\nObject\nobject\none\nObject\nobject\ntwo\nObject\nobject\nthree\n[MaxDepth]\nObject\nTruncated\nread-only\naccessor\n[Accessor not evaluated]\nunavailable\nUnavailable\nread-only\nHooks\n\nObserved hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable.\n\nHook 0 (state-or-reducer)\n5\nHook 1 (state-or-reducer)\nObject\nobject\ncount\n2\nContext\nFixtureTheme 0\nObject\nobject\nmode\n\"light\"\nrevision\n0",
+                "sections": [
+                    {
+                        "name": "Props",
+                        "text": "Props\nmarker\n\"R07 props 0\"\ntyped\nObject\nobject\nmissing\nundefined\nundefined\nbig\n42n\nbigint\nmap\nMap(1)\nmap\n0\nEntry 0\nmap-entry\n0\n\"key\"\n1\n7\nset\nSet(1)\nset\nValue 0\n\"member\"\ndate\n2026-01-02T00:00:00.000Z\ndate\nnan\nNaN\nnumber\nlarge\nArray(80)\narray\nTruncated\n0\n0\n1\n1\n2\n2\n3\n3\n4\n4\n5\n5\n6\n6\n7\n7\n8\n8\n9\n9\n10\n10\n11\n11\n12\n12\n13\n13\n14\n14\n15\n15\n16\n16\n17\n17\n18\n18\n19\n19\n20\n20\n21\n21\n22\n22\n23\n23\n24\n24\n25\n25\n26\n26\n27\n27\n28\n28\n29\n29\n30\n30\n31\n31\n32\n32\n33\n33\n34\n34\n35\n35\n36\n36\n37\n37\n38\n38\n39\n39\n40\n40\n41\n41\n42\n42\n43\n43\n44\n44\n45\n45\n46\n46\n47\n47\n48\n48\n49\n49\ndeep\nObject\nobject\none\nObject\nobject\ntwo\nObject\nobject\nthree\n[MaxDepth]\nObject\nTruncated\nread-only\naccessor\n[Accessor not evaluated]\nunavailable\nUnavailable\nread-only"
+                    },
+                    {
+                        "name": "Hooks",
+                        "text": "Hooks\n\nObserved hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable.\n\nHook 0 (state-or-reducer)\n5\nHook 1 (state-or-reducer)\nObject\nobject\ncount\n2"
+                    },
+                    {
+                        "name": "Context",
+                        "text": "Context\nFixtureTheme 0\nObject\nobject\nmode\n\"light\"\nrevision\n0"
+                    }
+                ]
+            },
+            {
+                "stage": "function-after",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n12 visible nodes\n2 selected\nv\nFixtureTheme.Provider\ncontext-provider\nContextProvider\ncontext-provider\nv\nInspectorFunction\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nh1\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nspan\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\nv\nInspectorClass\nclass\nClassComponent\ncomponent\nclass\nv\nsection\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nInspectorFunction\n\nNo source file\n\nNAME\nInspectorFunction\nCOMPONENT ID\nc:4663df42-eb26-4d56-885c-ccb4a4a0d5d9:2\nTAGS\nFunctionComponent, component, function\nRead-only\nProps\nmarker\n\"R07 props 1\"\ntyped\nObject\nobject\nmissing\nundefined\nundefined\nbig\n42n\nbigint\nmap\nMap(1)\nmap\n0\nEntry 0\nmap-entry\n0\n\"key\"\n1\n7\nset\nSet(1)\nset\nValue 0\n\"member\"\ndate\n2026-01-02T00:00:00.000Z\ndate\nnan\nNaN\nnumber\nlarge\nArray(80)\narray\nTruncated\n0\n0\n1\n1\n2\n2\n3\n3\n4\n4\n5\n5\n6\n6\n7\n7\n8\n8\n9\n9\n10\n10\n11\n11\n12\n12\n13\n13\n14\n14\n15\n15\n16\n16\n17\n17\n18\n18\n19\n19\n20\n20\n21\n21\n22\n22\n23\n23\n24\n24\n25\n25\n26\n26\n27\n27\n28\n28\n29\n29\n30\n30\n31\n31\n32\n32\n33\n33\n34\n34\n35\n35\n36\n36\n37\n37\n38\n38\n39\n39\n40\n40\n41\n41\n42\n42\n43\n43\n44\n44\n45\n45\n46\n46\n47\n47\n48\n48\n49\n49\ndeep\nObject\nobject\none\nObject\nobject\ntwo\nObject\nobject\nthree\n[MaxDepth]\nObject\nTruncated\nread-only\naccessor\n[Accessor not evaluated]\nunavailable\nUnavailable\nread-only\nHooks\n\nObserved hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable.\n\nHook 0 (state-or-reducer)\n6\nHook 1 (state-or-reducer)\nObject\nobject\ncount\n3\nContext\nFixtureTheme 0\nObject\nobject\nmode\n\"dark\"\nrevision\n1",
+                "sections": [
+                    {
+                        "name": "Props",
+                        "text": "Props\nmarker\n\"R07 props 1\"\ntyped\nObject\nobject\nmissing\nundefined\nundefined\nbig\n42n\nbigint\nmap\nMap(1)\nmap\n0\nEntry 0\nmap-entry\n0\n\"key\"\n1\n7\nset\nSet(1)\nset\nValue 0\n\"member\"\ndate\n2026-01-02T00:00:00.000Z\ndate\nnan\nNaN\nnumber\nlarge\nArray(80)\narray\nTruncated\n0\n0\n1\n1\n2\n2\n3\n3\n4\n4\n5\n5\n6\n6\n7\n7\n8\n8\n9\n9\n10\n10\n11\n11\n12\n12\n13\n13\n14\n14\n15\n15\n16\n16\n17\n17\n18\n18\n19\n19\n20\n20\n21\n21\n22\n22\n23\n23\n24\n24\n25\n25\n26\n26\n27\n27\n28\n28\n29\n29\n30\n30\n31\n31\n32\n32\n33\n33\n34\n34\n35\n35\n36\n36\n37\n37\n38\n38\n39\n39\n40\n40\n41\n41\n42\n42\n43\n43\n44\n44\n45\n45\n46\n46\n47\n47\n48\n48\n49\n49\ndeep\nObject\nobject\none\nObject\nobject\ntwo\nObject\nobject\nthree\n[MaxDepth]\nObject\nTruncated\nread-only\naccessor\n[Accessor not evaluated]\nunavailable\nUnavailable\nread-only"
+                    },
+                    {
+                        "name": "Hooks",
+                        "text": "Hooks\n\nObserved hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable.\n\nHook 0 (state-or-reducer)\n6\nHook 1 (state-or-reducer)\nObject\nobject\ncount\n3"
+                    },
+                    {
+                        "name": "Context",
+                        "text": "Context\nFixtureTheme 0\nObject\nobject\nmode\n\"dark\"\nrevision\n1"
+                    }
+                ]
+            },
+            {
+                "stage": "class-before",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n7 visible nodes\n4 selected\nv\nFixtureTheme.Provider\ncontext-provider\nContextProvider\ncontext-provider\nv\nInspectorFunction\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nv\nInspectorClass\nclass\nClassComponent\ncomponent\nclass\nv\nsection\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nInspectorClass\n\nNo source file\n\nNAME\nInspectorClass\nCOMPONENT ID\nc:4663df42-eb26-4d56-885c-ccb4a4a0d5d9:9\nTAGS\nClassComponent, component, class\nRead-only\nProps\nmarker\n\"class-prop\"\nClass State\nClass state\nObject\nobject\nclicks\n10\nnested\nObject\nobject\nready\ntrue\nContext\nFixtureTheme 0\nObject\nobject\nmode\n\"dark\"\nrevision\n1",
+                "sections": [
+                    {
+                        "name": "Props",
+                        "text": "Props\nmarker\n\"class-prop\""
+                    },
+                    {
+                        "name": "Class State",
+                        "text": "Class State\nClass state\nObject\nobject\nclicks\n10\nnested\nObject\nobject\nready\ntrue"
+                    },
+                    {
+                        "name": "Context",
+                        "text": "Context\nFixtureTheme 0\nObject\nobject\nmode\n\"dark\"\nrevision\n1"
+                    }
+                ]
+            },
+            {
+                "stage": "class-after",
+                "body": "React DevTools\nCommand\nDark\nOverview\nComponents\nTimeline\nSettings\nTree filter\nState filter\nComponent tree\n7 visible nodes\n4 selected\nv\nFixtureTheme.Provider\ncontext-provider\nContextProvider\ncontext-provider\nv\nInspectorFunction\nfunction\nFunctionComponent\ncomponent\nfunction\nv\nmain\nhost\nHostComponent\nhost\nv\nInspectorClass\nclass\nClassComponent\ncomponent\nclass\nv\nsection\nhost\nHostComponent\nhost\noutput\nhost\nHostComponent\nhost\nbutton\nhost\nHostComponent\nhost\n\nSelected component\nInspectorClass\n\nNo source file\n\nNAME\nInspectorClass\nCOMPONENT ID\nc:4663df42-eb26-4d56-885c-ccb4a4a0d5d9:9\nTAGS\nClassComponent, component, class\nRead-only\nProps\nmarker\n\"class-prop\"\nClass State\nClass state\nObject\nobject\nclicks\n11\nnested\nObject\nobject\nready\ntrue\nContext\nFixtureTheme 0\nObject\nobject\nmode\n\"dark\"\nrevision\n1",
+                "sections": [
+                    {
+                        "name": "Props",
+                        "text": "Props\nmarker\n\"class-prop\""
+                    },
+                    {
+                        "name": "Class State",
+                        "text": "Class State\nClass state\nObject\nobject\nclicks\n11\nnested\nObject\nobject\nready\ntrue"
+                    },
+                    {
+                        "name": "Context",
+                        "text": "Context\nFixtureTheme 0\nObject\nobject\nmode\n\"dark\"\nrevision\n1"
+                    }
+                ]
+            }
+        ]
+    },
+    "applicationSourceCommit": "f89d7b883b2f71cd221d68a2d621c0e9cd4fa374"
+}

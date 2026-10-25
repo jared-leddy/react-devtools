@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.13
+
+- Inspect committed props, nested hook slots, reducer values, class state and
+  observed context in separate read-only sections, fetched only on demand.
+- Preserve typed values and show explicit unavailable/truncated markers. Bound
+  collection, depth, string and total expansion; skip property accessors.
+- Stop treating class state as hook lists or guessing production reducer kinds.
+  Keep raw context values out of pushed component-tree metadata.
+- Add development/production value fixtures, web-host CI scenarios and real native
+  Chrome/Firefox inspection evidence. Development builds: Chrome 0.0.21,
+  Firefox 0.0.12; not approved browser-store releases.
+
 ## 0.1.12
 
 - Give components opaque root-scoped identities that survive alternate Fibers,
