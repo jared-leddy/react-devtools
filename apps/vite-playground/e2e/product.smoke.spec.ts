@@ -118,6 +118,17 @@ test('overlay toolbar picks a real component on an unannotated app', async ({
     await expect(
         page.getByRole('button', { name: 'Toggle inspect mode' })
     ).toHaveAttribute('aria-pressed', 'true');
+    await client
+        .getByRole('link', { name: 'Overview', exact: true })
+        .press('Escape');
+    await expect(
+        page.getByRole('button', { name: 'Toggle inspect mode' })
+    ).toHaveAttribute('aria-pressed', 'false');
+    await expect(page.locator('[data-react-devtools-picker]')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Toggle inspect mode' }).click();
+    await expect(
+        page.getByRole('button', { name: 'Toggle inspect mode' })
+    ).toHaveAttribute('aria-pressed', 'true');
     const target = page.getByRole('heading', {
         name: 'useState component',
         exact: true

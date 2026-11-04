@@ -146,11 +146,28 @@ function ClientShell() {
         getClientRuntimeSnapshot
     );
     const sessionSnapshot = useDevToolsSessionSnapshot();
+    const session = useDevToolsSession();
+    useEffect(() => {
+        if (!sessionSnapshot?.state?.inspectMode.enabled) return;
+        const cancel = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                void session?.setInspectMode?.(false).catch(() => {});
+            }
+        };
+        window.addEventListener('keydown', cancel, true);
+        return () => window.removeEventListener('keydown', cancel, true);
+    }, [session, sessionSnapshot?.state?.inspectMode.enabled]);
+
     const pickedTarget = sessionSnapshot?.state?.inspectMode.lastSelectedTarget;
     const pickedTargetId = pickedTarget?.componentId;
     const pickedToken = pickedTarget?.selectionId;
+    const revealedPick = useRef<string | undefined>(undefined);
     useEffect(() => {
         if (!pickedTargetId) return;
+        const token = pickedToken ?? pickedTargetId;
+        if (revealedPick.current === token) return;
+        revealedPick.current = token;
         setClientSetting('treeFilter', '');
         navigate(
             `/components?componentId=${encodeURIComponent(pickedTargetId)}`
@@ -1969,25 +1986,8 @@ function ComponentsPage({
         () => createSessionComponentTree(snapshot?.state?.components ?? []),
         [snapshot?.state?.components]
     );
-    useEffect(() => {
-        if (!snapshot?.state?.inspectMode.enabled) return;
-        const cancel = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                event.preventDefault();
-                void session
-                    ?.setInspectMode?.(false)
-                    .catch((error: unknown) =>
-                        setActionError(
-                            error instanceof Error
-                                ? error.message
-                                : 'Picker cancellation failed'
-                        )
-                    );
-            }
-        };
-        window.addEventListener('keydown', cancel, true);
-        return () => window.removeEventListener('keydown', cancel, true);
-    }, [session, snapshot?.state?.inspectMode.enabled]);
+    const pickedToken =
+        snapshot?.state?.inspectMode.lastSelectedTarget?.selectionId;
     const pickedId =
         snapshot?.state?.inspectMode.lastSelectedTarget?.componentId;
     useEffect(
@@ -2204,6 +2204,7 @@ function ComponentsPage({
                                       }
                                     : undefined
                             }
+                            scrollRequestKey={pickedToken}
                             scrollToId={pickedId ?? undefined}
                             initialSelectedId={firstComponentId}
                             nodes={filterComponentTree(
@@ -2496,6 +2497,7 @@ function RuntimeStatePage({
 }
 
 function ComponentTreePlaceholder({
+    scrollRequestKey,
     highlightBridge,
     scrollToId,
     initialSelectedId,
@@ -2503,6 +2505,7 @@ function ComponentTreePlaceholder({
     onSelectedIdChange,
     selectedId
 }: {
+    scrollRequestKey?: string;
     highlightBridge?: import('./components/tree').TreeHighlightBridge;
     scrollToId?: string;
     initialSelectedId?: string;
@@ -2515,6 +2518,7 @@ function ComponentTreePlaceholder({
             <VirtualizedComponentTree
                 highlightBridge={highlightBridge}
                 scrollToId={scrollToId}
+                scrollRequestKey={scrollRequestKey}
                 initialSelectedId={initialSelectedId}
                 nodes={nodes}
                 onSelectedIdChange={onSelectedIdChange}

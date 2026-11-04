@@ -349,6 +349,10 @@ it('routes real page actions and picker selection through the session, with erro
     expect(
         screen.queryByRole('button', { name: 'Open source' })
     ).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('link', { name: 'Settings' }));
+    expect(
+        await screen.findByRole('region', { name: 'Settings page' })
+    ).toBeInTheDocument();
     unmount();
     expect(clearHighlight).toHaveBeenCalled();
     expect(setInspectMode).toHaveBeenLastCalledWith(false);

@@ -224,6 +224,7 @@ it('reveals a picked row beneath collapsed ancestors', async () => {
         <VirtualizedComponentTree
             defaultExpandedIds={[]}
             nodes={nodes}
+            scrollRequestKey="pick-1"
             scrollToId="picked"
             selectedId="picked"
         />
@@ -233,4 +234,25 @@ it('reveals a picked row beneath collapsed ancestors', async () => {
             screen.getByText('Picked').closest('[aria-selected]')
         ).toHaveAttribute('aria-selected', 'true')
     );
+    fireEvent.click(screen.getByRole('button', { name: 'Collapse Root' }));
+    rerender(
+        <VirtualizedComponentTree
+            defaultExpandedIds={[]}
+            nodes={[...nodes]}
+            scrollToId="picked"
+            scrollRequestKey="pick-1"
+            selectedId="picked"
+        />
+    );
+    expect(screen.queryByText('Picked')).not.toBeInTheDocument();
+    rerender(
+        <VirtualizedComponentTree
+            defaultExpandedIds={[]}
+            nodes={[...nodes]}
+            scrollToId="picked"
+            scrollRequestKey="pick-2"
+            selectedId="picked"
+        />
+    );
+    await waitFor(() => expect(screen.getByText('Picked')).toBeInTheDocument());
 });
