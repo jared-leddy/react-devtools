@@ -13,6 +13,7 @@ export interface BoundingRect {
 }
 
 export interface HighlightElementOptions {
+    owner?: object;
     className?: string;
     document?: HighlighterDocument;
 }
@@ -49,6 +50,7 @@ interface BoundingRectLike {
     y?: number;
 }
 
+let activeOwner: object | undefined;
 let activeHighlightElement: null | HighlighterElement = null;
 
 export function getBoundingRect(fiber: ReactFiber): BoundingRect | null {
@@ -68,7 +70,7 @@ export function highlightElement(
     const rect = getBoundingRect(fiber);
 
     if (!rect) {
-        unhighlightElement();
+        unhighlightElement(options.owner);
         return null;
     }
 
@@ -97,8 +99,8 @@ export function highlightElement(
     }
 
     applyStyle(overlay, {
-        backgroundColor: 'rgba(79, 70, 229, 0.12)',
-        border: '2px solid rgba(79, 70, 229, 0.92)',
+        backgroundColor: 'rgba(63, 185, 80, 0.12)',
+        border: '2px solid rgba(63, 185, 80, 0.92)',
         boxSizing: 'border-box',
         height: `${rect.height}px`,
         left: `${rect.left + scrollX}px`,
@@ -111,16 +113,21 @@ export function highlightElement(
 
     appendChild(body, overlay);
     activeHighlightElement = overlay;
+    activeOwner = options.owner;
 
     return rect;
 }
 
-export function unhighlightElement(): void {
+export function unhighlightElement(owner?: object): void {
+    if (owner && owner !== activeOwner) return;
     activeHighlightElement?.remove?.();
     activeHighlightElement = null;
+    activeOwner = undefined;
 }
 
-function findNearestHostNode(fiber: ReactFiber): null | HighlighterElement {
+export function findNearestHostNode(
+    fiber: ReactFiber
+): null | HighlighterElement {
     const visited = new Set<ReactFiber>();
     const candidates: ReactFiber[] = [fiber];
 

@@ -5,16 +5,19 @@ export default [
             'scripts/identity-smoke.mjs',
             'scripts/values-smoke.mjs',
             'scripts/lifecycle-smoke.mjs',
+            'scripts/picker-smoke.mjs',
             'docs/recovery/r05/*.mjs',
             'docs/recovery/r06/*.mjs',
             'docs/recovery/r07/*.mjs',
-            'docs/recovery/r08/*.mjs'
+            'docs/recovery/r08/*.mjs',
+            'docs/recovery/r09/*.mjs'
         ],
         languageOptions: {
             globals: {
                 process: 'readonly',
                 setTimeout: 'readonly',
                 clearTimeout: 'readonly',
+                scrollY: 'readonly',
                 window: 'readonly',
                 document: 'readonly'
             }
@@ -31,7 +34,9 @@ export default [
             'scripts/native-values.mjs',
             'scripts/firefox-values.mjs',
             'scripts/native-lifecycles.mjs',
-            'scripts/firefox-lifecycles.mjs'
+            'scripts/firefox-lifecycles.mjs',
+            'scripts/native-picker.mjs',
+            'scripts/firefox-picker.mjs'
         ],
         languageOptions: {
             globals: {
@@ -41,6 +46,7 @@ export default [
                 fetch: 'readonly',
                 setTimeout: 'readonly',
                 clearTimeout: 'readonly',
+                scrollY: 'readonly',
                 window: 'readonly',
                 document: 'readonly',
                 HTMLInputElement: 'readonly',

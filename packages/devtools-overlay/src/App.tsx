@@ -1,5 +1,6 @@
 import {
     useEffect,
+    useCallback,
     useMemo,
     useRef,
     useState,
@@ -18,6 +19,12 @@ import {
 import { createIframeServerChannel } from '@devtools/kit';
 import { createPageBackend } from '@devtools/core/page-backend';
 import { createBroadcastChannelServerChannel } from '@devtools/kit';
+
+interface OverlayPageActions {
+    dispose?: () => void;
+    setInspectMode?: (enabled: boolean) => unknown;
+    subscribeInspectMode?: (listener: (enabled: boolean) => void) => () => void;
+}
 
 const SOURCE_METADATA_ATTRIBUTE = 'data-react-devtools-source';
 const COMPONENT_ID_ATTRIBUTE = 'data-react-devtools-component-id';
@@ -125,6 +132,11 @@ export function DevtoolsOverlay({
         })
     );
     const [inspecting, setInspecting] = useState(defaultInspecting);
+    const pendingInspect = useRef(defaultInspecting);
+    const [pickerError, setPickerError] = useState('');
+    const nativePicker =
+        resolveInspectTarget === resolveDefaultInspectTarget &&
+        !onInspectTarget;
     const [channelName] = useState(
         () => `react-devtools:${globalThis.crypto.randomUUID()}`
     );
@@ -141,9 +153,26 @@ export function DevtoolsOverlay({
     const frameHostRef = useRef<HTMLDivElement>(null);
     const mountedIframeRef = useRef(false);
     const minimizeTimerRef = useRef<number | undefined>(undefined);
-    const sessionRelayRef = useRef<{ dispose?: () => void } | undefined>(
-        undefined
-    );
+    const sessionRelayRef = useRef<OverlayPageActions | undefined>(undefined);
+    const requestNativeInspectMode = useCallback((enabled: boolean) => {
+        pendingInspect.current = enabled;
+        setInspecting(enabled);
+        setPickerError('');
+        const actions = sessionRelayRef.current;
+        if (actions?.setInspectMode)
+            void Promise.resolve()
+                .then(() => actions.setInspectMode!(enabled))
+                .catch((error: unknown) => {
+                    pendingInspect.current = false;
+                    setInspecting(false);
+                    setPickerError(
+                        error instanceof Error
+                            ? error.message
+                            : 'Picker unavailable'
+                    );
+                });
+    }, []);
+
     const iframeController = useMemo(
         () =>
             createLazyIframeController({
@@ -152,24 +181,38 @@ export function DevtoolsOverlay({
                     if (!frameHostRef.current?.contains(transport.iframe))
                         return;
                     sessionRelayRef.current?.dispose?.();
-                    if (session)
-                        sessionRelayRef.current = createDevToolsSessionRelay(
-                            session,
-                            createIframeServerChannel({
-                                iframe: transport.iframe
-                            })
-                        );
-                    else
-                        sessionRelayRef.current = createPageBackend(
-                            window,
-                            createIframeServerChannel({
-                                iframe: transport.iframe
-                            })
-                        );
+                    const backend = session
+                        ? createDevToolsSessionRelay(
+                              session,
+                              createIframeServerChannel({
+                                  iframe: transport.iframe
+                              })
+                          )
+                        : createPageBackend(
+                              window,
+                              createIframeServerChannel({
+                                  iframe: transport.iframe
+                              })
+                          );
+                    const off = nativePicker
+                        ? backend.subscribeInspectMode?.((enabled) => {
+                              pendingInspect.current = enabled;
+                              setInspecting(enabled);
+                          })
+                        : undefined;
+                    sessionRelayRef.current = {
+                        ...backend,
+                        dispose() {
+                            off?.();
+                            backend.dispose?.();
+                        }
+                    };
+                    if (nativePicker && pendingInspect.current)
+                        requestNativeInspectMode(true);
                     await onConnect?.(transport);
                 }
             }),
-        [clientUrl, onConnect, session]
+        [clientUrl, nativePicker, onConnect, requestNativeInspectMode, session]
     );
     useEffect(
         () => () => {
@@ -197,6 +240,7 @@ export function DevtoolsOverlay({
     }
 
     function togglePanel() {
+        if (preferences.open && nativePicker) requestNativeInspectMode(false);
         updatePreferences((currentPreferences) => {
             const nextOpen = !currentPreferences.open;
             onToggle?.(nextOpen);
@@ -209,10 +253,20 @@ export function DevtoolsOverlay({
     }
 
     function toggleInspectMode() {
-        setInspecting((currentInspecting) => !currentInspecting);
+        if (!nativePicker) {
+            setInspecting((current) => !current);
+            return;
+        }
+        requestNativeInspectMode(!pendingInspect.current);
+        updatePreferences((current) => ({
+            ...current,
+            open: true,
+            minimized: false
+        }));
     }
 
     function closePanel() {
+        if (nativePicker) requestNativeInspectMode(false);
         updatePreferences((currentPreferences) => ({
             ...currentPreferences,
             open: false
@@ -221,6 +275,7 @@ export function DevtoolsOverlay({
     }
 
     function minimizePanel() {
+        if (nativePicker) requestNativeInspectMode(false);
         if (preferences.minimizeDelay > 0) {
             window.clearTimeout(minimizeTimerRef.current);
             minimizeTimerRef.current = window.setTimeout(() => {
@@ -265,7 +320,10 @@ export function DevtoolsOverlay({
     }
 
     useEffect(() => {
-        if (!inspecting) {
+        if (
+            !inspecting ||
+            (nativePicker && sessionRelayRef.current?.setInspectMode)
+        ) {
             setHoverTarget(null);
             return undefined;
         }
@@ -314,6 +372,7 @@ export function DevtoolsOverlay({
 
         function handleKeyDown(event: KeyboardEvent) {
             if (event.key === 'Escape') {
+                pendingInspect.current = false;
                 setInspecting(false);
                 setHoverTarget(null);
             }
@@ -321,6 +380,7 @@ export function DevtoolsOverlay({
 
         function handleBlur(event: FocusEvent) {
             if (event.target === window) {
+                pendingInspect.current = false;
                 setInspecting(false);
                 setHoverTarget(null);
             }
@@ -337,7 +397,13 @@ export function DevtoolsOverlay({
             window.removeEventListener('keydown', handleKeyDown, true);
             window.removeEventListener('blur', handleBlur, true);
         };
-    }, [iframeController, inspecting, onInspectTarget, resolveInspectTarget]);
+    }, [
+        iframeController,
+        inspecting,
+        nativePicker,
+        onInspectTarget,
+        resolveInspectTarget
+    ]);
 
     useEffect(() => {
         if (!frameHostRef.current) {
@@ -374,7 +440,12 @@ export function DevtoolsOverlay({
     });
 
     useEffect(() => {
-        if (!open || minimized || !preferences.closeOnOutsideClick) {
+        if (
+            !open ||
+            minimized ||
+            inspecting ||
+            !preferences.closeOnOutsideClick
+        ) {
             return undefined;
         }
 
@@ -396,7 +467,7 @@ export function DevtoolsOverlay({
         return () => {
             window.removeEventListener('pointerdown', handlePointerDown, true);
         };
-    }, [minimized, open, preferences.closeOnOutsideClick]);
+    }, [inspecting, minimized, open, preferences.closeOnOutsideClick]);
 
     useEffect(
         () => () => {
@@ -417,6 +488,7 @@ export function DevtoolsOverlay({
     return (
         <div
             className="react-devtools-overlay"
+            data-react-devtools-overlay="true"
             data-dock={preferences.dock}
             data-inspecting={inspecting}
             data-minimized={minimized}
@@ -437,6 +509,7 @@ export function DevtoolsOverlay({
                     }}
                 />
             ) : null}
+            {pickerError ? <p role="alert">{pickerError}</p> : null}
             <button
                 aria-label="Toggle inspect mode"
                 aria-pressed={inspecting}

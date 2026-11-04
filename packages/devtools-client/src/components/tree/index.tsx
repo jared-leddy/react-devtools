@@ -42,6 +42,7 @@ export interface VirtualizedComponentTreeProps {
     overscanCount?: number;
     rowHeight?: number;
     scrollToId?: string;
+    scrollRequestKey?: string;
     selectedId?: string;
 }
 
@@ -73,6 +74,7 @@ export function VirtualizedComponentTree({
     overscanCount = 6,
     rowHeight = DEFAULT_ROW_HEIGHT,
     scrollToId,
+    scrollRequestKey,
     selectedId: controlledSelectedId
 }: VirtualizedComponentTreeProps) {
     const listRef = useRef<ListImperativeAPI | null>(null);
@@ -97,6 +99,37 @@ export function VirtualizedComponentTree({
         });
         knownExpandableIds.current = nextKnown;
     }, [computedDefaultExpandedIds]);
+    const revealedScroll = useRef<string | undefined>(undefined);
+    useEffect(() => {
+        if (!scrollToId) {
+            revealedScroll.current = undefined;
+            return;
+        }
+        const requestKey = scrollRequestKey ?? scrollToId;
+        if (revealedScroll.current === requestKey) return;
+        const ancestors = (
+            items: ComponentTreeNode[],
+            path: string[] = []
+        ): string[] | undefined => {
+            for (const node of items) {
+                if (node.id === scrollToId) return path;
+                const found = ancestors(node.children ?? [], [
+                    ...path,
+                    node.id
+                ]);
+                if (found) return found;
+            }
+        };
+        const path = ancestors(nodes);
+        if (path) {
+            revealedScroll.current = requestKey;
+            setExpandedIds((current) =>
+                path.every((id) => current.has(id))
+                    ? current
+                    : new Set([...current, ...path])
+            );
+        }
+    }, [scrollToId, scrollRequestKey, nodes]);
     const [selectedId, setSelectedId] = useState(
         () => initialSelectedId ?? findFirstNodeId(nodes) ?? ''
     );
@@ -119,7 +152,7 @@ export function VirtualizedComponentTree({
                 index: requestedScrollIndex
             });
         }
-    }, [listRef, requestedScrollIndex]);
+    }, [listRef, requestedScrollIndex, scrollRequestKey]);
 
     const toggleNode = useCallback((id: string) => {
         setExpandedIds((currentIds) => {

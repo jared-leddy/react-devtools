@@ -667,6 +667,33 @@ describe('extension entrypoints', () => {
         expect(chrome.panels.create).not.toHaveBeenCalled();
     });
 
+    it('uses the native source API with zero-based lines only when available', async () => {
+        document.body.innerHTML = '<div id="root"></div>';
+        const host = createMockDevToolsPanelChrome();
+        const openResource = jest.fn();
+        (globalThis as typeof globalThis & { chrome?: unknown }).chrome = {
+            ...host.api,
+            devtools: { ...host.api.devtools, panels: { openResource } }
+        };
+        await import('../src/devtools-panel');
+        const { createDevToolsSession } = jest.requireMock(
+            '@devtools/core/browser'
+        ) as { createDevToolsSession: jest.Mock };
+        const options = createDevToolsSession.mock.calls.at(-1)![0];
+        await options.openSource({
+            fileName: 'http://localhost/app.tsx',
+            lineNumber: 7,
+            columnNumber: 2
+        });
+        expect(openResource).toHaveBeenCalledWith(
+            'http://localhost/app.tsx',
+            6
+        );
+        await expect(
+            options.openSource({ fileName: '', lineNumber: 0 })
+        ).rejects.toThrow('unavailable');
+    });
+
     it('bootstraps the DevTools panel client and inspected-page user app', async () => {
         document.body.innerHTML = '<div id="root"></div>';
         const chrome = createMockDevToolsPanelChrome();
@@ -751,6 +778,8 @@ describe('extension entrypoints', () => {
             hookMode: 'wrapped',
             rendererCount: 1,
             rootCount: 1,
+            setInspectMode: expect.any(Function),
+            subscribeInspectMode: expect.any(Function),
             dispose: expect.any(Function)
         });
         expect(createRpcServer).toHaveBeenLastCalledWith(serverFunctions, {

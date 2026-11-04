@@ -19,7 +19,7 @@ afterEach(() => {
     cleanup.splice(0).forEach((dispose) => dispose());
 });
 const settle = () => new Promise((resolve) => setTimeout(resolve, 5));
-describe('revision-bound inspection', () => {
+describe('session-bound inspection', () => {
     it('reads real state and rejects unsupported or disposed inspection', async () => {
         const h = harness();
         await expect(
@@ -51,7 +51,7 @@ describe('revision-bound inspection', () => {
             h.session.inspectComponent!({ rootId: 'root', componentId: 'node' })
         ).rejects.toThrow('unavailable');
     });
-    it('ignores inspected values after a newer revision or disposal', async () => {
+    it('retains observed replies across unrelated revisions and ignores disposed sessions', async () => {
         const h = harness();
         await h.session.connect();
         const response = { rootId: 'root', componentId: 'node', sections: [] };
@@ -61,9 +61,9 @@ describe('revision-bound inspection', () => {
             rootId: 'root',
             componentId: 'node'
         });
-        await h.send(0, 1, 'new-root');
+        await h.send(0, 1, 'initial');
         first.resolve(response);
-        await expect(pending).resolves.toBeUndefined();
+        await expect(pending).resolves.toEqual(response);
         const next = deferred<ComponentStateResponse>();
         h.functions.getComponentState.mockReturnValueOnce(next.promise);
         const disposed = h.session.inspectComponent!({
@@ -73,6 +73,19 @@ describe('revision-bound inspection', () => {
         h.session.dispose();
         next.resolve(response);
         await expect(disposed).resolves.toBeUndefined();
+    });
+    it('ignores an inspection that finishes after a physical disconnect', async () => {
+        const h = harness();
+        await h.session.connect();
+        const first = deferred<ComponentStateResponse>();
+        h.functions.getComponentState.mockReturnValueOnce(first.promise);
+        const pending = h.session.inspectComponent!({
+            rootId: 'root',
+            componentId: 'node'
+        });
+        h.disconnect();
+        first.resolve({ rootId: 'root', componentId: 'node', sections: [] });
+        await expect(pending).resolves.toBeUndefined();
     });
 });
 function deferred<T>() {

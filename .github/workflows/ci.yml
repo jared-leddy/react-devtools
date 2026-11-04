@@ -116,6 +116,9 @@ jobs:
             - name: Native extension lifecycle matrix
               run: xvfb-run --auto-servernum npm run test:lifecycle-smoke
 
+            - name: Native extension picker actions
+              run: xvfb-run --auto-servernum npm run test:picker-smoke
+
             - name: Upload product smoke diagnostics
               if: ${{ !cancelled() }}
               uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -128,5 +131,6 @@ jobs:
                       artifacts/r06-identity-smoke
                       artifacts/r07-values-smoke
                       artifacts/r08-lifecycle-smoke
+                      artifacts/r09-picker-smoke
                   if-no-files-found: ignore
                   retention-days: 7

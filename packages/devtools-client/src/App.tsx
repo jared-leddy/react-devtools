@@ -146,6 +146,34 @@ function ClientShell() {
         getClientRuntimeSnapshot
     );
     const sessionSnapshot = useDevToolsSessionSnapshot();
+    const session = useDevToolsSession();
+    useEffect(() => {
+        if (!sessionSnapshot?.state?.inspectMode.enabled) return;
+        const cancel = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                void session?.setInspectMode?.(false).catch(() => {});
+            }
+        };
+        window.addEventListener('keydown', cancel, true);
+        return () => window.removeEventListener('keydown', cancel, true);
+    }, [session, sessionSnapshot?.state?.inspectMode.enabled]);
+
+    const pickedTarget = sessionSnapshot?.state?.inspectMode.lastSelectedTarget;
+    const pickedTargetId = pickedTarget?.componentId;
+    const pickedToken = pickedTarget?.selectionId;
+    const revealedPick = useRef<string | undefined>(undefined);
+    useEffect(() => {
+        if (!pickedTargetId) return;
+        const token = pickedToken ?? pickedTargetId;
+        if (revealedPick.current === token) return;
+        revealedPick.current = token;
+        setClientSetting('treeFilter', '');
+        navigate(
+            `/components?componentId=${encodeURIComponent(pickedTargetId)}`
+        );
+    }, [navigate, pickedTargetId, pickedToken]);
+
     const runtimeSnapshot = sessionSnapshot
         ? getSessionRuntimeSnapshot(sessionSnapshot)
         : legacyRuntimeSnapshot;
@@ -1943,11 +1971,31 @@ function ComponentsPage({
 }) {
     const [searchParams, setSearchParams] = useSearchParams();
     const requestedComponentId = searchParams.get('componentId');
+    const [actionError, setActionError] = useState('');
+    const runAction = (action?: Promise<unknown>) => {
+        setActionError('');
+        void action?.catch((error: unknown) =>
+            setActionError(
+                error instanceof Error ? error.message : 'Page action failed'
+            )
+        );
+    };
     const session = useDevToolsSession();
     const snapshot = useDevToolsSessionSnapshot();
     const componentTree = useMemo(
         () => createSessionComponentTree(snapshot?.state?.components ?? []),
         [snapshot?.state?.components]
+    );
+    const pickedToken =
+        snapshot?.state?.inspectMode.lastSelectedTarget?.selectionId;
+    const pickedId =
+        snapshot?.state?.inspectMode.lastSelectedTarget?.componentId;
+    useEffect(
+        () => () => {
+            void session?.setInspectMode?.(false).catch(() => {});
+            void session?.clearHighlight?.().catch(() => {});
+        },
+        [session]
     );
     const firstComponentId = findFirstComponentTreeNodeId(componentTree);
     const selectedComponent = requestedComponentId
@@ -1960,52 +2008,77 @@ function ComponentsPage({
         componentTree.length === 0 || runtimeSnapshot.rootStatus === 'empty';
     const [inspection, setInspection] = useState<{
         id: string;
-        revision?: number;
+        streamId?: string;
         sections: StateViewerSection[];
         error?: string;
     }>();
     useEffect(() => {
-        let current = true;
         if (
-            !selectedComponent ||
+            !selectedComponentId ||
+            !selectedComponent?.rootId ||
             !session?.inspectComponent ||
             !snapshot?.capabilities?.componentState
         )
             return;
-        void session
-            .inspectComponent({
-                componentId: selectedComponent.id,
-                rootId: selectedComponent.rootId!
-            })
-            .then((response) => {
-                if (current)
+        let current = true;
+        let fetching = false;
+        let dirty = false;
+        let revision = session.getSnapshot().revision;
+        const rootId = selectedComponent.rootId;
+        const streamId = snapshot.streamId;
+        const refresh = async () => {
+            if (!current || session.getSnapshot().status !== 'connected')
+                return;
+            if (fetching) {
+                dirty = true;
+                return;
+            }
+            fetching = true;
+            dirty = false;
+            try {
+                const response = await session.inspectComponent!({
+                    componentId: selectedComponentId,
+                    rootId
+                });
+                if (current && response)
                     setInspection({
-                        id: selectedComponent.id,
-                        revision: snapshot.revision,
-                        sections: (response?.sections ??
-                            []) as StateViewerSection[]
+                        id: selectedComponentId,
+                        streamId,
+                        sections: response.sections as StateViewerSection[]
                     });
-            })
-            .catch((error: unknown) => {
+            } catch (error) {
                 if (current)
                     setInspection({
-                        id: selectedComponent.id,
-                        revision: snapshot.revision,
+                        id: selectedComponentId,
+                        streamId,
                         sections: [],
                         error:
                             error instanceof Error
                                 ? error.message
                                 : 'Inspection failed'
                     });
-            });
+            } finally {
+                fetching = false;
+                if (dirty && current) void refresh();
+            }
+        };
+        const unsubscribe = session.subscribe(() => {
+            const next = session.getSnapshot();
+            if (next.revision !== revision) {
+                revision = next.revision;
+                void refresh();
+            }
+        });
+        void refresh();
         return () => {
             current = false;
+            unsubscribe();
         };
     }, [
         session,
         selectedComponentId,
         selectedComponent?.rootId,
-        snapshot?.revision,
+        snapshot?.streamId,
         snapshot?.capabilities?.componentState
     ]);
     const detailNode = selectedComponent
@@ -2013,7 +2086,7 @@ function ComponentsPage({
               ...selectedComponent,
               stateSections:
                   inspection?.id === selectedComponent.id &&
-                  inspection.revision === snapshot?.revision
+                  inspection.streamId === snapshot?.streamId
                       ? inspection.sections.map((section) => ({
                             ...section,
                             fields: section.fields.filter((field) =>
@@ -2034,6 +2107,60 @@ function ComponentsPage({
             className="dt-client-shell__page dt-client-shell__page--flush"
         >
             <div className="dt-client-filters">
+                {snapshot?.capabilities?.inspect && session?.setInspectMode ? (
+                    <button
+                        aria-pressed={
+                            snapshot.state?.inspectMode.enabled ?? false
+                        }
+                        onClick={() =>
+                            runAction(
+                                session.setInspectMode?.(
+                                    !snapshot.state?.inspectMode.enabled
+                                )
+                            )
+                        }
+                    >
+                        {snapshot.state?.inspectMode.enabled
+                            ? 'Cancel picker'
+                            : 'Pick component'}
+                    </button>
+                ) : null}
+                {selectedComponent &&
+                snapshot?.capabilities?.highlight &&
+                session?.scrollToComponent ? (
+                    <button
+                        onClick={() =>
+                            runAction(
+                                session
+                                    .scrollToComponent?.({
+                                        componentId: selectedComponent.id,
+                                        rootId: selectedComponent.rootId!
+                                    })
+                                    .then((found) => {
+                                        if (!found)
+                                            throw new Error(
+                                                'This component has no mounted DOM node'
+                                            );
+                                    })
+                            )
+                        }
+                    >
+                        Scroll to component
+                    </button>
+                ) : null}
+                {selectedComponent?.source && session?.openSource ? (
+                    <button
+                        onClick={() =>
+                            runAction(
+                                session.openSource?.(selectedComponent.source!)
+                            )
+                        }
+                    >
+                        Open source
+                    </button>
+                ) : null}
+                {actionError ? <p role="alert">{actionError}</p> : null}
+
                 <label>
                     Tree filter
                     <input
@@ -2061,6 +2188,24 @@ function ComponentsPage({
                         <ComponentEmptyRootPane />
                     ) : (
                         <ComponentTreePlaceholder
+                            highlightBridge={
+                                snapshot?.capabilities?.highlight
+                                    ? {
+                                          highlightComponent: (request) =>
+                                              runAction(
+                                                  session?.highlightComponent?.(
+                                                      request
+                                                  )
+                                              ),
+                                          unhighlightElement: () =>
+                                              runAction(
+                                                  session?.clearHighlight?.()
+                                              )
+                                      }
+                                    : undefined
+                            }
+                            scrollRequestKey={pickedToken}
+                            scrollToId={pickedId ?? undefined}
                             initialSelectedId={firstComponentId}
                             nodes={filterComponentTree(
                                 componentTree,
@@ -2086,8 +2231,8 @@ function ComponentsPage({
                                       ? 'Inspection unsupported'
                                       : ((inspection &&
                                         inspection.id === selectedComponentId &&
-                                        inspection.revision ===
-                                            snapshot?.revision
+                                        inspection.streamId ===
+                                            snapshot?.streamId
                                             ? inspection.error
                                             : undefined) ?? '')}
                             </p>
@@ -2352,11 +2497,17 @@ function RuntimeStatePage({
 }
 
 function ComponentTreePlaceholder({
+    scrollRequestKey,
+    highlightBridge,
+    scrollToId,
     initialSelectedId,
     nodes,
     onSelectedIdChange,
     selectedId
 }: {
+    scrollRequestKey?: string;
+    highlightBridge?: import('./components/tree').TreeHighlightBridge;
+    scrollToId?: string;
     initialSelectedId?: string;
     nodes: ComponentTreeNode[];
     onSelectedIdChange: (id: string) => void;
@@ -2365,6 +2516,9 @@ function ComponentTreePlaceholder({
     return (
         <Card title="Component tree">
             <VirtualizedComponentTree
+                highlightBridge={highlightBridge}
+                scrollToId={scrollToId}
+                scrollRequestKey={scrollRequestKey}
                 initialSelectedId={initialSelectedId}
                 nodes={nodes}
                 onSelectedIdChange={onSelectedIdChange}

@@ -188,6 +188,8 @@ describe('shared page backend', () => {
             hookMode: 'wrapped',
             rendererCount: 1,
             rootCount: 1,
+            setInspectMode: expect.any(Function),
+            subscribeInspectMode: expect.any(Function),
             dispose: expect.any(Function)
         });
         expect(createRpcServer).toHaveBeenLastCalledWith(serverFunctions, {

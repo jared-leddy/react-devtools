@@ -1,3 +1,4 @@
+import { verifyFirefoxPicker } from './firefox-picker.mjs';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import net from 'node:net';
@@ -121,6 +122,9 @@ try {
         });
     const toolbox = await showToolbox();
     console.log('Native Firefox', JSON.stringify({ app, toolbox }));
+    let pickerChecks;
+    if (process.argv.includes('--picker'))
+        pickerChecks = await verifyFirefoxPicker({ command, execute, output });
     let identityChecks;
     let lifecycleChecks;
     if (lifecycleMode)
@@ -161,6 +165,8 @@ try {
         await keys(['\uE004', '\uE004', '\uE004', '\uE004', '\uE007']);
         await new Promise((resolve) => setTimeout(resolve, 500));
         await keys([
+            '\uE004',
+            '\uE004',
             '\uE004',
             '\uE004',
             '\uE004',
@@ -466,6 +472,7 @@ try {
                 updateChecks,
                 modelChecks,
                 identityChecks,
+                pickerChecks,
                 valueChecks,
                 lifecycleChecks
             },

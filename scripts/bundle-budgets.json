@@ -14,7 +14,7 @@
     {
         "name": "overlay",
         "directory": "packages/devtools-overlay/dist",
-        "rawBytes": 280000,
+        "rawBytes": 282000,
         "gzipBytes": 90000
     },
     {

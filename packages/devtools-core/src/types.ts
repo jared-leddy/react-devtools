@@ -189,6 +189,7 @@ export interface ComponentDiagnosticRecord {
 }
 
 export interface InspectTargetRecord {
+    selectionId?: string;
     componentId?: null | string;
     displayName?: string;
     domRect?: {

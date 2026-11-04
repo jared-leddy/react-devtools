@@ -42,6 +42,8 @@ export async function verifyFirefoxLifecycles({
             '\uE004',
             '\uE004',
             '\uE004',
+            '\uE004',
+            '\uE004',
             ...'LifecycleApp',
             '\uE004',
             '\uE004',

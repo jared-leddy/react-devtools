@@ -5,6 +5,8 @@ import {
 import { DEVTOOLS_PROTOCOL_VERSION } from './protocol.js';
 import type {
     DevToolsCoreState,
+    HighlightRequest,
+    ComponentSourceLocation,
     ComponentStateRequest,
     ComponentStateResponse,
     DevToolsSessionCapabilities,
@@ -33,11 +35,17 @@ export interface DevToolsSession {
     inspectComponent?(
         request: ComponentStateRequest
     ): Promise<ComponentStateResponse | undefined>;
+    highlightComponent?(request: HighlightRequest): Promise<void>;
+    clearHighlight?(): Promise<void>;
+    setInspectMode?(enabled: boolean): Promise<void>;
+    scrollToComponent?(request: HighlightRequest): Promise<boolean>;
+    openSource?(source: ComponentSourceLocation): Promise<void>;
     dispose(): void;
 }
 
 export function createDevToolsSession(
     options: CreateDevToolsCoreClientOptions & {
+        openSource?: (source: ComponentSourceLocation) => Promise<void>;
         clientId?: string;
         timeoutMs?: number;
         heartbeatMs?: number;
@@ -325,7 +333,32 @@ export function createDevToolsSession(
         });
     let client = makeClient();
 
+    const requireAction = (capability: 'inspect' | 'highlight') => {
+        if (
+            disposed ||
+            snapshot.status !== 'connected' ||
+            !snapshot.capabilities?.[capability]
+        )
+            throw new Error('Page action unavailable');
+    };
     const api: DevToolsSession = {
+        ...(options.openSource ? { openSource: options.openSource } : {}),
+        async highlightComponent(request) {
+            requireAction('highlight');
+            await client.highlightComponent(request);
+        },
+        async clearHighlight() {
+            requireAction('highlight');
+            await client.clearHighlight();
+        },
+        async setInspectMode(enabled) {
+            requireAction('inspect');
+            await client.setInspectMode(enabled);
+        },
+        async scrollToComponent(request) {
+            requireAction('highlight');
+            return client.scrollToComponent(request);
+        },
         async inspectComponent(request) {
             if (
                 disposed ||
@@ -334,7 +367,6 @@ export function createDevToolsSession(
             )
                 throw new Error('Component inspection unavailable');
             const streamId = snapshot.streamId;
-            const revision = snapshot.revision;
             const inspectionGeneration = generation;
             let result: ComponentStateResponse | undefined;
             try {
@@ -344,8 +376,7 @@ export function createDevToolsSession(
                     disposed ||
                     generation !== inspectionGeneration ||
                     snapshot.status !== 'connected' ||
-                    snapshot.streamId !== streamId ||
-                    snapshot.revision !== revision
+                    snapshot.streamId !== streamId
                 )
                     return undefined;
                 throw error;
@@ -354,8 +385,7 @@ export function createDevToolsSession(
                 disposed ||
                 generation !== inspectionGeneration ||
                 snapshot.status !== 'connected' ||
-                snapshot.streamId !== streamId ||
-                snapshot.revision !== revision
+                snapshot.streamId !== streamId
             )
                 return undefined;
             if (
