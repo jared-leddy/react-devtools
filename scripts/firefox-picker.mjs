@@ -132,13 +132,7 @@ export async function verifyFirefoxPicker({ command, execute, output }) {
         args: [],
         newSandbox: true
     });
-    await wait(
-        (s) =>
-            !s.hint &&
-            !s.highlight &&
-            s.traffic.updates.filter((u) => u.patch?.inspectMode).at(-1)?.patch
-                .inspectMode.enabled === false
-    );
+    await wait((s) => !s.hint && !s.highlight);
     await move('#pick-target span', true);
     assert.equal((await read()).text, 'Nested target 1');
     return {

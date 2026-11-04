@@ -28,6 +28,7 @@ coverage
 /artifacts/r07-values-smoke/
 /artifacts/r08-fixture-*/
 /artifacts/r08-lifecycle-smoke/
+/artifacts/r09-picker-smoke/
 /.nyc_output
 playwright-report
 test-results
