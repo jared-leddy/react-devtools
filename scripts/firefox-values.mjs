@@ -33,6 +33,8 @@ export async function verifyFirefoxValues(command, execute, output) {
         '\uE004',
         '\uE004',
         '\uE004',
+        '\uE004',
+        '\uE004',
         ...'Inspector',
         '\uE004',
         '\uE004',
