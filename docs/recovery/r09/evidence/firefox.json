@@ -1,0 +1,1977 @@
+{
+    "applicationSourceCommit": "008d28a3e7c617233361903b1edcf8751fbcd7f9",
+    "verificationCommit": "6988b8136f6e0484fd403923bec59922d44708bd",
+    "fixture": "docs/recovery/r09/fixture.tsx",
+    "reactVersion": "19.1.1",
+    "browser": {
+        "name": "firefox",
+        "version": "160.0",
+        "platform": "mac"
+    },
+    "fixtureUrl": "http://127.0.0.1:9058/development",
+    "panel": {
+        "url": "http://127.0.0.1:9058/development",
+        "browsingContextId": 11,
+        "tools": [
+            {
+                "id": "webext-devtools-panel-react-devtools_local_dev-156-0",
+                "label": "React"
+            }
+        ],
+        "panelUrl": null,
+        "panelBody": null,
+        "panelBrowsingContextId": 19
+    },
+    "checks": {
+        "snapshots": [
+            {
+                "stage": "picked",
+                "hint": false,
+                "highlight": false,
+                "traffic": {
+                    "requests": [
+                        "getComponentState",
+                        "getSessionRevision",
+                        "setInspectMode",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "getComponentState"
+                    ],
+                    "inspections": [
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": 51.43333435058594,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": -28.333328247070312,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": -28.333328247070312,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": -28.333328247070312,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": -28.333328247070312,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": 31.5,
+                                "width": 109.26666259765625,
+                                "height": 22
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": 0
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        }
+                    ],
+                    "updates": [
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 6,
+                            "revision": 7,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": true,
+                                    "hoveredTarget": null,
+                                    "lastSelectedTarget": null
+                                }
+                            },
+                            "invalidatedComponents": []
+                        },
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 7,
+                            "revision": 8,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": true,
+                                    "hoveredTarget": {
+                                        "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                                        "rootId": "react-root:1"
+                                    },
+                                    "lastSelectedTarget": null
+                                }
+                            },
+                            "invalidatedComponents": []
+                        },
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 8,
+                            "revision": 9,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": true,
+                                    "hoveredTarget": {
+                                        "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                                        "rootId": "react-root:1"
+                                    },
+                                    "lastSelectedTarget": null
+                                }
+                            },
+                            "invalidatedComponents": []
+                        },
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 9,
+                            "revision": 10,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": false,
+                                    "hoveredTarget": null,
+                                    "lastSelectedTarget": {
+                                        "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                                        "rootId": "react-root:1",
+                                        "selectionId": "1ce178dd-e40f-474d-ba54-21f40eb0590a"
+                                    }
+                                },
+                                "selectedComponentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                                "selectedRootId": "react-root:1"
+                            },
+                            "invalidatedComponents": []
+                        }
+                    ]
+                },
+                "text": "Nested target 0"
+            },
+            {
+                "stage": "cancel-0",
+                "hint": false,
+                "highlight": false,
+                "traffic": {
+                    "requests": [
+                        "getComponentState",
+                        "getSessionRevision",
+                        "setInspectMode",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "getComponentState",
+                        "setInspectMode"
+                    ],
+                    "inspections": [
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": 51.43333435058594,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": -28.333328247070312,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": -28.333328247070312,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": -28.333328247070312,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": -28.333328247070312,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": 31.5,
+                                "width": 109.26666259765625,
+                                "height": 22
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": 0
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        }
+                    ],
+                    "updates": [
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 6,
+                            "revision": 7,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": true,
+                                    "hoveredTarget": null,
+                                    "lastSelectedTarget": null
+                                }
+                            },
+                            "invalidatedComponents": []
+                        },
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 7,
+                            "revision": 8,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": true,
+                                    "hoveredTarget": {
+                                        "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                                        "rootId": "react-root:1"
+                                    },
+                                    "lastSelectedTarget": null
+                                }
+                            },
+                            "invalidatedComponents": []
+                        },
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 8,
+                            "revision": 9,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": true,
+                                    "hoveredTarget": {
+                                        "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                                        "rootId": "react-root:1"
+                                    },
+                                    "lastSelectedTarget": null
+                                }
+                            },
+                            "invalidatedComponents": []
+                        },
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 9,
+                            "revision": 10,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": false,
+                                    "hoveredTarget": null,
+                                    "lastSelectedTarget": {
+                                        "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                                        "rootId": "react-root:1",
+                                        "selectionId": "1ce178dd-e40f-474d-ba54-21f40eb0590a"
+                                    }
+                                },
+                                "selectedComponentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                                "selectedRootId": "react-root:1"
+                            },
+                            "invalidatedComponents": []
+                        }
+                    ]
+                },
+                "text": "Nested target 0"
+            },
+            {
+                "stage": "cancel-1",
+                "hint": false,
+                "highlight": false,
+                "traffic": {
+                    "requests": [
+                        "getComponentState",
+                        "getSessionRevision",
+                        "setInspectMode",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "getComponentState",
+                        "setInspectMode",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "setInspectMode",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "notifySessionUpdated",
+                        "getComponentState"
+                    ],
+                    "inspections": [
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": 51.43333435058594,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": -28.333328247070312,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": -28.333328247070312,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": -28.333328247070312,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": -28.333328247070312,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": 31.5,
+                                "width": 109.26666259765625,
+                                "height": 22
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": 0
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": 31.5,
+                                "width": 109.26666259765625,
+                                "height": 22
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": 0
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": 31.5,
+                                "width": 109.26666259765625,
+                                "height": 22
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": 0
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": 31.5,
+                                "width": 109.26666259765625,
+                                "height": 22
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": 0
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        }
+                    ],
+                    "updates": [
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 6,
+                            "revision": 7,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": true,
+                                    "hoveredTarget": null,
+                                    "lastSelectedTarget": null
+                                }
+                            },
+                            "invalidatedComponents": []
+                        },
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 7,
+                            "revision": 8,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": true,
+                                    "hoveredTarget": {
+                                        "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                                        "rootId": "react-root:1"
+                                    },
+                                    "lastSelectedTarget": null
+                                }
+                            },
+                            "invalidatedComponents": []
+                        },
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 8,
+                            "revision": 9,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": true,
+                                    "hoveredTarget": {
+                                        "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                                        "rootId": "react-root:1"
+                                    },
+                                    "lastSelectedTarget": null
+                                }
+                            },
+                            "invalidatedComponents": []
+                        },
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 9,
+                            "revision": 10,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": false,
+                                    "hoveredTarget": null,
+                                    "lastSelectedTarget": {
+                                        "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                                        "rootId": "react-root:1",
+                                        "selectionId": "1ce178dd-e40f-474d-ba54-21f40eb0590a"
+                                    }
+                                },
+                                "selectedComponentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                                "selectedRootId": "react-root:1"
+                            },
+                            "invalidatedComponents": []
+                        },
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 10,
+                            "revision": 12,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": false,
+                                    "hoveredTarget": null,
+                                    "lastSelectedTarget": {
+                                        "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                                        "rootId": "react-root:1",
+                                        "selectionId": "1ce178dd-e40f-474d-ba54-21f40eb0590a"
+                                    }
+                                }
+                            },
+                            "invalidatedComponents": []
+                        },
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 12,
+                            "revision": 13,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": true,
+                                    "hoveredTarget": null,
+                                    "lastSelectedTarget": {
+                                        "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                                        "rootId": "react-root:1",
+                                        "selectionId": "1ce178dd-e40f-474d-ba54-21f40eb0590a"
+                                    }
+                                }
+                            },
+                            "invalidatedComponents": []
+                        },
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 13,
+                            "revision": 14,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": false,
+                                    "hoveredTarget": null,
+                                    "lastSelectedTarget": {
+                                        "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                                        "rootId": "react-root:1",
+                                        "selectionId": "1ce178dd-e40f-474d-ba54-21f40eb0590a"
+                                    }
+                                }
+                            },
+                            "invalidatedComponents": []
+                        }
+                    ]
+                },
+                "text": "Nested target 0"
+            },
+            {
+                "stage": "cancel-2",
+                "hint": false,
+                "highlight": false,
+                "traffic": {
+                    "requests": [
+                        "getComponentState",
+                        "getSessionRevision",
+                        "setInspectMode",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "getComponentState",
+                        "setInspectMode",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "setInspectMode",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "notifySessionUpdated",
+                        "getComponentState",
+                        "setInspectMode"
+                    ],
+                    "inspections": [
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": 51.43333435058594,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": -28.333328247070312,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": -28.333328247070312,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": -28.333328247070312,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": -28.333328247070312,
+                                "width": 1469,
+                                "height": 1717.0333251953125
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "HTMLDivElement",
+                                                    "type": "instance",
+                                                    "value": {
+                                                        "_reactListeningwg2mmadxxlg": true
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Hook 1 (effect)",
+                                            "value": {
+                                                "_custom": {
+                                                    "display": "Array(0)",
+                                                    "type": "array",
+                                                    "value": []
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": 31.5,
+                                "width": 109.26666259765625,
+                                "height": 22
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": 0
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": 31.5,
+                                "width": 109.26666259765625,
+                                "height": 22
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": 0
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": 31.5,
+                                "width": 109.26666259765625,
+                                "height": 22
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": 0
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        },
+                        {
+                            "domRect": {
+                                "x": 8,
+                                "y": 31.5,
+                                "width": 109.26666259765625,
+                                "height": 22
+                            },
+                            "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                            "contexts": [],
+                            "diagnostics": [],
+                            "rootId": "react-root:1",
+                            "editing": {
+                                "props": false,
+                                "hooks": false,
+                                "state": false,
+                                "context": false
+                            },
+                            "sections": [
+                                {
+                                    "fields": [],
+                                    "name": "props",
+                                    "status": "available"
+                                },
+                                {
+                                    "fields": [
+                                        {
+                                            "name": "Hook 0 (state)",
+                                            "value": 0
+                                        }
+                                    ],
+                                    "name": "hooks",
+                                    "status": "available",
+                                    "notice": "Observed hook slots. Custom-hook and variable names are unavailable; state/reducer kinds may be ambiguous. Server metadata is unavailable."
+                                }
+                            ]
+                        }
+                    ],
+                    "updates": [
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 6,
+                            "revision": 7,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": true,
+                                    "hoveredTarget": null,
+                                    "lastSelectedTarget": null
+                                }
+                            },
+                            "invalidatedComponents": []
+                        },
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 7,
+                            "revision": 8,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": true,
+                                    "hoveredTarget": {
+                                        "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:1",
+                                        "rootId": "react-root:1"
+                                    },
+                                    "lastSelectedTarget": null
+                                }
+                            },
+                            "invalidatedComponents": []
+                        },
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 8,
+                            "revision": 9,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": true,
+                                    "hoveredTarget": {
+                                        "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                                        "rootId": "react-root:1"
+                                    },
+                                    "lastSelectedTarget": null
+                                }
+                            },
+                            "invalidatedComponents": []
+                        },
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 9,
+                            "revision": 10,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": false,
+                                    "hoveredTarget": null,
+                                    "lastSelectedTarget": {
+                                        "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                                        "rootId": "react-root:1",
+                                        "selectionId": "1ce178dd-e40f-474d-ba54-21f40eb0590a"
+                                    }
+                                },
+                                "selectedComponentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                                "selectedRootId": "react-root:1"
+                            },
+                            "invalidatedComponents": []
+                        },
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 10,
+                            "revision": 12,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": false,
+                                    "hoveredTarget": null,
+                                    "lastSelectedTarget": {
+                                        "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                                        "rootId": "react-root:1",
+                                        "selectionId": "1ce178dd-e40f-474d-ba54-21f40eb0590a"
+                                    }
+                                }
+                            },
+                            "invalidatedComponents": []
+                        },
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 12,
+                            "revision": 13,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": true,
+                                    "hoveredTarget": null,
+                                    "lastSelectedTarget": {
+                                        "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                                        "rootId": "react-root:1",
+                                        "selectionId": "1ce178dd-e40f-474d-ba54-21f40eb0590a"
+                                    }
+                                }
+                            },
+                            "invalidatedComponents": []
+                        },
+                        {
+                            "sessionId": "be6e2870-e741-41c5-954c-22b21c1c5e4e",
+                            "streamId": "6fc1d8f0-e48a-4900-936e-7fe5d2e13945",
+                            "baseRevision": 13,
+                            "revision": 14,
+                            "patch": {
+                                "inspectMode": {
+                                    "enabled": false,
+                                    "hoveredTarget": null,
+                                    "lastSelectedTarget": {
+                                        "componentId": "c:94cbc2c6-0b79-4c59-ae91-aaebfb873442:4",
+                                        "rootId": "react-root:1",
+                                        "selectionId": "1ce178dd-e40f-474d-ba54-21f40eb0590a"
+                                    }
+                                }
+                            },
+                            "invalidatedComponents": []
+                        }
+                    ]
+                },
+                "text": "Nested target 0"
+            }
+        ],
+        "actualKeyboardAndPointer": true,
+        "disconnectCleanup": true
+    },
+    "notes": [
+        "Actual native keyboard and pointer input in a disposable profile.",
+        "Profile/process paths excluded. Portal/frame and minified production picking additionally verified in Chrome."
+    ]
+}
