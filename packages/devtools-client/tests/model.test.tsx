@@ -290,3 +290,104 @@ describe('session-backed component model', () => {
         expect(screen.getAllByText('Not available').length).toBeGreaterThan(0);
     });
 });
+
+it('routes real page actions and picker selection through the session, with errors visible', async () => {
+    const f = fixture();
+    const setInspectMode = jest.fn(async () => {});
+    const clearHighlight = jest.fn(async () => {});
+    const highlightComponent = jest.fn(async () => {});
+    const scrollToComponent = jest.fn(async () => false);
+    Object.assign(f.session, {
+        setInspectMode,
+        clearHighlight,
+        highlightComponent,
+        scrollToComponent
+    });
+    f.update({
+        capabilities: {
+            ...f.snapshot.capabilities!,
+            inspect: true,
+            highlight: true
+        }
+    });
+    const { unmount } = render(
+        <DevToolsSessionProvider session={f.session}>
+            <App initialEntries={['/components']} />
+        </DevToolsSessionProvider>
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Pick component' }));
+    expect(setInspectMode).toHaveBeenCalledWith(true);
+    fireEvent.click(
+        screen.getByRole('button', { name: 'Scroll to component' })
+    );
+    await screen.findByText('This component has no mounted DOM node');
+    act(() =>
+        f.update({
+            state: {
+                ...f.snapshot.state!,
+                inspectMode: {
+                    enabled: false,
+                    hoveredTarget: null,
+                    lastSelectedTarget: {
+                        componentId: 'child',
+                        rootId: 'root',
+                        selectionId: 'pick-1'
+                    }
+                }
+            }
+        })
+    );
+    await waitFor(() =>
+        expect(
+            screen
+                .getByText('Counter', {
+                    selector: '.dt-components-tree__label'
+                })
+                .closest('[aria-selected]')
+        ).toHaveAttribute('aria-selected', 'true')
+    );
+    expect(
+        screen.queryByRole('button', { name: 'Open source' })
+    ).not.toBeInTheDocument();
+    unmount();
+    expect(clearHighlight).toHaveBeenCalled();
+    expect(setInspectMode).toHaveBeenLastCalledWith(false);
+});
+
+it('coalesces continuous revisions without starving inspection or clearing observed values', async () => {
+    const f = fixture();
+    const pending: Array<
+        (value: Awaited<ReturnType<typeof f.inspect>>) => void
+    > = [];
+    f.inspect.mockImplementation(
+        () => new Promise((resolve) => pending.push(resolve))
+    );
+    const { unmount } = render(
+        <DevToolsSessionProvider session={f.session}>
+            <App initialEntries={['/components']} />
+        </DevToolsSessionProvider>
+    );
+    act(() => {
+        f.update({ revision: 1 });
+        f.update({ revision: 2 });
+    });
+    expect(f.inspect).toHaveBeenCalledTimes(1);
+    const response = (value: string) => ({
+        componentId: 'app',
+        rootId: 'root',
+        sections: [{ name: 'props', fields: [{ name: 'message', value }] }]
+    });
+    await act(async () => pending[0](response('Observed zero')));
+    expect(await screen.findByText(/Observed zero/)).toBeInTheDocument();
+    expect(f.inspect).toHaveBeenCalledTimes(2);
+    act(() => {
+        f.update({ revision: 3 });
+        f.update({ revision: 4 });
+    });
+    expect(screen.getByText(/Observed zero/)).toBeInTheDocument();
+    expect(f.inspect).toHaveBeenCalledTimes(2);
+    await act(async () => pending[1](response('Observed one')));
+    expect(await screen.findByText(/Observed one/)).toBeInTheDocument();
+    expect(f.inspect).toHaveBeenCalledTimes(3);
+    unmount();
+});

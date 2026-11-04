@@ -207,3 +207,30 @@ describe('VirtualizedComponentTree', () => {
         );
     });
 });
+
+it('reveals a picked row beneath collapsed ancestors', async () => {
+    const nodes = [
+        {
+            id: 'root',
+            label: 'Root',
+            children: [{ id: 'picked', label: 'Picked' }]
+        }
+    ];
+    const { rerender } = render(
+        <VirtualizedComponentTree defaultExpandedIds={[]} nodes={nodes} />
+    );
+    expect(screen.queryByText('Picked')).not.toBeInTheDocument();
+    rerender(
+        <VirtualizedComponentTree
+            defaultExpandedIds={[]}
+            nodes={nodes}
+            scrollToId="picked"
+            selectedId="picked"
+        />
+    );
+    await waitFor(() =>
+        expect(
+            screen.getByText('Picked').closest('[aria-selected]')
+        ).toHaveAttribute('aria-selected', 'true')
+    );
+});

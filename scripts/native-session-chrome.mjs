@@ -1,3 +1,4 @@
+import { verifyNativePicker } from './native-picker.mjs';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -254,7 +255,8 @@ try {
                 modelMode ||
                 identityMode ||
                 valuesMode ||
-                lifecycleMode) &&
+                lifecycleMode ||
+                process.argv.includes('--picker')) &&
             target.url.endsWith('/devtools-panel.html') &&
             result.result?.result?.value?.inspected?.url === url
         ) {
@@ -277,6 +279,33 @@ try {
     let updateChecks;
     let modelChecks;
     let identityChecks;
+    let pickerChecks;
+    if (process.argv.includes('--picker')) {
+        assert(evaluatePanel, 'Actual native extension panel missing');
+        pickerChecks = await verifyNativePicker(
+            page,
+            evaluatePanel,
+            async (stage) => {
+                for (const inspector of nativeInspectors) {
+                    const shot = await inspector.send(
+                        'Page.captureScreenshot',
+                        { format: 'png' }
+                    );
+                    if (shot.result?.data)
+                        fs.writeFileSync(
+                            `${output}/${stage}-${inspector.targetId}.png`,
+                            Buffer.from(shot.result.data, 'base64')
+                        );
+                }
+            },
+            async () => {
+                for (const inspector of nativeInspectors)
+                    await cdp.send('Target.closeTarget', {
+                        targetId: inspector.targetId
+                    });
+            }
+        );
+    }
     let valueChecks;
     let lifecycleChecks;
     if (lifecycleMode)
@@ -548,6 +577,7 @@ try {
                 updateChecks,
                 modelChecks,
                 identityChecks,
+                pickerChecks,
                 valueChecks,
                 lifecycleChecks
             },

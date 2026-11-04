@@ -97,6 +97,29 @@ export function VirtualizedComponentTree({
         });
         knownExpandableIds.current = nextKnown;
     }, [computedDefaultExpandedIds]);
+    useEffect(() => {
+        if (!scrollToId) return;
+        const ancestors = (
+            items: ComponentTreeNode[],
+            path: string[] = []
+        ): string[] | undefined => {
+            for (const node of items) {
+                if (node.id === scrollToId) return path;
+                const found = ancestors(node.children ?? [], [
+                    ...path,
+                    node.id
+                ]);
+                if (found) return found;
+            }
+        };
+        const path = ancestors(nodes);
+        if (path)
+            setExpandedIds((current) =>
+                path.every((id) => current.has(id))
+                    ? current
+                    : new Set([...current, ...path])
+            );
+    }, [scrollToId, nodes]);
     const [selectedId, setSelectedId] = useState(
         () => initialSelectedId ?? findFirstNodeId(nodes) ?? ''
     );

@@ -296,3 +296,24 @@ function createRect(
 function mockRect(element: Element, rect: DOMRect): void {
     element.getBoundingClientRect = jest.fn(() => rect);
 }
+
+it('does not clear another session owner highlight during cleanup', () => {
+    const node = document.createElement('div');
+    document.body.append(node);
+    const fiber = createFiberFixture({
+        tag: ReactFiberTag.HostComponent,
+        stateNode: node
+    });
+    const first = {};
+    const second = {};
+    highlightElement(fiber, { owner: first });
+    unhighlightElement(second);
+    expect(
+        document.querySelector('[data-react-devtools-highlighter]')
+    ).not.toBeNull();
+    unhighlightElement(first);
+    expect(
+        document.querySelector('[data-react-devtools-highlighter]')
+    ).toBeNull();
+    node.remove();
+});

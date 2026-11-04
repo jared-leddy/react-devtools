@@ -323,3 +323,123 @@ describe('backend-confirmed sessions', () => {
         expect(store.getState().transportStatus).not.toBe('connected');
     });
 });
+
+it('gates page actions by backend capabilities and routes enabled actions without substituting state', async () => {
+    const [channel, backend] = channels();
+    const store = createDevToolsCoreStateStore();
+    const { createDevToolsUpdatePublisher } = await import('../src/updates.js');
+    const updates = createDevToolsUpdatePublisher({ store, publish() {} });
+    const functions = createDevToolsCoreServerFunctions(
+        store,
+        'actions-test',
+        updates
+    );
+    const highlight = jest.fn(functions.highlightComponent);
+    const scroll = jest.fn(() => true);
+    const clear = jest.fn(functions.clearHighlight);
+    const inspectMode = jest.fn(functions.setInspectMode);
+    const server = createRpcServer<
+        import('../src/rpc.js').DevToolsCoreClientFunctions,
+        import('../src/rpc.js').DevToolsCoreServerFunctions
+    >(
+        {
+            ...functions,
+            handshake(request: Parameters<typeof functions.handshake>[0]) {
+                const response = functions.handshake(request);
+                return {
+                    ...response,
+                    capabilities: {
+                        ...response.capabilities,
+                        highlight: true,
+                        inspect: true
+                    }
+                };
+            },
+            highlightComponent: highlight,
+            scrollToComponent: scroll,
+            clearHighlight: clear,
+            setInspectMode: inspectMode
+        },
+        { channel: backend }
+    );
+    const openSource = jest.fn(async () => {});
+    const session = createDevToolsSession({ channel, openSource });
+    const request = { rootId: 'root', componentId: 'card' };
+    await expect(session.highlightComponent!(request)).rejects.toThrow(
+        'unavailable'
+    );
+    await session.connect();
+    await session.highlightComponent!(request);
+    await session.clearHighlight!();
+    await session.setInspectMode!(true);
+    expect(await session.scrollToComponent!(request)).toBe(true);
+    expect(highlight).toHaveBeenCalledWith(request);
+    expect(scroll).toHaveBeenCalledWith(request);
+    expect(clear).toHaveBeenCalled();
+    expect(inspectMode).toHaveBeenCalledWith(true);
+    await session.openSource!({
+        fileName: '/app.tsx',
+        lineNumber: 2,
+        columnNumber: 1
+    });
+    expect(openSource).toHaveBeenCalled();
+    session.dispose();
+    server.dispose();
+    updates.dispose();
+    await expect(session.setInspectMode!(true)).rejects.toThrow('unavailable');
+});
+
+it('forwards supported borrowed-session page actions and cancels only owned picker work', async () => {
+    const [channel, backend] = channels();
+    const store = createDevToolsCoreStateStore();
+    store.setTransportStatus('connected');
+    const setInspectMode = jest.fn(async () => {});
+    const clearHighlight = jest.fn(async () => {});
+    const highlightComponent = jest.fn(async () => {});
+    const scrollToComponent = jest.fn(async () => true);
+    const dispose = jest.fn();
+    const host: import('../src/session.js').DevToolsSession = {
+        getSnapshot: () => ({
+            sessionId: 'host',
+            serverId: 'backend',
+            status: 'connected',
+            state: store.getState(),
+            capabilities: {
+                roots: true,
+                components: true,
+                componentState: false,
+                highlight: true,
+                inspect: true,
+                edit: false,
+                stores: false
+            }
+        }),
+        subscribe: () => () => {},
+        connect: async () => {},
+        dispose,
+        setInspectMode,
+        clearHighlight,
+        highlightComponent,
+        scrollToComponent
+    };
+    const relay = createDevToolsSessionRelay(host, backend);
+    const session = createDevToolsSession({ channel });
+    await session.connect();
+    expect(session.getSnapshot().capabilities).toMatchObject({
+        highlight: true,
+        inspect: true
+    });
+    await session.highlightComponent!({ componentId: 'card', rootId: 'root' });
+    await session.clearHighlight!();
+    expect(
+        await session.scrollToComponent!({
+            componentId: 'card',
+            rootId: 'root'
+        })
+    ).toBe(true);
+    await session.setInspectMode!(true);
+    relay.dispose();
+    expect(setInspectMode).toHaveBeenLastCalledWith(false);
+    expect(dispose).not.toHaveBeenCalled();
+    session.dispose();
+});

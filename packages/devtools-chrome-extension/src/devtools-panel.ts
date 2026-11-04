@@ -7,6 +7,13 @@ import { createDevToolsSession } from '@devtools/core/browser';
 
 interface ChromeDevToolsPanelLike {
     devtools?: {
+        panels?: {
+            openResource?: (
+                url: string,
+                line: number,
+                callback?: () => void
+            ) => void | Promise<void>;
+        };
         network?: {
             onNavigated?: {
                 addListener?: (listener: () => void) => void;
@@ -107,7 +114,25 @@ function mountPanelClient(): boolean {
 
     setClientRouteEnvironment({ transport: 'extension' });
     const mounted = mountDevToolsClient(root, {
-        session: createDevToolsSession({ preset: 'extension' })
+        session: createDevToolsSession({
+            preset: 'extension',
+            ...(getChromeApi()?.devtools?.panels?.openResource
+                ? {
+                      openSource: async (source) => {
+                          if (
+                              !source.fileName ||
+                              !Number.isFinite(source.lineNumber) ||
+                              source.lineNumber < 1
+                          )
+                              throw new Error('Source location unavailable');
+                          await getChromeApi()!.devtools!.panels!.openResource!(
+                              source.fileName,
+                              source.lineNumber - 1
+                          );
+                      }
+                  }
+                : {})
+        })
     });
     globalThis.addEventListener('unload', () => mounted.unmount(), {
         once: true

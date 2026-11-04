@@ -1,4 +1,9 @@
 import {
+    createPagePicker,
+    type PickerDocument,
+    type PickerNode
+} from './picker.js';
+import {
     createDevToolsCoreServerFunctions,
     type DevToolsCoreServerFunctions
 } from './rpc.js';
@@ -14,7 +19,8 @@ import { getComponentStateSections } from './fiber/state.js';
 import {
     getBoundingRect,
     highlightElement,
-    unhighlightElement
+    unhighlightElement,
+    findNearestHostNode
 } from './highlighter.js';
 import {
     inspectReactFiberContexts,
@@ -47,10 +53,13 @@ export interface UserAppRpcServerBootstrapResult {
     hookMode: 'disabled' | 'installed' | 'missing' | 'wrapped';
     rendererCount: number;
     rootCount: number;
+    setInspectMode?: (enabled: boolean) => unknown;
+    subscribeInspectMode?: (listener: (enabled: boolean) => void) => () => void;
     dispose?: () => void;
 }
 
 interface UserAppWindow {
+    document?: unknown;
     addEventListener(type: string, listener: () => void): void;
     removeEventListener(type: string, listener: () => void): void;
     [REACT_DEVTOOLS_GLOBAL_HOOK_KEY]?: unknown;
@@ -81,16 +90,28 @@ export function createPageBackend(
         createRootId: (_root, index) => `react-root:${index.toString(36)}`
     });
     const walker = createFiberWalker();
+    const highlightOwner = {};
     let stopHooks: (() => void) | undefined;
     let refreshTimer: ReturnType<typeof setTimeout> | undefined;
     const flushRefresh = () => {
         clearTimeout(refreshTimer);
         refreshTimer = undefined;
-        refreshRootsAndComponents({ registry, store, walker });
+        refreshRootsAndComponents({ registry, store, walker, highlightOwner });
     };
     const scheduleRefresh = () => {
         refreshTimer ??= setTimeout(flushRefresh, 0);
     };
+    const picker = createPagePicker({
+        owner: highlightOwner,
+        document: target.document as PickerDocument | undefined,
+        registry,
+        refresh: () => {
+            if (refreshTimer !== undefined) flushRefresh();
+        },
+        select: (selection) => store.recordInspectSelection(selection),
+        hover: (hovered) => store.recordInspectHover(hovered),
+        cancel: () => store.setInspectMode(false)
+    });
     const updates = createDevToolsUpdatePublisher({
         store,
         projectState: () => createSessionState(store),
@@ -101,6 +122,15 @@ export function createPageBackend(
             stopHooks?.();
             stopHooks = undefined;
             if (!active) {
+                picker.stop();
+                store.update({
+                    inspectMode: {
+                        enabled: false,
+                        hoveredTarget: null,
+                        lastSelectedTarget: null
+                    },
+                    highlightedComponentId: null
+                });
                 registry.clear();
                 store.setComponents([]);
                 store.update({ componentState: {} });
@@ -134,7 +164,9 @@ export function createPageBackend(
         registry,
         updates,
         flushRefresh,
-        () => refreshTimer !== undefined
+        () => refreshTimer !== undefined,
+        picker,
+        highlightOwner
     );
 
     const server = createRpcServer<
@@ -151,6 +183,7 @@ export function createPageBackend(
         disposed = true;
         if (singletonKey && owner[singletonKey] === result)
             delete owner[singletonKey];
+        picker.stop();
         updates.dispose();
         server.dispose();
         target.removeEventListener('pagehide', dispose);
@@ -158,6 +191,12 @@ export function createPageBackend(
     target.addEventListener('pagehide', dispose);
 
     const result = {
+        setInspectMode(enabled: boolean) {
+            if (disposed) throw new Error('Backend disconnected');
+            return serverFunctions.setInspectMode(enabled);
+        },
+        subscribeInspectMode: (listener: (enabled: boolean) => void) =>
+            store.subscribe((state) => listener(state.inspectMode.enabled)),
         didOpenRpcServer: true,
         hookMode: hookInstallation.mode,
         rendererCount: hookInstallation.hook.renderers.size,
@@ -205,13 +244,22 @@ function createUserAppServerFunctions(
     registry: ReturnType<typeof createFiberRootRegistry>,
     updates: ReturnType<typeof createDevToolsUpdatePublisher>,
     flushRefresh: () => void,
-    hasPendingRefresh: () => boolean
+    hasPendingRefresh: () => boolean,
+    picker: ReturnType<typeof createPagePicker>,
+    highlightOwner: object
 ): DevToolsCoreServerFunctions {
     const coreFunctions = createDevToolsCoreServerFunctions(
         store,
         USER_APP_SERVER_ID,
         updates
     );
+
+    const getFiber = (request: import('./types.js').HighlightRequest) => {
+        if (hasPendingRefresh()) flushRefresh();
+        return registry.records
+            .find((record) => record.id === request.rootId)
+            ?.instanceMap.get(request.componentId);
+    };
 
     return {
         ...coreFunctions,
@@ -222,7 +270,9 @@ function createUserAppServerFunctions(
                 capabilities: {
                     ...response.capabilities,
                     components: true,
-                    componentState: true
+                    componentState: true,
+                    highlight: true,
+                    inspect: true
                 },
                 state: createSessionState(store)
             };
@@ -232,10 +282,7 @@ function createUserAppServerFunctions(
             return coreFunctions.getComponents(request);
         },
         getComponentState(request) {
-            if (hasPendingRefresh()) flushRefresh();
-            const fiber = registry.records
-                .find((record) => record.id === request.rootId)
-                ?.instanceMap.get(request.componentId);
+            const fiber = getFiber(request);
             return fiber
                 ? createComponentStateResponse(
                       request.componentId,
@@ -244,19 +291,37 @@ function createUserAppServerFunctions(
                   )
                 : undefined;
         },
+        setInspectMode(enabled) {
+            if (enabled) picker.start();
+            else picker.stop();
+            return store.setInspectMode(enabled);
+        },
+        toggleInspectMode() {
+            return this.setInspectMode(!store.getState().inspectMode.enabled);
+        },
+        clearHighlight() {
+            unhighlightElement(highlightOwner);
+            return coreFunctions.clearHighlight();
+        },
+        scrollToComponent(request) {
+            const fiber = getFiber(request);
+            const node = fiber
+                ? (findNearestHostNode(fiber) as unknown as PickerNode | null)
+                : null;
+            if (!node?.scrollIntoView) return false;
+            node.scrollIntoView({ block: 'center', inline: 'nearest' });
+            return true;
+        },
         highlightComponent(request) {
-            if (hasPendingRefresh()) flushRefresh();
-            const fiber = registry.records
-                .find((record) => record.id === request.rootId)
-                ?.instanceMap.get(request.componentId);
+            const fiber = getFiber(request);
 
             if (!fiber) {
-                unhighlightElement();
+                unhighlightElement(highlightOwner);
 
                 return store.update({ highlightedComponentId: null });
             }
 
-            highlightElement(fiber);
+            highlightElement(fiber, { owner: highlightOwner });
 
             return coreFunctions.highlightComponent(request);
         }
@@ -271,6 +336,8 @@ function createSessionState(store: DevToolsCoreStateStore) {
         renderers: state.renderers,
         roots: state.roots,
         components: state.components.map(projectComponent),
+        inspectMode: state.inspectMode,
+        highlightedComponentId: state.highlightedComponentId,
         selectedComponentId: state.selectedComponentId,
         selectedRootId: state.selectedRootId,
         performance: state.performance,
@@ -527,11 +594,13 @@ function recordCommittedRoot({
 function refreshRootsAndComponents({
     registry,
     store,
-    walker
+    walker,
+    highlightOwner
 }: {
     registry: ReturnType<typeof createFiberRootRegistry>;
     store: DevToolsCoreStateStore;
     walker: ReturnType<typeof createFiberWalker>;
+    highlightOwner: object;
 }): void {
     const roots = registry.records.map((record) => ({
         ...store.getState().roots.find((root) => root.id === record.id),
@@ -558,7 +627,7 @@ function refreshRootsAndComponents({
         store.update({ selectedComponentId: null });
     const highlighted = store.getState().highlightedComponentId;
     if (highlighted && !activeIds.has(highlighted)) {
-        unhighlightElement();
+        unhighlightElement(highlightOwner);
         store.update({ highlightedComponentId: null });
     }
 

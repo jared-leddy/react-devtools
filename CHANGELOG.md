@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.15
+
+- Connect real page picking, hover highlights and scroll actions to current Fiber
+  identities; reveal picked rows through filters and collapsed ancestors.
+- Capture nested and portal targets, including same-origin frame portals, and
+  remove picker listeners and overlays on cancellation, navigation or disconnect.
+- Open available source locations through native browser DevTools resources; hide
+  actions without source metadata or host support and display action failures.
+- Serialize selected inspections during continuous app commits and retain observed
+  values until replacement, without accepting obsolete selections or sessions.
+- Add native Chrome and Firefox page-action evidence and a Chromium picker CI
+  gate. Development extensions: Chrome 0.0.23 and Firefox 0.0.14.
+
 ## 0.1.14
 
 - Reconnect native sessions with fresh snapshots after document/port changes and

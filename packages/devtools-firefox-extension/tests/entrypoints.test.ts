@@ -383,6 +383,32 @@ describe('extension entrypoints', () => {
         expect(browser.devtools.panels.create).not.toHaveBeenCalled();
     });
 
+    it('opens available source locations through Firefox native resources', async () => {
+        document.body.innerHTML = '<div id="root"></div>';
+        const host = createMockPanelBrowser();
+        const openResource = jest.fn(async () => {});
+        (globalThis as typeof globalThis & { browser?: unknown }).browser = {
+            ...host.api,
+            devtools: { ...host.api.devtools, panels: { openResource } }
+        };
+        await import('../src/devtools-panel');
+        const { createDevToolsSession } = jest.requireMock(
+            '@devtools/core/browser'
+        ) as { createDevToolsSession: jest.Mock };
+        const options = createDevToolsSession.mock.calls.at(-1)![0];
+        await options.openSource({
+            fileName: 'http://localhost/app.tsx',
+            lineNumber: 9,
+            columnNumber: 1
+        });
+        expect(openResource).toHaveBeenCalledWith(
+            'http://localhost/app.tsx',
+            8
+        );
+        await expect(
+            options.openSource({ fileName: '', lineNumber: 0 })
+        ).rejects.toThrow('unavailable');
+    });
     it('mounts the Firefox DevTools panel and injects the user app', async () => {
         const { mountDevToolsClient } = jest.requireMock(
             '@devtools/client'

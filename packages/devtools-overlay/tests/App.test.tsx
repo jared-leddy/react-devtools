@@ -47,11 +47,11 @@ describe('DevtoolsOverlay', () => {
         await act(async () => {
             fireEvent.load(iframe);
         });
-        expect(listeners.size).toBe(2);
+        expect(listeners.size).toBe(3);
         await act(async () => {
             fireEvent.load(iframe);
         });
-        expect(listeners.size).toBe(2);
+        expect(listeners.size).toBe(3);
         unmount();
         expect(listeners.size).toBe(0);
         expect(session.dispose).not.toHaveBeenCalled();
@@ -559,3 +559,24 @@ function createPointerMouseEvent(
         ...options
     });
 }
+
+it('connects the default toolbar to the page backend and removes its picker on disposal', async () => {
+    const { unmount } = render(
+        <DevtoolsOverlay defaultOpen clientUrl="/client/" />
+    );
+    await act(async () => fireEvent.load(document.querySelector('iframe')!));
+    const button = screen.getByRole('button', { name: 'Toggle inspect mode' });
+    await act(async () => fireEvent.click(button));
+    expect(
+        document.querySelector('[data-react-devtools-picker]')
+    ).not.toBeNull();
+    expect(button).toHaveAttribute('aria-pressed', 'true');
+    await act(async () => fireEvent.click(button));
+    expect(document.querySelector('[data-react-devtools-picker]')).toBeNull();
+    await act(async () => fireEvent.click(button));
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(button).toHaveAttribute('aria-pressed', 'false');
+    await act(async () => fireEvent.click(button));
+    unmount();
+    expect(document.querySelector('[data-react-devtools-picker]')).toBeNull();
+});

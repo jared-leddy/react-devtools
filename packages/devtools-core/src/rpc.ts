@@ -101,6 +101,8 @@ export interface DevToolsCoreServerFunctions {
         request: DevToolsCoreHandshakeRequest
     ) => DevToolsCoreHandshakeResponse;
     highlightComponent: (request: HighlightRequest) => DevToolsCoreState;
+    clearHighlight: () => DevToolsCoreState;
+    scrollToComponent: (request: HighlightRequest) => boolean;
     recordFiberRootEvent: (
         rootEvent: FiberRootEventRecord
     ) => RootEventResponse;
@@ -344,6 +346,12 @@ export function createDevToolsCoreServerFunctions(
                           state: store.getState()
                       })
             };
+        },
+        clearHighlight() {
+            return store.update({ highlightedComponentId: null });
+        },
+        scrollToComponent() {
+            return false;
         },
         highlightComponent(request) {
             return store.update({

@@ -110,7 +110,7 @@ test('component selection updates details and live page state', async ({
     await capturePanel(page, testInfo);
 });
 
-test('DOM picker cannot invent an identity on an unannotated app', async ({
+test('overlay toolbar picks a real component on an unannotated app', async ({
     page
 }, testInfo) => {
     const client = await openPanel(page);
@@ -123,13 +123,20 @@ test('DOM picker cannot invent an identity on an unannotated app', async ({
         exact: true
     });
     await target.hover();
-    await expect(page.getByTestId('react-devtools-inspect-box')).toHaveCount(0);
-    await page.keyboard.press('Escape');
+    await expect(page.locator('[data-react-devtools-highlighter]')).toHaveCount(
+        1
+    );
+    await target.click();
     await expect(
         page.getByRole('button', { name: 'Toggle inspect mode' })
     ).toHaveAttribute('aria-pressed', 'false');
-    await client.getByRole('link', { name: 'Components', exact: true }).click();
-    await expect(client.getByRole('tree')).toContainText('StateCounterDemo');
+    await expect(page.locator('[data-react-devtools-picker]')).toHaveCount(0);
+    await expect(
+        client.getByRole('region', { name: 'Component details' })
+    ).toContainText('StateCounterDemo');
+    await expect(client.locator('[aria-selected=true]')).toContainText(
+        'StateCounterDemo'
+    );
     await capturePanel(page, testInfo);
 });
 

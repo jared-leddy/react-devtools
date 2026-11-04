@@ -7,7 +7,7 @@ import {
 } from './state.js';
 import type { DevToolsCoreClientFunctions } from './rpc.js';
 import type { DevToolsCoreHandshakeRequest } from './types.js';
-import type { ComponentStateRequest } from './types.js';
+import type { ComponentStateRequest, HighlightRequest } from './types.js';
 import { createDevToolsUpdatePublisher } from './updates.js';
 
 // A borrowed session remains authoritative; the relay exposes metadata, not inspectors.
@@ -34,6 +34,11 @@ export function createDevToolsSessionRelay(
         const patch =
             source.status === 'connected' && source.state
                 ? {
+                      inspectMode: source.state.inspectMode,
+                      selectedComponentId: source.state.selectedComponentId,
+                      selectedRootId: source.state.selectedRootId,
+                      highlightedComponentId:
+                          source.state.highlightedComponentId,
                       renderers: source.state.renderers,
                       roots: source.state.roots,
                       components: source.state.components,
@@ -45,7 +50,42 @@ export function createDevToolsSessionRelay(
         state = { ...state, ...patch };
         listeners.forEach((listener) => listener(state, patch));
     };
+    let disposed = false;
+    let picking = false;
+    let highlighting = false;
+    const stopPicking = () => {
+        if (picking) void session.setInspectMode?.(false).catch(() => {});
+        picking = false;
+        if (highlighting) void session.clearHighlight?.().catch(() => {});
+        highlighting = false;
+    };
     const functions = {
+        async highlightComponent(request: HighlightRequest) {
+            if (!session.highlightComponent)
+                throw new Error('Highlight unavailable');
+            highlighting = true;
+            await session.highlightComponent(request);
+            return state;
+        },
+        async clearHighlight() {
+            highlighting = false;
+            await session.clearHighlight?.();
+            return state;
+        },
+        async scrollToComponent(request: HighlightRequest) {
+            return session.scrollToComponent?.(request) ?? false;
+        },
+        async setInspectMode(enabled: boolean) {
+            if (!session.setInspectMode) throw new Error('Picker unavailable');
+            picking = enabled;
+            try {
+                await session.setInspectMode(enabled);
+            } catch (error) {
+                picking = false;
+                throw error;
+            }
+            return state;
+        },
         async handshake(request: DevToolsCoreHandshakeRequest) {
             if (request.protocolVersion !== DEVTOOLS_PROTOCOL_VERSION)
                 throw new Error('Unsupported DevTools protocol version');
@@ -69,8 +109,13 @@ export function createDevToolsSessionRelay(
                     componentState:
                         source.capabilities.componentState &&
                         !!session.inspectComponent,
-                    highlight: false,
-                    inspect: false,
+                    highlight:
+                        source.capabilities.highlight &&
+                        !!session.highlightComponent &&
+                        !!session.clearHighlight &&
+                        !!session.scrollToComponent,
+                    inspect:
+                        source.capabilities.inspect && !!session.setInspectMode,
                     edit: false,
                     stores: false
                 }
@@ -80,7 +125,10 @@ export function createDevToolsSessionRelay(
             session.inspectComponent?.(request),
         getSessionSnapshot: updates.getSnapshot,
         getSessionRevision: updates.getRevision,
-        disconnectSession: updates.disconnect
+        disconnectSession(request: Parameters<typeof updates.disconnect>[0]) {
+            stopPicking();
+            return updates.disconnect(request);
+        }
     };
     const server = createRpcServer<
         DevToolsCoreClientFunctions,
@@ -88,7 +136,10 @@ export function createDevToolsSessionRelay(
     >(functions, {
         channel,
         options: { timeout: 5000 },
-        onDisconnect: () => updates.suspend()
+        onDisconnect: () => {
+            stopPicking();
+            updates.suspend();
+        }
     });
     const unsubscribe = session.subscribe(() => {
         const source = session.getSnapshot();
@@ -103,7 +154,21 @@ export function createDevToolsSessionRelay(
         }
     });
     return {
+        async setInspectMode(enabled: boolean) {
+            if (disposed) throw new Error('Relay disconnected');
+            await session.connect();
+            if (disposed) throw new Error('Relay disconnected');
+            return functions.setInspectMode(enabled);
+        },
+        subscribeInspectMode: (listener: (enabled: boolean) => void) =>
+            session.subscribe(() =>
+                listener(
+                    session.getSnapshot().state?.inspectMode.enabled ?? false
+                )
+            ),
         dispose() {
+            disposed = true;
+            stopPicking();
             unsubscribe();
             updates.dispose();
             server.dispose();

@@ -12,7 +12,7 @@ if (root) {
                     badge: 'ready',
                     build: {
                         channel: 'dev',
-                        version: '0.0.22'
+                        version: '0.0.23'
                     },
                     docs: [
                         {
